@@ -468,7 +468,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
   , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& MatchId
   , int64 OpCode
-  , const FString& Data
+  , const TArray<uint8>& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 )
@@ -513,7 +513,7 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
   }
   if (StoredData.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), StoredData);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(StoredData.GetData(), StoredData.Num()));
   }
   if (StoredPresences.Num() > 0)
   {
@@ -2005,7 +2005,7 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
   , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , int64 OpCode
-  , const FString& Data
+  , const TArray<uint8>& Data
 )
 {
   UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(GetTransientPackage());
@@ -2046,7 +2046,7 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
   }
   if (StoredData.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), StoredData);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(StoredData.GetData(), StoredData.Num()));
   }
 
   StoredWebSocketSubsystem->Send(TEXT("party_data_send"), Json)

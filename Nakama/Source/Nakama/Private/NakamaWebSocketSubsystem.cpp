@@ -323,7 +323,13 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
             if (auto* RequestPtr = Requests.Find(Cid))
             {
                 TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState> Request = *RequestPtr;
-                Request->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ServerError });
+                const TSharedPtr<FJsonObject>* ErrorObj;
+                TSharedPtr<FJsonObject> ErrorData;
+                if (JsonObject->TryGetObjectField(TEXT("error"), ErrorObj))
+                {
+                    ErrorData = *ErrorObj;
+                }
+                Request->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ServerError, .Data = ErrorData });
                 Requests.Remove(Cid);
             }
         }
@@ -350,8 +356,24 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
         // We should have a pending request for this CID.
         if (auto* RequestPtr = Requests.Find(Cid))
         {
+            // The envelope has exactly one field besides "cid" (the oneof payload).
+            // Extract it so callers receive the payload directly, not the envelope wrapper.
+            TSharedPtr<FJsonObject> Payload;
+            for (const auto& Field : JsonObject->Values)
+            {
+                if (Field.Key != TEXT("cid"))
+                {
+                    const TSharedPtr<FJsonObject>* ObjPtr;
+                    if (Field.Value->TryGetObject(ObjPtr))
+                    {
+                        Payload = *ObjPtr;
+                    }
+                    break;
+                }
+            }
+
             TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState> Request = *RequestPtr;
-            Request->Resolve(FNakamaWebSocketResponse{ .Data = JsonObject });
+            Request->Resolve(FNakamaWebSocketResponse{ .Data = Payload });
 
             Requests.Remove(Cid);
         }

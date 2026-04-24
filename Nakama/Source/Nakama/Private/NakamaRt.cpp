@@ -21,6 +21,29 @@
 namespace Nakama
 {
 
+FNakamaRtClient::FNakamaRtClient(UGameInstance* InGi)
+{
+  if (InGi == nullptr)
+  {
+    UE_LOG(LogNakama, Error, TEXT("FNakamaRtClient constructor received null GameInstance pointer."));
+    return;
+  }
+  WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
+  if (WebSocketSubsystem.IsValid())
+  {
+    EventHandle = WebSocketSubsystem->ServerEventReceived.AddRaw(this, &FNakamaRtClient::HandleServerEvent);
+  }
+}
+
+FNakamaRtClient::~FNakamaRtClient()
+{
+  if (WebSocketSubsystem.IsValid())
+  {
+    WebSocketSubsystem->ServerEventReceived.Remove(EventHandle);
+    WebSocketSubsystem->Close();
+  }
+}
+
 TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
   const FNakamaWebSocketConnectionParams& Params
 ) noexcept
@@ -122,7 +145,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
 
     FNakamaRtResult<FNakamaRtChannel> ErrorResult
       = FNakamaRtResult<FNakamaRtChannel>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtChannel>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtChannelJoin RequestMsg;
@@ -163,14 +186,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
 
         FNakamaRtResult<FNakamaRtChannel> ErrorResult
           = FNakamaRtResult<FNakamaRtChannel>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtChannel ResultData = FNakamaRtChannel::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannel> Result 
+      FNakamaRtResult<FNakamaRtChannel> Result
         = FNakamaRtResult<FNakamaRtChannel>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -186,7 +209,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelL
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtChannelLeave RequestMsg;
@@ -224,14 +247,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelL
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -248,7 +267,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtChannelMessageSend RequestMsg;
@@ -287,14 +306,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
         FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
           = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result 
+      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
         = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -312,7 +331,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtChannelMessageUpdate RequestMsg;
@@ -352,14 +371,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
         FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
           = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result 
+      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
         = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -376,7 +395,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtChannelMessageRemove RequestMsg;
@@ -415,14 +434,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
         FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
           = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result 
+      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
         = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -438,7 +457,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchCreate(
 
     FNakamaRtResult<FNakamaRtMatch> ErrorResult
       = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtMatch>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchCreate RequestMsg;
@@ -476,21 +495,21 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchCreate(
 
         FNakamaRtResult<FNakamaRtMatch> ErrorResult
           = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatch> Result 
+      FNakamaRtResult<FNakamaRtMatch> Result
         = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDataSend(
   const FString& MatchId
   , int64 OpCode
-  , const FString& Data
+  , const TArray<uint8>& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 ) noexcept
@@ -503,7 +522,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDat
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchDataSend RequestMsg;
@@ -545,14 +564,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDat
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -570,7 +585,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
 
     FNakamaRtResult<FNakamaRtMatch> ErrorResult
       = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtMatch>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchJoin RequestMsg;
@@ -610,14 +625,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
 
         FNakamaRtResult<FNakamaRtMatch> ErrorResult
           = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatch> Result 
+      FNakamaRtResult<FNakamaRtMatch> Result
         = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -633,7 +648,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchLea
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchLeave RequestMsg;
@@ -671,14 +686,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchLea
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -699,7 +710,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
 
     FNakamaRtResult<FNakamaRtMatchmakerTicket> ErrorResult
       = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchmakerAdd RequestMsg;
@@ -742,14 +753,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
 
         FNakamaRtResult<FNakamaRtMatchmakerTicket> ErrorResult
           = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtMatchmakerTicket ResultData = FNakamaRtMatchmakerTicket::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatchmakerTicket> Result 
+      FNakamaRtResult<FNakamaRtMatchmakerTicket> Result
         = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -765,7 +776,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::Matchmak
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtMatchmakerRemove RequestMsg;
@@ -803,14 +814,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::Matchmak
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -828,7 +835,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
 
     FNakamaRtResult<FNakamaRtRpc> ErrorResult
       = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtRpc>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtRpc RequestMsg;
@@ -868,14 +875,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
 
         FNakamaRtResult<FNakamaRtRpc> ErrorResult
           = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtRpc ResultData = FNakamaRtRpc::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtRpc> Result 
+      FNakamaRtResult<FNakamaRtRpc> Result
         = FNakamaRtResult<FNakamaRtRpc>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -892,7 +899,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
 
     FNakamaRtResult<FNakamaRtStatus> ErrorResult
       = FNakamaRtResult<FNakamaRtStatus>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtStatus>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtStatusFollow RequestMsg;
@@ -931,14 +938,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
 
         FNakamaRtResult<FNakamaRtStatus> ErrorResult
           = FNakamaRtResult<FNakamaRtStatus>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtStatus ResultData = FNakamaRtStatus::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtStatus> Result 
+      FNakamaRtResult<FNakamaRtStatus> Result
         = FNakamaRtResult<FNakamaRtStatus>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -954,7 +961,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUn
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtStatusUnfollow RequestMsg;
@@ -992,14 +999,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUn
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1015,7 +1018,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUp
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtStatusUpdate RequestMsg;
@@ -1053,14 +1056,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUp
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1075,7 +1074,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> FNakamaRtClient::Ping(
 
     FNakamaRtResult<FNakamaRtPong> ErrorResult
       = FNakamaRtResult<FNakamaRtPong>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtPong>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPing RequestMsg;
@@ -1112,14 +1111,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> FNakamaRtClient::Ping(
 
         FNakamaRtResult<FNakamaRtPong> ErrorResult
           = FNakamaRtResult<FNakamaRtPong>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtPong ResultData = FNakamaRtPong::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPong> Result 
+      FNakamaRtResult<FNakamaRtPong> Result
         = FNakamaRtResult<FNakamaRtPong>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -1138,7 +1137,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
 
     FNakamaRtResult<FNakamaRtParty> ErrorResult
       = FNakamaRtResult<FNakamaRtParty>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtParty>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyCreate RequestMsg;
@@ -1179,14 +1178,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
 
         FNakamaRtResult<FNakamaRtParty> ErrorResult
           = FNakamaRtResult<FNakamaRtParty>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtParty ResultData = FNakamaRtParty::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtParty> Result 
+      FNakamaRtResult<FNakamaRtParty> Result
         = FNakamaRtResult<FNakamaRtParty>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -1202,7 +1201,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoi
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyJoin RequestMsg;
@@ -1240,14 +1239,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoi
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1263,7 +1258,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLea
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyLeave RequestMsg;
@@ -1301,14 +1296,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLea
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1325,7 +1316,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPro
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyPromote RequestMsg;
@@ -1364,14 +1355,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPro
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1388,7 +1375,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAcc
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyAccept RequestMsg;
@@ -1427,14 +1414,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAcc
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1451,7 +1434,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRem
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyRemove RequestMsg;
@@ -1490,14 +1473,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRem
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1513,7 +1492,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClo
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyClose RequestMsg;
@@ -1551,14 +1530,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClo
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1574,7 +1549,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> FNakamaRtClient::Party
 
     FNakamaRtResult<FNakamaRtPartyJoinRequest> ErrorResult
       = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyJoinRequestList RequestMsg;
@@ -1612,14 +1587,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> FNakamaRtClient::Party
 
         FNakamaRtResult<FNakamaRtPartyJoinRequest> ErrorResult
           = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtPartyJoinRequest ResultData = FNakamaRtPartyJoinRequest::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPartyJoinRequest> Result 
+      FNakamaRtResult<FNakamaRtPartyJoinRequest> Result
         = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -1641,7 +1616,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
 
     FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> ErrorResult
       = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyMatchmakerAdd RequestMsg;
@@ -1685,14 +1660,14 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
 
         FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> ErrorResult
           = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
-
       FNakamaRtPartyMatchmakerTicket ResultData = FNakamaRtPartyMatchmakerTicket::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> Result 
+      FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> Result
         = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+
     });
 }
 
@@ -1709,7 +1684,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyMat
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyMatchmakerRemove RequestMsg;
@@ -1748,21 +1723,17 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyMat
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDataSend(
   const FString& PartyId
   , int64 OpCode
-  , const FString& Data
+  , const TArray<uint8>& Data
 ) noexcept
 {
   if (!WebSocketSubsystem.IsValid())
@@ -1773,7 +1744,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDat
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyDataSend RequestMsg;
@@ -1813,14 +1784,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDat
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 
@@ -1839,7 +1806,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyUpd
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRtPartyUpdate RequestMsg;
@@ -1880,14 +1847,10 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyUpd
 
         FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
           = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
-      FNakamaRtEmptyResponse ResultData = FNakamaRtEmptyResponse::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtEmptyResponse> Result 
-        = FNakamaRtResult<FNakamaRtEmptyResponse>::Success(ResultData);
-
-      return Result;
     });
 }
 

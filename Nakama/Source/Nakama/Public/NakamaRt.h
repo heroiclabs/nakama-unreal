@@ -49,10 +49,8 @@ namespace Nakama
     }
   };
 
-  USTRUCT(BlueprintType)
   struct FNakamaRtEmptyResponse
   {
-    GENERATED_BODY()
   };
 
   class FNakamaRtClient
@@ -63,28 +61,8 @@ namespace Nakama
     void HandleServerEvent(const FString& Json);
 
   public:
-    explicit FNakamaRtClient(UGameInstance* InGi)
-    {
-      if (InGi == nullptr)
-      {
-        UE_LOG(LogNakama, Error, TEXT("FNakamaRtClient constructor received null GameInstance pointer."));
-        return;
-      }
-      WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
-      if (WebSocketSubsystem.IsValid())
-      {
-        EventHandle = WebSocketSubsystem->ServerEventReceived.AddRaw(this, &FNakamaRtClient::HandleServerEvent);
-      }
-    }
-
-    ~FNakamaRtClient()
-    {
-      if (WebSocketSubsystem.IsValid())
-      {
-        WebSocketSubsystem->ServerEventReceived.Remove(EventHandle);
-        WebSocketSubsystem->Close();
-      }
-    }
+    NAKAMA_API explicit FNakamaRtClient(UGameInstance* InGi);
+    NAKAMA_API ~FNakamaRtClient();
 
     FNakamaRtClient(const FNakamaRtClient&) = delete;
     FNakamaRtClient& operator=(const FNakamaRtClient&) = delete;
@@ -179,7 +157,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchDataSend(
       const FString& MatchId
       , int64 OpCode
-      , const FString& Data
+      , const TArray<uint8>& Data
       , const TArray<FNakamaRtUserPresence>& Presences
       , bool Reliable
     ) noexcept;
@@ -409,7 +387,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyDataSend(
       const FString& PartyId
       , int64 OpCode
-      , const FString& Data
+      , const TArray<uint8>& Data
     ) noexcept;
 
     /*

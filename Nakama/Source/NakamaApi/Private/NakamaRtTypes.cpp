@@ -18,51 +18,6 @@
 
 #include "NakamaRtTypes.h"
 
-FNakamaRtGoogleProtobufFieldOptions FNakamaRtGoogleProtobufFieldOptions::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
-{
-  FNakamaRtGoogleProtobufFieldOptions Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (Json->HasField(TEXT("category")))
-  {
-      const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-      if (Json->TryGetArrayField(TEXT("category"), ArrayPtr))
-      {
-        for (const auto& Item : *ArrayPtr)
-        {
-          Result.Category.Add((Item->AsString()));
-        }
-      }
-  }
-  if (Json->HasField(TEXT("response_field")))
-  {
-      Result.ResponseField = Json->GetStringField(TEXT("response_field"));
-  }
-
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaRtGoogleProtobufFieldOptions::ToJson() const noexcept
-{
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Category.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : Category)
-    {
-      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-    }
-    Json->SetArrayField(TEXT("category"), Array);
-  }
-  if (ResponseField.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("response_field"), ResponseField);
-  }
-  return Json;
-}
-
 FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
   FNakamaRtUserPresence Result;
@@ -796,7 +751,7 @@ FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("data")))
   {
-      Result.Data = Json->GetStringField(TEXT("data"));
+      FBase64::Decode(Json->GetStringField(TEXT("data")), Result.Data);
   }
   if (Json->HasField(TEXT("reliable")))
   {
@@ -824,7 +779,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const noexcept
   }
   if (Data.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), Data);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data.GetData(), Data.Num()));
   }
   
   {
@@ -850,7 +805,7 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("data")))
   {
-      Result.Data = Json->GetStringField(TEXT("data"));
+      FBase64::Decode(Json->GetStringField(TEXT("data")), Result.Data);
   }
   if (Json->HasField(TEXT("presences")))
   {
@@ -889,7 +844,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const noexcept
   }
   if (Data.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), Data);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data.GetData(), Data.Num()));
   }
   if (Presences.Num() > 0)
   {
@@ -2088,7 +2043,7 @@ FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("data")))
   {
-      Result.Data = Json->GetStringField(TEXT("data"));
+      FBase64::Decode(Json->GetStringField(TEXT("data")), Result.Data);
   }
 
   return Result;
@@ -2112,7 +2067,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const noexcept
   }
   if (Data.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), Data);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data.GetData(), Data.Num()));
   }
   return Json;
 }
@@ -2134,7 +2089,7 @@ FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("data")))
   {
-      Result.Data = Json->GetStringField(TEXT("data"));
+      FBase64::Decode(Json->GetStringField(TEXT("data")), Result.Data);
   }
 
   return Result;
@@ -2154,7 +2109,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const noexcept
   }
   if (Data.IsEmpty() == false)
   {
-    Json->SetStringField(TEXT("data"), Data);
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data.GetData(), Data.Num()));
   }
   return Json;
 }

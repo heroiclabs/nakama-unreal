@@ -300,7 +300,7 @@ public:
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& MatchId
     , int64 OpCode
-    , const FString& Data
+    , const TArray<uint8>& Data
     , const TArray<FNakamaRtUserPresence>& Presences
     , bool Reliable
   );
@@ -311,7 +311,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredMatchId;
   int64 StoredOpCode;
-  FString StoredData;
+  TArray<uint8> StoredData;
   TArray<FNakamaRtUserPresence> StoredPresences;
   bool StoredReliable;
 };
@@ -1052,7 +1052,7 @@ public:
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , int64 OpCode
-    , const FString& Data
+    , const TArray<uint8>& Data
   );
 
   virtual void Activate() override;
@@ -1061,7 +1061,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
   int64 StoredOpCode;
-  FString StoredData;
+  TArray<uint8> StoredData;
 };
 /**
 *  Update Party label and whether it's open or closed.

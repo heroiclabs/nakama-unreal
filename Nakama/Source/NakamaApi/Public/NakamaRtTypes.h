@@ -23,9 +23,9 @@
 #include "NakamaRtTypes.generated.h"
 
 //
-// Shadow these two from the other Nakama Types.
+// Shadow these from the other Nakama Types.
 USTRUCT(BlueprintType)
-struct FNakamaRtNotification : public FNakamaNotification 
+struct FNakamaRtNotification : public FNakamaNotification
 {
     GENERATED_BODY()
     static FNakamaRtNotification FromJson(const TSharedPtr<FJsonObject>& Shared)
@@ -34,9 +34,22 @@ struct FNakamaRtNotification : public FNakamaNotification
     }
 };
 USTRUCT(BlueprintType)
-struct FNakamaRtRpc : public FNakamaRpc 
+struct FNakamaRtRpc : public FNakamaRpc
 {
     GENERATED_BODY()
+    static FNakamaRtRpc FromJson(const TSharedPtr<FJsonObject>& Shared)
+    {
+      return static_cast<FNakamaRtRpc>(FNakamaRpc::FromJson(Shared));
+    }
+};
+USTRUCT(BlueprintType)
+struct FNakamaRtChannelMessage : public FNakamaChannelMessage
+{
+    GENERATED_BODY()
+    static FNakamaRtChannelMessage FromJson(const TSharedPtr<FJsonObject>& Shared)
+    {
+      return static_cast<FNakamaRtChannelMessage>(FNakamaChannelMessage::FromJson(Shared));
+    }
 };
 /*
 * 
@@ -74,26 +87,6 @@ enum class ENakamaRtErrorCode : uint8
   , MATCH_JOIN_REJECTED = 5 //  The match join was rejected.
   , RUNTIME_FUNCTION_NOT_FOUND = 6 //  The runtime function does not exist on the server.
   , RUNTIME_FUNCTION_EXCEPTION = 7 //  The runtime function executed with an error.
-};
-
-/*
-* 
-*/
-USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtGoogleProtobufFieldOptions
-{
-  GENERATED_BODY()
-
-  /**  */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  ENakamaRtMessageCategory Category;
-
-  /**  */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString ResponseField;
-
-  static FNakamaRtGoogleProtobufFieldOptions FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /*
@@ -470,7 +463,7 @@ struct NAKAMAAPI_API FNakamaRtMatchData
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString Data;
+  TArray<uint8> Data;
 
   /**  True if this data was delivered reliably, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -498,7 +491,7 @@ struct NAKAMAAPI_API FNakamaRtMatchDataSend
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString Data;
+  TArray<uint8> Data;
 
   /**  List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -1086,7 +1079,7 @@ struct NAKAMAAPI_API FNakamaRtPartyData
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString Data;
+  TArray<uint8> Data;
 
   static FNakamaRtPartyData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1110,7 +1103,7 @@ struct NAKAMAAPI_API FNakamaRtPartyDataSend
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString Data;
+  TArray<uint8> Data;
 
   static FNakamaRtPartyDataSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
