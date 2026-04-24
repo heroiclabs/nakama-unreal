@@ -83,7 +83,11 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
   {{ if eq "NonZero" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }} != 0)
   {{ else if ne "" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
+    {{- if eq "TArray<uint8>" $param.TypeEntry.FieldType }}
+    Json->SetStringField(TEXT("{{ $param.Metadata.JsonFieldName }}"), FBase64::Encode(Stored{{ $param.Name }}.GetData(), Stored{{ $param.Name }}.Num()));
+    {{- else }}
     Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
+    {{- end }}
   }
   {{- end }}
 

@@ -87,7 +87,7 @@ func (api *Api) addFile(protoFile string) error {
 		),
 		proto.WithMessage(
 			func(message *proto.Message) {
-				if message.Name == "google.protobuf.EnumValueOptions" {
+				if strings.HasPrefix(message.Name, "google.") {
 					return
 				}
 

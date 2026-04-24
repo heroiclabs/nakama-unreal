@@ -185,26 +185,24 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		DefaultValue: "0.0",
 	}
 
-	/*
-		bytesEntry := modules.TypeEntry{
-			Param:         "const TArray<uint8>&",
-			RepeatedParam: "const TArray<TArray<uint8>>&",
-			MapParam:      "const TMap<FString, TArray<uint8>>&",
-			MapType:       "TMap<FString, TArray<uint8>>",
+	bytesEntry := modules.TypeEntry{
+		Param:         "const TArray<uint8>&",
+		RepeatedParam: "const TArray<TArray<uint8>>&",
+		MapParam:      "const TMap<FString, TArray<uint8>>&",
+		MapType:       "TMap<FString, TArray<uint8>>",
 
-			JsonArrayValue: "String",
-			QueryFormat:    "%s",
-			EmptyCheck:     "",
+		JsonArrayValue: "String",
+		QueryFormat:    "%s",
+		EmptyCheck:     "IsEmpty",
 
-			FieldType:         "TArray<uint8>",
-			RepeatedFieldType: "TArray<TArray<uint8>>",
+		FieldType:         "TArray<uint8>",
+		RepeatedFieldType: "TArray<TArray<uint8>>",
 
-			JsonSetter:       "SetStringField",
-			JsonGetter:       "GetStringField",
-			JsonCast:         "",
-			JsonToTypeMethod: "AsString()",
-		}
-	*/
+		JsonSetter:       "SetStringField",
+		JsonGetter:       "GetStringField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsString()",
+	}
 
 	return &UnrealTypeMapper{
 		targetSystem: targetSystem,
@@ -232,8 +230,8 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 			"double":      doubleEntry,
 			"DoubleValue": doubleEntry,
 
-			"bytes":      stringEntry,
-			"BytesValue": stringEntry,
+			"bytes":      bytesEntry,
+			"BytesValue": bytesEntry,
 		},
 	}
 }

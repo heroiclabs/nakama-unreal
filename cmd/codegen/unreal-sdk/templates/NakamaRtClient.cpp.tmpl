@@ -21,6 +21,29 @@
 namespace Nakama
 {
 
+FNakamaRtClient::FNakamaRtClient(UGameInstance* InGi)
+{
+  if (InGi == nullptr)
+  {
+    UE_LOG(LogNakama, Error, TEXT("FNakamaRtClient constructor received null GameInstance pointer."));
+    return;
+  }
+  WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
+  if (WebSocketSubsystem.IsValid())
+  {
+    EventHandle = WebSocketSubsystem->ServerEventReceived.AddRaw(this, &FNakamaRtClient::HandleServerEvent);
+  }
+}
+
+FNakamaRtClient::~FNakamaRtClient()
+{
+  if (WebSocketSubsystem.IsValid())
+  {
+    WebSocketSubsystem->ServerEventReceived.Remove(EventHandle);
+    WebSocketSubsystem->Close();
+  }
+}
+
 TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
   const FNakamaWebSocketConnectionParams& Params
 ) noexcept
@@ -66,7 +89,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> FNakamaRtCl
 
     FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> ErrorResult
       = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Failure(Error);
-    return MakeCompletedFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>>(ErrorResult);
+    return MakeCompletedFuture(ErrorResult);
   }
 
   FNakamaRt{{ $func.Name }} RequestMsg;
@@ -106,14 +129,19 @@ TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> FNakamaRtCl
 
         FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> ErrorResult
           = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Failure(Error);
-        return ErrorResult;
+        return MakeCompletedFuture(ErrorResult);
       }
 
+      {{- if eq "EmptyResponse" $func.ReturnType.Name }}
+      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      {{- else }}
       FNakamaRt{{ $func.ReturnType.Name }} ResultData = FNakamaRt{{ $func.ReturnType.Name }}::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> Result 
+      FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> Result
         = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Success(ResultData);
 
-      return Result;
+      return MakeCompletedFuture(Result);
+      {{- end }}
+
     });
 }
 {{- end }}

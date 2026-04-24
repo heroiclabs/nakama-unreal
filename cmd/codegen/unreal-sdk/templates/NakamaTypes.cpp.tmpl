@@ -61,7 +61,11 @@ FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJson
       {{- if $member.Metadata.IsEnumType }}
       Result.{{ $member.Name }} = static_cast<{{ $member.Type }}>(Json->GetNumberField(TEXT("{{ $member.Metadata.JsonFieldName }}")));
       {{- else if not $member.Metadata.IsMessageType }}
+      {{- if eq "TArray<uint8>" $member.TypeEntry.FieldType }}
+      FBase64::Decode(Json->GetStringField(TEXT("{{ $member.Metadata.JsonFieldName }}")), Result.{{ $member.Name }});
+      {{- else }}
       Result.{{ $member.Name }} = Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"));
+      {{- end }}
       {{- else }}
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))
@@ -107,7 +111,11 @@ TSharedPtr<FJsonObject> FNakama{{ $type.Name }}::ToJson() const noexcept
     {{- if $member.Metadata.IsEnumType }}
     Json->SetNumberField(TEXT("{{ $member.Metadata.JsonFieldName }}"), static_cast<int32>({{ $member.Name }}));
     {{- else }}
+    {{- if eq "TArray<uint8>" $member.TypeEntry.FieldType }}
+    Json->SetStringField(TEXT("{{ $member.Metadata.JsonFieldName }}"), FBase64::Encode({{ $member.Name }}.GetData(), {{ $member.Name }}.Num()));
+    {{- else }}
     Json->{{ $member.TypeEntry.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.TypeEntry.MaybeToJson }});
+    {{- end }}
     {{- end }}
   }
   {{- end }}
