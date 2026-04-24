@@ -32,6 +32,24 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
   return WebSocketSubsystem->Connect(Params);
 }
 
+void FNakamaRtClient::HandleServerEvent(const FString& Json)
+{
+  TSharedPtr<FJsonObject> Envelope;
+  TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+  if (!FJsonSerializer::Deserialize(Reader, Envelope) || !Envelope.IsValid())
+  {
+    return;
+  }
+  {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+  if (On{{ $t.Name }} && Envelope->HasField(TEXT("{{ $t.Metadata.JsonFieldName }}")))
+  {
+    On{{ $t.Name }}(FNakamaRt{{ $t.Name }}::FromJson(Envelope->GetObjectField(TEXT("{{ $t.Metadata.JsonFieldName }}"))));
+    return;
+  }
+  {{- end }}{{- end }}
+}
+
+
 {{- range $func := $.Funcs }}
 
 TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> FNakamaRtClient::{{ $func.Name }}(

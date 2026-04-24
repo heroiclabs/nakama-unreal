@@ -50,7 +50,7 @@ namespace Nakama
   };
 
   USTRUCT(BlueprintType)
-  struct FNakamaRtEmptyResult
+  struct FNakamaRtEmptyResponse
   {
     GENERATED_BODY()
   };
@@ -59,6 +59,8 @@ namespace Nakama
   {
   private:
     TWeakObjectPtr<UNakamaWebSocketSubsystem> WebSocketSubsystem;
+    FDelegateHandle EventHandle;
+    void HandleServerEvent(const FString& Json);
 
   public:
     explicit FNakamaRtClient(UGameInstance* InGi)
@@ -69,12 +71,17 @@ namespace Nakama
         return;
       }
       WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
+      if (WebSocketSubsystem.IsValid())
+      {
+        EventHandle = WebSocketSubsystem->ServerEventReceived.AddRaw(this, &FNakamaRtClient::HandleServerEvent);
+      }
     }
 
     ~FNakamaRtClient()
     {
       if (WebSocketSubsystem.IsValid())
       {
+        WebSocketSubsystem->ServerEventReceived.Remove(EventHandle);
         WebSocketSubsystem->Close();
       }
     }
@@ -105,5 +112,10 @@ namespace Nakama
       {{- end }}
     ) noexcept;
     {{- end }}
+
+    // Event callbacks — assign to receive server-pushed events
+    {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+    TFunction<void(const FNakamaRt{{ $t.Name }}&)> On{{ $t.Name }};
+    {{- end }}{{- end }}
   };
 }

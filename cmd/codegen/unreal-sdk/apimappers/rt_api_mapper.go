@@ -42,6 +42,23 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, typeMapper modules.TypeMapper) (
 		return modules.ApiMap{}, fmt.Errorf("envelope message is not found.")
 	}
 
+	// Patch the types with metadata about whether it corresponds to an event.
+	typesByName := make(map[string]*modules.Type, len(types))
+	for i := range types {
+		typesByName[types[i].Name] = &types[i]
+	}
+	for _, field := range envelope.OneofFields {
+		if slices.Contains(field.Categories, "EVENT") {
+			if t, ok := typesByName[field.Type]; ok {
+				if t.DataDecl.Metadata == nil {
+					t.DataDecl.Metadata = make(map[string]any)
+				}
+				t.DataDecl.Metadata["IsEvent"] = true
+				t.DataDecl.Metadata["JsonFieldName"] = field.Name
+			}
+		}
+	}
+
 	funcs := make([]modules.Function, 0, len(api.Rpcs))
 	for _, field := range envelope.OneofFields {
 		// This is kinda hacky, but basically follows the implicit nature of the rt schema:
