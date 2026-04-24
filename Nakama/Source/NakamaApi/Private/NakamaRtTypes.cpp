@@ -18,6 +18,51 @@
 
 #include "NakamaRtTypes.h"
 
+FNakamaRtGoogleProtobufFieldOptions FNakamaRtGoogleProtobufFieldOptions::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+{
+  FNakamaRtGoogleProtobufFieldOptions Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("category")))
+  {
+      const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+      if (Json->TryGetArrayField(TEXT("category"), ArrayPtr))
+      {
+        for (const auto& Item : *ArrayPtr)
+        {
+          Result.Category.Add((Item->AsString()));
+        }
+      }
+  }
+  if (Json->HasField(TEXT("response_field")))
+  {
+      Result.ResponseField = Json->GetStringField(TEXT("response_field"));
+  }
+
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaRtGoogleProtobufFieldOptions::ToJson() const noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Category.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Category)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("category"), Array);
+  }
+  if (ResponseField.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("response_field"), ResponseField);
+  }
+  return Json;
+}
+
 FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
   FNakamaRtUserPresence Result;

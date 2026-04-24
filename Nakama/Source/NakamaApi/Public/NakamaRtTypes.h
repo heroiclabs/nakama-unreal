@@ -39,6 +39,17 @@ struct FNakamaRtRpc : public FNakamaRpc
     GENERATED_BODY()
 };
 /*
+* 
+*/
+UENUM(BlueprintType)
+enum class ENakamaRtMessageCategory : uint8
+{
+  CATEGORY_UNKNOWN = 0 // 
+  , REQUEST = 1 // 
+  , RESPONSE = 2 // 
+  , EVENT = 3 // 
+};
+/*
 * The type of chat channel.
 */
 UENUM(BlueprintType)
@@ -63,6 +74,26 @@ enum class ENakamaRtErrorCode : uint8
   , MATCH_JOIN_REJECTED = 5 //  The match join was rejected.
   , RUNTIME_FUNCTION_NOT_FOUND = 6 //  The runtime function does not exist on the server.
   , RUNTIME_FUNCTION_EXCEPTION = 7 //  The runtime function executed with an error.
+};
+
+/*
+* 
+*/
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtGoogleProtobufFieldOptions
+{
+  GENERATED_BODY()
+
+  /**  */
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
+  ENakamaRtMessageCategory Category;
+
+  /**  */
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
+  FString ResponseField;
+
+  static FNakamaRtGoogleProtobufFieldOptions FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /*

@@ -85,7 +85,8 @@ void UNakamaRealtimeClientChannelJoin::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtChannel Result = FNakamaRtChannel::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -223,7 +224,8 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -301,7 +303,8 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -373,7 +376,8 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -439,7 +443,8 @@ void UNakamaRealtimeClientMatchCreate::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -618,7 +623,8 @@ void UNakamaRealtimeClientMatchJoin::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -793,7 +799,8 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtMatchmakerTicket Result = FNakamaRtMatchmakerTicket::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -937,7 +944,8 @@ void UNakamaRealtimeClientRpc::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtRpc Result = FNakamaRtRpc::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -1019,7 +1027,8 @@ void UNakamaRealtimeClientStatusFollow::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtStatus Result = FNakamaRtStatus::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -1175,6 +1184,67 @@ void UNakamaRealtimeClientStatusUpdate::Activate()
     });
 }
 
+UNakamaRealtimeClientPing* UNakamaRealtimeClientPing::Ping(
+  UObject* WorldContextObject
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+)
+{
+  UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(GetTransientPackage());
+  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
+}
+
+void UNakamaRealtimeClientPing::Activate()
+{
+  static const TCHAR* TraceScope_Ping = TEXT("NakamaRTBP_Ping");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Ping);
+
+  if (!StoredWebSocketSubsystem)
+  {
+    FNakamaRtError Err;
+    Err.Message = TEXT("WebSocket subsystem is null");
+    OnError.Broadcast(Err);
+    SetReadyToDestroy();
+    return;
+  }
+
+  TWeakObjectPtr<UNakamaRealtimeClientPing> WeakThis(this);
+
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+
+  StoredWebSocketSubsystem->Send(TEXT("ping"), Json)
+    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    {
+      auto* Self = WeakThis.Get();
+      if (!Self)
+      {
+        return;
+      }
+
+      if (Resp.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtPong Result = FNakamaRtPong::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
+      }
+      else
+      {
+        FNakamaRtError Err;
+        if (Resp.Data.IsValid())
+        {
+          Err = FNakamaRtError::FromJson(Resp.Data);
+        }
+        else
+        {
+          Err.Code = static_cast<int32>(Resp.ErrorCode);
+        }
+        Self->OnError.Broadcast(Err);
+      }
+      Self->SetReadyToDestroy();
+    });
+}
+
 UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem
@@ -1241,7 +1311,8 @@ void UNakamaRealtimeClientPartyCreate::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtParty Result = FNakamaRtParty::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -1721,7 +1792,8 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtPartyJoinRequest Result = FNakamaRtPartyJoinRequest::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -1836,7 +1908,8 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        FNakamaRtPartyMatchmakerTicket Result = FNakamaRtPartyMatchmakerTicket::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
       }
       else
       {
@@ -1898,78 +1971,6 @@ void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
   }
 
   StoredWebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
-    {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast();
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
-}
-
-UNakamaRealtimeClientPartyMatchmakerTicket* UNakamaRealtimeClientPartyMatchmakerTicket::PartyMatchmakerTicket(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
-  , const FString& PartyId
-  , const FString& Ticket
-)
-{
-  UNakamaRealtimeClientPartyMatchmakerTicket* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerTicket>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
-  Action->StoredPartyId = PartyId;
-  Action->StoredTicket = Ticket;
-
-  Action->RegisterWithGameInstance(WorldContextObject);
-  return Action;
-}
-
-void UNakamaRealtimeClientPartyMatchmakerTicket::Activate()
-{
-  static const TCHAR* TraceScope_PartyMatchmakerTicket = TEXT("NakamaRTBP_PartyMatchmakerTicket");
-  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerTicket);
-
-  if (!StoredWebSocketSubsystem)
-  {
-    FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
-    SetReadyToDestroy();
-    return;
-  }
-
-  TWeakObjectPtr<UNakamaRealtimeClientPartyMatchmakerTicket> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  if (StoredTicket.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("ticket"), StoredTicket);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_matchmaker_ticket"), Json)
     .Next([WeakThis](FNakamaWebSocketResponse Resp)
     {
       auto* Self = WeakThis.Get();

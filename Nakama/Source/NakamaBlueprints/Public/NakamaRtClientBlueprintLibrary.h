@@ -31,13 +31,25 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtError, const FNakamaRtError&, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaRtSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelJoinSuccess, const FNakamaRtChannel&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageSendSuccess, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageUpdateSuccess, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageRemoveSuccess, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchCreateSuccess, const FNakamaRtMatch&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchJoinSuccess, const FNakamaRtMatch&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchmakerAddSuccess, const FNakamaRtMatchmakerTicket&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRpcSuccess, const FNakamaRtRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStatusFollowSuccess, const FNakamaRtStatus&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPingSuccess, const FNakamaRtPong&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyCreateSuccess, const FNakamaRtParty&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyJoinRequestListSuccess, const FNakamaRtPartyJoinRequest&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyMatchmakerAddSuccess, const FNakamaRtPartyMatchmakerTicket&, Result);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
 // ============================================================================
-
 /**
-*  [client] Join a realtime chat channel.
+*  Join a realtime chat channel.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelJoin : public UBlueprintAsyncActionBase
@@ -46,7 +58,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelJoin : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaChannelJoinSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -77,9 +89,8 @@ private:
   bool StoredPersistence;
   bool StoredHidden;
 };
-
 /**
-*  [client] Leave a realtime chat channel.
+*  Leave a realtime chat channel.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelLeave : public UBlueprintAsyncActionBase
@@ -113,9 +124,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredChannelId;
 };
-
 /**
-*  [client] Send a message to a realtime chat channel.
+*  Send a message to a realtime chat channel.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageSend : public UBlueprintAsyncActionBase
@@ -124,7 +134,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageSend : public UBlu
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaChannelMessageSendSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -151,9 +161,8 @@ private:
   FString StoredChannelId;
   FString StoredContent;
 };
-
 /**
-*  [client] Update a message previously sent to a realtime chat channel.
+*  Update a message previously sent to a realtime chat channel.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageUpdate : public UBlueprintAsyncActionBase
@@ -162,7 +171,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageUpdate : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaChannelMessageUpdateSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -191,9 +200,8 @@ private:
   FString StoredMessageId;
   FString StoredContent;
 };
-
 /**
-*  [client] Remove a message previously sent to a realtime chat channel.
+*  Remove a message previously sent to a realtime chat channel.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageRemove : public UBlueprintAsyncActionBase
@@ -202,7 +210,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageRemove : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaChannelMessageRemoveSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -229,9 +237,8 @@ private:
   FString StoredChannelId;
   FString StoredMessageId;
 };
-
 /**
-*  [client] A client to server request to create a realtime match.
+*  A client to server request to create a realtime match.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchCreate : public UBlueprintAsyncActionBase
@@ -240,7 +247,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchCreate : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaMatchCreateSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -265,9 +272,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredName;
 };
-
 /**
-*  [client] A client to server request to send data to a realtime match.
+*  A client to server request to send data to a realtime match.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchDataSend : public UBlueprintAsyncActionBase
@@ -309,9 +315,8 @@ private:
   TArray<FNakamaRtUserPresence> StoredPresences;
   bool StoredReliable;
 };
-
 /**
-*  [client] A client to server request to join a realtime match.
+*  A client to server request to join a realtime match.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchJoin : public UBlueprintAsyncActionBase
@@ -320,7 +325,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchJoin : public UBlueprintAsy
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaMatchJoinSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -349,9 +354,8 @@ private:
   FString StoredToken;
   TMap<FString, FString> StoredMetadata;
 };
-
 /**
-*  [client] A client to server request to leave a realtime match.
+*  A client to server request to leave a realtime match.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchLeave : public UBlueprintAsyncActionBase
@@ -385,9 +389,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredMatchId;
 };
-
 /**
-*  [client] Submit a new matchmaking process request.
+*  Submit a new matchmaking process request.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerAdd : public UBlueprintAsyncActionBase
@@ -396,7 +399,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerAdd : public UBlueprin
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaMatchmakerAddSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -431,9 +434,8 @@ private:
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
 };
-
 /**
-*  [client] Cancel a matchmaking process using a ticket.
+*  Cancel a matchmaking process using a ticket.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerRemove : public UBlueprintAsyncActionBase
@@ -467,9 +469,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredTicket;
 };
-
 /**
-*  [client][server] RPC call or response.
+*  RPC call or response.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRpc : public UBlueprintAsyncActionBase
@@ -478,7 +479,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRpc : public UBlueprintAsyncActi
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRpcSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -507,9 +508,8 @@ private:
   FString StoredPayload;
   FString StoredHttpKey;
 };
-
 /**
-*  [client] Start following some set of users to receive their status updates.
+*  Start following some set of users to receive their status updates.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusFollow : public UBlueprintAsyncActionBase
@@ -518,7 +518,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusFollow : public UBlueprint
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaStatusFollowSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -545,9 +545,8 @@ private:
   TArray<FString> StoredUserIds;
   TArray<FString> StoredUsernames;
 };
-
 /**
-*  [client] Stop following some set of users to no longer receive their status updates.
+*  Stop following some set of users to no longer receive their status updates.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUnfollow : public UBlueprintAsyncActionBase
@@ -581,9 +580,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   TArray<FString> StoredUserIds;
 };
-
 /**
-*  [client] Set the user's own status.
+*  Set the user's own status.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUpdate : public UBlueprintAsyncActionBase
@@ -617,9 +615,41 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredStatus;
 };
-
 /**
-*  [client] Create a party.
+*  Application-level heartbeat and connection check.
+*/
+UCLASS(Transient)
+class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPing : public UBlueprintAsyncActionBase
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaPingSuccess OnSuccess;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaRtError OnError;
+
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "Ping")
+    , Category = "Nakama|RealtimeClient"
+  )
+  static UNakamaRealtimeClientPing* Ping(
+    UObject* WorldContextObject
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  );
+
+  virtual void Activate() override;
+
+private:
+  TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
+};
+/**
+*  Create a party.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyCreate : public UBlueprintAsyncActionBase
@@ -628,7 +658,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyCreate : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaPartyCreateSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -659,9 +689,8 @@ private:
   FString StoredLabel;
   bool StoredHidden;
 };
-
 /**
-*  [client] Join a party, or request to join if the party is not open.
+*  Join a party, or request to join if the party is not open.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoin : public UBlueprintAsyncActionBase
@@ -695,9 +724,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
 };
-
 /**
-*  [client] Leave a party.
+*  Leave a party.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyLeave : public UBlueprintAsyncActionBase
@@ -731,9 +759,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
 };
-
 /**
-*  [client] Promote a new party leader.
+*  Promote a new party leader.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyPromote : public UBlueprintAsyncActionBase
@@ -769,9 +796,8 @@ private:
   FString StoredPartyId;
   FNakamaRtUserPresence StoredPresence;
 };
-
 /**
-*  [client] Accept a request to join.
+*  Accept a request to join.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyAccept : public UBlueprintAsyncActionBase
@@ -807,9 +833,8 @@ private:
   FString StoredPartyId;
   FNakamaRtUserPresence StoredPresence;
 };
-
 /**
-*  [client] Kick a party member, or decline a request to join.
+*  Kick a party member, or decline a request to join.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyRemove : public UBlueprintAsyncActionBase
@@ -845,9 +870,8 @@ private:
   FString StoredPartyId;
   FNakamaRtUserPresence StoredPresence;
 };
-
 /**
-*  [client] End a party, kicking all party members and closing it.
+*  End a party, kicking all party members and closing it.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyClose : public UBlueprintAsyncActionBase
@@ -881,9 +905,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
 };
-
 /**
-*  [client] Request a list of pending join requests for a party.
+*  Request a list of pending join requests for a party.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoinRequestList : public UBlueprintAsyncActionBase
@@ -892,7 +915,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoinRequestList : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaPartyJoinRequestListSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -917,9 +940,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
 };
-
 /**
-*  [client] Begin matchmaking as a party.
+*  Begin matchmaking as a party.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerAdd : public UBlueprintAsyncActionBase
@@ -928,7 +950,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerAdd : public UBlu
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaPartyMatchmakerAddSuccess OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
@@ -965,9 +987,8 @@ private:
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
 };
-
 /**
-*  [client] Cancel a party matchmaking process using a ticket.
+*  Cancel a party matchmaking process using a ticket.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerRemove : public UBlueprintAsyncActionBase
@@ -1003,47 +1024,8 @@ private:
   FString StoredPartyId;
   FString StoredTicket;
 };
-
 /**
-*  [client] A response from starting a new party matchmaking process.
-*/
-UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerTicket : public UBlueprintAsyncActionBase
-{
-  GENERATED_BODY()
-
-public:
-  UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
-
-  UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
-    BlueprintCallable
-    , meta = (
-      BlueprintInternalUseOnly = "true"
-      , WorldContext = "WorldContextObject"
-      , DisplayName = "PartyMatchmakerTicket")
-    , Category = "Nakama|RealtimeClient"
-  )
-  static UNakamaRealtimeClientPartyMatchmakerTicket* PartyMatchmakerTicket(
-    UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem
-    , const FString& PartyId
-    , const FString& Ticket
-  );
-
-  virtual void Activate() override;
-
-private:
-  TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
-  FString StoredPartyId;
-  FString StoredTicket;
-};
-
-/**
-*  [client] A client to server request to send data to a party.
+*  A client to server request to send data to a party.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyDataSend : public UBlueprintAsyncActionBase
@@ -1081,9 +1063,8 @@ private:
   int64 StoredOpCode;
   FString StoredData;
 };
-
 /**
-*  [client] Update Party label and whether it's open or closed.
+*  Update Party label and whether it's open or closed.
 */
 UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyUpdate : public UBlueprintAsyncActionBase
