@@ -132,7 +132,7 @@ void FNakamaRtPingSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->StatusUpdate(TEXT(""));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -200,7 +200,7 @@ void FNakamaRtChannelSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->ChannelJoin(GenerateRoomName(), 1, false, false);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     TestFalse("Joined channel should have a non-empty ID", Resp.Data->Id.IsEmpty());
@@ -232,7 +232,7 @@ void FNakamaRtChannelSpec::Define()
                     TestFalse("Channel ID from join", JoinResp.Data->Id.IsEmpty());
                     return RtClient->ChannelMessageSend(JoinResp.Data->Id, TEXT("{\"msg\":\"hello\"}"));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     TestFalse("Ack should contain a message_id", Resp.Data->MessageId.IsEmpty());
@@ -275,7 +275,7 @@ void FNakamaRtChannelSpec::Define()
                     TestFalse("Message ID before update", SendResp.Data->MessageId.IsEmpty());
                     return RtClient->ChannelMessageUpdate(SendResp.Data->ChannelId, SendResp.Data->MessageId, TEXT("{\"msg\":\"updated\"}"));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -316,7 +316,7 @@ void FNakamaRtChannelSpec::Define()
                     }
                     return RtClient->ChannelMessageRemove(SendResp.Data->ChannelId, SendResp.Data->MessageId);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -346,7 +346,7 @@ void FNakamaRtChannelSpec::Define()
                     }
                     return RtClient->ChannelLeave(JoinResp.Data->Id);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -413,7 +413,7 @@ void FNakamaRtMatchSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->MatchCreate(TEXT(""));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     TestFalse("match_id should not be empty", Resp.Data->MatchId.IsEmpty());
@@ -445,7 +445,7 @@ void FNakamaRtMatchSpec::Define()
                     TestFalse("Match ID before leave", CreateResp.Data->MatchId.IsEmpty());
                     return RtClient->MatchLeave(CreateResp.Data->MatchId);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -464,14 +464,11 @@ void FNakamaRtMatchSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->MatchCreate(TEXT(""));
                 })
-                .Next([this, Done](auto CreateResp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> CreateResp)
                 {
                     RT_FAIL_ON_ERROR(CreateResp, Done);
-                    TArray<uint8> RawBytes = { 0x48, 0x65, 0x6C, 0x6C, 0x6F };
-                    FString Payload = BytesToHex(RawBytes.GetData(), RawBytes.Num());
-
                     // MatchDataSend is fire-and-forget — the server sends no response.
-                    RtClient->MatchDataSend(CreateResp.Data->MatchId, 1, Payload, {}, true);
+                    RtClient->MatchDataSend(CreateResp.Data->MatchId, 1, TArray<uint8>{0x48, 0x65, 0x6C, 0x6C, 0x6F}, {}, true);
                     Done.Execute();
                 });
         });
@@ -536,7 +533,7 @@ void FNakamaRtMatchmakerSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 2, {}, {});
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatchmakerTicket> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     TestFalse("Matchmaker ticket should not be empty", Resp.Data->Ticket.IsEmpty());
@@ -568,7 +565,7 @@ void FNakamaRtMatchmakerSpec::Define()
                     TestFalse("Ticket before remove", AddResp.Data->Ticket.IsEmpty());
                     return RtClient->MatchmakerRemove(AddResp.Data->Ticket);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -694,7 +691,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient2->MatchJoin(PendingMatchId, TEXT(""), {});
                 })
-                .Next([this, Done](auto JoinResult)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
                     RT_FAIL_ON_ERROR(JoinResult, Done);
                     TestFalse("Client B joined with non-empty match_id", JoinResult.Data->MatchId.IsEmpty());
@@ -737,7 +734,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     RtClient->OnMatchmakerMatched = [this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         RtClient->MatchJoin(TEXT(""), Matched.Token, {})
-                            .Next([this, Done](auto JoinResult)
+                            .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                             {
                                 if (!JoinResult.bIsSuccess)
                                 {
@@ -752,7 +749,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     RtClient2->OnMatchmakerMatched = [this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         RtClient2->MatchJoin(TEXT(""), Matched.Token, {})
-                            .Next([this, Done](auto JoinResult)
+                            .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                             {
                                 if (!JoinResult.bIsSuccess)
                                 {
@@ -777,7 +774,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     }
                     return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
                 })
-                .Next([this, Done](auto AddBResp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatchmakerTicket> AddBResp)
                 {
                     if (!AddBResp.bIsSuccess)
                     {
@@ -904,7 +901,7 @@ void FNakamaRtEventSpec::Define()
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient2->MatchJoin(PendingId, TEXT(""), {});
                 })
-                .Next([this, Done](auto JoinResult)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
                     if (!JoinResult.bIsSuccess)
                     {
@@ -964,7 +961,7 @@ void FNakamaRtEventSpec::Define()
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient2->MatchJoin(PendingId, TEXT(""), {});
                 })
-                .Next([this, Done](auto JoinResult)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
                     if (!JoinResult.bIsSuccess)
                     {
@@ -973,7 +970,67 @@ void FNakamaRtEventSpec::Define()
                         return;
                     }
                     // Client B sends data; Client A will receive it via OnMatchData.
-                    RtClient2->MatchDataSend(PendingId, TestOpCode, TEXT("hello"), {}, true);
+                    RtClient2->MatchDataSend(PendingId, TestOpCode, TArray<uint8>{'h','e','l','l','o'}, {}, true);
+                });
+        });
+
+        LatentIt("should receive the correct bytes when another client sends match data", [this](const FDoneDelegate& Done)
+        {
+            // Client A creates a match and registers OnMatchData expecting specific bytes.
+            // Client B joins the match and sends a known payload as TArray<uint8>.
+            // Done fires when Client A's callback confirms the data bytes match.
+            static constexpr int64 TestOpCode = 43;
+            static const TArray<uint8> TestPayload = {0x01, 0x02, 0x03};
+
+            RtClient = MakeUnique<FNakamaRtClient>(GI);
+            RtClient->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
+                {
+                    TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return RtClient->MatchCreate(TEXT(""));
+                })
+                .Next([this, Done](auto CreateResult) -> TNakamaFuture<FNakamaSessionResult>
+                {
+                    if (!CreateResult.bIsSuccess)
+                    {
+                        AddError(TEXT("MatchCreate failed"));
+                        return MakeCompletedFuture<FNakamaSessionResult>(FNakamaSessionResult{});
+                    }
+                    PendingId = CreateResult.Data->MatchId;
+
+                    RtClient->OnMatchData = [this, Done](const FNakamaRtMatchData& MatchData)
+                    {
+                        TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
+                        TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
+                        TestEqual("MatchData bytes", MatchData.Data, TestPayload);
+                        Done.Execute();
+                    };
+
+                    return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
+                })
+                .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
+                    Session2 = R2.Value;
+                    GI2 = CreateTestGameInstance();
+                    GI2->AddToRoot();
+                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
+                    return RtClient2->Connect(MakeConnParams(Session2));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
+                {
+                    TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
+                    return RtClient2->MatchJoin(PendingId, TEXT(""), {});
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
+                {
+                    if (!JoinResult.bIsSuccess)
+                    {
+                        AddError(TEXT("Client B MatchJoin failed"));
+                        Done.Execute();
+                        return;
+                    }
+                    RtClient2->MatchDataSend(PendingId, TestOpCode, TestPayload, {}, true);
                 });
         });
     });
@@ -1026,7 +1083,7 @@ void FNakamaRtEventSpec::Define()
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient2->ChannelJoin(RoomName, 1, false, false);
                 })
-                .Next([this, Done](auto JoinResult)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> JoinResult)
                 {
                     if (!JoinResult.bIsSuccess)
                     {
@@ -1097,7 +1154,7 @@ void FNakamaRtStatusSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->StatusUpdate(TEXT("Playing a game"));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -1113,7 +1170,7 @@ void FNakamaRtStatusSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->StatusUpdate(TEXT(""));
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -1134,7 +1191,7 @@ void FNakamaRtStatusSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->StatusFollow({ GenerateId() }, {});
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtStatus> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -1162,7 +1219,7 @@ void FNakamaRtStatusSpec::Define()
                     }
                     return RtClient->StatusUnfollow({ FakeUserId });
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -1229,7 +1286,7 @@ void FNakamaRtPartySpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
                     return RtClient->PartyCreate(true, 4, TEXT(""), false);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtParty> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     TestFalse("party_id should not be empty", Resp.Data->PartyId.IsEmpty());
@@ -1261,7 +1318,7 @@ void FNakamaRtPartySpec::Define()
                     TestFalse("Party ID before close", CreateResp.Data->PartyId.IsEmpty());
                     return RtClient->PartyClose(CreateResp.Data->PartyId);
                 })
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
@@ -1311,7 +1368,7 @@ void FNakamaRtSubsystemLifetimeSpec::Define()
             //    on a null/stale pointer — guaranteed crash.
             //    After the fix it must immediately resolve to an error.
             RtClient->StatusUpdate(TEXT(""))
-                .Next([this, Done](auto Resp)
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     TestFalse(
                         TEXT("Stale-subsystem call must return an error, not success"),

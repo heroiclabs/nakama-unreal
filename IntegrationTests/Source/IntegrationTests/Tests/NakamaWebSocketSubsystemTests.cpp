@@ -438,10 +438,9 @@ BEGIN_DEFINE_SPEC(FNakamaWebSocketSubsystemChannelSpec, "IntegrationTests.Nakama
     FString ExtractChannelId(const FNakamaWebSocketResponse& Resp) const
     {
         FString Id;
-        const TSharedPtr<FJsonObject>* ChannelObj;
-        if (Resp.Data.IsValid() && Resp.Data->TryGetObjectField(TEXT("channel"), ChannelObj))
+        if (Resp.Data.IsValid())
         {
-            (*ChannelObj)->TryGetStringField(TEXT("id"), Id);
+            Resp.Data->TryGetStringField(TEXT("id"), Id);
         }
         return Id;
     }
@@ -584,10 +583,9 @@ BEGIN_DEFINE_SPEC(FNakamaWebSocketSubsystemMatchSpec, "IntegrationTests.NakamaWe
     FString ExtractMatchId(const FNakamaWebSocketResponse& Resp) const
     {
         FString Id;
-        const TSharedPtr<FJsonObject>* MatchObj;
-        if (Resp.Data.IsValid() && Resp.Data->TryGetObjectField(TEXT("match"), MatchObj))
+        if (Resp.Data.IsValid())
         {
-            (*MatchObj)->TryGetStringField(TEXT("match_id"), Id);
+            Resp.Data->TryGetStringField(TEXT("match_id"), Id);
         }
         return Id;
     }
@@ -705,10 +703,9 @@ BEGIN_DEFINE_SPEC(FNakamaWebSocketSubsystemMatchmakerSpec, "IntegrationTests.Nak
     FString ExtractTicket(const FNakamaWebSocketResponse& Resp) const
     {
         FString Ticket;
-        const TSharedPtr<FJsonObject>* TicketObj;
-        if (Resp.Data.IsValid() && Resp.Data->TryGetObjectField(TEXT("matchmaker_ticket"), TicketObj))
+        if (Resp.Data.IsValid())
         {
-            (*TicketObj)->TryGetStringField(TEXT("ticket"), Ticket);
+            Resp.Data->TryGetStringField(TEXT("ticket"), Ticket);
         }
         return Ticket;
     }
