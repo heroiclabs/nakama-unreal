@@ -100,7 +100,12 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
+        {{- if ne $func.ReturnType.Name "EmptyResponse" }}
+        FNakamaRt{{ $func.ReturnType.Name }} Result = FNakamaRt{{ $func.ReturnType.Name }}::FromJson(Resp.Data);
+        Self->OnSuccess.Broadcast(Result);
+        {{- else }}
         Self->OnSuccess.Broadcast();
+        {{- end }}
       }
       else
       {

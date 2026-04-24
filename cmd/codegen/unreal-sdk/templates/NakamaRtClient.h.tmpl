@@ -25,6 +25,36 @@
 
 namespace Nakama
 {
+  template<typename T>
+  struct FNakamaRtResult
+  {
+    bool bIsSuccess = false;
+
+    TOptional<T> Data;
+    TOptional<FNakamaRtError> Error;
+
+    static FNakamaRtResult<T> Success(const T& InData)
+    {
+      FNakamaRtResult Result;
+      Result.bIsSuccess = true;
+      Result.Data = InData;
+      return Result;
+    }
+    static FNakamaRtResult<T> Failure(const FNakamaRtError& InError)
+    {
+      FNakamaRtResult Result;
+      Result.bIsSuccess = false;
+      Result.Error = InError;
+      return Result;
+    }
+  };
+
+  USTRUCT(BlueprintType)
+  struct FNakamaRtEmptyResult
+  {
+    GENERATED_BODY()
+  };
+
   class FNakamaRtClient
   {
   private:
@@ -69,7 +99,7 @@ namespace Nakama
     * {{- range $param := $func.Params }}
     * @param {{ $param.Name }}{{ "\t" }}{{ $param.Comment }}{{ end }}
     */
-    NAKAMA_API TNakamaFuture<FNakamaRt{{ $func.ReturnType.Name }}> {{ $func.Name }}(
+    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> {{ $func.Name }}(
       {{- range $idx, $param := $func.Params }}
       {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
       {{- end }}

@@ -34,50 +34,69 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
 
 {{- range $func := $.Funcs }}
 
-TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
+TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> FNakamaRtClient::{{ $func.Name }}(
   {{- range $idx, $param := $func.Params }}
   {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 ) noexcept
 {
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  {{- range $param := $func.Params }}
-
-  {{- if $param.Metadata.Repeated }}
-  if ({{ $param.Name }}.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : {{ $param.Name }})
-    {
-      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.MaybeToJson }}));
-    }
-    Json->SetArrayField(TEXT("{{ $param.Metadata.JsonFieldName }}"), Array);
-  }
-  {{- else if $param.Metadata.IsMap }}
-  if ({{ $param.Name }}.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : {{ $param.Name }})
-    {
-      MapObj->{{ $param.TypeEntry.JsonSetter }}(Pair.Key, Pair.Value);
-    }
-    Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
-  }
-  {{- else }}
-  {{ if eq "NonZero" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }} != 0)
-  {{ else if ne "" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
-  {
-    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), {{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
-  }
-  {{- end }}
-
-  {{- end }}
-
   if (!WebSocketSubsystem.IsValid())
   {
-    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    FNakamaRtError Error;
+    Error.Code = -1;
+    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+
+    FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> ErrorResult
+      = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Failure(Error);
+    return MakeCompletedFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>>(ErrorResult);
   }
-  return WebSocketSubsystem->Send(TEXT("{{ $func.Metadata.RpcName }}"), Json);
+
+  FNakamaRt{{ $func.Name }} RequestMsg;
+  {{- range $idx, $param := $func.Params }}
+  RequestMsg.{{ $param.Name }} = {{ $param.Name }};
+  {{- end }}
+
+  return WebSocketSubsystem->Send(TEXT("{{ $func.Metadata.RpcName }}"), RequestMsg.ToJson())
+    .Next([](FNakamaWebSocketResponse Response)
+    {
+      FNakamaRtError Error;
+      Error.Code = -1;
+
+      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      {
+        switch (Response.ErrorCode)
+        {
+          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
+            break;
+          case ENakamaWebSocketError::ConnectionFailed:
+            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
+            break;
+          case ENakamaWebSocketError::NotConnected:
+            Error.Message = TEXT("WebSocketSubsystem is not connected.");
+            break;
+          case ENakamaWebSocketError::ConnectionClosed:
+            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
+            break;
+          case ENakamaWebSocketError::ServerError:
+            Error = FNakamaRtError::FromJson(Response.Data);
+            break;
+          default:
+            Error.Message = TEXT("Unknown error.");
+            break;
+        }
+
+        FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> ErrorResult
+          = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Failure(Error);
+        return ErrorResult;
+      }
+
+      FNakamaRt{{ $func.ReturnType.Name }} ResultData = FNakamaRt{{ $func.ReturnType.Name }}::FromJson(Response.Data);
+      FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> Result 
+        = FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>::Success(ResultData);
+
+      return Result;
+    });
 }
 {{- end }}
 

@@ -53,7 +53,11 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, typeMapper modules.TypeMapper) (
 				return modules.ApiMap{}, fmt.Errorf("type definition not found in proto schema: `%s`", field.Type)
 			}
 
-			var returnType *yacg.ProtoMessage = nil
+			//
+			// Try match the responseField with one of the other messages as the return type.
+			var returnType *yacg.ProtoMessage = &yacg.ProtoMessage{
+				Name: "EmptyResponse",
+			}
 			if field.ResponseField != "" {
 				returnType, found = api.MessagesByName[field.ResponseField]
 				if !found {
