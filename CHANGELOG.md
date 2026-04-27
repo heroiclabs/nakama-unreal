@@ -2,7 +2,17 @@
 All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
-### Unreleased
+
+### [2.11.2] - 2026-04-27
+### Added
+- Server-side Satori events: #165
+
+### Changed
+- Removed Legacy `*Core/` code: #166
+
+### Fixed
+- Missing member initializations: #164
+
 
 ### [2.11.1] - 2026-04-09
 ### Added
