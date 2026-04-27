@@ -8,7 +8,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Server-side Satori events: #165
 
 ### Changed
-- Removed Legacy `*Core/` code.
+- Removed Legacy `*Core/` code: #166
 
 ### Fixed
 - Missing member initializations: #164
