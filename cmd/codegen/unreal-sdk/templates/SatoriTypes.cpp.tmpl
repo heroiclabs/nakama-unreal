@@ -38,7 +38,13 @@ FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJson
         for (const auto& Item : *ArrayPtr)
         {
           {{- if not $member.Metadata.IsMessageType }}
+          {{- if $member.TypeEntry.JsonDeserializeFn }}
+          {{ $member.TypeEntry.FieldType }} TmpVal;
+          {{ $member.TypeEntry.JsonDeserializeFn }}(*Item->{{ $member.TypeEntry.JsonToTypeMethod }}, TmpVal);
+          Result.{{ $member.Name }}.Add(TmpVal);
+          {{- else }}
           Result.{{ $member.Name }}.Add({{ $member.TypeEntry.JsonCast }}(Item->{{ $member.TypeEntry.JsonToTypeMethod }}));
+          {{- end }}
           {{- else }}
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
@@ -61,7 +67,11 @@ FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJson
       {{- if $member.Metadata.IsEnumType }}
       Result.{{ $member.Name }} = static_cast<{{ $member.Type }}>(Json->GetIntegerField(TEXT("{{ $member.Metadata.JsonFieldName }}")));
       {{- else if not $member.Metadata.IsMessageType }}
+      {{- if $member.TypeEntry.JsonDeserializeFn }}
+      {{ $member.TypeEntry.JsonDeserializeFn }}(*Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}")), Result.{{ $member.Name }});
+      {{- else }}
       Result.{{ $member.Name }} = Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"));
+      {{- end }}
       {{- else }}
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))
@@ -86,7 +96,7 @@ TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : {{ $member.Name }})
     {
-      Array.Add(MakeShared<{{ $member.TypeEntry.JsonArrayValue }}>(Item{{ $member.TypeEntry.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $member.TypeEntry.JsonArrayValue }}>(Item{{ $member.TypeEntry.JsonSerializeFn }}));
     }
     Json->SetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), Array);
   }
@@ -107,7 +117,7 @@ TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const noexcept
     {{- if $member.Metadata.IsEnumType }}
     Json->SetNumberField(TEXT("{{ $member.Metadata.JsonFieldName }}"), static_cast<int32>({{ $member.Name }}));
     {{- else }}
-    Json->{{ $member.TypeEntry.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.TypeEntry.MaybeToJson }});
+    Json->{{ $member.TypeEntry.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.TypeEntry.JsonSerializeFn }});
     {{- end }}
   }
   {{- end }}

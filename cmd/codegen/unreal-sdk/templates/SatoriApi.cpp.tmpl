@@ -83,7 +83,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   {{- if $func.Metadata.BodyParams }}
   {{- if $func.Metadata.IsScalarBody }}
   {{- $bodyParam := index $func.Metadata.BodyParams 0 }}
-  Body = {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }};
+  Body = {{ $bodyParam.Name }}{{ $bodyParam.JsonSerializeFn }};
   {{- else }}
   Body = MakeShared<FJsonObject>();
   {{- range $bodyParam := $func.Metadata.BodyParams }}
@@ -94,7 +94,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
     TArray<TSharedPtr<FJsonValue>> Array;
     for ({{ $bodyParam.Param }} Item : {{ $bodyParam.Name }})
     {
-      Array.Add(MakeShared<{{ $bodyParam.JsonArrayValue }}>(Item{{ $bodyParam.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $bodyParam.JsonArrayValue }}>(Item{{ $bodyParam.JsonSerializeFn }}));
     }
     Body->SetArrayField(TEXT("{{ $bodyParam.JsonFieldName }}"), Array);
   }
@@ -112,7 +112,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   {{ if eq "NonZero" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }} != 0)
   {{ else if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
   {
-    Body->{{ $bodyParam.JsonSetter }}(TEXT("{{ $bodyParam.JsonFieldName }}"), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
+    Body->{{ $bodyParam.JsonSetter }}(TEXT("{{ $bodyParam.JsonFieldName }}"), {{ $bodyParam.Name }}{{ $bodyParam.JsonSerializeFn }});
   }
   {{- end }}
 

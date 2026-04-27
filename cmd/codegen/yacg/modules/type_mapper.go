@@ -19,14 +19,15 @@ type TypeEntry struct {
 	EmptyCheck       string // Guard strategy: "IsEmpty", "NonZero", "None", "NumEmpty"
 
 	// JSON serialization (body building)
-	JsonArrayValue string // FJsonValue subclass: "String", "Number", "Boolean", "Object"
-	MaybeToJson    string // Suffix when serializing to JSON: ".ToJson()" for message types, "" for primitives
+	JsonArrayValue  string // FJsonValue subclass: "FJsonValueString", "FJsonValueNumber", etc.
+	JsonSerializeFn string // Suffix appended to value when serializing: ".ToJson()" for message types, ".ToIso8601()" for timestamps, "" for primitives
 
 	// JSON deserialization (FromJson)
-	JsonSetter       string // Setter method: "SetStringField", "SetIntegerField", etc
-	JsonGetter       string // Getter method: "GetStringField", "GetIntegerField", etc.
-	JsonCast         string // Custom casts, for example static_cast<int32>
-	JsonToTypeMethod string // e.g. AsString(), AsNumber()
+	JsonSetter        string // Setter method: "SetStringField", "SetNumberField", etc.
+	JsonGetter        string // Getter method: "GetStringField", "GetNumberField", etc.
+	JsonCast          string // Cast applied to getter result, e.g. "static_cast<int32>"
+	JsonToTypeMethod  string // Method on FJsonValue, e.g. "AsString()", "AsNumber()"
+	JsonDeserializeFn string // If set, called as Fn(*JsonGetter(...), Result.Field) instead of direct assignment
 
 	// Declaration default value (empty string means no initializer)
 	DefaultValue string // e.g. "false", "0", "0.f"

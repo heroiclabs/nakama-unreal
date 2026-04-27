@@ -204,12 +204,32 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		JsonToTypeMethod: "AsString()",
 	}
 
+	timestampEntry := modules.TypeEntry{
+		Param:         "const FDateTime&",
+		RepeatedParam: "const TArray<FDateTime>&",
+		MapParam:      "const TMap<FString, FDateTime>&",
+		MapType:       "TMap<FString, FDateTime>",
+
+		JsonArrayValue: "FJsonValueString",
+		QueryFormat:    "%s",
+		EmptyCheck:     "",
+
+		FieldType:         "FDateTime",
+		RepeatedFieldType: "TArray<FDateTime>",
+
+		JsonSetter:        "SetStringField",
+		JsonGetter:        "GetStringField",
+		JsonCast:          "",
+		JsonToTypeMethod:  "AsString()",
+		JsonSerializeFn:   ".ToIso8601()",
+		JsonDeserializeFn: "FDateTime::ParseIso8601",
+	}
+
 	return &UnrealTypeMapper{
 		targetSystem: targetSystem,
 		entries: map[string]modules.TypeEntry{
 			"string":      stringEntry,
 			"StringValue": stringEntry,
-			"Timestamp":   stringEntry,
 
 			"bool":      boolEntry,
 			"BoolValue": boolEntry,
@@ -232,6 +252,8 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 			"bytes":      bytesEntry,
 			"BytesValue": bytesEntry,
+
+			"Timestamp":   timestampEntry,
 		},
 	}
 }
@@ -282,7 +304,7 @@ func (r *UnrealTypeMapper) ResolveEntry(intype string) modules.TypeEntry {
 			JsonArrayValue:    "FJsonValueObject",
 			JsonSetter:        "SetObjectField",
 			JsonGetter:        "GetObjectField",
-			MaybeToJson:       ".ToJson()",
+			JsonSerializeFn:       ".ToJson()",
 			JsonToTypeMethod:  "AsString()",
 		}
 	}

@@ -65,7 +65,7 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Stored{{ $param.Name }})
     {
-      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.JsonSerializeFn }}));
     }
     Json->SetArrayField(TEXT("{{ $param.Metadata.JsonFieldName }}"), Array);
   }
@@ -86,7 +86,7 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
     {{- if eq "TArray<uint8>" $param.TypeEntry.FieldType }}
     Json->SetStringField(TEXT("{{ $param.Metadata.JsonFieldName }}"), FBase64::Encode(Stored{{ $param.Name }}.GetData(), Stored{{ $param.Name }}.Num()));
     {{- else }}
-    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
+    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.JsonSerializeFn }});
     {{- end }}
   }
   {{- end }}
