@@ -2130,7 +2130,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Account has user", !Result.Value.User.Id.IsEmpty());
-				TestTrue("Account has create time", !Result.Value.User.CreateTime.IsEmpty());
+				TestTrue("Account has create time", Result.Value.User.CreateTime != FDateTime(0));
 				Done.Execute();
 			});
 		});
@@ -4774,7 +4774,7 @@ void FNakamaAsyncEventSpec::Define()
 		{
 			TMap<FString, FString> Properties;
 			Properties.Add(TEXT("source"), TEXT("test"));
-			Nakama::Event(ClientConfig, Session, TEXT("test_event"), FDateTime::UtcNow().ToIso8601(), false, Properties).Next([this, Done](FNakamaVoidResult Result)
+			Nakama::Event(ClientConfig, Session, TEXT("test_event"), FDateTime::UtcNow(), false, Properties).Next([this, Done](FNakamaVoidResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Event submitted successfully", true);
@@ -4785,7 +4785,7 @@ void FNakamaAsyncEventSpec::Define()
 		LatentIt("should accept empty event name", [this](const FDoneDelegate& Done)
 		{
 			TMap<FString, FString> Properties;
-			Nakama::Event(ClientConfig, Session, TEXT(""), FDateTime::UtcNow().ToIso8601(), false, Properties).Next([this, Done](FNakamaVoidResult Result)
+			Nakama::Event(ClientConfig, Session, TEXT(""), FDateTime::UtcNow(), false, Properties).Next([this, Done](FNakamaVoidResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Event with empty name accepted", true);

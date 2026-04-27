@@ -2205,7 +2205,7 @@ void FNakamaBPEventsSpec::Define()
 			Properties.Add(TEXT("key1"), TEXT("value1"));
 
 			auto* Action = UNakamaClientEvent::Event(
-				GetTransientPackage(), Client, Session, TEXT("bp_test_event"), TEXT(""), false, Properties);
+				GetTransientPackage(), Client, Session, TEXT("bp_test_event"), FDateTime(), false, Properties);
 			Action->Activate();
 
 			// Verify: server is still healthy after event
