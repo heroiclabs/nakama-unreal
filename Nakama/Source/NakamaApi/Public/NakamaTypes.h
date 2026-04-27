@@ -167,11 +167,11 @@ struct NAKAMAAPI_API FNakamaUser
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  The Facebook Instant Game ID in the user's account. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -235,11 +235,11 @@ struct NAKAMAAPI_API FNakamaAccount
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString VerifyTime;
+  FDateTime VerifyTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString DisableTime;
+  FDateTime DisableTime;
 
   static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -831,11 +831,11 @@ struct NAKAMAAPI_API FNakamaChannelMessage
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  True if the message was persisted to the channel's history, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -1063,7 +1063,7 @@ struct NAKAMAAPI_API FNakamaEvent
 
   /**  The time when the event was triggered. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString Timestamp;
+  FDateTime Timestamp;
 
   /**  True if the event came directly from a client call, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -1095,7 +1095,7 @@ struct NAKAMAAPI_API FNakamaFriend
 
   /**  Time of the latest relationship update. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  Metadata. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -1255,11 +1255,11 @@ struct NAKAMAAPI_API FNakamaGroup
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the group was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the group was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaGroup FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1451,7 +1451,7 @@ struct NAKAMAAPI_API FNakamaLeaderboard
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  Whether the leaderboard was created authoritatively or not. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -1519,15 +1519,15 @@ struct NAKAMAAPI_API FNakamaLeaderboardRecord
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record was updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record expires. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString ExpiryTime;
+  FDateTime ExpiryTime;
 
   /**  The rank of this record. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2123,11 +2123,11 @@ struct NAKAMAAPI_API FNakamaMatchmakerCompletionStats
 
   /**  */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CompleteTime;
+  FDateTime CompleteTime;
 
   static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -2147,7 +2147,7 @@ struct NAKAMAAPI_API FNakamaMatchmakerStats
 
   /**  */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString OldestTicketCreateTime;
+  FDateTime OldestTicketCreateTime;
 
   /**  */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2187,7 +2187,7 @@ struct NAKAMAAPI_API FNakamaNotification
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the notification was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  True if this notification was persisted to the database. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2359,11 +2359,11 @@ struct NAKAMAAPI_API FNakamaStorageObject
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaStorageObject FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -2395,11 +2395,11 @@ struct NAKAMAAPI_API FNakamaStorageObjectAck
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaStorageObjectAck FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -2515,15 +2515,15 @@ struct NAKAMAAPI_API FNakamaTournament
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament will start. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString StartTime;
+  FDateTime StartTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament will be stopped. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString EndTime;
+  FDateTime EndTime;
 
   /**  Duration of the tournament in seconds. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2883,19 +2883,19 @@ struct NAKAMAAPI_API FNakamaValidatedPurchase
 
   /**  Timestamp when the purchase was done. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString PurchaseTime;
+  FDateTime PurchaseTime;
 
   /**  Timestamp when the receipt validation was stored in DB. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  Timestamp when the receipt validation was updated in DB. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  Timestamp when the purchase was refunded. Set to UNIX */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString RefundTime;
+  FDateTime RefundTime;
 
   /**  Raw provider validation response. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2955,15 +2955,15 @@ struct NAKAMAAPI_API FNakamaValidatedSubscription
 
   /**  UNIX Timestamp when the purchase was done. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString PurchaseTime;
+  FDateTime PurchaseTime;
 
   /**  UNIX Timestamp when the receipt validation was stored in DB. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  UNIX Timestamp when the receipt validation was updated in DB. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  Whether the purchase was done in production or sandbox environment. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2971,11 +2971,11 @@ struct NAKAMAAPI_API FNakamaValidatedSubscription
 
   /**  Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString ExpiryTime;
+  FDateTime ExpiryTime;
 
   /**  Subscription refund time. If this time is set, the subscription was refunded. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FString RefundTime;
+  FDateTime RefundTime;
 
   /**  Raw provider validation response body. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")

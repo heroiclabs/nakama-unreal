@@ -168,7 +168,7 @@ struct FSatoriEvent
 
   /**  The time when the event was triggered on the producer side. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  FString Timestamp;
+  FDateTime Timestamp;
 
   /**  The identity id associated with the event. Ignored if the event is published as part of a session. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")

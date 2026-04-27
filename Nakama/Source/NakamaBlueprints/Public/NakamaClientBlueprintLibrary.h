@@ -1048,7 +1048,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& Name
-    , const FString& Timestamp
+    , const FDateTime& Timestamp
     , bool External
     , const TMap<FString, FString>& Properties
   );
@@ -1059,7 +1059,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredName;
-  FString StoredTimestamp;
+  FDateTime StoredTimestamp;
   bool StoredExternal;
   TMap<FString, FString> StoredProperties;
 };

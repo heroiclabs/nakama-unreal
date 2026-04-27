@@ -195,7 +195,7 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcep
   }
   if (Json->HasField(TEXT("timestamp")))
   {
-      Result.Timestamp = Json->GetStringField(TEXT("timestamp"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("timestamp")), Result.Timestamp);
   }
   if (Json->HasField(TEXT("identity_id")))
   {
@@ -242,9 +242,9 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (Timestamp.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("timestamp"), Timestamp);
+    Json->SetStringField(TEXT("timestamp"), Timestamp.ToIso8601());
   }
   if (IdentityId.IsEmpty() == false)
   {

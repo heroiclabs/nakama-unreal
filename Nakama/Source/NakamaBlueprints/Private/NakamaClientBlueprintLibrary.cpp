@@ -1147,7 +1147,7 @@ UNakamaClientEvent* UNakamaClientEvent::Event(
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& Name
-  , const FString& Timestamp
+  , const FDateTime& Timestamp
   , bool External
   , const TMap<FString, FString>& Properties
 )

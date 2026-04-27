@@ -2132,7 +2132,7 @@ NAKAMAAPI_API void NakamaApi::Event (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& Name,
-  const FString& Timestamp,
+  const FDateTime& Timestamp,
   bool External,
   const TMap<FString, FString>& Properties,
   TFunction<void()> OnSuccess,
@@ -2161,9 +2161,9 @@ NAKAMAAPI_API void NakamaApi::Event (
   {
     Body->SetStringField(TEXT("name"), Name);
   }
-  if (Timestamp.IsEmpty() == false)
+  
   {
-    Body->SetStringField(TEXT("timestamp"), Timestamp);
+    Body->SetStringField(TEXT("timestamp"), Timestamp.ToIso8601());
   }
   
   {
@@ -2206,7 +2206,7 @@ NAKAMAAPI_API void NakamaApi::Event (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& Name,
-  const FString& Timestamp,
+  const FDateTime& Timestamp,
   bool External,
   const TMap<FString, FString>& Properties,
   TFunction<void()> OnSuccess,
@@ -2235,9 +2235,9 @@ NAKAMAAPI_API void NakamaApi::Event (
   {
     Body->SetStringField(TEXT("name"), Name);
   }
-  if (Timestamp.IsEmpty() == false)
+  
   {
-    Body->SetStringField(TEXT("timestamp"), Timestamp);
+    Body->SetStringField(TEXT("timestamp"), Timestamp.ToIso8601());
   }
   
   {

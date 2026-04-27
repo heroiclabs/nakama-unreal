@@ -268,11 +268,11 @@ FNakamaRtChannelMessageAck FNakamaRtChannelMessageAck::FromJson(const TSharedPtr
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("persistent")))
   {
@@ -318,13 +318,13 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("username"), Username);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   
   {

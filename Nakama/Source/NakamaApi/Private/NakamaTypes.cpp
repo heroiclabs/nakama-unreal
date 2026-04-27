@@ -83,11 +83,11 @@ FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("facebook_instant_game_id")))
   {
@@ -160,13 +160,13 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("edge_count"), EdgeCount);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   if (FacebookInstantGameId.IsEmpty() == false)
   {
@@ -267,11 +267,11 @@ FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json) noe
   }
   if (Json->HasField(TEXT("verify_time")))
   {
-      Result.VerifyTime = Json->GetStringField(TEXT("verify_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("verify_time")), Result.VerifyTime);
   }
   if (Json->HasField(TEXT("disable_time")))
   {
-      Result.DisableTime = Json->GetStringField(TEXT("disable_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("disable_time")), Result.DisableTime);
   }
   return Result;
 }
@@ -304,13 +304,13 @@ TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("custom_id"), CustomId);
   }
-  if (VerifyTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("verify_time"), VerifyTime);
+    Json->SetStringField(TEXT("verify_time"), VerifyTime.ToIso8601());
   }
-  if (DisableTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("disable_time"), DisableTime);
+    Json->SetStringField(TEXT("disable_time"), DisableTime.ToIso8601());
   }
   return Json;
 }
@@ -1489,11 +1489,11 @@ FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObje
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("persistent")))
   {
@@ -1546,13 +1546,13 @@ TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("content"), Content);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   
   {
@@ -1963,7 +1963,7 @@ FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcep
   }
   if (Json->HasField(TEXT("timestamp")))
   {
-      Result.Timestamp = Json->GetStringField(TEXT("timestamp"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("timestamp")), Result.Timestamp);
   }
   if (Json->HasField(TEXT("external")))
   {
@@ -1990,9 +1990,9 @@ TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("name"), Name);
   }
-  if (Timestamp.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("timestamp"), Timestamp);
+    Json->SetStringField(TEXT("timestamp"), Timestamp.ToIso8601());
   }
   
   {
@@ -2031,7 +2031,7 @@ FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json) noexc
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -2052,9 +2052,9 @@ TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("state"), State);
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   if (Metadata.IsEmpty() == false)
   {
@@ -2344,11 +2344,11 @@ FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json) noexcep
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -2398,13 +2398,13 @@ TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("max_count"), MaxCount);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   return Json;
 }
@@ -2739,7 +2739,7 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("authoritative")))
   {
@@ -2778,9 +2778,9 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
   
   {
@@ -2874,15 +2874,15 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("expiry_time")))
   {
-      Result.ExpiryTime = Json->GetStringField(TEXT("expiry_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("expiry_time")), Result.ExpiryTime);
   }
   if (Json->HasField(TEXT("rank")))
   {
@@ -2929,17 +2929,17 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
-  if (ExpiryTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("expiry_time"), ExpiryTime);
+    Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
   }
   if (Rank != 0)
   
@@ -4051,11 +4051,11 @@ FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(cons
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("complete_time")))
   {
-      Result.CompleteTime = Json->GetStringField(TEXT("complete_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("complete_time")), Result.CompleteTime);
   }
   return Result;
 }
@@ -4063,13 +4063,13 @@ FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(cons
 TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (CompleteTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("complete_time"), CompleteTime);
+    Json->SetStringField(TEXT("complete_time"), CompleteTime.ToIso8601());
   }
   return Json;
 }
@@ -4087,7 +4087,7 @@ FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("oldest_ticket_create_time")))
   {
-      Result.OldestTicketCreateTime = Json->GetStringField(TEXT("oldest_ticket_create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("oldest_ticket_create_time")), Result.OldestTicketCreateTime);
   }
   if (Json->HasField(TEXT("completions")))
   {
@@ -4115,9 +4115,9 @@ TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("ticket_count"), TicketCount);
   }
-  if (OldestTicketCreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("oldest_ticket_create_time"), OldestTicketCreateTime);
+    Json->SetStringField(TEXT("oldest_ticket_create_time"), OldestTicketCreateTime.ToIso8601());
   }
   if (Completions.Num() > 0)
   {
@@ -4160,7 +4160,7 @@ FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>&
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("persistent")))
   {
@@ -4193,9 +4193,9 @@ TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("sender_id"), SenderId);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
   
   {
@@ -4497,11 +4497,11 @@ FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -4539,13 +4539,13 @@ TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("permission_write"), PermissionWrite);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   return Json;
 }
@@ -4575,11 +4575,11 @@ FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJson
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -4603,13 +4603,13 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("user_id"), UserId);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   return Json;
 }
@@ -4799,15 +4799,15 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("start_time")))
   {
-      Result.StartTime = Json->GetStringField(TEXT("start_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("start_time")), Result.StartTime);
   }
   if (Json->HasField(TEXT("end_time")))
   {
-      Result.EndTime = Json->GetStringField(TEXT("end_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("end_time")), Result.EndTime);
   }
   if (Json->HasField(TEXT("duration")))
   {
@@ -4894,17 +4894,17 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (StartTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("start_time"), StartTime);
+    Json->SetStringField(TEXT("start_time"), StartTime.ToIso8601());
   }
-  if (EndTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("end_time"), EndTime);
+    Json->SetStringField(TEXT("end_time"), EndTime.ToIso8601());
   }
   if (Duration != 0)
   
@@ -5551,19 +5551,19 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("purchase_time")))
   {
-      Result.PurchaseTime = Json->GetStringField(TEXT("purchase_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("purchase_time")), Result.PurchaseTime);
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("refund_time")))
   {
-      Result.RefundTime = Json->GetStringField(TEXT("refund_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("refund_time")), Result.RefundTime);
   }
   if (Json->HasField(TEXT("provider_response")))
   {
@@ -5599,21 +5599,21 @@ TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
   }
-  if (PurchaseTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("purchase_time"), PurchaseTime);
+    Json->SetStringField(TEXT("purchase_time"), PurchaseTime.ToIso8601());
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
-  if (RefundTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("refund_time"), RefundTime);
+    Json->SetStringField(TEXT("refund_time"), RefundTime.ToIso8601());
   }
   if (ProviderResponse.IsEmpty() == false)
   {
@@ -5695,15 +5695,15 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
   }
   if (Json->HasField(TEXT("purchase_time")))
   {
-      Result.PurchaseTime = Json->GetStringField(TEXT("purchase_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("purchase_time")), Result.PurchaseTime);
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   if (Json->HasField(TEXT("environment")))
   {
@@ -5711,11 +5711,11 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
   }
   if (Json->HasField(TEXT("expiry_time")))
   {
-      Result.ExpiryTime = Json->GetStringField(TEXT("expiry_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("expiry_time")), Result.ExpiryTime);
   }
   if (Json->HasField(TEXT("refund_time")))
   {
-      Result.RefundTime = Json->GetStringField(TEXT("refund_time"));
+      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("refund_time")), Result.RefundTime);
   }
   if (Json->HasField(TEXT("provider_response")))
   {
@@ -5751,29 +5751,29 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
   }
-  if (PurchaseTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("purchase_time"), PurchaseTime);
+    Json->SetStringField(TEXT("purchase_time"), PurchaseTime.ToIso8601());
   }
-  if (CreateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("create_time"), CreateTime);
+    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   }
-  if (UpdateTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("update_time"), UpdateTime);
+    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
   
   {
     Json->SetNumberField(TEXT("environment"), static_cast<int32>(Environment));
   }
-  if (ExpiryTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("expiry_time"), ExpiryTime);
+    Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
   }
-  if (RefundTime.IsEmpty() == false)
+  
   {
-    Json->SetStringField(TEXT("refund_time"), RefundTime);
+    Json->SetStringField(TEXT("refund_time"), RefundTime.ToIso8601());
   }
   if (ProviderResponse.IsEmpty() == false)
   {

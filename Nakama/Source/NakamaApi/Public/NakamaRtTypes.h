@@ -231,11 +231,11 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageAck
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was created. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString CreateTime;
+  FDateTime CreateTime;
 
   /**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was last updated. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString UpdateTime;
+  FDateTime UpdateTime;
 
   /**  True if the message was persisted to the channel's history, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
