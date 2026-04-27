@@ -995,9 +995,164 @@ void USatoriClient::DeleteIdentity(
 	HttpRequest->ProcessRequest();
 }
 
+void USatoriClient::PostServerEvent(
+	const TArray<FSatoriEvent>& Events, 
+	FOnPostServerEventSent Success, 
+	FOnSatoriError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if (!IsClientActive(this))
+		{
+			return;
+		}
+
+		Success.Broadcast();
+	};
+
+	auto errorCallback = [this, Error](const FSatoriError& error)
+	{
+		if (!IsClientActive(this))
+		{
+			return;
+		}
+
+		Error.Broadcast(error);
+	};
+
+	PostServerEvent(Events, successCallback, errorCallback);
+}
+
+void USatoriClient::PostServerEvent(
+	const TArray<FSatoriEvent>& Events,
+	TFunction<void()> SuccessCallback,
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+{
+	// Setup the endpoint
+	const FString Endpoint = TEXT("/v1/server-event");
+
+	// Setup the request content
+	TSharedPtr<FJsonObject> ContentJson = MakeShareable(new FJsonObject);
+
+	// Setup the request body
+	TArray<TSharedPtr<FJsonValue>> EventsJson;
+	for (const FSatoriEvent& Event : Events)
+	{
+		TSharedPtr<FJsonObject> EventJson = MakeShareable(new FJsonObject());
+		EventJson->SetStringField(TEXT("name"), Event.Name);
+		if (!Event.ID.IsEmpty())
+		{
+			EventJson->SetStringField(TEXT("id"), Event.ID);
+		}
+		FSatoriUtils::AddVarsToJson(EventJson, Event.Metadata, TEXT("metadata"));
+		if (!Event.Value.IsEmpty())
+		{
+			EventJson->SetStringField(TEXT("value"), Event.Value);
+		}
+		// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being compliant with it.
+		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());
+		
+		if (!Event.IdentityId.IsEmpty())
+		{
+			EventJson->SetStringField(TEXT("identity_id"), Event.IdentityId);
+		}
+		if (!Event.SessionId.IsEmpty())
+		{
+			EventJson->SetStringField(TEXT("session_id"), Event.SessionId);
+		}
+		if (Event.SessionIssuedAt > 0)
+		{
+			EventJson->SetNumberField(TEXT("session_issued_at"), Event.SessionIssuedAt);
+		}
+		if (Event.SessionExpiresAt > 0)
+		{
+			EventJson->SetNumberField(TEXT("session_expires_at"), Event.SessionExpiresAt);
+		}
+		
+		EventsJson.Add(MakeShareable(new FJsonValueObject(EventJson)));
+	}
+	
+	ContentJson->SetArrayField(TEXT("events"), EventsJson);
+
+	// Serialize the request content
+	FString Content;
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
+	{
+		// Handle JSON serialization failure
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
+		return;
+	}
+
+	// Make the request
+	const auto HttpRequest = MakeRequest(
+		Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
+	
+	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
+
+	// Lock the ActiveRequests mutex to protect concurrent access
+	FScopeLock Lock(&ActiveRequestsMutex);
+
+	// Add the HttpRequest to ActiveRequests
+	ActiveRequests.Add(HttpRequest);
+
+	// Bind the response callback and handle the response
+	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) 
+	{
+		if (!IsValidLowLevel())
+		{
+			return;
+		}
+
+		// Lock the ActiveRequests mutex to protect concurrent access
+		FScopeLock Lock(&ActiveRequestsMutex);
+
+		if (ActiveRequests.Contains(Request))
+		{
+			if (bSuccess && Response.IsValid())
+			{
+				const FString ResponseBody = Response->GetContentAsString();
+
+				// Check if Request was successful
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				{
+					// Check for Success Callback
+					if (SuccessCallback)
+					{
+						SuccessCallback();
+					}
+				}
+				else
+				{
+					// Check for Error Callback
+					if (ErrorCallback)
+					{
+						const FSatoriError Error(ResponseBody);
+						ErrorCallback(Error);
+					}
+				}
+			}
+			else
+			{
+				// Handle Invalid Response
+				if (ErrorCallback)
+				{
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
+					ErrorCallback(RequestError);
+				}
+			}
+
+			// Remove the HttpRequest from ActiveRequests
+			ActiveRequests.Remove(Request);
+		}
+	});
+
+	// Process the request
+	HttpRequest->ProcessRequest();
+}
+
 void USatoriClient::PostEvent(
 	USatoriSession* Session,
-	const TArray<FSatoriEvent>& events, 
+	const TArray<FSatoriEvent>& Events, 
 	FOnPostEventSent Success, 
 	FOnSatoriError Error)
 {
@@ -1021,7 +1176,7 @@ void USatoriClient::PostEvent(
 			Error.Broadcast(error);
 		};
 
-	PostEvent(Session, events, successCallback, errorCallback);
+	PostEvent(Session, Events, successCallback, errorCallback);
 }
 
 void USatoriClient::PostEvent(
@@ -1057,10 +1212,11 @@ void USatoriClient::PostEvent(
 		{
 			EventJson->SetStringField(TEXT("value"), Event.Value);
 		}
-		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being copliant with it.
+		// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being compliant with it.
+		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());
 		EventsJson.Add(MakeShareable(new FJsonValueObject(EventJson)));
 	}
-
+	
 	ContentJson->SetArrayField(TEXT("events"), EventsJson);
 
 	// Serialize the request content
