@@ -42,14 +42,14 @@ type ApiMap struct {
 
 type ApiMapper interface {
 	// Maps the API to a set of functions.
-	MapApi(api yacg.Api, nameResolver TypeMapper) (ApiMap, error)
+	MapApi(api yacg.Api, typeMapper TypeMapper) (ApiMap, error)
 
 	// Map an RPC to one or more functions (for overloading support).
-	MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver TypeMapper) ([]Function, error)
+	MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper TypeMapper) ([]Function, error)
 
 	// Map an Enum to sdk-specific representation
-	MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver TypeMapper) (Enum, error)
+	MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMapper TypeMapper) (Enum, error)
 
 	// Maps a message to a Type representation
-	MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver TypeMapper) (Type, error)
+	MapMessage(message *yacg.ProtoMessage, api yacg.Api, typeMapper TypeMapper) (Type, error)
 }
