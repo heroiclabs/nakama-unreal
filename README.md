@@ -3,12 +3,12 @@ Nakama Unreal
 
 ## Overview
 
-[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com).
+[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com/nakama).
 
 This client implements the full Nakama API and socket options with the server, as well as the [Satori](https://heroiclabs.com/docs/satori/concepts/introduction/index.html) API.  
 It's written in C++ with minimal dependencies to support Unreal 4 and 5.
 
-If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-cpp/issues).
+If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-unreal/issues).
 
 Plugin documentation including Getting Started and Code Examples is online at [https://heroiclabs.com/docs/unreal-client-guide/](https://heroiclabs.com/docs/unreal-client-guide/).
 
@@ -67,7 +67,7 @@ Run `task --list` to see all available tasks.
 
 ### Testing
 
-The client comes with a test suite that comes as an Unreal Project that can be found under `IntegrationTests/`. 
+The client provides a test suite that comes as an Unreal Project that can be found under `IntegrationTests/`. 
 To build and run the test project in headless mode, you can issue this command:
 
 ```powershell
@@ -80,4 +80,4 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 ## License
 
-This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-dotnet/blob/master/LICENSE).
+This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-unreal/blob/master/LICENSE).
