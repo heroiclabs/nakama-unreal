@@ -157,7 +157,6 @@ tasks:
     desc: 'Build and run IntegrationTests C++ automation suite.'
     cmds:
     - task: check-unreal-engine
-    - task: codegen
     - cmd: |
         if [ ! -d "IntegrationTests/satori/.git" ]; then
           git clone git@github.com:heroiclabs/satori.git IntegrationTests/satori
