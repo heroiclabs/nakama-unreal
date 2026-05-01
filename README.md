@@ -204,7 +204,7 @@ To use Satori in your Unreal project, you'll need to copy the Satori Client file
 
 1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
 2. If one does not already exist, create a `Plugins` folder here.
-3. Copy the `Satoris` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
+3. Copy the `Satori` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
 
 **Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
 
