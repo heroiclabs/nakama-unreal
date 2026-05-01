@@ -198,6 +198,83 @@ Satori is a liveops server for games that powers actionable analytics, A/B testi
 
 Full documentation is online - https://heroiclabs.com/docs/satori/client-libraries/unreal
 
+# Example Usage
+
+1. Create the Satori Client Config using your desired connection credentials:
+
+```cpp
+const FString ServerKey = TEXT("apiKey");
+const FString Host = TEXT("127.0.0.1");
+constexpr int32 Port = 7450;
+constexpr bool bUseSSL = false
+
+const FSatoriClientConfig ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, bUseSSL};
+
+```
+
+2. Authenticate using the previously created Satori Client Config along with a unique ID for the user:
+
+```cpp
+FSatoriSession Session;
+
+const FString Id = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+constexpr bool bNoSession = false;
+const TMap<FString, FString> Default = {};
+const TMap<FString, FString> Custom = {};
+
+Satori::Authenticate(ClientConfig, Id, bNoSession, Default, Custom).Next(
+    [&Session](const FSatoriSessionResult& SessionResult)
+    {
+       if (SessionResult.bIsError)
+       {
+          UE_LOG(LogTemp, Error, TEXT("Error authenticating: {%d} %s"), SessionResult.Error.Code,
+                 *SessionResult.Error.Message);
+          return;
+       }
+
+       Session = SessionResult.Value;
+
+       UE_LOG(LogTemp, Log, TEXT("Session has token: %s"), *Session.Token);
+       UE_LOG(LogTemp, Log, TEXT("Session has refresh token: %s"), *Session.RefreshToken);
+    });
+
+```
+
+3. Once the user is authenticated, you can start making API requests by passing in both the Satori Client Config, and the session that was received from authentication:
+
+```cpp
+Satori::ListProperties(ClientConfig, Session).Next(
+    [](const FSatoriPropertiesResult& ListPropertiesResult)
+    {
+       if (ListPropertiesResult.bIsError)
+       {
+          UE_LOG(LogTemp, Error, TEXT("Error listing properties: {%d} %s"),
+                 ListPropertiesResult.Error.Code,
+                 *ListPropertiesResult.Error.Message);
+          return;
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Default)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Default Property found: %s with value %s"),
+                 *Property.Key, *Property.Value);
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Custom)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Custom Property found: %s with value %s"), *Property.Key,
+                 *Property.Value);
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Computed)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Computed Property found: %s with value %s"),
+                 *Property.Key, *Property.Value);
+       }
+    });
+
+```
+
 ## Installing the Plugin
 
 To use Satori in your Unreal project, you'll need to copy the Satori Client files you downloaded into the appropriate place:
