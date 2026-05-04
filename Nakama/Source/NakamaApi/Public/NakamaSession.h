@@ -25,9 +25,9 @@ struct NAKAMAAPI_API FNakamaSession
 
 	/** True if the corresponding account was just created, false otherwise. */
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
-	bool Created;
+	bool Created = false;
 	
-  /** Authentication credentials. */
+	/** Authentication credentials. */
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
 	FString Token;
 
