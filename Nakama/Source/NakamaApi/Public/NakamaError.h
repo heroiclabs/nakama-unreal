@@ -1,5 +1,5 @@
 /*
- * Copyright {{currentYear}} The Nakama Authors
+ * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ struct NAKAMAAPI_API FNakamaError
 };
 
 /** gRPC status codes returned by Nakama in FNakamaError::Code. */
-namespace ENakamaErrorCode
+namespace NakamaErrorCode
 {
 	constexpr int32 OK = 0;
 	constexpr int32 Cancelled = 1;
