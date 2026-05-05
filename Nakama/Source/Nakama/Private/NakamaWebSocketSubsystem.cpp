@@ -67,6 +67,11 @@ void UNakamaWebSocketSubsystem::Close()
     }
 }
 
+void UNakamaWebSocketSubsystem::BeginConnect(FNakamaWebSocketConnectionParams Params)
+{
+    Connect(Params);
+}
+
 TNakamaFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNakamaWebSocketConnectionParams Params)
 {
     // Do we already have a connection?
@@ -266,6 +271,11 @@ void UNakamaWebSocketSubsystem::OnConnected()
         LocalState->Resolve(FNakamaWebSocketConnectionResult{});
         return false;
     }), 0.0f);
+    
+    if (BpWebSocketConnected.IsBound())
+    {
+        BpWebSocketConnected.Broadcast(FNakamaWebSocketConnectionResult{});
+    }
 }
 
 void UNakamaWebSocketSubsystem::OnConnectionError(const FString& Error)
@@ -452,6 +462,10 @@ void UNakamaWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason
     if (Closed.IsBound())
     {
         Closed.Broadcast(StatusCode, Reason, bWasClean);
+    }
+    if (BpWebSocketClosed.IsBound())
+    {
+        BpWebSocketClosed.Broadcast(StatusCode, Reason, bWasClean);
     }
 }
 
