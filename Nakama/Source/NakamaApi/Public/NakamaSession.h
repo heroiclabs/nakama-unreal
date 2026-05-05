@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "NakamaSession.generated.h"
 
 USTRUCT(BlueprintType)
@@ -74,5 +76,34 @@ struct NAKAMAAPI_API FNakamaSession
 private:
 	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept;
 	void ParseTokens() noexcept;
+};
+
+UCLASS()
+class NAKAMAAPI_API UNakamaSessionFunctions : public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+public:
+
+	/** True if the auth token expires within BufferSeconds from now. */
+  UFUNCTION(BlueprintPure, Category = "Nakama|Session")
+	static bool IsExpired(const FNakamaSession& Session, int64 BufferSeconds = 0)
+  {
+    return Session.IsExpired(BufferSeconds);
+  }
+
+	/** True if the refresh token has expired (no buffer). */
+  UFUNCTION(BlueprintPure, Category = "Nakama|Session")
+	static bool IsRefreshExpired(const FNakamaSession& Session, int64 BufferSeconds = 0)
+  {
+    return Session.IsRefreshExpired(BufferSeconds);
+  }
+
+	/** Replace tokens and re-parse JWT claims. */
+  UFUNCTION(BlueprintCallable, Category = "Nakama|Session")
+	static void UpdateSession(UPARAM(ref) FNakamaSession& Session, const FString& NewToken, const FString& NewRefreshToken)
+  {
+    Session.Update(NewToken, NewRefreshToken);
+  }
 };
 

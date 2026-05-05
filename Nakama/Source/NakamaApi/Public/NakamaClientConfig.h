@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "NakamaClientConfig.generated.h"
 
 /** Low-level API client configuration. */
@@ -37,4 +39,18 @@ struct NAKAMAAPI_API FNakamaClientConfig
 	bool bUseSSL = false;
 
 	FString GetBaseUrl() const noexcept;
+};
+
+UCLASS()
+class NAKAMAAPI_API UNakamaClientConfigFunctions : public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+public:
+
+  UFUNCTION(BlueprintPure, Category = "Nakama|ClientConfig")
+	static FString GetBaseUrl(const FNakamaClientConfig& Config)
+  {
+    return Config.GetBaseUrl();
+  }
 };
