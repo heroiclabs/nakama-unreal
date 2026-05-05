@@ -49,7 +49,11 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
+    {{- if ne $func.ReturnType.Name "EmptyResponse" }}
+    OnError.Broadcast(Err, {});
+    {{- else }}
     OnError.Broadcast(Err);
+    {{- end }}
     SetReadyToDestroy();
     return;
   }
@@ -106,9 +110,9 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
       {
         {{- if ne $func.ReturnType.Name "EmptyResponse" }}
         FNakamaRt{{ $func.ReturnType.Name }} Result = FNakamaRt{{ $func.ReturnType.Name }}::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         {{- else }}
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         {{- end }}
       }
       else
@@ -122,7 +126,11 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
+        {{- if ne $func.ReturnType.Name "EmptyResponse" }}
+        Self->OnError.Broadcast(Err, {});
+        {{- else }}
         Self->OnError.Broadcast(Err);
+        {{- end }}
       }
       Self->SetReadyToDestroy();
     });

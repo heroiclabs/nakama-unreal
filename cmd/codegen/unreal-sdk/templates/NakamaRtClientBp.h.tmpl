@@ -29,12 +29,11 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtError, const FNakamaRtError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaRtSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtEmptyResponse, const FNakamaRtError&, Error);
 
 {{- range $func := $.Funcs }}
 {{- if ne $func.ReturnType.Name "EmptyResponse" }}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakama{{ $func.Name }}Success, const FNakamaRt{{ $func.ReturnType.Name }}&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakama{{ $func.Name }}Response, const FNakamaRtError&, Error, const FNakamaRt{{ $func.ReturnType.Name }}&, Result);
 {{- end }}
 {{- end }}
 
@@ -52,11 +51,19 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClient{{ $func.Name }} : public UBluep
   GENERATED_BODY()
 
 public:
+  {{ if ne $func.ReturnType.Name "EmptyResponse" -}}
   UPROPERTY(BlueprintAssignable)
-  {{ if ne $func.ReturnType.Name "EmptyResponse" -}}FOnNakama{{ $func.Name }}Success{{- else -}}FOnNakamaRtSuccess{{- end }} OnSuccess;
+  FOnNakama{{ $func.Name }}Response OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
+  FOnNakama{{ $func.Name }}Response OnError;
+  {{- else -}}
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaRtEmptyResponse OnSuccess;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaRtEmptyResponse OnError;
+  {{- end -}}
 
   UFUNCTION(
     BlueprintCallable

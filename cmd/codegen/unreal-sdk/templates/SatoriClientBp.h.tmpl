@@ -31,13 +31,12 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSatoriSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriEmptyResponse, const FSatoriError&, Error);
 
 {{- /* Generate success delegates for each unique return type */ -}}
 {{- range $func := $.Funcs }}
-{{- if ne "FOnSatoriSuccess" $func.Metadata.BpDelegateName }}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam({{ $func.Metadata.BpDelegateName }}, const {{ $func.Type }}&, Result);
+{{- if ne "FOnSatoriEmptyResponse" $func.Metadata.BpDelegateName }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams({{ $func.Metadata.BpDelegateName }}, const FSatoriError&, Error, const {{ $func.Type }}&, Result);
 {{- end }}
 {{- end }}
 
@@ -61,7 +60,11 @@ public:
   {{ $func.Metadata.BpDelegateName }} OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  {{- if ne "FOnSatoriEmptyResponse" $func.Metadata.BpDelegateName }}
+  {{ $func.Metadata.BpDelegateName }} OnError;
+  {{- else }}
+  FOnSatoriEmptyResponse OnError;
+  {{- end }}
 
   UFUNCTION(
     BlueprintCallable

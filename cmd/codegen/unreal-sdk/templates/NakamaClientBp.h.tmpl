@@ -29,13 +29,12 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaEmptyResponse, const FNakamaError&, Error);
 
 {{- /* Generate success delegates for each unique return type */ -}}
 {{- range $func := $.Funcs }}
-{{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams({{ $func.Metadata.BpDelegateName }}, FNakamaError, Error, const {{ $func.Type }}&, Result);
+{{- if ne "FOnNakamaEmptyResponse" $func.Metadata.BpDelegateName }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams({{ $func.Metadata.BpDelegateName }}, const FNakamaError&, Error, const {{ $func.Type }}&, Result);
 {{- end }}
 {{- end }}
 
@@ -59,10 +58,10 @@ public:
   {{ $func.Metadata.BpDelegateName }} OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
+  {{- if ne "FOnNakamaEmptyResponse" $func.Metadata.BpDelegateName }}
   {{ $func.Metadata.BpDelegateName }} OnError;
   {{- else }}
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
   {{- end }}
 
   UFUNCTION(
