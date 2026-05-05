@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SatoriClientConfig.generated.h"
 
 /** Low-level API client configuration. */
@@ -37,4 +39,18 @@ struct SATORIAPI_API FSatoriClientConfig
 	bool bUseSSL = false;
 
 	FString GetBaseUrl() const noexcept;
+};
+
+UCLASS()
+class NAKAMAAPI_API USatoriClientConfigFunctions : public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+public:
+
+  UFUNCTION(BlueprintPure, Category = "Satori|ClientConfig")
+	static FString GetBaseUrl(const FSatoriClientConfig& Config)
+  {
+    return Config.GetBaseUrl();
+  }
 };

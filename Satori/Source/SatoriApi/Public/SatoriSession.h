@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SatoriSession.generated.h"
 
 USTRUCT(BlueprintType)
@@ -74,5 +76,34 @@ struct SATORIAPI_API FSatoriSession
 private:
 	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept;
 	void ParseTokens() noexcept;
+};
+
+UCLASS()
+class SATORIAPI_API USatoriSessionFunctions : public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+public:
+
+	/** True if the auth token expires within BufferSeconds from now. */
+  UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	static bool IsExpired(const FSatoriSession& Session, int64 BufferSeconds = 0)
+  {
+    return Session.IsExpired(BufferSeconds);
+  }
+
+	/** True if the refresh token has expired (no buffer). */
+  UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	static bool IsRefreshExpired(const FSatoriSession& Session, int64 BufferSeconds = 0)
+  {
+    return Session.IsRefreshExpired(BufferSeconds);
+  }
+
+	/** Replace tokens and re-parse JWT claims. */
+  UFUNCTION(BlueprintCallable, Category = "Satori|Session")
+	static void UpdateSession(UPARAM(ref) FSatoriSession& Session, const FString& NewToken, const FString& NewRefreshToken)
+  {
+    Session.Update(NewToken, NewRefreshToken);
+  }
 };
 
