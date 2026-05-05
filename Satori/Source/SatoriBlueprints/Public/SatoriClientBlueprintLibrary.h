@@ -31,17 +31,16 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSatoriSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthenticate, const FSatoriSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthenticateRefresh, const FSatoriSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetExperiments, const FSatoriExperimentList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetFlagOverrides, const FSatoriFlagOverrideList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetFlags, const FSatoriFlagList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetLiveEvents, const FSatoriLiveEventList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriIdentify, const FSatoriSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriListProperties, const FSatoriProperties&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetMessageList, const FSatoriGetMessageListResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriEmptyResponse, const FSatoriError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticate, const FSatoriError&, Error, const FSatoriSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateRefresh, const FSatoriError&, Error, const FSatoriSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetExperiments, const FSatoriError&, Error, const FSatoriExperimentList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlagOverrides, const FSatoriError&, Error, const FSatoriFlagOverrideList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlags, const FSatoriError&, Error, const FSatoriFlagList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetLiveEvents, const FSatoriError&, Error, const FSatoriLiveEventList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriIdentify, const FSatoriError&, Error, const FSatoriSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriListProperties, const FSatoriError&, Error, const FSatoriProperties&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetMessageList, const FSatoriError&, Error, const FSatoriGetMessageListResponse&, Result);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -61,7 +60,7 @@ public:
   FOnSatoriAuthenticate OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriAuthenticate OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -101,10 +100,10 @@ class SATORIBLUEPRINTS_API USatoriClientAuthenticateLogout : public UBlueprintAs
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -143,7 +142,7 @@ public:
   FOnSatoriAuthenticateRefresh OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriAuthenticateRefresh OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -177,10 +176,10 @@ class SATORIBLUEPRINTS_API USatoriClientDeleteIdentity : public UBlueprintAsyncA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -214,10 +213,10 @@ class SATORIBLUEPRINTS_API USatoriClientEvent : public UBlueprintAsyncActionBase
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -253,10 +252,10 @@ class SATORIBLUEPRINTS_API USatoriClientServerEvent : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -295,7 +294,7 @@ public:
   FOnSatoriGetExperiments OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriGetExperiments OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -336,7 +335,7 @@ public:
   FOnSatoriGetFlagOverrides OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriGetFlagOverrides OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -377,7 +376,7 @@ public:
   FOnSatoriGetFlags OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriGetFlags OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -418,7 +417,7 @@ public:
   FOnSatoriGetLiveEvents OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriGetLiveEvents OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -464,10 +463,10 @@ class SATORIBLUEPRINTS_API USatoriClientJoinLiveEvent : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -503,10 +502,10 @@ class SATORIBLUEPRINTS_API USatoriClientHealthcheck : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -543,7 +542,7 @@ public:
   FOnSatoriIdentify OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriIdentify OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -586,7 +585,7 @@ public:
   FOnSatoriListProperties OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriListProperties OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -620,10 +619,10 @@ class SATORIBLUEPRINTS_API USatoriClientReadycheck : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -657,10 +656,10 @@ class SATORIBLUEPRINTS_API USatoriClientUpdateProperties : public UBlueprintAsyn
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -703,7 +702,7 @@ public:
   FOnSatoriGetMessageList OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriGetMessageList OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -745,10 +744,10 @@ class SATORIBLUEPRINTS_API USatoriClientUpdateMessage : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -788,10 +787,10 @@ class SATORIBLUEPRINTS_API USatoriClientDeleteMessage : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriSuccess OnSuccess;
+  FOnSatoriEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnSatoriError OnError;
+  FOnSatoriEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable

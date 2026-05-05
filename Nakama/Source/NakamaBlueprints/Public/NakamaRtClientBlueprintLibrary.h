@@ -29,21 +29,20 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtError, const FNakamaRtError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaRtSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelJoinSuccess, const FNakamaRtChannel&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageSendSuccess, const FNakamaRtChannelMessageAck&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageUpdateSuccess, const FNakamaRtChannelMessageAck&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageRemoveSuccess, const FNakamaRtChannelMessageAck&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchCreateSuccess, const FNakamaRtMatch&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchJoinSuccess, const FNakamaRtMatch&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchmakerAddSuccess, const FNakamaRtMatchmakerTicket&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRpcSuccess, const FNakamaRtRpc&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStatusFollowSuccess, const FNakamaRtStatus&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPingSuccess, const FNakamaRtPong&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyCreateSuccess, const FNakamaRtParty&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyJoinRequestListSuccess, const FNakamaRtPartyJoinRequest&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyMatchmakerAddSuccess, const FNakamaRtPartyMatchmakerTicket&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtEmptyResponse, const FNakamaRtError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaChannelJoinResponse, const FNakamaRtError&, Error, const FNakamaRtChannel&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaChannelMessageSendResponse, const FNakamaRtError&, Error, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaChannelMessageUpdateResponse, const FNakamaRtError&, Error, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaChannelMessageRemoveResponse, const FNakamaRtError&, Error, const FNakamaRtChannelMessageAck&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchCreateResponse, const FNakamaRtError&, Error, const FNakamaRtMatch&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchJoinResponse, const FNakamaRtError&, Error, const FNakamaRtMatch&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchmakerAddResponse, const FNakamaRtError&, Error, const FNakamaRtMatchmakerTicket&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcResponse, const FNakamaRtError&, Error, const FNakamaRtRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaStatusFollowResponse, const FNakamaRtError&, Error, const FNakamaRtStatus&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPingResponse, const FNakamaRtError&, Error, const FNakamaRtPong&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPartyCreateResponse, const FNakamaRtError&, Error, const FNakamaRtParty&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPartyJoinRequestListResponse, const FNakamaRtError&, Error, const FNakamaRtPartyJoinRequest&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPartyMatchmakerAddResponse, const FNakamaRtError&, Error, const FNakamaRtPartyMatchmakerTicket&, Result);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -58,12 +57,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelJoin : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaChannelJoinSuccess OnSuccess;
+  FOnNakamaChannelJoinResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaChannelJoinResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -99,12 +96,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelLeave : public UBlueprint
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -134,12 +129,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageSend : public UBlu
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaChannelMessageSendSuccess OnSuccess;
+  FOnNakamaChannelMessageSendResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaChannelMessageSendResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -171,12 +164,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageUpdate : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaChannelMessageUpdateSuccess OnSuccess;
+  FOnNakamaChannelMessageUpdateResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaChannelMessageUpdateResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -210,12 +201,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageRemove : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaChannelMessageRemoveSuccess OnSuccess;
+  FOnNakamaChannelMessageRemoveResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaChannelMessageRemoveResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -247,12 +236,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchCreate : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaMatchCreateSuccess OnSuccess;
+  FOnNakamaMatchCreateResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaMatchCreateResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -282,12 +269,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchDataSend : public UBlueprin
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -325,12 +310,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchJoin : public UBlueprintAsy
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaMatchJoinSuccess OnSuccess;
+  FOnNakamaMatchJoinResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaMatchJoinResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -364,12 +347,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchLeave : public UBlueprintAs
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -399,12 +380,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerAdd : public UBlueprin
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaMatchmakerAddSuccess OnSuccess;
+  FOnNakamaMatchmakerAddResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaMatchmakerAddResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -444,12 +423,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerRemove : public UBluep
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -479,12 +456,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRpc : public UBlueprintAsyncActi
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRpcSuccess OnSuccess;
+  FOnNakamaRpcResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRpcResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -518,12 +493,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusFollow : public UBlueprint
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaStatusFollowSuccess OnSuccess;
+  FOnNakamaStatusFollowResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaStatusFollowResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -555,12 +528,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUnfollow : public UBluepri
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -590,12 +561,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUpdate : public UBlueprint
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -625,12 +594,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPing : public UBlueprintAsyncAct
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaPingSuccess OnSuccess;
+  FOnNakamaPingResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaPingResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -658,12 +625,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyCreate : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaPartyCreateSuccess OnSuccess;
+  FOnNakamaPartyCreateResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaPartyCreateResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -699,12 +664,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoin : public UBlueprintAsy
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -734,12 +697,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyLeave : public UBlueprintAs
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -769,12 +730,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyPromote : public UBlueprint
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -806,12 +765,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyAccept : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -843,12 +800,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyRemove : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -880,12 +835,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyClose : public UBlueprintAs
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -915,12 +868,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoinRequestList : public UB
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaPartyJoinRequestListSuccess OnSuccess;
+  FOnNakamaPartyJoinRequestListResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaPartyJoinRequestListResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -950,12 +901,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerAdd : public UBlu
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaPartyMatchmakerAddSuccess OnSuccess;
+  FOnNakamaPartyMatchmakerAddResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaPartyMatchmakerAddResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -997,12 +946,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerRemove : public U
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -1034,12 +981,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyDataSend : public UBlueprin
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
@@ -1073,12 +1018,10 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyUpdate : public UBlueprintA
 
 public:
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtSuccess OnSuccess;
+  FOnNakamaRtEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaRtError OnError;
-
-  UFUNCTION(
+  FOnNakamaRtEmptyResponse OnError;UFUNCTION(
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"

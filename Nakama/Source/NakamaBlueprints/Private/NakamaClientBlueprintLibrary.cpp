@@ -55,7 +55,7 @@ void UNakamaClientAddFriends::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -104,7 +104,7 @@ void UNakamaClientAddGroupUsers::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -199,7 +199,7 @@ void UNakamaClientSessionLogout::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -695,7 +695,7 @@ void UNakamaClientBanGroupUsers::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -744,7 +744,7 @@ void UNakamaClientBlockFriends::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -848,7 +848,7 @@ void UNakamaClientDeleteAccount::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -897,7 +897,7 @@ void UNakamaClientDeleteFriends::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -943,7 +943,7 @@ void UNakamaClientDeleteGroup::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -989,7 +989,7 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1035,7 +1035,7 @@ void UNakamaClientDeleteNotifications::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1081,7 +1081,7 @@ void UNakamaClientDeleteTournamentRecord::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1127,7 +1127,7 @@ void UNakamaClientDeleteStorageObjects::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1182,7 +1182,7 @@ void UNakamaClientEvent::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1409,7 +1409,7 @@ void UNakamaClientHealthcheck::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1458,7 +1458,7 @@ void UNakamaClientImportFacebookFriends::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1507,7 +1507,7 @@ void UNakamaClientImportSteamFriends::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1553,7 +1553,7 @@ void UNakamaClientJoinGroup::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1599,7 +1599,7 @@ void UNakamaClientJoinTournament::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1648,7 +1648,7 @@ void UNakamaClientKickGroupUsers::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1694,7 +1694,7 @@ void UNakamaClientLeaveGroup::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1743,7 +1743,7 @@ void UNakamaClientLinkApple::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1792,7 +1792,7 @@ void UNakamaClientLinkCustom::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1841,7 +1841,7 @@ void UNakamaClientLinkDevice::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1893,7 +1893,7 @@ void UNakamaClientLinkEmail::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1942,7 +1942,7 @@ void UNakamaClientLinkFacebook::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -1991,7 +1991,7 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -2055,7 +2055,7 @@ void UNakamaClientLinkGameCenter::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -2104,7 +2104,7 @@ void UNakamaClientLinkGoogle::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -2153,7 +2153,7 @@ void UNakamaClientLinkSteam::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3091,7 +3091,7 @@ void UNakamaClientPromoteGroupUsers::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3140,7 +3140,7 @@ void UNakamaClientDemoteGroupUsers::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3284,7 +3284,7 @@ void UNakamaClientUnlinkApple::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3333,7 +3333,7 @@ void UNakamaClientUnlinkCustom::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3382,7 +3382,7 @@ void UNakamaClientUnlinkDevice::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3434,7 +3434,7 @@ void UNakamaClientUnlinkEmail::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3483,7 +3483,7 @@ void UNakamaClientUnlinkFacebook::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3532,7 +3532,7 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3596,7 +3596,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3645,7 +3645,7 @@ void UNakamaClientUnlinkGoogle::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3694,7 +3694,7 @@ void UNakamaClientUnlinkSteam::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3755,7 +3755,7 @@ void UNakamaClientUpdateAccount::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -3816,7 +3816,7 @@ void UNakamaClientUpdateGroup::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },

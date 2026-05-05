@@ -29,50 +29,49 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaSessionRefresh, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateApple, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateCustom, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateDevice, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateEmail, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebook, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebookInstantGame, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGameCenter, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGoogle, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateSteam, FNakamaError, Error, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaCreateGroup, FNakamaError, Error, const FNakamaGroup&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetAccount, FNakamaError, Error, const FNakamaAccount&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetUsers, FNakamaError, Error, const FNakamaUsers&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetSubscription, FNakamaError, Error, const FNakamaValidatedSubscription&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetMatchmakerStats, FNakamaError, Error, const FNakamaMatchmakerStats&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListChannelMessages, FNakamaError, Error, const FNakamaChannelMessageList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriends, FNakamaError, Error, const FNakamaFriendList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriendsOfFriends, FNakamaError, Error, const FNakamaFriendsOfFriendsList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroups, FNakamaError, Error, const FNakamaGroupList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroupUsers, FNakamaError, Error, const FNakamaGroupUserList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecords, FNakamaError, Error, const FNakamaLeaderboardRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecordsAroundOwner, FNakamaError, Error, const FNakamaLeaderboardRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListMatches, FNakamaError, Error, const FNakamaMatchList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListParties, FNakamaError, Error, const FNakamaPartyList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListNotifications, FNakamaError, Error, const FNakamaNotificationList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListStorageObjects, FNakamaError, Error, const FNakamaStorageObjectList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListSubscriptions, FNakamaError, Error, const FNakamaSubscriptionList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournaments, FNakamaError, Error, const FNakamaTournamentList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecords, FNakamaError, Error, const FNakamaTournamentRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecordsAroundOwner, FNakamaError, Error, const FNakamaTournamentRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListUserGroups, FNakamaError, Error, const FNakamaUserGroupList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaReadStorageObjects, FNakamaError, Error, const FNakamaStorageObjects&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcFunc, FNakamaError, Error, const FNakamaRpc&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseApple, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionApple, FNakamaError, Error, const FNakamaValidateSubscriptionResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseGoogle, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionGoogle, FNakamaError, Error, const FNakamaValidateSubscriptionResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseHuawei, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseFacebookInstant, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteLeaderboardRecord, FNakamaError, Error, const FNakamaLeaderboardRecord&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteStorageObjects, FNakamaError, Error, const FNakamaStorageObjectAcks&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteTournamentRecord, FNakamaError, Error, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaEmptyResponse, const FNakamaError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaSessionRefresh, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateApple, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateCustom, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateDevice, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateEmail, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebook, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebookInstantGame, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGameCenter, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGoogle, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateSteam, const FNakamaError&, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaCreateGroup, const FNakamaError&, Error, const FNakamaGroup&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetAccount, const FNakamaError&, Error, const FNakamaAccount&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetUsers, const FNakamaError&, Error, const FNakamaUsers&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetSubscription, const FNakamaError&, Error, const FNakamaValidatedSubscription&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetMatchmakerStats, const FNakamaError&, Error, const FNakamaMatchmakerStats&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListChannelMessages, const FNakamaError&, Error, const FNakamaChannelMessageList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriends, const FNakamaError&, Error, const FNakamaFriendList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriendsOfFriends, const FNakamaError&, Error, const FNakamaFriendsOfFriendsList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroups, const FNakamaError&, Error, const FNakamaGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroupUsers, const FNakamaError&, Error, const FNakamaGroupUserList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecords, const FNakamaError&, Error, const FNakamaLeaderboardRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecordsAroundOwner, const FNakamaError&, Error, const FNakamaLeaderboardRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListMatches, const FNakamaError&, Error, const FNakamaMatchList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListParties, const FNakamaError&, Error, const FNakamaPartyList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListNotifications, const FNakamaError&, Error, const FNakamaNotificationList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListStorageObjects, const FNakamaError&, Error, const FNakamaStorageObjectList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListSubscriptions, const FNakamaError&, Error, const FNakamaSubscriptionList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournaments, const FNakamaError&, Error, const FNakamaTournamentList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecords, const FNakamaError&, Error, const FNakamaTournamentRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecordsAroundOwner, const FNakamaError&, Error, const FNakamaTournamentRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListUserGroups, const FNakamaError&, Error, const FNakamaUserGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaReadStorageObjects, const FNakamaError&, Error, const FNakamaStorageObjects&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcFunc, const FNakamaError&, Error, const FNakamaRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseApple, const FNakamaError&, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionApple, const FNakamaError&, Error, const FNakamaValidateSubscriptionResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseGoogle, const FNakamaError&, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionGoogle, const FNakamaError&, Error, const FNakamaValidateSubscriptionResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseHuawei, const FNakamaError&, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseFacebookInstant, const FNakamaError&, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteLeaderboardRecord, const FNakamaError&, Error, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteStorageObjects, const FNakamaError&, Error, const FNakamaStorageObjectAcks&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteTournamentRecord, const FNakamaError&, Error, const FNakamaLeaderboardRecord&, Result);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -89,10 +88,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientAddFriends : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -132,10 +131,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientAddGroupUsers : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -212,10 +211,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientSessionLogout : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -626,10 +625,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientBanGroupUsers : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -667,10 +666,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientBlockFriends : public UBlueprintAsyncAct
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -757,10 +756,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteAccount : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -794,10 +793,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteFriends : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -835,10 +834,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteGroup : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -874,10 +873,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteLeaderboardRecord : public UBluepr
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -913,10 +912,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteNotifications : public UBlueprintA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -952,10 +951,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteTournamentRecord : public UBluepri
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -991,10 +990,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteStorageObjects : public UBlueprint
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1030,10 +1029,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientEvent : public UBlueprintAsyncActionBase
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1231,10 +1230,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientHealthcheck : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1268,10 +1267,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientImportFacebookFriends : public UBlueprin
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1309,10 +1308,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAs
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1350,10 +1349,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientJoinGroup : public UBlueprintAsyncAction
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1389,10 +1388,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientJoinTournament : public UBlueprintAsyncA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1428,10 +1427,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientKickGroupUsers : public UBlueprintAsyncA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1469,10 +1468,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLeaveGroup : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1508,10 +1507,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkApple : public UBlueprintAsyncAction
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1549,10 +1548,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkCustom : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1590,10 +1589,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkDevice : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1631,10 +1630,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkEmail : public UBlueprintAsyncAction
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1674,10 +1673,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebook : public UBlueprintAsyncAct
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1715,10 +1714,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebookInstantGame : public UBluepr
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1756,10 +1755,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGameCenter : public UBlueprintAsyncA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1807,10 +1806,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGoogle : public UBlueprintAsyncActio
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -1848,10 +1847,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkSteam : public UBlueprintAsyncAction
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2615,10 +2614,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientPromoteGroupUsers : public UBlueprintAsy
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2656,10 +2655,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDemoteGroupUsers : public UBlueprintAsyn
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2777,10 +2776,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkApple : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2818,10 +2817,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkCustom : public UBlueprintAsyncAct
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2859,10 +2858,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkDevice : public UBlueprintAsyncAct
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2900,10 +2899,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkEmail : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2943,10 +2942,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebook : public UBlueprintAsyncA
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -2984,10 +2983,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebookInstantGame : public UBlue
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -3025,10 +3024,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGameCenter : public UBlueprintAsyn
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -3076,10 +3075,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGoogle : public UBlueprintAsyncAct
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -3117,10 +3116,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnlinkSteam : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -3158,10 +3157,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUpdateAccount : public UBlueprintAsyncAc
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable
@@ -3207,10 +3206,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUpdateGroup : public UBlueprintAsyncActi
 public:
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaSuccess OnSuccess;
+  FOnNakamaEmptyResponse OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaEmptyResponse OnError;
 
   UFUNCTION(
     BlueprintCallable

@@ -48,7 +48,7 @@ void UNakamaRealtimeClientChannelJoin::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -86,7 +86,7 @@ void UNakamaRealtimeClientChannelJoin::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtChannel Result = FNakamaRtChannel::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -99,7 +99,7 @@ void UNakamaRealtimeClientChannelJoin::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -152,7 +152,7 @@ void UNakamaRealtimeClientChannelLeave::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -196,7 +196,7 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -225,7 +225,7 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -238,7 +238,7 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -271,7 +271,7 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -304,7 +304,7 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -317,7 +317,7 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -348,7 +348,7 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -377,7 +377,7 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -390,7 +390,7 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -419,7 +419,7 @@ void UNakamaRealtimeClientMatchCreate::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -444,7 +444,7 @@ void UNakamaRealtimeClientMatchCreate::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -457,7 +457,7 @@ void UNakamaRealtimeClientMatchCreate::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -540,7 +540,7 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -586,7 +586,7 @@ void UNakamaRealtimeClientMatchJoin::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -624,7 +624,7 @@ void UNakamaRealtimeClientMatchJoin::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -637,7 +637,7 @@ void UNakamaRealtimeClientMatchJoin::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -690,7 +690,7 @@ void UNakamaRealtimeClientMatchLeave::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -742,7 +742,7 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -800,7 +800,7 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtMatchmakerTicket Result = FNakamaRtMatchmakerTicket::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -813,7 +813,7 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -866,7 +866,7 @@ void UNakamaRealtimeClientMatchmakerRemove::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -912,7 +912,7 @@ void UNakamaRealtimeClientRpc::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -945,7 +945,7 @@ void UNakamaRealtimeClientRpc::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtRpc Result = FNakamaRtRpc::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -958,7 +958,7 @@ void UNakamaRealtimeClientRpc::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -989,7 +989,7 @@ void UNakamaRealtimeClientStatusFollow::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -1028,7 +1028,7 @@ void UNakamaRealtimeClientStatusFollow::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtStatus Result = FNakamaRtStatus::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -1041,7 +1041,7 @@ void UNakamaRealtimeClientStatusFollow::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -1099,7 +1099,7 @@ void UNakamaRealtimeClientStatusUnfollow::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1165,7 +1165,7 @@ void UNakamaRealtimeClientStatusUpdate::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1205,7 +1205,7 @@ void UNakamaRealtimeClientPing::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -1226,7 +1226,7 @@ void UNakamaRealtimeClientPing::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtPong Result = FNakamaRtPong::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -1239,7 +1239,7 @@ void UNakamaRealtimeClientPing::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -1274,7 +1274,7 @@ void UNakamaRealtimeClientPartyCreate::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -1312,7 +1312,7 @@ void UNakamaRealtimeClientPartyCreate::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtParty Result = FNakamaRtParty::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -1325,7 +1325,7 @@ void UNakamaRealtimeClientPartyCreate::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -1378,7 +1378,7 @@ void UNakamaRealtimeClientPartyJoin::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1444,7 +1444,7 @@ void UNakamaRealtimeClientPartyLeave::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1516,7 +1516,7 @@ void UNakamaRealtimeClientPartyPromote::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1588,7 +1588,7 @@ void UNakamaRealtimeClientPartyAccept::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1660,7 +1660,7 @@ void UNakamaRealtimeClientPartyRemove::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1726,7 +1726,7 @@ void UNakamaRealtimeClientPartyClose::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -1768,7 +1768,7 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -1793,7 +1793,7 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtPartyJoinRequest Result = FNakamaRtPartyJoinRequest::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -1806,7 +1806,7 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -1847,7 +1847,7 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
-    OnError.Broadcast(Err);
+    OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
@@ -1909,7 +1909,7 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
         FNakamaRtPartyMatchmakerTicket Result = FNakamaRtPartyMatchmakerTicket::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
       }
       else
       {
@@ -1922,7 +1922,7 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
         {
           Err.Code = static_cast<int32>(Resp.ErrorCode);
         }
-        Self->OnError.Broadcast(Err);
+        Self->OnError.Broadcast(Err, {});
       }
       Self->SetReadyToDestroy();
     });
@@ -1981,7 +1981,7 @@ void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -2060,7 +2060,7 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {
@@ -2144,7 +2144,7 @@ void UNakamaRealtimeClientPartyUpdate::Activate()
 
       if (Resp.ErrorCode == ENakamaWebSocketError::None)
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
       }
       else
       {

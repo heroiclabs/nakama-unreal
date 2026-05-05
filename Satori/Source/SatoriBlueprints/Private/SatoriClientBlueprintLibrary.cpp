@@ -55,7 +55,7 @@ void USatoriClientAuthenticate::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -63,7 +63,7 @@ void USatoriClientAuthenticate::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -101,7 +101,7 @@ void USatoriClientAuthenticateLogout::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -144,7 +144,7 @@ void USatoriClientAuthenticateRefresh::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -152,7 +152,7 @@ void USatoriClientAuthenticateRefresh::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -187,7 +187,7 @@ void USatoriClientDeleteIdentity::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -233,7 +233,7 @@ void USatoriClientEvent::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -279,7 +279,7 @@ void USatoriClientServerEvent::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -328,7 +328,7 @@ void USatoriClientGetExperiments::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -336,7 +336,7 @@ void USatoriClientGetExperiments::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -377,7 +377,7 @@ void USatoriClientGetFlagOverrides::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -385,7 +385,7 @@ void USatoriClientGetFlagOverrides::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -426,7 +426,7 @@ void USatoriClientGetFlags::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -434,7 +434,7 @@ void USatoriClientGetFlags::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -487,7 +487,7 @@ void USatoriClientGetLiveEvents::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -495,7 +495,7 @@ void USatoriClientGetLiveEvents::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -533,7 +533,7 @@ void USatoriClientJoinLiveEvent::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -576,7 +576,7 @@ void USatoriClientHealthcheck::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -628,7 +628,7 @@ void USatoriClientIdentify::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -636,7 +636,7 @@ void USatoriClientIdentify::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -671,7 +671,7 @@ void USatoriClientListProperties::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -679,7 +679,7 @@ void USatoriClientListProperties::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -714,7 +714,7 @@ void USatoriClientReadycheck::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -766,7 +766,7 @@ void USatoriClientUpdateProperties::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -821,7 +821,7 @@ void USatoriClientGetMessageList::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         Self->SetReadyToDestroy();
       }
     },
@@ -829,7 +829,7 @@ void USatoriClientGetMessageList::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnError.Broadcast(Error);
+        Self->OnError.Broadcast(Error, {});
         Self->SetReadyToDestroy();
       }
     }
@@ -873,7 +873,7 @@ void USatoriClientUpdateMessage::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
@@ -919,7 +919,7 @@ void USatoriClientDeleteMessage::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
-        Self->OnSuccess.Broadcast();
+        Self->OnSuccess.Broadcast({});
         Self->SetReadyToDestroy();
       }
     },
