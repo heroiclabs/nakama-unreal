@@ -731,7 +731,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     TestFalse("Connect A", CR1.ErrorCode != ENakamaWebSocketError::None);
 
                     // Set up typed event callbacks before adding to the matchmaker queue.
-                    RtClient->OnMatchmakerMatched = [this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    RtClient->OnMatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         RtClient->MatchJoin(TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
@@ -744,9 +744,9 @@ void FNakamaRtMatchJoinSpec::Define()
                                 }
                                 if (++MatchJoinedCount == 2) { Done.Execute(); }
                             });
-                    };
+                    });
 
-                    RtClient2->OnMatchmakerMatched = [this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    RtClient2->OnMatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         RtClient2->MatchJoin(TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
@@ -759,7 +759,7 @@ void FNakamaRtMatchJoinSpec::Define()
                                 }
                                 if (++MatchJoinedCount == 2) { Done.Execute(); }
                             });
-                    };
+                    });
 
                     return RtClient->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
                 })
@@ -878,12 +878,12 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchPresenceEvent = [this, Done](const FNakamaRtMatchPresenceEvent& Event)
+                    RtClient->OnMatchPresenceEvent.AddLambda([this, Done](const FNakamaRtMatchPresenceEvent& Event)
                     {
                         TestEqual("Presence event match_id", Event.MatchId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
                         Done.Execute();
-                    };
+                    });
 
                     return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
                 })
@@ -938,12 +938,12 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchData = [this, Done](const FNakamaRtMatchData& MatchData)
+                    RtClient->OnMatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
                         Done.Execute();
-                    };
+                    });
 
                     return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
                 })
@@ -998,13 +998,13 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchData = [this, Done](const FNakamaRtMatchData& MatchData)
+                    RtClient->OnMatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
                         TestEqual("MatchData bytes", MatchData.Data, TestPayload);
                         Done.Execute();
-                    };
+                    });
 
                     return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
                 })
@@ -1060,12 +1060,12 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = JoinResult.Data->Id;
 
-                    RtClient->OnChannelPresenceEvent = [this, Done](const FNakamaRtChannelPresenceEvent& Event)
+                    RtClient->OnChannelPresenceEvent.AddLambda([this, Done](const FNakamaRtChannelPresenceEvent& Event)
                     {
                         TestEqual("Presence event channel_id", Event.ChannelId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
                         Done.Execute();
-                    };
+                    });
 
                     return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
                 })
