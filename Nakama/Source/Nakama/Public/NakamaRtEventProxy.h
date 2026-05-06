@@ -20,39 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaRt.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
 #include "NakamaRtEventProxy.generated.h"
-
-USTRUCT(BlueprintType)
-struct FNakamaRtClientHandle
-{
-  GENERATED_BODY()
-
-  TSharedPtr<Nakama::FNakamaRtClient> RtClientPtr;
-
-  FNakamaRtClientHandle() : RtClientPtr(nullptr) {}
-  explicit FNakamaRtClientHandle(TSharedPtr<Nakama::FNakamaRtClient> InPtr) : RtClientPtr(InPtr) {}
-};
-
-UCLASS()
-class NAKAMA_API UNakamaRtClientHandleUtils : public UBlueprintFunctionLibrary
-{
-  GENERATED_BODY()
-
-public:
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (WorldContext = "WorldContextObject"))
-  static FNakamaRtClientHandle CreateFNakamaRtClientHandle(UObject* WorldContextObject)
-  {
-    if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
-    {
-      UGameInstance* GI = World->GetGameInstance();
-      
-      TSharedPtr<Nakama::FNakamaRtClient> RtClient = MakeShared<Nakama::FNakamaRtClient>(GI);
-      return FNakamaRtClientHandle(RtClient);
-    }
-    return FNakamaRtClientHandle(nullptr);
-  }
-};
 
 //
 // Delegates for event callbacks
@@ -70,10 +38,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStatusPresenceEventDynami
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamDataDynamic, const FNakamaRtStreamData&, Data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamPresenceEventDynamic, const FNakamaRtStreamPresenceEvent&, Data);
 
-UCLASS(Blueprintable)
+UCLASS(BlueprintType)
 class NAKAMA_API UNakamaRtEventProxy : public UObject
 {
   GENERATED_BODY()
+
+  TUniquePtr<Nakama::FNakamaRtClient> RtClient;
 
 public:
 
@@ -116,25 +86,36 @@ public:
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
   FDelegateOnStreamPresenceEventDynamic OnStreamPresenceEvent;
 
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
-  void Initialize(FNakamaRtClientHandle RtClientHandle)
+  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (WorldContext = "WorldContextObject"))
+  static UNakamaRtEventProxy* CreateNakamaRtEventProxy(UObject* WorldContextObject)
   {
-    if (RtClientHandle.RtClientPtr.IsValid())
+    UNakamaRtEventProxy* Proxy = NewObject<UNakamaRtEventProxy>(WorldContextObject);
+    
+    if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
     {
-      RtClientHandle.RtClientPtr->OnChannelMessage.AddUObject(this, &UNakamaRtEventProxy::HandleOnChannelMessage);
-      RtClientHandle.RtClientPtr->OnChannelPresenceEvent.AddUObject(this, &UNakamaRtEventProxy::HandleOnChannelPresenceEvent);
-      RtClientHandle.RtClientPtr->OnMatchData.AddUObject(this, &UNakamaRtEventProxy::HandleOnMatchData);
-      RtClientHandle.RtClientPtr->OnMatchPresenceEvent.AddUObject(this, &UNakamaRtEventProxy::HandleOnMatchPresenceEvent);
-      RtClientHandle.RtClientPtr->OnMatchmakerMatched.AddUObject(this, &UNakamaRtEventProxy::HandleOnMatchmakerMatched);
-      RtClientHandle.RtClientPtr->OnNotifications.AddUObject(this, &UNakamaRtEventProxy::HandleOnNotifications);
-      RtClientHandle.RtClientPtr->OnPartyLeader.AddUObject(this, &UNakamaRtEventProxy::HandleOnPartyLeader);
-      RtClientHandle.RtClientPtr->OnPartyJoinRequest.AddUObject(this, &UNakamaRtEventProxy::HandleOnPartyJoinRequest);
-      RtClientHandle.RtClientPtr->OnPartyData.AddUObject(this, &UNakamaRtEventProxy::HandleOnPartyData);
-      RtClientHandle.RtClientPtr->OnPartyPresenceEvent.AddUObject(this, &UNakamaRtEventProxy::HandleOnPartyPresenceEvent);
-      RtClientHandle.RtClientPtr->OnStatusPresenceEvent.AddUObject(this, &UNakamaRtEventProxy::HandleOnStatusPresenceEvent);
-      RtClientHandle.RtClientPtr->OnStreamData.AddUObject(this, &UNakamaRtEventProxy::HandleOnStreamData);
-      RtClientHandle.RtClientPtr->OnStreamPresenceEvent.AddUObject(this, &UNakamaRtEventProxy::HandleOnStreamPresenceEvent);
+      UGameInstance* GI = World->GetGameInstance();
+      
+      Proxy->RtClient = MakeUnique<Nakama::FNakamaRtClient>(GI);
+    }    
+
+    if (Proxy->RtClient.IsValid())
+    {
+      Proxy->RtClient->OnChannelMessage.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnChannelMessage);
+      Proxy->RtClient->OnChannelPresenceEvent.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnChannelPresenceEvent);
+      Proxy->RtClient->OnMatchData.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnMatchData);
+      Proxy->RtClient->OnMatchPresenceEvent.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnMatchPresenceEvent);
+      Proxy->RtClient->OnMatchmakerMatched.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnMatchmakerMatched);
+      Proxy->RtClient->OnNotifications.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnNotifications);
+      Proxy->RtClient->OnPartyLeader.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnPartyLeader);
+      Proxy->RtClient->OnPartyJoinRequest.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnPartyJoinRequest);
+      Proxy->RtClient->OnPartyData.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnPartyData);
+      Proxy->RtClient->OnPartyPresenceEvent.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnPartyPresenceEvent);
+      Proxy->RtClient->OnStatusPresenceEvent.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnStatusPresenceEvent);
+      Proxy->RtClient->OnStreamData.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnStreamData);
+      Proxy->RtClient->OnStreamPresenceEvent.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOnStreamPresenceEvent);
     }
+    
+    return Proxy;
   }
   
 private:
