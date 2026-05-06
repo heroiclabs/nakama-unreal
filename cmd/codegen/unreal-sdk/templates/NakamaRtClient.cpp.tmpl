@@ -64,9 +64,9 @@ void FNakamaRtClient::HandleServerEvent(const FString& Json)
     return;
   }
   {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
-  if (On{{ $t.Name }} && Envelope->HasField(TEXT("{{ $t.Metadata.JsonFieldName }}")))
+  if (On{{ $t.Name }}.IsBound() && Envelope->HasField(TEXT("{{ $t.Metadata.JsonFieldName }}")))
   {
-    On{{ $t.Name }}(FNakamaRt{{ $t.Name }}::FromJson(Envelope->GetObjectField(TEXT("{{ $t.Metadata.JsonFieldName }}"))));
+    On{{ $t.Name }}.Broadcast(FNakamaRt{{ $t.Name }}::FromJson(Envelope->GetObjectField(TEXT("{{ $t.Metadata.JsonFieldName }}"))));
     return;
   }
   {{- end }}{{- end }}

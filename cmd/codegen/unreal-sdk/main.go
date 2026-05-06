@@ -171,6 +171,11 @@ func main() {
 			},
 			{
 				Requires: nakamaRtApiRequires,
+				Template: "templates/NakamaRtEventProxy.h.tmpl",
+				Output:   "Nakama/Source/Nakama/Public/NakamaRtEventProxy.h",
+			},
+			{
+				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtClientBp.h.tmpl",
 				Output:   "Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h",
 			},

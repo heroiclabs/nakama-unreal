@@ -53,6 +53,12 @@ namespace Nakama
   {
   };
 
+  //
+  // Delegates for event callbacks
+  {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOn{{ $t.Name }}, const FNakamaRt{{ $t.Name }}&);
+  {{- end }}{{- end }}
+  
   class FNakamaRtClient
   {
   private:
@@ -91,9 +97,10 @@ namespace Nakama
     ) noexcept;
     {{- end }}
 
-    // Event callbacks — assign to receive server-pushed events
+    // Event callbacks - bind to receive server-pushed events.
     {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
-    TFunction<void(const FNakamaRt{{ $t.Name }}&)> On{{ $t.Name }};
+    FDelegateOn{{ $t.Name }} On{{ $t.Name }};
     {{- end }}{{- end }}
   };
 }
+
