@@ -17,6 +17,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Templates/SharedPointer.h"
 #include "IWebSocket.h"
 #include "NakamaFuture.h"
 #include <atomic>
@@ -42,7 +43,7 @@ struct FNakamaWebSocketResponse
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
+	// UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
 	TSharedPtr<FJsonObject> Data;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")

@@ -42,7 +42,7 @@ struct SATORIAPI_API FSatoriClientConfig
 };
 
 UCLASS()
-class NAKAMAAPI_API USatoriClientConfigFunctions : public UBlueprintFunctionLibrary
+class SATORIAPI_API USatoriClientConfigFunctions : public UBlueprintFunctionLibrary
 {
   GENERATED_BODY()
 
