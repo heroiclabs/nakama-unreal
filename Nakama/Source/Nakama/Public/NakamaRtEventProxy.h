@@ -120,79 +120,66 @@ public:
   
 private:
 
-  UFUNCTION()
   void HandleOnChannelMessage(const FNakamaRtChannelMessage& Data)
   {
     OnChannelMessage.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnChannelPresenceEvent(const FNakamaRtChannelPresenceEvent& Data)
   {
     OnChannelPresenceEvent.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnMatchData(const FNakamaRtMatchData& Data)
   {
     OnMatchData.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnMatchPresenceEvent(const FNakamaRtMatchPresenceEvent& Data)
   {
     OnMatchPresenceEvent.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnMatchmakerMatched(const FNakamaRtMatchmakerMatched& Data)
   {
     OnMatchmakerMatched.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnNotifications(const FNakamaRtNotifications& Data)
   {
     OnNotifications.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnPartyLeader(const FNakamaRtPartyLeader& Data)
   {
     OnPartyLeader.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnPartyJoinRequest(const FNakamaRtPartyJoinRequest& Data)
   {
     OnPartyJoinRequest.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnPartyData(const FNakamaRtPartyData& Data)
   {
     OnPartyData.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnPartyPresenceEvent(const FNakamaRtPartyPresenceEvent& Data)
   {
     OnPartyPresenceEvent.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnStatusPresenceEvent(const FNakamaRtStatusPresenceEvent& Data)
   {
     OnStatusPresenceEvent.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnStreamData(const FNakamaRtStreamData& Data)
   {
     OnStreamData.Broadcast(Data);
   }
 
-  UFUNCTION()
   void HandleOnStreamPresenceEvent(const FNakamaRtStreamPresenceEvent& Data)
   {
     OnStreamPresenceEvent.Broadcast(Data);

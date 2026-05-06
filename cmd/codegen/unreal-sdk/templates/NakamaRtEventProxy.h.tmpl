@@ -67,7 +67,6 @@ public:
 private:
   {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
 
-  UFUNCTION()
   void HandleOn{{ $t.Name }}(const FNakamaRt{{ $t.Name }}& Data)
   {
     On{{ $t.Name }}.Broadcast(Data);
