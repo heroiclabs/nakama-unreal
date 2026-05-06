@@ -63,69 +63,69 @@ void FNakamaRtClient::HandleServerEvent(const FString& Json)
   {
     return;
   }
-  if (OnChannelMessage && Envelope->HasField(TEXT("channel_message")))
+  if (OnChannelMessage.IsBound() && Envelope->HasField(TEXT("channel_message")))
   {
-    OnChannelMessage(FNakamaRtChannelMessage::FromJson(Envelope->GetObjectField(TEXT("channel_message"))));
+    OnChannelMessage.Broadcast(FNakamaRtChannelMessage::FromJson(Envelope->GetObjectField(TEXT("channel_message"))));
     return;
   }
-  if (OnChannelPresenceEvent && Envelope->HasField(TEXT("channel_presence_event")))
+  if (OnChannelPresenceEvent.IsBound() && Envelope->HasField(TEXT("channel_presence_event")))
   {
-    OnChannelPresenceEvent(FNakamaRtChannelPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("channel_presence_event"))));
+    OnChannelPresenceEvent.Broadcast(FNakamaRtChannelPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("channel_presence_event"))));
     return;
   }
-  if (OnMatchData && Envelope->HasField(TEXT("match_data")))
+  if (OnMatchData.IsBound() && Envelope->HasField(TEXT("match_data")))
   {
-    OnMatchData(FNakamaRtMatchData::FromJson(Envelope->GetObjectField(TEXT("match_data"))));
+    OnMatchData.Broadcast(FNakamaRtMatchData::FromJson(Envelope->GetObjectField(TEXT("match_data"))));
     return;
   }
-  if (OnMatchPresenceEvent && Envelope->HasField(TEXT("match_presence_event")))
+  if (OnMatchPresenceEvent.IsBound() && Envelope->HasField(TEXT("match_presence_event")))
   {
-    OnMatchPresenceEvent(FNakamaRtMatchPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("match_presence_event"))));
+    OnMatchPresenceEvent.Broadcast(FNakamaRtMatchPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("match_presence_event"))));
     return;
   }
-  if (OnMatchmakerMatched && Envelope->HasField(TEXT("matchmaker_matched")))
+  if (OnMatchmakerMatched.IsBound() && Envelope->HasField(TEXT("matchmaker_matched")))
   {
-    OnMatchmakerMatched(FNakamaRtMatchmakerMatched::FromJson(Envelope->GetObjectField(TEXT("matchmaker_matched"))));
+    OnMatchmakerMatched.Broadcast(FNakamaRtMatchmakerMatched::FromJson(Envelope->GetObjectField(TEXT("matchmaker_matched"))));
     return;
   }
-  if (OnNotifications && Envelope->HasField(TEXT("notifications")))
+  if (OnNotifications.IsBound() && Envelope->HasField(TEXT("notifications")))
   {
-    OnNotifications(FNakamaRtNotifications::FromJson(Envelope->GetObjectField(TEXT("notifications"))));
+    OnNotifications.Broadcast(FNakamaRtNotifications::FromJson(Envelope->GetObjectField(TEXT("notifications"))));
     return;
   }
-  if (OnPartyLeader && Envelope->HasField(TEXT("party_leader")))
+  if (OnPartyLeader.IsBound() && Envelope->HasField(TEXT("party_leader")))
   {
-    OnPartyLeader(FNakamaRtPartyLeader::FromJson(Envelope->GetObjectField(TEXT("party_leader"))));
+    OnPartyLeader.Broadcast(FNakamaRtPartyLeader::FromJson(Envelope->GetObjectField(TEXT("party_leader"))));
     return;
   }
-  if (OnPartyJoinRequest && Envelope->HasField(TEXT("party_join_request")))
+  if (OnPartyJoinRequest.IsBound() && Envelope->HasField(TEXT("party_join_request")))
   {
-    OnPartyJoinRequest(FNakamaRtPartyJoinRequest::FromJson(Envelope->GetObjectField(TEXT("party_join_request"))));
+    OnPartyJoinRequest.Broadcast(FNakamaRtPartyJoinRequest::FromJson(Envelope->GetObjectField(TEXT("party_join_request"))));
     return;
   }
-  if (OnPartyData && Envelope->HasField(TEXT("party_data")))
+  if (OnPartyData.IsBound() && Envelope->HasField(TEXT("party_data")))
   {
-    OnPartyData(FNakamaRtPartyData::FromJson(Envelope->GetObjectField(TEXT("party_data"))));
+    OnPartyData.Broadcast(FNakamaRtPartyData::FromJson(Envelope->GetObjectField(TEXT("party_data"))));
     return;
   }
-  if (OnPartyPresenceEvent && Envelope->HasField(TEXT("party_presence_event")))
+  if (OnPartyPresenceEvent.IsBound() && Envelope->HasField(TEXT("party_presence_event")))
   {
-    OnPartyPresenceEvent(FNakamaRtPartyPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("party_presence_event"))));
+    OnPartyPresenceEvent.Broadcast(FNakamaRtPartyPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("party_presence_event"))));
     return;
   }
-  if (OnStatusPresenceEvent && Envelope->HasField(TEXT("status_presence_event")))
+  if (OnStatusPresenceEvent.IsBound() && Envelope->HasField(TEXT("status_presence_event")))
   {
-    OnStatusPresenceEvent(FNakamaRtStatusPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("status_presence_event"))));
+    OnStatusPresenceEvent.Broadcast(FNakamaRtStatusPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("status_presence_event"))));
     return;
   }
-  if (OnStreamData && Envelope->HasField(TEXT("stream_data")))
+  if (OnStreamData.IsBound() && Envelope->HasField(TEXT("stream_data")))
   {
-    OnStreamData(FNakamaRtStreamData::FromJson(Envelope->GetObjectField(TEXT("stream_data"))));
+    OnStreamData.Broadcast(FNakamaRtStreamData::FromJson(Envelope->GetObjectField(TEXT("stream_data"))));
     return;
   }
-  if (OnStreamPresenceEvent && Envelope->HasField(TEXT("stream_presence_event")))
+  if (OnStreamPresenceEvent.IsBound() && Envelope->HasField(TEXT("stream_presence_event")))
   {
-    OnStreamPresenceEvent(FNakamaRtStreamPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("stream_presence_event"))));
+    OnStreamPresenceEvent.Broadcast(FNakamaRtStreamPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("stream_presence_event"))));
     return;
   }
 }

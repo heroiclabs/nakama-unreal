@@ -53,6 +53,22 @@ namespace Nakama
   {
   };
 
+  //
+  // Delegates for event callbacks
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelMessage, const FNakamaRtChannelMessage&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchData, const FNakamaRtMatchData&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchmakerMatched, const FNakamaRtMatchmakerMatched&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnNotifications, const FNakamaRtNotifications&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyLeader, const FNakamaRtPartyLeader&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyJoinRequest, const FNakamaRtPartyJoinRequest&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyData, const FNakamaRtPartyData&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyPresenceEvent, const FNakamaRtPartyPresenceEvent&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStatusPresenceEvent, const FNakamaRtStatusPresenceEvent&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamData, const FNakamaRtStreamData&);
+  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&);
+  
   class FNakamaRtClient
   {
   private:
@@ -405,19 +421,20 @@ namespace Nakama
       , bool Hidden
     ) noexcept;
 
-    // Event callbacks — assign to receive server-pushed events
-    TFunction<void(const FNakamaRtChannelMessage&)> OnChannelMessage;
-    TFunction<void(const FNakamaRtChannelPresenceEvent&)> OnChannelPresenceEvent;
-    TFunction<void(const FNakamaRtMatchData&)> OnMatchData;
-    TFunction<void(const FNakamaRtMatchPresenceEvent&)> OnMatchPresenceEvent;
-    TFunction<void(const FNakamaRtMatchmakerMatched&)> OnMatchmakerMatched;
-    TFunction<void(const FNakamaRtNotifications&)> OnNotifications;
-    TFunction<void(const FNakamaRtPartyLeader&)> OnPartyLeader;
-    TFunction<void(const FNakamaRtPartyJoinRequest&)> OnPartyJoinRequest;
-    TFunction<void(const FNakamaRtPartyData&)> OnPartyData;
-    TFunction<void(const FNakamaRtPartyPresenceEvent&)> OnPartyPresenceEvent;
-    TFunction<void(const FNakamaRtStatusPresenceEvent&)> OnStatusPresenceEvent;
-    TFunction<void(const FNakamaRtStreamData&)> OnStreamData;
-    TFunction<void(const FNakamaRtStreamPresenceEvent&)> OnStreamPresenceEvent;
+    // Event callbacks - bind to receive server-pushed events.
+    FDelegateOnChannelMessage OnChannelMessage;
+    FDelegateOnChannelPresenceEvent OnChannelPresenceEvent;
+    FDelegateOnMatchData OnMatchData;
+    FDelegateOnMatchPresenceEvent OnMatchPresenceEvent;
+    FDelegateOnMatchmakerMatched OnMatchmakerMatched;
+    FDelegateOnNotifications OnNotifications;
+    FDelegateOnPartyLeader OnPartyLeader;
+    FDelegateOnPartyJoinRequest OnPartyJoinRequest;
+    FDelegateOnPartyData OnPartyData;
+    FDelegateOnPartyPresenceEvent OnPartyPresenceEvent;
+    FDelegateOnStatusPresenceEvent OnStatusPresenceEvent;
+    FDelegateOnStreamData OnStreamData;
+    FDelegateOnStreamPresenceEvent OnStreamPresenceEvent;
   };
 }
+
