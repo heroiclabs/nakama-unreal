@@ -43,9 +43,8 @@ struct FNakamaWebSocketResponse
 {
 	GENERATED_BODY()
 
-	// UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
 	TSharedPtr<FJsonObject> Data;
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
 	ENakamaWebSocketError ErrorCode = ENakamaWebSocketError::None;
 };

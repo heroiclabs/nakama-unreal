@@ -339,7 +339,7 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
                 {
                     ErrorData = *ErrorObj;
                 }
-                Request->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ServerError, .Data = ErrorData });
+                Request->Resolve(FNakamaWebSocketResponse{ .Data = ErrorData, .ErrorCode = ENakamaWebSocketError::ServerError });
                 Requests.Remove(Cid);
             }
         }
