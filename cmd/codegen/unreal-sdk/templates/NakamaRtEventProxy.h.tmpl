@@ -20,39 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaRt.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
 #include "NakamaRtEventProxy.generated.h"
-
-USTRUCT(BlueprintType)
-struct FNakamaRtClientHandle
-{
-  GENERATED_BODY()
-
-  TSharedPtr<Nakama::FNakamaRtClient> RtClientPtr;
-
-  FNakamaRtClientHandle() : RtClientPtr(nullptr) {}
-  explicit FNakamaRtClientHandle(TSharedPtr<Nakama::FNakamaRtClient> InPtr) : RtClientPtr(InPtr) {}
-};
-
-UCLASS()
-class NAKAMA_API UNakamaRtClientHandleUtils : public UBlueprintFunctionLibrary
-{
-  GENERATED_BODY()
-
-public:
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (WorldContext = "WorldContextObject"))
-  static FNakamaRtClientHandle CreateFNakamaRtClientHandle(UObject* WorldContextObject)
-  {
-    if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
-    {
-      UGameInstance* GI = World->GetGameInstance();
-      
-      TSharedPtr<Nakama::FNakamaRtClient> RtClient = MakeShared<Nakama::FNakamaRtClient>(GI);
-      return FNakamaRtClientHandle(RtClient);
-    }
-    return FNakamaRtClientHandle(nullptr);
-  }
-};
 
 //
 // Delegates for event callbacks
@@ -60,10 +28,12 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOn{{ $t.Name }}Dynamic, const FNakamaRt{{ $t.Name }}&, Data);
 {{- end }}{{- end }}
 
-UCLASS(Blueprintable)
+UCLASS(BlueprintType)
 class NAKAMA_API UNakamaRtEventProxy : public UObject
 {
   GENERATED_BODY()
+
+  TUniquePtr<Nakama::FNakamaRtClient> RtClient;
 
 public:
   {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
@@ -72,15 +42,26 @@ public:
   FDelegateOn{{ $t.Name }}Dynamic On{{ $t.Name }};
   {{- end }}{{- end }}
 
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
-  void Initialize(FNakamaRtClientHandle RtClientHandle)
+  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (WorldContext = "WorldContextObject"))
+  static UNakamaRtEventProxy* CreateNakamaRtEventProxy(UObject* WorldContextObject)
   {
-    if (RtClientHandle.RtClientPtr.IsValid())
+    UNakamaRtEventProxy* Proxy = NewObject<UNakamaRtEventProxy>(WorldContextObject);
+    
+    if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+    {
+      UGameInstance* GI = World->GetGameInstance();
+      
+      Proxy->RtClient = MakeUnique<Nakama::FNakamaRtClient>(GI);
+    }    
+
+    if (Proxy->RtClient.IsValid())
     {
       {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
-      RtClientHandle.RtClientPtr->On{{ $t.Name }}.AddUObject(this, &UNakamaRtEventProxy::HandleOn{{ $t.Name }});
+      Proxy->RtClient->On{{ $t.Name }}.AddUObject(Proxy, &UNakamaRtEventProxy::HandleOn{{ $t.Name }});
       {{- end }}{{- end }}
     }
+    
+    return Proxy;
   }
   
 private:
