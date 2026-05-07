@@ -193,7 +193,27 @@ Cursors are used to add paging functionality to certain nodes, like friends list
 
 Satori is a liveops server for games that powers actionable analytics, A/B testing, and remote configuration. Use the Satori Unreal Client to communicate with Satori from within your Unreal game.
 
+Use the Satori Unreal Client with either Blueprints or C++.
+
 Full documentation is online - https://heroiclabs.com/docs/satori/client-libraries/unreal
+
+## Installing the Plugin
+
+To use Satori in your Unreal project, you'll need to copy the Satori Client files you downloaded into the appropriate place:
+
+1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
+2. If one does not already exist, create a `Plugins` folder here.
+3. Copy the `Satori` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
+
+**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
+
+Remember to add the modules to the dependencies under your project's Build.cs file. For example:
+
+```cs
+PublicDependencyModuleNames.AddRange(new string[] { "Satori", "SatoriApi", "SatoriBlueprints" });
+```
+
+At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Satori". If all went well, you should see the Satori plugin, make sure to enable it (this may prompt an editor restart).
 
 # Example Usage
 
@@ -271,24 +291,6 @@ Satori::ListProperties(ClientConfig, Session).Next(
     });
 
 ```
-
-## Installing the Plugin
-
-To use Satori in your Unreal project, you'll need to copy the Satori Client files you downloaded into the appropriate place:
-
-1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
-2. If one does not already exist, create a `Plugins` folder here.
-3. Copy the `Satori` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
-
-**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
-
-Remember to add the modules to the dependencies under your project's Build.cs file. For example:
-
-```cs
-PublicDependencyModuleNames.AddRange(new string[] { "Satori", "SatoriApi", "SatoriBlueprints" });
-```
-
-At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Satori". If all went well, you should see the Satori plugin, make sure to enable it (this may prompt an editor restart).
 
 # Development
 
