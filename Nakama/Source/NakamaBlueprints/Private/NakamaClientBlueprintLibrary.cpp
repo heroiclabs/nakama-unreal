@@ -3204,16 +3204,16 @@ void UNakamaClientReadStorageObjects::Activate()
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
   , const FString& Id
   , const FString& Payload
-  , const FString& HttpKey
 )
 {
   UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
   Action->StoredId = Id;
   Action->StoredPayload = Payload;
-  Action->StoredHttpKey = HttpKey;
 
   Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
@@ -3228,9 +3228,9 @@ void UNakamaClientRpcFunc::Activate()
 
   NakamaApi::RpcFunc(
     StoredClientConfig,
+    StoredSession,
     StoredId,
     StoredPayload,
-    StoredHttpKey,
     [WeakThis](const FNakamaRpc& Result)
     {
       if (auto* Self = WeakThis.Get())

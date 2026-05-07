@@ -2751,18 +2751,18 @@ public:
   static UNakamaClientRpcFunc* RpcFunc(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
+    , const FNakamaSession& Session
     , const FString& Id
     , const FString& Payload
-    , const FString& HttpKey
   );
 
   virtual void Activate() override;
 
 private:
   FNakamaClientConfig StoredClientConfig;
+  FNakamaSession StoredSession;
   FString StoredId;
   FString StoredPayload;
-  FString StoredHttpKey;
 };
 
 /**

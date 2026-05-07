@@ -2,6 +2,7 @@ package apimappers
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/emicklei/proto"
@@ -72,7 +73,7 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, t
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
 	isRpcFunc := strings.Contains(rpc.Name, "RpcFunc")
-	needsSession := !isAuth && !isSessionRefresh && !isRpcFunc
+	needsSession := !isAuth && !isSessionRefresh
 
 	if needsSession {
 		sessionType := typeMapper.ResolveEntry("Session").FieldType
@@ -83,6 +84,13 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, t
 			Metadata: map[string]any{"ParamType": fmt.Sprintf("const %s&", sessionType)},
 		}
 		paramsMembers = append([]modules.DataDecl{sessionParam}, paramsType.Members...)
+
+		// Remove built-in HttpKey parameter for RpcFunc call.
+		if isRpcFunc {
+			paramsMembers = slices.DeleteFunc(paramsMembers, func(p modules.DataDecl) bool {
+				return p.Name == "HttpKey"
+			})
+		}
 	}
 
 	funcOverloads = append(funcOverloads, modules.Function{
