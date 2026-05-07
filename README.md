@@ -127,23 +127,21 @@ As you can see, this returns a session object that will be passed into other fun
 
 ![image createclient-4](./images/Client-4.png)
 
-After you have created a default client you'll be able to setup one or more realtime clients (sockets) that interact with the server.
+After you have created a default client you'll be able to set up a Web Socket connection with the server if you wish to use real-time features.
 
-Drag out from the **NakamaClient** that you created earlier, and call the **Setup Realtime Client** function.
+Get the **NakamaWebSocketSubsystem** and bind to the connected and closed events to handle the connection lifecycle. Then you can call **BeginConnect** to establish the connection by passing in the params, including the auth token from the session that you stored earlier. In this screenshot, we have split the Params struct pin to keep the nodes tidy.
 
 ![image createclient-5](./images/Client-5.png)
 
-Remember to provide the user session from the successful authentication earlier, then bind custom events to the success and error callbacks. The Realtime Client will be returned from this node, and is ready to be used to communicate with the Nakama server. You can now use features such as Chat and Matchmaker.
-
-![image createclient-6](./images/Client-6.png)
+Once connected, you can now use real-time functions by passing in the **NakamaWebSocketSubsystem**. Keep in mind that this will only work if the web socket connection has been successfully established.
 
 ## Setting up Listeners and Binding to Events
 
-After creating your Realtime Client you are ready to bind to its' events
+After establishing your web socket connection, you are ready to bind to its events by first creating the event proxy.
 
 ![image binding-1](./images/Bindings-1.png)
 
-After setting up your specific listeners you are ready to bind to the callbacks.
+After creating the event proxy, you are ready to bind to the callbacks.
 
 ![image binding-2](./images/Bindings-2.png)
 
@@ -155,10 +153,9 @@ Create a custom event and give it a meaningful name.
 
  ![image binding-4](./images/Bindings-4.png)
 
-In the next example we listen to matchmaker matched event then bind to it and handle the response by joining a match with the returned token which then returns a Match including the match id, presences, label and so on.
+In the next example we listen to matchmaker matched event then bind to it and handle the response by joining a match with the returned token or match id, which then returns a Match including the match id, presences, label and so on.
 
 ![image binding-5](./images/Bindings-5.png)
-
 
 ## Session Management
 
@@ -172,9 +169,9 @@ There are also some additional session management methods like restoring the ses
 
 ![image sessions-2](./images/Sessions-2.png)
 
+![image sessions-3](./images/Sessions-3.png)
 
 It is recommended to store the auth token from the session and check at startup if it has expired. If the token has expired you must reauthenticate. The expiry time of the token can be changed as a setting in the server.
-
 
 ## Requests
 
@@ -182,7 +179,7 @@ The client includes a lot of built-in APIs for various features of the game serv
 
 ![image requests](./images/Requests.png)
 
-The RPC node can be used to run specific functionality on the server, the payload should be in JSON format.
+The RpcFunc node can be used to run specific functionality on the server, the payload should be in JSON format.
 
 ![image rpc](./images/RPC.png)
 
