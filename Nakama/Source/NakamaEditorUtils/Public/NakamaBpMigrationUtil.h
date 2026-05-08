@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-using UnrealBuildTool;
+#pragma once
 
-public class NakamaEditorUtils : ModuleRules
+#include "EditorUtilityLibrary.h"
+#include "NakamaBpMigrationUtil.generated.h"
+
+UCLASS()
+class UNakamaBpMigrationUtil : public UEditorUtilityLibrary
 {
-	public NakamaEditorUtils(ReadOnlyTargetRules Target) : base(Target)
-	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintCallable)
+	static int32 ReplaceLatentNakamaNodesWithComments(UBlueprint* Blueprint);
 
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Engine",
-				"UnrealEd",
-				"BlueprintGraph",
-				"Blutility",
-			}
-			);
-
-
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
-				"CoreUObject",
-			}
-			);
-	}
-}
+private:
+	static bool IsLatentNakamaNode(UEdGraphNode* Node);
+};

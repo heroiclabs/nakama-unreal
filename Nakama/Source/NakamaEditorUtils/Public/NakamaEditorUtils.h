@@ -14,32 +14,15 @@
  * limitations under the License.
  */
 
-using UnrealBuildTool;
+#pragma once
 
-public class NakamaEditorUtils : ModuleRules
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
+
+class FNakamaEditorUtilsModule : public IModuleInterface
 {
-	public NakamaEditorUtils(ReadOnlyTargetRules Target) : base(Target)
-	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-
-
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Engine",
-				"UnrealEd",
-				"BlueprintGraph",
-				"Blutility",
-			}
-			);
-
-
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
-				"CoreUObject",
-			}
-			);
-	}
-}
+public:
+	/** IModuleInterface implementation */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+};
