@@ -74,4 +74,6 @@ public class Nakama : ModuleRules
 
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
     }
+
+    RuntimeDependencies.Add(Path.Combine(PluginDirectory, "Resources", "nakama.version"), StagedFileType.NonUFS);
 }
