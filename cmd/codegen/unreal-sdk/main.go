@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"log"
+	"os/exec"
+	"strings"
 	"text/template"
 	"time"
 
@@ -15,6 +18,19 @@ func getFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"currentYear": func() int {
 			return time.Now().Year()
+		},
+		"getVersionData": func() string {
+			args := []string{"rev-parse", "HEAD"}
+			cmd := exec.Command("git", args...)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+
+			err := cmd.Run()
+			if err != nil {
+				return "unknown-build"
+			}
+
+			return strings.TrimSpace(out.String())
 		},
 		"getUniqueFuncReturnTypes": func(funcs []modules.Function) []string {
 			set := make(map[string]bool)
@@ -223,6 +239,11 @@ func main() {
 				Requires: satoriBpRequires,
 				Template: "templates/SatoriClientBp.cpp.tmpl",
 				Output:   "Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp",
+			},
+			{
+				Requires: nakamaHttpRequires,
+				Template: "templates/nakama.version.tmpl",
+				Output:   "Nakama/Resources/nakama.version",
 			},
 		},
 	}
