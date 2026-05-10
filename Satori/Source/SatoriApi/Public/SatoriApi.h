@@ -642,7 +642,7 @@ namespace SatoriApi
   SATORIAPI_API void UpdateProperties(
     const FSatoriClientConfig& Config,
     const FString& HttpKey,
-    bool Recompute,
+    FSatoriOptionalBool Recompute,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void()> OnSuccess,
@@ -667,7 +667,7 @@ namespace SatoriApi
   SATORIAPI_API void UpdateProperties(
     const FSatoriClientConfig& Config,
     const FSatoriSession& Session,
-    bool Recompute,
+    FSatoriOptionalBool Recompute,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void()> OnSuccess,

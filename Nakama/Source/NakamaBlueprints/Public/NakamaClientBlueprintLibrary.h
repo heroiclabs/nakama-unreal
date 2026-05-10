@@ -269,7 +269,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountApple& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -278,7 +278,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountApple StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -310,7 +310,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountCustom& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -319,7 +319,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountCustom StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -351,7 +351,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountDevice& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -360,7 +360,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountDevice StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -392,7 +392,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountEmail& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -401,7 +401,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountEmail StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -433,9 +433,9 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountFacebook& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
-    , bool Sync
+    , FNakamaOptionalBool Sync
   );
 
   virtual void Activate() override;
@@ -443,9 +443,9 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountFacebook StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
-  bool StoredSync;
+  FNakamaOptionalBool StoredSync;
 };
 
 /**
@@ -476,7 +476,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountFacebookInstantGame& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -485,7 +485,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountFacebookInstantGame StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -517,7 +517,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountGameCenter& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -526,7 +526,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountGameCenter StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -558,7 +558,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountGoogle& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
   );
 
@@ -567,7 +567,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountGoogle StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
 };
 
@@ -599,9 +599,9 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaAccountSteam& Account
-    , bool Create
+    , FNakamaOptionalBool Create
     , const FString& Username
-    , bool Sync
+    , FNakamaOptionalBool Sync
   );
 
   virtual void Activate() override;
@@ -609,9 +609,9 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaAccountSteam StoredAccount;
-  bool StoredCreate;
+  FNakamaOptionalBool StoredCreate;
   FString StoredUsername;
-  bool StoredSync;
+  FNakamaOptionalBool StoredSync;
 };
 
 /**
@@ -1285,7 +1285,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FNakamaAccountFacebook& Account
-    , bool Reset
+    , FNakamaOptionalBool Reset
   );
 
   virtual void Activate() override;
@@ -1294,7 +1294,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FNakamaAccountFacebook StoredAccount;
-  bool StoredReset;
+  FNakamaOptionalBool StoredReset;
 };
 
 /**
@@ -1326,7 +1326,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FNakamaAccountSteam& Account
-    , bool Reset
+    , FNakamaOptionalBool Reset
   );
 
   virtual void Activate() override;
@@ -1335,7 +1335,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FNakamaAccountSteam StoredAccount;
-  bool StoredReset;
+  FNakamaOptionalBool StoredReset;
 };
 
 /**
@@ -1691,7 +1691,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FNakamaAccountFacebook& Account
-    , bool Sync
+    , FNakamaOptionalBool Sync
   );
 
   virtual void Activate() override;
@@ -1700,7 +1700,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FNakamaAccountFacebook StoredAccount;
-  bool StoredSync;
+  FNakamaOptionalBool StoredSync;
 };
 
 /**
@@ -1865,7 +1865,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FNakamaAccountSteam& Account
-    , bool Sync
+    , FNakamaOptionalBool Sync
   );
 
   virtual void Activate() override;
@@ -1874,7 +1874,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FNakamaAccountSteam StoredAccount;
-  bool StoredSync;
+  FNakamaOptionalBool StoredSync;
 };
 
 /**
@@ -1906,8 +1906,8 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& ChannelId
-    , int32 Limit
-    , bool Forward
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalBool Forward
     , const FString& Cursor
   );
 
@@ -1917,8 +1917,8 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredChannelId;
-  int32 StoredLimit;
-  bool StoredForward;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalBool StoredForward;
   FString StoredCursor;
 };
 
@@ -1950,8 +1950,8 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
-    , int32 State
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalInt32 State
     , const FString& Cursor
   );
 
@@ -1960,8 +1960,8 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
-  int32 StoredState;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalInt32 StoredState;
   FString StoredCursor;
 };
 
@@ -1993,7 +1993,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
   );
 
@@ -2002,7 +2002,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
 };
 
@@ -2036,10 +2036,10 @@ public:
     , const FNakamaSession& Session
     , const FString& Name
     , const FString& Cursor
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& LangTag
-    , int32 Members
-    , bool Open
+    , FNakamaOptionalInt32 Members
+    , FNakamaOptionalBool Open
   );
 
   virtual void Activate() override;
@@ -2049,10 +2049,10 @@ private:
   FNakamaSession StoredSession;
   FString StoredName;
   FString StoredCursor;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredLangTag;
-  int32 StoredMembers;
-  bool StoredOpen;
+  FNakamaOptionalInt32 StoredMembers;
+  FNakamaOptionalBool StoredOpen;
 };
 
 /**
@@ -2084,8 +2084,8 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& GroupId
-    , int32 Limit
-    , int32 State
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalInt32 State
     , const FString& Cursor
   );
 
@@ -2095,8 +2095,8 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredGroupId;
-  int32 StoredLimit;
-  int32 StoredState;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalInt32 StoredState;
   FString StoredCursor;
 };
 
@@ -2130,9 +2130,9 @@ public:
     , const FNakamaSession& Session
     , const FString& LeaderboardId
     , const TArray<FString>& OwnerIds
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
-    , int64 Expiry
+    , FNakamaOptionalInt64 Expiry
   );
 
   virtual void Activate() override;
@@ -2142,9 +2142,9 @@ private:
   FNakamaSession StoredSession;
   FString StoredLeaderboardId;
   TArray<FString> StoredOwnerIds;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
-  int64 StoredExpiry;
+  FNakamaOptionalInt64 StoredExpiry;
 };
 
 /**
@@ -2176,9 +2176,9 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& LeaderboardId
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& OwnerId
-    , int64 Expiry
+    , FNakamaOptionalInt64 Expiry
     , const FString& Cursor
   );
 
@@ -2188,9 +2188,9 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredLeaderboardId;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredOwnerId;
-  int64 StoredExpiry;
+  FNakamaOptionalInt64 StoredExpiry;
   FString StoredCursor;
 };
 
@@ -2222,11 +2222,11 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
-    , bool Authoritative
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalBool Authoritative
     , const FString& Label
-    , int32 MinSize
-    , int32 MaxSize
+    , FNakamaOptionalInt32 MinSize
+    , FNakamaOptionalInt32 MaxSize
     , const FString& Query
   );
 
@@ -2235,11 +2235,11 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
-  bool StoredAuthoritative;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalBool StoredAuthoritative;
   FString StoredLabel;
-  int32 StoredMinSize;
-  int32 StoredMaxSize;
+  FNakamaOptionalInt32 StoredMinSize;
+  FNakamaOptionalInt32 StoredMaxSize;
   FString StoredQuery;
 };
 
@@ -2271,8 +2271,8 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
-    , bool Open
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalBool Open
     , const FString& Query
     , const FString& Cursor
   );
@@ -2282,8 +2282,8 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
-  bool StoredOpen;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalBool StoredOpen;
   FString StoredQuery;
   FString StoredCursor;
 };
@@ -2316,7 +2316,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& CacheableCursor
   );
 
@@ -2325,7 +2325,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCacheableCursor;
 };
 
@@ -2359,7 +2359,7 @@ public:
     , const FNakamaSession& Session
     , const FString& UserId
     , const FString& Collection
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
   );
 
@@ -2370,7 +2370,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredUserId;
   FString StoredCollection;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
 };
 
@@ -2402,7 +2402,7 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
   );
 
@@ -2411,7 +2411,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
 };
 
@@ -2443,11 +2443,11 @@ public:
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
-    , int32 CategoryStart
-    , int32 CategoryEnd
-    , int32 StartTime
-    , int32 EndTime
-    , int32 Limit
+    , FNakamaOptionalInt32 CategoryStart
+    , FNakamaOptionalInt32 CategoryEnd
+    , FNakamaOptionalInt32 StartTime
+    , FNakamaOptionalInt32 EndTime
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
   );
 
@@ -2456,11 +2456,11 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-  int32 StoredCategoryStart;
-  int32 StoredCategoryEnd;
-  int32 StoredStartTime;
-  int32 StoredEndTime;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredCategoryStart;
+  FNakamaOptionalInt32 StoredCategoryEnd;
+  FNakamaOptionalInt32 StoredStartTime;
+  FNakamaOptionalInt32 StoredEndTime;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
 };
 
@@ -2494,9 +2494,9 @@ public:
     , const FNakamaSession& Session
     , const FString& TournamentId
     , const TArray<FString>& OwnerIds
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& Cursor
-    , int64 Expiry
+    , FNakamaOptionalInt64 Expiry
   );
 
   virtual void Activate() override;
@@ -2506,9 +2506,9 @@ private:
   FNakamaSession StoredSession;
   FString StoredTournamentId;
   TArray<FString> StoredOwnerIds;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredCursor;
-  int64 StoredExpiry;
+  FNakamaOptionalInt64 StoredExpiry;
 };
 
 /**
@@ -2540,9 +2540,9 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& TournamentId
-    , int32 Limit
+    , FNakamaOptionalInt32 Limit
     , const FString& OwnerId
-    , int64 Expiry
+    , FNakamaOptionalInt64 Expiry
     , const FString& Cursor
   );
 
@@ -2552,9 +2552,9 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredTournamentId;
-  int32 StoredLimit;
+  FNakamaOptionalInt32 StoredLimit;
   FString StoredOwnerId;
-  int64 StoredExpiry;
+  FNakamaOptionalInt64 StoredExpiry;
   FString StoredCursor;
 };
 
@@ -2587,8 +2587,8 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& UserId
-    , int32 Limit
-    , int32 State
+    , FNakamaOptionalInt32 Limit
+    , FNakamaOptionalInt32 State
     , const FString& Cursor
   );
 
@@ -2598,8 +2598,8 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredUserId;
-  int32 StoredLimit;
-  int32 StoredState;
+  FNakamaOptionalInt32 StoredLimit;
+  FNakamaOptionalInt32 StoredState;
   FString StoredCursor;
 };
 
@@ -3228,7 +3228,7 @@ public:
     , const FString& Description
     , const FString& LangTag
     , const FString& AvatarUrl
-    , bool Open
+    , FNakamaOptionalBool Open
   );
 
   virtual void Activate() override;
@@ -3241,7 +3241,7 @@ private:
   FString StoredDescription;
   FString StoredLangTag;
   FString StoredAvatarUrl;
-  bool StoredOpen;
+  FNakamaOptionalBool StoredOpen;
 };
 
 /**
@@ -3273,7 +3273,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& Receipt
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3282,7 +3282,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredReceipt;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**
@@ -3314,7 +3314,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& Receipt
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3323,7 +3323,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredReceipt;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**
@@ -3355,7 +3355,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& Purchase
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3364,7 +3364,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredPurchase;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**
@@ -3396,7 +3396,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& Receipt
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3405,7 +3405,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredReceipt;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**
@@ -3438,7 +3438,7 @@ public:
     , const FNakamaSession& Session
     , const FString& Purchase
     , const FString& Signature
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3448,7 +3448,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredPurchase;
   FString StoredSignature;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**
@@ -3480,7 +3480,7 @@ public:
     , FNakamaClientConfig ClientConfig
     , const FNakamaSession& Session
     , const FString& SignedRequest
-    , bool Persist
+    , FNakamaOptionalBool Persist
   );
 
   virtual void Activate() override;
@@ -3489,7 +3489,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredSignedRequest;
-  bool StoredPersist;
+  FNakamaOptionalBool StoredPersist;
 };
 
 /**

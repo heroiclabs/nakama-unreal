@@ -73,8 +73,8 @@ public:
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Target
     , int32 Type
-    , bool Persistence
-    , bool Hidden
+    , FNakamaRtOptionalBool Persistence
+    , FNakamaRtOptionalBool Hidden
   );
 
   virtual void Activate() override;
@@ -83,8 +83,8 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredTarget;
   int32 StoredType;
-  bool StoredPersistence;
-  bool StoredHidden;
+  FNakamaRtOptionalBool StoredPersistence;
+  FNakamaRtOptionalBool StoredHidden;
 };
 /**
 *  Leave a realtime chat channel.
@@ -397,7 +397,7 @@ public:
     , int32 MinCount
     , int32 MaxCount
     , const FString& Query
-    , int32 CountMultiple
+    , FNakamaRtOptionalInt32 CountMultiple
     , const TMap<FString, FString>& StringProperties
     , const TMap<FString, double>& NumericProperties
   );
@@ -409,7 +409,7 @@ private:
   int32 StoredMinCount;
   int32 StoredMaxCount;
   FString StoredQuery;
-  int32 StoredCountMultiple;
+  FNakamaRtOptionalInt32 StoredCountMultiple;
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
 };
@@ -919,7 +919,7 @@ public:
     , int32 MinCount
     , int32 MaxCount
     , const FString& Query
-    , int32 CountMultiple
+    , FNakamaRtOptionalInt32 CountMultiple
     , const TMap<FString, FString>& StringProperties
     , const TMap<FString, double>& NumericProperties
   );
@@ -932,7 +932,7 @@ private:
   int32 StoredMinCount;
   int32 StoredMaxCount;
   FString StoredQuery;
-  int32 StoredCountMultiple;
+  FNakamaRtOptionalInt32 StoredCountMultiple;
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
 };

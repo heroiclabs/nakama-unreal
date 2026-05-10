@@ -104,8 +104,8 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> ChannelJoin(
       const FString& Target
       , int32 Type
-      , bool Persistence
-      , bool Hidden
+      , FNakamaRtOptionalBool Persistence
+      , FNakamaRtOptionalBool Hidden
     ) noexcept;
 
     /*
@@ -214,7 +214,7 @@ namespace Nakama
       int32 MinCount
       , int32 MaxCount
       , const FString& Query
-      , int32 CountMultiple
+      , FNakamaRtOptionalInt32 CountMultiple
       , const TMap<FString, FString>& StringProperties
       , const TMap<FString, double>& NumericProperties
     ) noexcept;
@@ -377,7 +377,7 @@ namespace Nakama
       , int32 MinCount
       , int32 MaxCount
       , const FString& Query
-      , int32 CountMultiple
+      , FNakamaRtOptionalInt32 CountMultiple
       , const TMap<FString, FString>& StringProperties
       , const TMap<FString, double>& NumericProperties
     ) noexcept;

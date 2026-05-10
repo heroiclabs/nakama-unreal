@@ -449,7 +449,7 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
 NAKAMAAPI_API void NakamaApi::AuthenticateApple (
   const FNakamaClientConfig& Config,
   const FNakamaAccountApple& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -464,9 +464,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -509,7 +509,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
 NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
   const FNakamaClientConfig& Config,
   const FNakamaAccountCustom& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -524,9 +524,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -569,7 +569,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
 NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
   const FNakamaClientConfig& Config,
   const FNakamaAccountDevice& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -584,9 +584,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -629,7 +629,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
 NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
   const FNakamaClientConfig& Config,
   const FNakamaAccountEmail& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -644,9 +644,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -689,9 +689,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
 NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
   const FNakamaClientConfig& Config,
   const FNakamaAccountFacebook& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -705,17 +705,17 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync)));
+    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -754,7 +754,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
 NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
   const FNakamaClientConfig& Config,
   const FNakamaAccountFacebookInstantGame& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -769,9 +769,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -814,7 +814,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
 NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
   const FNakamaClientConfig& Config,
   const FNakamaAccountGameCenter& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -829,9 +829,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -874,7 +874,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
 NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
   const FNakamaClientConfig& Config,
   const FNakamaAccountGoogle& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -889,9 +889,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
@@ -934,9 +934,9 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
 NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
   const FNakamaClientConfig& Config,
   const FNakamaAccountSteam& Account,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void(const FNakamaSession&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -950,17 +950,17 @@ NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create)));
+    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
   }
   if (Username.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync)));
+    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2804,7 +2804,7 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FNakamaAccountFacebook& Account,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -2818,9 +2818,9 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset)));
+    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2859,7 +2859,7 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FNakamaAccountFacebook& Account,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -2873,9 +2873,9 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset)));
+    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2914,7 +2914,7 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FNakamaAccountSteam& Account,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -2928,9 +2928,9 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset)));
+    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2969,7 +2969,7 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FNakamaAccountSteam& Account,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -2983,9 +2983,9 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset)));
+    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -3964,7 +3964,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FNakamaAccountFacebook& Account,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -3978,9 +3978,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync)));
+    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4019,7 +4019,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FNakamaAccountFacebook& Account,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -4033,9 +4033,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  
+  if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync)));
+    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4510,7 +4510,7 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FNakamaAccountSteam& Account,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -4537,9 +4537,9 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("sync"), Sync);
+    Body->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
 
   //
@@ -4569,7 +4569,7 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FNakamaAccountSteam& Account,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -4596,9 +4596,9 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("sync"), Sync);
+    Body->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
 
   //
@@ -4628,8 +4628,8 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& ChannelId,
-  int32 Limit,
-  bool Forward,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Forward,
   const FString& Cursor,
   TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4646,14 +4646,13 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Forward.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
+    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4696,8 +4695,8 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& ChannelId,
-  int32 Limit,
-  bool Forward,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Forward,
   const FString& Cursor,
   TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4714,14 +4713,13 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Forward.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
+    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4763,8 +4761,8 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
 NAKAMAAPI_API void NakamaApi::ListFriends (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaFriendList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4779,15 +4777,13 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4829,8 +4825,8 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
 NAKAMAAPI_API void NakamaApi::ListFriends (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaFriendList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4845,15 +4841,13 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4895,7 +4889,7 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
 NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4910,10 +4904,9 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4955,7 +4948,7 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
 NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -4970,10 +4963,9 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5017,10 +5009,10 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   const FString& HttpKey,
   const FString& Name,
   const FString& Cursor,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& LangTag,
-  int32 Members,
-  bool Open,
+  FNakamaOptionalInt32 Members,
+  FNakamaOptionalBool Open,
   TFunction<void(const FNakamaGroupList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -5042,23 +5034,21 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (LangTag.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *(LangTag)));
   }
-  if (Members != 0)
-  
+  if (Members.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members)));
+    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members.GetValue())));
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open)));
+    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5098,10 +5088,10 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   const FNakamaSession& Session,
   const FString& Name,
   const FString& Cursor,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& LangTag,
-  int32 Members,
-  bool Open,
+  FNakamaOptionalInt32 Members,
+  FNakamaOptionalBool Open,
   TFunction<void(const FNakamaGroupList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -5123,23 +5113,21 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (LangTag.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *(LangTag)));
   }
-  if (Members != 0)
-  
+  if (Members.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members)));
+    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members.GetValue())));
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open)));
+    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5178,8 +5166,8 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& GroupId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5196,15 +5184,13 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5247,8 +5233,8 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& GroupId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5265,15 +5251,13 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5317,9 +5301,9 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   const FString& HttpKey,
   const FString& LeaderboardId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -5339,19 +5323,17 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   {
     QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5391,9 +5373,9 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   const FNakamaSession& Session,
   const FString& LeaderboardId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -5413,19 +5395,17 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   {
     QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5464,9 +5444,9 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& LeaderboardId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5485,15 +5465,13 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5536,9 +5514,9 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& LeaderboardId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5557,15 +5535,13 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5607,11 +5583,11 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
 NAKAMAAPI_API void NakamaApi::ListMatches (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
-  bool Authoritative,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Authoritative,
   const FString& Label,
-  int32 MinSize,
-  int32 MaxSize,
+  FNakamaOptionalInt32 MinSize,
+  FNakamaOptionalInt32 MaxSize,
   const FString& Query,
   TFunction<void(const FNakamaMatchList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5626,28 +5602,25 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Authoritative.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative)));
+    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative.GetValue())));
   }
   if (Label.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("label=%s"), *(Label)));
   }
-  if (MinSize != 0)
-  
+  if (MinSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize)));
+    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize.GetValue())));
   }
-  if (MaxSize != 0)
-  
+  if (MaxSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize)));
+    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize.GetValue())));
   }
   if (Query.IsEmpty() == false)
   {
@@ -5689,11 +5662,11 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
 NAKAMAAPI_API void NakamaApi::ListMatches (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
-  bool Authoritative,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Authoritative,
   const FString& Label,
-  int32 MinSize,
-  int32 MaxSize,
+  FNakamaOptionalInt32 MinSize,
+  FNakamaOptionalInt32 MaxSize,
   const FString& Query,
   TFunction<void(const FNakamaMatchList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5708,28 +5681,25 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Authoritative.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative)));
+    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative.GetValue())));
   }
   if (Label.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("label=%s"), *(Label)));
   }
-  if (MinSize != 0)
-  
+  if (MinSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize)));
+    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize.GetValue())));
   }
-  if (MaxSize != 0)
-  
+  if (MaxSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize)));
+    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize.GetValue())));
   }
   if (Query.IsEmpty() == false)
   {
@@ -5771,8 +5741,8 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
 NAKAMAAPI_API void NakamaApi::ListParties (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
-  bool Open,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Open,
   const FString& Query,
   const FString& Cursor,
   TFunction<void(const FNakamaPartyList&)> OnSuccess,
@@ -5788,14 +5758,13 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open)));
+    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
   }
   if (Query.IsEmpty() == false)
   {
@@ -5841,8 +5810,8 @@ NAKAMAAPI_API void NakamaApi::ListParties (
 NAKAMAAPI_API void NakamaApi::ListParties (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
-  bool Open,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Open,
   const FString& Query,
   const FString& Cursor,
   TFunction<void(const FNakamaPartyList&)> OnSuccess,
@@ -5858,14 +5827,13 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open)));
+    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
   }
   if (Query.IsEmpty() == false)
   {
@@ -5911,7 +5879,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
 NAKAMAAPI_API void NakamaApi::ListNotifications (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& CacheableCursor,
   TFunction<void(const FNakamaNotificationList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5926,10 +5894,9 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (CacheableCursor.IsEmpty() == false)
   {
@@ -5971,7 +5938,7 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
 NAKAMAAPI_API void NakamaApi::ListNotifications (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& CacheableCursor,
   TFunction<void(const FNakamaNotificationList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -5986,10 +5953,9 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (CacheableCursor.IsEmpty() == false)
   {
@@ -6033,7 +5999,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   const FString& HttpKey,
   const FString& UserId,
   const FString& Collection,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6054,10 +6020,9 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   {
     QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *(UserId)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6101,7 +6066,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   const FNakamaSession& Session,
   const FString& UserId,
   const FString& Collection,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6122,10 +6087,9 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   {
     QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *(UserId)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6167,7 +6131,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
 NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6191,10 +6155,9 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Body->SetNumberField(TEXT("limit"), Limit);
+    Body->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6228,7 +6191,7 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
 NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6252,10 +6215,9 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Body->SetNumberField(TEXT("limit"), Limit);
+    Body->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6289,11 +6251,11 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
 NAKAMAAPI_API void NakamaApi::ListTournaments (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
-  int32 CategoryStart,
-  int32 CategoryEnd,
-  int32 StartTime,
-  int32 EndTime,
-  int32 Limit,
+  FNakamaOptionalInt32 CategoryStart,
+  FNakamaOptionalInt32 CategoryEnd,
+  FNakamaOptionalInt32 StartTime,
+  FNakamaOptionalInt32 EndTime,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaTournamentList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6308,30 +6270,25 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (CategoryStart != 0)
-  
+  if (CategoryStart.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart)));
+    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart.GetValue())));
   }
-  if (CategoryEnd != 0)
-  
+  if (CategoryEnd.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd)));
+    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd.GetValue())));
   }
-  if (StartTime != 0)
-  
+  if (StartTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime)));
+    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime.GetValue())));
   }
-  if (EndTime != 0)
-  
+  if (EndTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime)));
+    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime.GetValue())));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6373,11 +6330,11 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
 NAKAMAAPI_API void NakamaApi::ListTournaments (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
-  int32 CategoryStart,
-  int32 CategoryEnd,
-  int32 StartTime,
-  int32 EndTime,
-  int32 Limit,
+  FNakamaOptionalInt32 CategoryStart,
+  FNakamaOptionalInt32 CategoryEnd,
+  FNakamaOptionalInt32 StartTime,
+  FNakamaOptionalInt32 EndTime,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   TFunction<void(const FNakamaTournamentList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6392,30 +6349,25 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (CategoryStart != 0)
-  
+  if (CategoryStart.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart)));
+    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart.GetValue())));
   }
-  if (CategoryEnd != 0)
-  
+  if (CategoryEnd.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd)));
+    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd.GetValue())));
   }
-  if (StartTime != 0)
-  
+  if (StartTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime)));
+    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime.GetValue())));
   }
-  if (EndTime != 0)
-  
+  if (EndTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime)));
+    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime.GetValue())));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6459,9 +6411,9 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   const FString& HttpKey,
   const FString& TournamentId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -6481,19 +6433,17 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   {
     QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6533,9 +6483,9 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   const FNakamaSession& Session,
   const FString& TournamentId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -6555,19 +6505,17 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   {
     QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
     QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6606,9 +6554,9 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& TournamentId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6627,15 +6575,13 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6678,9 +6624,9 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& TournamentId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6699,15 +6645,13 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry)));
+    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6750,8 +6694,8 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& UserId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6768,15 +6712,13 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -6819,8 +6761,8 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& UserId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
@@ -6837,15 +6779,13 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State)));
+    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -8728,7 +8668,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   const FString& Description,
   const FString& LangTag,
   const FString& AvatarUrl,
-  bool Open,
+  FNakamaOptionalBool Open,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -8769,9 +8709,9 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   {
     Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("open"), Open);
+    Body->SetBoolField(TEXT("open"), Open.GetValue());
   }
 
   //
@@ -8805,7 +8745,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   const FString& Description,
   const FString& LangTag,
   const FString& AvatarUrl,
-  bool Open,
+  FNakamaOptionalBool Open,
   TFunction<void()> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -8846,9 +8786,9 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   {
     Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("open"), Open);
+    Body->SetBoolField(TEXT("open"), Open.GetValue());
   }
 
   //
@@ -8878,7 +8818,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -8905,9 +8845,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -8938,7 +8878,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -8965,9 +8905,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -8998,7 +8938,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9025,9 +8965,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9058,7 +8998,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9085,9 +9025,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9118,7 +9058,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& Purchase,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9145,9 +9085,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9178,7 +9118,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& Purchase,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9205,9 +9145,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9238,7 +9178,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9265,9 +9205,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9298,7 +9238,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9325,9 +9265,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9359,7 +9299,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   const FString& HttpKey,
   const FString& Purchase,
   const FString& Signature,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9390,9 +9330,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   {
     Body->SetStringField(TEXT("signature"), Signature);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9424,7 +9364,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   const FNakamaSession& Session,
   const FString& Purchase,
   const FString& Signature,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9455,9 +9395,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   {
     Body->SetStringField(TEXT("signature"), Signature);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9488,7 +9428,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,
   const FString& SignedRequest,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9515,9 +9455,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   {
     Body->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //
@@ -9548,7 +9488,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   const FNakamaClientConfig& Config,
   const FNakamaSession& Session,
   const FString& SignedRequest,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
@@ -9575,9 +9515,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   {
     Body->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("persist"), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
 
   //

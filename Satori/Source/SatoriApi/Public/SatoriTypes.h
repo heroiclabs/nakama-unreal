@@ -19,6 +19,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SatoriOptionals.h"
 #include "SatoriTypes.generated.h"
 
 enum class ESatoriRequestAuth : uint8
@@ -744,7 +745,7 @@ struct FSatoriUpdatePropertiesRequest
 
   /**  Informs the server to recompute the audience membership of the identity. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  bool Recompute = false;
+  FSatoriOptionalBool Recompute;
 
   /**  Event default properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")

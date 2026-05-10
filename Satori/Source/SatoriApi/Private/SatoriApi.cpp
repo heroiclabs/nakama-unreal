@@ -1614,7 +1614,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
 SATORIAPI_API void SatoriApi::UpdateProperties (
   const FSatoriClientConfig& Config,
   const FString& HttpKey,
-  bool Recompute,
+  FSatoriOptionalBool Recompute,
   const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   TFunction<void()> OnSuccess,
@@ -1639,9 +1639,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  
+  if (Recompute.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("recompute"), Recompute);
+    Body->SetBoolField(TEXT("recompute"), Recompute.GetValue());
   }
   if (Default.Num() > 0)
   {
@@ -1688,7 +1688,7 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
 SATORIAPI_API void SatoriApi::UpdateProperties (
   const FSatoriClientConfig& Config,
   const FSatoriSession& Session,
-  bool Recompute,
+  FSatoriOptionalBool Recompute,
   const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   TFunction<void()> OnSuccess,
@@ -1713,9 +1713,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  
+  if (Recompute.IsEmpty() == false)
   {
-    Body->SetBoolField(TEXT("recompute"), Recompute);
+    Body->SetBoolField(TEXT("recompute"), Recompute.GetValue());
   }
   if (Default.Num() > 0)
   {

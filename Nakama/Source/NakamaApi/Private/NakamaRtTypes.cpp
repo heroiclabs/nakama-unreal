@@ -207,13 +207,13 @@ TSharedPtr<FJsonObject> FNakamaRtChannelJoin::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("type"), Type);
   }
-  
+  if (Persistence.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persistence"), Persistence);
+    Json->SetBoolField(TEXT("persistence"), Persistence.GetValue());
   }
-  
+  if (Hidden.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("hidden"), Hidden);
+    Json->SetBoolField(TEXT("hidden"), Hidden.GetValue());
   }
   return Json;
 }
@@ -309,10 +309,9 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("message_id"), MessageId);
   }
-  if (Code != 0)
-  
+  if (Code.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("code"), Code);
+    Json->SetNumberField(TEXT("code"), Code.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -326,9 +325,9 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
-  
+  if (Persistent.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persistent"), Persistent);
+    Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
   }
   if (RoomName.IsEmpty() == false)
   {
@@ -1079,10 +1078,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("query"), Query);
   }
-  if (CountMultiple != 0)
-  
+  if (CountMultiple.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
   }
   if (StringProperties.Num() > 0)
   {
@@ -1926,10 +1924,9 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("query"), Query);
   }
-  if (CountMultiple != 0)
-  
+  if (CountMultiple.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
   }
   if (StringProperties.Num() > 0)
   {

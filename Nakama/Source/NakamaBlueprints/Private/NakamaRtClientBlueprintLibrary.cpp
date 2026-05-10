@@ -24,8 +24,8 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Target
   , int32 Type
-  , bool Persistence
-  , bool Hidden
+  , FNakamaRtOptionalBool Persistence
+  , FNakamaRtOptionalBool Hidden
 )
 {
   UNakamaRealtimeClientChannelJoin* Action = NewObject<UNakamaRealtimeClientChannelJoin>(GetTransientPackage());
@@ -65,13 +65,13 @@ void UNakamaRealtimeClientChannelJoin::Activate()
   {
     Json->SetNumberField(TEXT("type"), StoredType);
   }
-  
+  if (StoredPersistence.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persistence"), StoredPersistence);
+    Json->SetBoolField(TEXT("persistence"), StoredPersistence.GetValue());
   }
-  
+  if (StoredHidden.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("hidden"), StoredHidden);
+    Json->SetBoolField(TEXT("hidden"), StoredHidden.GetValue());
   }
 
   StoredWebSocketSubsystem->Send(TEXT("channel_join"), Json)
@@ -715,7 +715,7 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
-  , int32 CountMultiple
+  , FNakamaRtOptionalInt32 CountMultiple
   , const TMap<FString, FString>& StringProperties
   , const TMap<FString, double>& NumericProperties
 )
@@ -764,10 +764,9 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("query"), StoredQuery);
   }
-  if (StoredCountMultiple != 0)
-  
+  if (StoredCountMultiple.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple.GetValue());
   }
   if (StoredStringProperties.Num() > 0)
   {
@@ -1819,7 +1818,7 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
-  , int32 CountMultiple
+  , FNakamaRtOptionalInt32 CountMultiple
   , const TMap<FString, FString>& StringProperties
   , const TMap<FString, double>& NumericProperties
 )
@@ -1873,10 +1872,9 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("query"), StoredQuery);
   }
-  if (StoredCountMultiple != 0)
-  
+  if (StoredCountMultiple.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple.GetValue());
   }
   if (StoredStringProperties.Num() > 0)
   {

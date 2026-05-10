@@ -977,9 +977,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1021,9 +1021,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const noexcep
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1065,9 +1065,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const noexcep
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1109,9 +1109,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1157,17 +1157,17 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const noexc
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("username"), Username);
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("sync"), Sync);
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
   return Json;
 }
@@ -1205,9 +1205,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() 
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1249,9 +1249,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const noe
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1293,9 +1293,9 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const noexcep
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
@@ -1341,17 +1341,17 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Create.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("create"), Create);
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
   if (Username.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("username"), Username);
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("sync"), Sync);
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
   return Json;
 }
@@ -1529,10 +1529,9 @@ TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("message_id"), MessageId);
   }
-  if (Code != 0)
-  
+  if (Code.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("code"), Code);
+    Json->SetNumberField(TEXT("code"), Code.GetValue());
   }
   if (SenderId.IsEmpty() == false)
   {
@@ -1554,9 +1553,9 @@ TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   }
-  
+  if (Persistent.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persistent"), Persistent);
+    Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
   }
   if (RoomName.IsEmpty() == false)
   {
@@ -2047,10 +2046,9 @@ TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("user"), User.ToJson());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   
   {
@@ -2384,9 +2382,9 @@ TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("open"), Open);
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
   }
   if (EdgeCount != 0)
   
@@ -2486,10 +2484,9 @@ TSharedPtr<FJsonObject> FNakamaGroupUserListGroupUser::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("user"), User.ToJson());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   return Json;
 }
@@ -2571,9 +2568,9 @@ TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const noex
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Reset.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("reset"), Reset);
+    Json->SetBoolField(TEXT("reset"), Reset.GetValue());
   }
   return Json;
 }
@@ -2607,9 +2604,9 @@ TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const noexcep
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Reset.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("reset"), Reset);
+    Json->SetBoolField(TEXT("reset"), Reset.GetValue());
   }
   return Json;
 }
@@ -3096,9 +3093,9 @@ TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("sync"), Sync);
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
   return Json;
 }
@@ -3132,9 +3129,9 @@ TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  
+  if (Sync.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("sync"), Sync);
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
   return Json;
 }
@@ -3172,14 +3169,13 @@ TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const noexce
   {
     Json->SetStringField(TEXT("channel_id"), ChannelId);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  
+  if (Forward.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("forward"), Forward);
+    Json->SetBoolField(TEXT("forward"), Forward.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3213,15 +3209,13 @@ FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<F
 TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3251,10 +3245,9 @@ FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(
 TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3308,23 +3301,21 @@ TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("cursor"), Cursor);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (LangTag.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("lang_tag"), LangTag);
   }
-  if (Members != 0)
-  
+  if (Members.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("members"), Members);
+    Json->SetNumberField(TEXT("members"), Members.GetValue());
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("open"), Open);
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
   }
   return Json;
 }
@@ -3362,15 +3353,13 @@ TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3416,19 +3405,17 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson(
   {
     Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (OwnerId.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("owner_id"), OwnerId);
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("expiry"), Expiry);
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3490,19 +3477,17 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const noe
     }
     Json->SetArrayField(TEXT("owner_ids"), Array);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("cursor"), Cursor);
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("expiry"), Expiry);
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
   }
   return Json;
 }
@@ -3544,28 +3529,25 @@ FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<F
 TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  
+  if (Authoritative.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("authoritative"), Authoritative);
+    Json->SetBoolField(TEXT("authoritative"), Authoritative.GetValue());
   }
   if (Label.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("label"), Label);
   }
-  if (MinSize != 0)
-  
+  if (MinSize.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("min_size"), MinSize);
+    Json->SetNumberField(TEXT("min_size"), MinSize.GetValue());
   }
-  if (MaxSize != 0)
-  
+  if (MaxSize.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("max_size"), MaxSize);
+    Json->SetNumberField(TEXT("max_size"), MaxSize.GetValue());
   }
   if (Query.IsEmpty() == false)
   {
@@ -3595,10 +3577,9 @@ FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const 
 TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (CacheableCursor.IsEmpty() == false)
   {
@@ -3644,10 +3625,9 @@ TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const noexcep
   {
     Json->SetStringField(TEXT("collection"), Collection);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3677,10 +3657,9 @@ FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const 
 TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3726,19 +3705,17 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson()
   {
     Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (OwnerId.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("owner_id"), OwnerId);
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("expiry"), Expiry);
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3800,19 +3777,17 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const noex
     }
     Json->SetArrayField(TEXT("owner_ids"), Array);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("cursor"), Cursor);
   }
-  if (Expiry != 0)
-  
+  if (Expiry.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("expiry"), Expiry);
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
   }
   return Json;
 }
@@ -3854,30 +3829,25 @@ FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSha
 TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (CategoryStart != 0)
-  
+  if (CategoryStart.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("category_start"), CategoryStart);
+    Json->SetNumberField(TEXT("category_start"), CategoryStart.GetValue());
   }
-  if (CategoryEnd != 0)
-  
+  if (CategoryEnd.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("category_end"), CategoryEnd);
+    Json->SetNumberField(TEXT("category_end"), CategoryEnd.GetValue());
   }
-  if (StartTime != 0)
-  
+  if (StartTime.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("start_time"), StartTime);
+    Json->SetNumberField(TEXT("start_time"), StartTime.GetValue());
   }
-  if (EndTime != 0)
-  
+  if (EndTime.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("end_time"), EndTime);
+    Json->SetNumberField(TEXT("end_time"), EndTime.GetValue());
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -3919,15 +3889,13 @@ TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("user_id"), UserId);
   }
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -5194,9 +5162,9 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("open"), Open);
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
   }
   return Json;
 }
@@ -5230,10 +5198,9 @@ TSharedPtr<FJsonObject> FNakamaUserGroupListUserGroup::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("group"), Group.ToJson());
   }
-  if (State != 0)
-  
+  if (State.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("state"), State);
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
   return Json;
 }
@@ -5351,9 +5318,9 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const noex
   {
     Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -5383,9 +5350,9 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const 
   {
     Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -5415,9 +5382,9 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const noe
   {
     Json->SetStringField(TEXT("purchase"), Purchase);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -5447,9 +5414,9 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const
   {
     Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -5487,9 +5454,9 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const noe
   {
     Json->SetStringField(TEXT("signature"), Signature);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -5519,9 +5486,9 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() 
   {
     Json->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  
+  if (Persist.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("persist"), Persist);
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
   }
   return Json;
 }
@@ -6069,15 +6036,13 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("version"), Version);
   }
-  if (PermissionRead != 0)
-  
+  if (PermissionRead.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("permission_read"), PermissionRead);
+    Json->SetNumberField(TEXT("permission_read"), PermissionRead.GetValue());
   }
-  if (PermissionWrite != 0)
-  
+  if (PermissionWrite.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("permission_write"), PermissionWrite);
+    Json->SetNumberField(TEXT("permission_write"), PermissionWrite.GetValue());
   }
   return Json;
 }
@@ -6237,14 +6202,13 @@ FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<F
 TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
-  
+  if (Limit.IsEmpty() == false)
   {
-    Json->SetNumberField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  
+  if (Open.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("open"), Open);
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
   }
   if (Query.IsEmpty() == false)
   {

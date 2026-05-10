@@ -2075,7 +2075,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
-  bool Recompute,
+  FSatoriOptionalBool Recompute,
   const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
@@ -2143,7 +2143,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
-  bool Recompute,
+  FSatoriOptionalBool Recompute,
   const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,

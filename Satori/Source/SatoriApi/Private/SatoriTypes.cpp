@@ -1608,9 +1608,9 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
 TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  
+  if (Recompute.IsEmpty() == false)
   {
-    Json->SetBoolField(TEXT("recompute"), Recompute);
+    Json->SetBoolField(TEXT("recompute"), Recompute.GetValue());
   }
   if (Default.Num() > 0)
   {

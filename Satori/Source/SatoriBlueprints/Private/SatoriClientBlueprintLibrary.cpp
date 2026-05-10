@@ -733,7 +733,7 @@ USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
   UObject* WorldContextObject
   , FSatoriClientConfig ClientConfig
   , const FSatoriSession& Session
-  , bool Recompute
+  , FSatoriOptionalBool Recompute
   , const TMap<FString, FString>& Default
   , const TMap<FString, FString>& Custom
 )

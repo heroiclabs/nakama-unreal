@@ -620,7 +620,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
@@ -690,7 +690,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountId,
   const TMap<FString, FString>& AccountVars,
@@ -760,7 +760,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountId,
   const TMap<FString, FString>& AccountVars,
@@ -830,7 +830,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountEmail,
   const FString& AccountPassword,
@@ -903,9 +903,9 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -976,7 +976,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountSignedPlayerInfo,
   const TMap<FString, FString>& AccountVars,
@@ -1046,7 +1046,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountPlayerId,
   const FString& AccountBundleId,
@@ -1131,7 +1131,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
@@ -1201,9 +1201,9 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
   const FNakamaClientConfig& ClientConfig,
-  bool Create,
+  FNakamaOptionalBool Create,
   const FString& Username,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -3674,7 +3674,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -3744,7 +3744,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -3838,7 +3838,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -3908,7 +3908,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  bool Reset,
+  FNakamaOptionalBool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -5212,7 +5212,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -5282,7 +5282,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -5870,7 +5870,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -5940,7 +5940,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  bool Sync,
+  FNakamaOptionalBool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
@@ -6035,8 +6035,8 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& ChannelId,
-  int32 Limit,
-  bool Forward,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Forward,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6106,8 +6106,8 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& ChannelId,
-  int32 Limit,
-  bool Forward,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Forward,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6201,8 +6201,8 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6269,8 +6269,8 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6361,7 +6361,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6426,7 +6426,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6516,10 +6516,10 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
   const FString& HttpKey,
   const FString& Name,
   const FString& Cursor,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& LangTag,
-  int32 Members,
-  bool Open,
+  FNakamaOptionalInt32 Members,
+  FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -6593,10 +6593,10 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
   const FNakamaSession& Session,
   const FString& Name,
   const FString& Cursor,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& LangTag,
-  int32 Members,
-  bool Open,
+  FNakamaOptionalInt32 Members,
+  FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -6696,8 +6696,8 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& GroupId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6767,8 +6767,8 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& GroupId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -6864,9 +6864,9 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FString& HttpKey,
   const FString& LeaderboardId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -6938,9 +6938,9 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FNakamaSession& Session,
   const FString& LeaderboardId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -7037,9 +7037,9 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& LeaderboardId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7111,9 +7111,9 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& LeaderboardId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7210,11 +7210,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
-  bool Authoritative,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Authoritative,
   const FString& Label,
-  int32 MinSize,
-  int32 MaxSize,
+  FNakamaOptionalInt32 MinSize,
+  FNakamaOptionalInt32 MaxSize,
   const FString& Query,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7287,11 +7287,11 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
-  bool Authoritative,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Authoritative,
   const FString& Label,
-  int32 MinSize,
-  int32 MaxSize,
+  FNakamaOptionalInt32 MinSize,
+  FNakamaOptionalInt32 MaxSize,
   const FString& Query,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7391,8 +7391,8 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
-  bool Open,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Open,
   const FString& Query,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
@@ -7462,8 +7462,8 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
-  bool Open,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalBool Open,
   const FString& Query,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
@@ -7558,7 +7558,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& CacheableCursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7623,7 +7623,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& CacheableCursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7713,7 +7713,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
   const FString& HttpKey,
   const FString& UserId,
   const FString& Collection,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7784,7 +7784,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
   const FNakamaSession& Session,
   const FString& UserId,
   const FString& Collection,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7878,7 +7878,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -7943,7 +7943,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8031,11 +8031,11 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
-  int32 CategoryStart,
-  int32 CategoryEnd,
-  int32 StartTime,
-  int32 EndTime,
-  int32 Limit,
+  FNakamaOptionalInt32 CategoryStart,
+  FNakamaOptionalInt32 CategoryEnd,
+  FNakamaOptionalInt32 StartTime,
+  FNakamaOptionalInt32 EndTime,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8108,11 +8108,11 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
-  int32 CategoryStart,
-  int32 CategoryEnd,
-  int32 StartTime,
-  int32 EndTime,
-  int32 Limit,
+  FNakamaOptionalInt32 CategoryStart,
+  FNakamaOptionalInt32 CategoryEnd,
+  FNakamaOptionalInt32 StartTime,
+  FNakamaOptionalInt32 EndTime,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8214,9 +8214,9 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
   const FString& HttpKey,
   const FString& TournamentId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -8288,9 +8288,9 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
   const FNakamaSession& Session,
   const FString& TournamentId,
   const TArray<FString>& OwnerIds,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& Cursor,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -8387,9 +8387,9 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& TournamentId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8461,9 +8461,9 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& TournamentId,
-  int32 Limit,
+  FNakamaOptionalInt32 Limit,
   const FString& OwnerId,
-  int64 Expiry,
+  FNakamaOptionalInt64 Expiry,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8561,8 +8561,8 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& UserId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -8632,8 +8632,8 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& UserId,
-  int32 Limit,
-  int32 State,
+  FNakamaOptionalInt32 Limit,
+  FNakamaOptionalInt32 State,
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
@@ -10937,7 +10937,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
   const FString& Description,
   const FString& LangTag,
   const FString& AvatarUrl,
-  bool Open,
+  FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11014,7 +11014,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
   const FString& Description,
   const FString& LangTag,
   const FString& AvatarUrl,
-  bool Open,
+  FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11114,7 +11114,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11179,7 +11179,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11267,7 +11267,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11332,7 +11332,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11420,7 +11420,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& Purchase,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11485,7 +11485,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& Purchase,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11573,7 +11573,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11638,7 +11638,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& Receipt,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11727,7 +11727,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
   const FString& HttpKey,
   const FString& Purchase,
   const FString& Signature,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11795,7 +11795,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
   const FNakamaSession& Session,
   const FString& Purchase,
   const FString& Signature,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11886,7 +11886,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& SignedRequest,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -11951,7 +11951,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
   const FString& SignedRequest,
-  bool Persist,
+  FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept

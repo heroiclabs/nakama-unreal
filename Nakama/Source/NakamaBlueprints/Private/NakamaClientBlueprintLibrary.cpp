@@ -218,7 +218,7 @@ UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateAppl
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountApple& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -267,7 +267,7 @@ UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCu
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountCustom& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -316,7 +316,7 @@ UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDe
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountDevice& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -365,7 +365,7 @@ UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmai
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountEmail& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -414,9 +414,9 @@ UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::Authentica
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountFacebook& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
-  , bool Sync
+  , FNakamaOptionalBool Sync
 )
 {
   UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(GetTransientPackage());
@@ -466,7 +466,7 @@ UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookI
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountFacebookInstantGame& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -515,7 +515,7 @@ UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::Authen
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountGameCenter& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -564,7 +564,7 @@ UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGo
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountGoogle& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
 )
 {
@@ -613,9 +613,9 @@ UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateStea
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaAccountSteam& Account
-  , bool Create
+  , FNakamaOptionalBool Create
   , const FString& Username
-  , bool Sync
+  , FNakamaOptionalBool Sync
 )
 {
   UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(GetTransientPackage());
@@ -1429,7 +1429,7 @@ UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFa
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FNakamaAccountFacebook& Account
-  , bool Reset
+  , FNakamaOptionalBool Reset
 )
 {
   UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(GetTransientPackage());
@@ -1478,7 +1478,7 @@ UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFri
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FNakamaAccountSteam& Account
-  , bool Reset
+  , FNakamaOptionalBool Reset
 )
 {
   UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(GetTransientPackage());
@@ -1913,7 +1913,7 @@ UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FNakamaAccountFacebook& Account
-  , bool Sync
+  , FNakamaOptionalBool Sync
 )
 {
   UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(GetTransientPackage());
@@ -2124,7 +2124,7 @@ UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FNakamaAccountSteam& Account
-  , bool Sync
+  , FNakamaOptionalBool Sync
 )
 {
   UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(GetTransientPackage());
@@ -2173,8 +2173,8 @@ UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelM
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& ChannelId
-  , int32 Limit
-  , bool Forward
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalBool Forward
   , const FString& Cursor
 )
 {
@@ -2227,8 +2227,8 @@ UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
-  , int32 State
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalInt32 State
   , const FString& Cursor
 )
 {
@@ -2279,7 +2279,7 @@ UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriend
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
 )
 {
@@ -2330,10 +2330,10 @@ UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
   , const FNakamaSession& Session
   , const FString& Name
   , const FString& Cursor
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& LangTag
-  , int32 Members
-  , bool Open
+  , FNakamaOptionalInt32 Members
+  , FNakamaOptionalBool Open
 )
 {
   UNakamaClientListGroups* Action = NewObject<UNakamaClientListGroups>(GetTransientPackage());
@@ -2390,8 +2390,8 @@ UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& GroupId
-  , int32 Limit
-  , int32 State
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalInt32 State
   , const FString& Cursor
 )
 {
@@ -2446,9 +2446,9 @@ UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLe
   , const FNakamaSession& Session
   , const FString& LeaderboardId
   , const TArray<FString>& OwnerIds
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
-  , int64 Expiry
+  , FNakamaOptionalInt64 Expiry
 )
 {
   UNakamaClientListLeaderboardRecords* Action = NewObject<UNakamaClientListLeaderboardRecords>(GetTransientPackage());
@@ -2503,9 +2503,9 @@ UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardReco
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& LeaderboardId
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& OwnerId
-  , int64 Expiry
+  , FNakamaOptionalInt64 Expiry
   , const FString& Cursor
 )
 {
@@ -2560,11 +2560,11 @@ UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
-  , bool Authoritative
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalBool Authoritative
   , const FString& Label
-  , int32 MinSize
-  , int32 MaxSize
+  , FNakamaOptionalInt32 MinSize
+  , FNakamaOptionalInt32 MaxSize
   , const FString& Query
 )
 {
@@ -2621,8 +2621,8 @@ UNakamaClientListParties* UNakamaClientListParties::ListParties(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
-  , bool Open
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalBool Open
   , const FString& Query
   , const FString& Cursor
 )
@@ -2676,7 +2676,7 @@ UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotification
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& CacheableCursor
 )
 {
@@ -2727,7 +2727,7 @@ UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObj
   , const FNakamaSession& Session
   , const FString& UserId
   , const FString& Collection
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
 )
 {
@@ -2780,7 +2780,7 @@ UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscription
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
 )
 {
@@ -2829,11 +2829,11 @@ UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
-  , int32 CategoryStart
-  , int32 CategoryEnd
-  , int32 StartTime
-  , int32 EndTime
-  , int32 Limit
+  , FNakamaOptionalInt32 CategoryStart
+  , FNakamaOptionalInt32 CategoryEnd
+  , FNakamaOptionalInt32 StartTime
+  , FNakamaOptionalInt32 EndTime
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
 )
 {
@@ -2892,9 +2892,9 @@ UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTour
   , const FNakamaSession& Session
   , const FString& TournamentId
   , const TArray<FString>& OwnerIds
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& Cursor
-  , int64 Expiry
+  , FNakamaOptionalInt64 Expiry
 )
 {
   UNakamaClientListTournamentRecords* Action = NewObject<UNakamaClientListTournamentRecords>(GetTransientPackage());
@@ -2949,9 +2949,9 @@ UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecord
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& TournamentId
-  , int32 Limit
+  , FNakamaOptionalInt32 Limit
   , const FString& OwnerId
-  , int64 Expiry
+  , FNakamaOptionalInt64 Expiry
   , const FString& Cursor
 )
 {
@@ -3007,8 +3007,8 @@ UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& UserId
-  , int32 Limit
-  , int32 State
+  , FNakamaOptionalInt32 Limit
+  , FNakamaOptionalInt32 State
   , const FString& Cursor
 )
 {
@@ -3779,7 +3779,7 @@ UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
   , const FString& Description
   , const FString& LangTag
   , const FString& AvatarUrl
-  , bool Open
+  , FNakamaOptionalBool Open
 )
 {
   UNakamaClientUpdateGroup* Action = NewObject<UNakamaClientUpdateGroup>(GetTransientPackage());
@@ -3836,7 +3836,7 @@ UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::Validate
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& Receipt
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidatePurchaseApple* Action = NewObject<UNakamaClientValidatePurchaseApple>(GetTransientPackage());
@@ -3885,7 +3885,7 @@ UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& Receipt
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidateSubscriptionApple* Action = NewObject<UNakamaClientValidateSubscriptionApple>(GetTransientPackage());
@@ -3934,7 +3934,7 @@ UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::Valida
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& Purchase
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidatePurchaseGoogle* Action = NewObject<UNakamaClientValidatePurchaseGoogle>(GetTransientPackage());
@@ -3983,7 +3983,7 @@ UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& Receipt
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidateSubscriptionGoogle* Action = NewObject<UNakamaClientValidateSubscriptionGoogle>(GetTransientPackage());
@@ -4033,7 +4033,7 @@ UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::Valida
   , const FNakamaSession& Session
   , const FString& Purchase
   , const FString& Signature
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidatePurchaseHuawei* Action = NewObject<UNakamaClientValidatePurchaseHuawei>(GetTransientPackage());
@@ -4084,7 +4084,7 @@ UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFaceb
   , FNakamaClientConfig ClientConfig
   , const FNakamaSession& Session
   , const FString& SignedRequest
-  , bool Persist
+  , FNakamaOptionalBool Persist
 )
 {
   UNakamaClientValidatePurchaseFacebookInstant* Action = NewObject<UNakamaClientValidatePurchaseFacebookInstant>(GetTransientPackage());

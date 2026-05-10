@@ -179,11 +179,11 @@ struct NAKAMAAPI_API FNakamaRtChannelJoin
 
   /**  Whether messages sent on this channel should be persistent. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  bool Persistence = false;
+  FNakamaRtOptionalBool Persistence;
 
   /**  Whether the user should appear in the channel's presence list and events. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  bool Hidden = false;
+  FNakamaRtOptionalBool Hidden;
 
   static FNakamaRtChannelJoin FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -223,7 +223,7 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageAck
 
   /**  The code representing a message type or category. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  int32 Code = 0;
+  FNakamaRtOptionalInt32 Code;
 
   /**  Username of the message sender. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -239,7 +239,7 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageAck
 
   /**  True if the message was persisted to the channel's history, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  bool Persistent = false;
+  FNakamaRtOptionalBool Persistent;
 
   /**  The name of the chat room, or an empty string if this message was not sent through a chat room. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -591,7 +591,7 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerAdd
 
   /**  Optional multiple of the count that must be satisfied. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  int32 CountMultiple = 0;
+  FNakamaRtOptionalInt32 CountMultiple;
 
   /**  String properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -1003,7 +1003,7 @@ struct NAKAMAAPI_API FNakamaRtPartyMatchmakerAdd
 
   /**  Optional multiple of the count that must be satisfied. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  int32 CountMultiple = 0;
+  FNakamaRtOptionalInt32 CountMultiple;
 
   /**  String properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")

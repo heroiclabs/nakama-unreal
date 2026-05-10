@@ -673,7 +673,7 @@ public:
     UObject* WorldContextObject
     , FSatoriClientConfig ClientConfig
     , const FSatoriSession& Session
-    , bool Recompute
+    , FSatoriOptionalBool Recompute
     , const TMap<FString, FString>& Default
     , const TMap<FString, FString>& Custom
   );
@@ -683,7 +683,7 @@ public:
 private:
   FSatoriClientConfig StoredClientConfig;
   FSatoriSession StoredSession;
-  bool StoredRecompute;
+  FSatoriOptionalBool StoredRecompute;
   TMap<FString, FString> StoredDefault;
   TMap<FString, FString> StoredCustom;
 };
