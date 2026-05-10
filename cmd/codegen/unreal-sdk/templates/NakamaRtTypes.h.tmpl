@@ -19,6 +19,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NakamaOptionals.h"
 #include "NakamaTypes.h"
 #include "NakamaRtTypes.generated.h"
 
