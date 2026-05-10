@@ -207,6 +207,23 @@ void FNakamaRtChannelSpec::Define()
                     Done.Execute();
                 });
         });
+
+        LatentIt("should join with persistence=false and hidden=false as explicit Optional booleans", [this](const FDoneDelegate& Done)
+        {
+            RtClient = MakeUnique<FNakamaRtClient>(GI);
+            RtClient->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return RtClient->ChannelJoin(GenerateRoomName(), 1, false, false);
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> Resp)
+                {
+                    RT_FAIL_ON_ERROR(Resp, Done);
+                    TestFalse("Channel ID is non-empty", Resp.Data->Id.IsEmpty());
+                    Done.Execute();
+                });
+        });
     });
 
     Describe("SendMessage", [this]()
@@ -761,7 +778,7 @@ void FNakamaRtMatchJoinSpec::Define()
                             });
                     });
 
-                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](auto AddAResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
@@ -772,7 +789,7 @@ void FNakamaRtMatchJoinSpec::Define()
                         FNakamaRtError Err = AddAResp.Error.IsSet() ? *AddAResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Err));
                     }
-                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatchmakerTicket> AddBResp)
                 {

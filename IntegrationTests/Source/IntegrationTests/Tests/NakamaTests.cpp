@@ -2238,6 +2238,44 @@ void FNakamaAsyncFriendsExtSpec::Define()
 				Done.Execute();
 			});
 		});
+
+		LatentIt("should return invited friend when filtering by state 1", [this](const FDoneDelegate& Done)
+		{
+			Nakama::AddFriends(ClientConfig, Session, {FriendUserId}, {}, TEXT(""))
+			.Next([this](const FNakamaVoid&) -> TNakamaFuture<FNakamaFriendListResult>
+			{
+				return Nakama::ListFriends(ClientConfig, Session, {}, FNakamaOptionalInt32(1), TEXT(""));
+			})
+			.Next([this, Done](FNakamaFriendListResult Result)
+			{
+				ASYNC_FAIL_ON_ERROR(Result, Done);
+				TestEqual("state=1 filter returns the invited friend", Result.Value.Friends.Num(), 1);
+				if (Result.Value.Friends.Num() > 0)
+					TestEqual("Returned friend is the invited user", Result.Value.Friends[0].User.Id, FriendUserId);
+				Done.Execute();
+			});
+		});
+
+		LatentIt("should return mutual friend when filtering by state 0", [this](const FDoneDelegate& Done)
+		{
+			Nakama::AddFriends(ClientConfig, Session, {FriendUserId}, {}, TEXT(""))
+			.Next([this](const FNakamaVoid&) -> TNakamaFuture<FNakamaVoidResult>
+			{
+				return Nakama::AddFriends(ClientConfig, FriendSession, {UserId}, {}, TEXT(""));
+			})
+			.Next([this](const FNakamaVoid&) -> TNakamaFuture<FNakamaFriendListResult>
+			{
+				return Nakama::ListFriends(ClientConfig, Session, {}, FNakamaOptionalInt32(0), TEXT(""));
+			})
+			.Next([this, Done](FNakamaFriendListResult Result)
+			{
+				ASYNC_FAIL_ON_ERROR(Result, Done);
+				TestEqual("state=0 filter returns the mutual friend", Result.Value.Friends.Num(), 1);
+				if (Result.Value.Friends.Num() > 0)
+					TestEqual("Returned friend is the mutual user", Result.Value.Friends[0].User.Id, FriendUserId);
+				Done.Execute();
+			});
+		});
 	});
 
 	Describe("AddFriendsByUsername", [this]()
@@ -2642,7 +2680,8 @@ void FNakamaAsyncGroupExtSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Group created", !Result.Value.Id.IsEmpty());
-				TestFalse("Group is closed", Result.Value.Open);
+				TestTrue("Open has value", Result.Value.Open.bIsSet);
+				TestFalse("Group is closed", Result.Value.Open.Value);
 				Done.Execute();
 			});
 		});
@@ -2819,6 +2858,52 @@ void FNakamaAsyncGroupExtSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Found superadmin (creator)", Result.Value.GroupUsers.Num() >= 1);
+				Done.Execute();
+			});
+		});
+
+		LatentIt("should return only superadmin when filtering by state 0", [this](const FDoneDelegate& Done)
+		{
+			TSharedPtr<FString> GroupId = MakeShared<FString>();
+			Nakama::CreateGroup(ClientConfig, Session, FString::Printf(TEXT("StateFilter0_%s"), *GenerateShortId()), TEXT("Test"), TEXT(""), TEXT("en"), true, 100)
+			.Next([this, GroupId](const FNakamaGroup& GroupResult) -> TNakamaFuture<FNakamaVoidResult>
+			{
+				*GroupId = GroupResult.Id;
+				return Nakama::AddGroupUsers(ClientConfig, Session, *GroupId, {MemberUserId});
+			})
+			.Next([this, GroupId](const FNakamaVoid&) -> TNakamaFuture<FNakamaGroupUserListResult>
+			{
+				return Nakama::ListGroupUsers(ClientConfig, Session, *GroupId, 100, FNakamaOptionalInt32(0), TEXT(""));
+			})
+			.Next([this, Done](FNakamaGroupUserListResult Result)
+			{
+				ASYNC_FAIL_ON_ERROR(Result, Done);
+				TestEqual("state=0 filter returns only the superadmin", Result.Value.GroupUsers.Num(), 1);
+				if (Result.Value.GroupUsers.Num() > 0)
+					TestEqual("Returned user is the creator", Result.Value.GroupUsers[0].User.Id, UserId);
+				Done.Execute();
+			});
+		});
+
+		LatentIt("should return only member when filtering by state 2", [this](const FDoneDelegate& Done)
+		{
+			TSharedPtr<FString> GroupId = MakeShared<FString>();
+			Nakama::CreateGroup(ClientConfig, Session, FString::Printf(TEXT("StateFilter2_%s"), *GenerateShortId()), TEXT("Test"), TEXT(""), TEXT("en"), true, 100)
+			.Next([this, GroupId](const FNakamaGroup& GroupResult) -> TNakamaFuture<FNakamaVoidResult>
+			{
+				*GroupId = GroupResult.Id;
+				return Nakama::AddGroupUsers(ClientConfig, Session, *GroupId, {MemberUserId});
+			})
+			.Next([this, GroupId](const FNakamaVoid&) -> TNakamaFuture<FNakamaGroupUserListResult>
+			{
+				return Nakama::ListGroupUsers(ClientConfig, Session, *GroupId, 100, FNakamaOptionalInt32(2), TEXT(""));
+			})
+			.Next([this, Done](FNakamaGroupUserListResult Result)
+			{
+				ASYNC_FAIL_ON_ERROR(Result, Done);
+				TestEqual("state=2 filter returns only the added member", Result.Value.GroupUsers.Num(), 1);
+				if (Result.Value.GroupUsers.Num() > 0)
+					TestEqual("Returned user is the member", Result.Value.GroupUsers[0].User.Id, MemberUserId);
 				Done.Execute();
 			});
 		});
@@ -3698,12 +3783,12 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 
 	Describe("ListFriends.Validation", [this]()
 	{
-		LatentIt("should accept limit zero", [this](const FDoneDelegate& Done)
+		LatentIt("should accept unset limit and state", [this](const FDoneDelegate& Done)
 		{
-			Nakama::ListFriends(ClientConfig, Session, 0, 0, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
+			Nakama::ListFriends(ClientConfig, Session, {}, {}, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
-				TestTrue("ListFriends with limit=0 accepted", true);
+				TestTrue("ListFriends with no limit accepted", true);
 				Done.Execute();
 			});
 		});
@@ -3844,7 +3929,8 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 			.Next([this, Done](FNakamaGroupResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Group is closed", !Result.Value.Open);
+				TestTrue("Open is set", Result.Value.Open.bIsSet);
+				TestFalse("Group is closed", Result.Value.Open.GetValue());
 				Done.Execute();
 			});
 		});

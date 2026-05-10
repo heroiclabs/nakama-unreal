@@ -660,7 +660,7 @@ void FNakamaBPFriendsSpec::Define()
 			// Verify via C++ ListFriends
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
+				NakamaApi::ListFriends(Client, Session, 10, {}, TEXT(""),
 					[this, Done](const FNakamaFriendList& Result)
 					{
 						TestTrue("Friend list is not empty", Result.Friends.Num() > 0);
@@ -686,13 +686,13 @@ void FNakamaBPFriendsSpec::Define()
 				{
 					// Fire BP ListFriends
 					auto* Action = UNakamaClientListFriends::ListFriends(
-						GetTransientPackage(), Client, Session, 10, 0, TEXT(""));
+						GetTransientPackage(), Client, Session, 10, {}, TEXT(""));
 					Action->Activate();
 
 					// Verify via C++
 					VerifyWhenComplete(Action, [this, Done]()
 					{
-						NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
+						NakamaApi::ListFriends(Client, Session, 10, {}, TEXT(""),
 							[this, Done](const FNakamaFriendList& Result)
 							{
 								TestTrue("Friend list has entries", Result.Friends.Num() > 0);
@@ -1006,7 +1006,7 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify: group still exists and is accessible
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
 					{
 						TestTrue("Group still has users after update", Result.GroupUsers.Num() > 0);
@@ -1064,13 +1064,13 @@ void FNakamaBPGroupsSpec::Define()
 		{
 			auto* Action = UNakamaClientListGroups::ListGroups(
 				GetTransientPackage(), Client, Session,
-				TEXT(""), TEXT(""), 100, TEXT(""), 0, true);
+				TEXT(""), TEXT(""), 100, TEXT(""), {}, true);
 			Action->Activate();
 
 			// Verify via C++ ListGroups
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroups(Client, Session, TEXT(""), TEXT(""), 100, TEXT(""), 0, true,
+				NakamaApi::ListGroups(Client, Session, TEXT(""), TEXT(""), 100, TEXT(""), {}, true,
 					[this, Done](const FNakamaGroupList& Result)
 					{
 						TestTrue("Group list has entries", Result.Groups.Num() > 0);
@@ -1098,7 +1098,7 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListGroupUsers
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
 					{
 						TestTrue("Group has at least 2 users", Result.GroupUsers.Num() >= 2);
@@ -1127,7 +1127,7 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListGroupUsers
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
 					{
 						TestTrue("Group has at least 2 users", Result.GroupUsers.Num() >= 2);
@@ -1161,7 +1161,7 @@ void FNakamaBPGroupsSpec::Define()
 					// Verify user2 is no longer in group
 					VerifyWhenComplete(Action, [this, Done]()
 					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
 							{
 								bool Found = false;
@@ -1211,7 +1211,7 @@ void FNakamaBPGroupsSpec::Define()
 					// Verify: user2 is still in group (promotion doesn't remove)
 					VerifyWhenComplete(Action, [this, Done]()
 					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
 							{
 								bool Found = false;
@@ -1259,7 +1259,7 @@ void FNakamaBPGroupsSpec::Define()
 					// Verify user2 no longer in group
 					VerifyWhenComplete(Action, [this, Done]()
 					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
 							{
 								bool Found = false;
@@ -1302,7 +1302,7 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
+				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
 					{
 						TestTrue("Group has at least one user (owner)", Result.GroupUsers.Num() > 0);
