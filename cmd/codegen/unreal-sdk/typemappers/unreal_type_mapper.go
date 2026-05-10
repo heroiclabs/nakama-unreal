@@ -15,7 +15,7 @@ type UnrealTypeMapper struct {
 }
 
 // NewUnrealTypeMapper makes a new UnrealTypeMapper.
-// Supply target system name: Nakama/Satori, etc.
+// Supply target system name: Nakama/NakamaRt/Satori, etc.
 func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 	stringEntry := modules.TypeEntry{
 		Param:         "const FString&",
@@ -225,6 +225,125 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		JsonDeserializeFn: "FDateTime::ParseIso8601",
 	}
 
+	ts := targetSystem
+
+	optionalBoolEntry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalBool",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalBool>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalBool>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalBool>",
+		FieldType:         "F" + ts + "OptionalBool",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalBool>",
+		JsonArrayValue:    "Boolean",
+		QueryFormat:       "%s",
+		QueryValueSetter:  "*LexToString",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetBoolField",
+		JsonGetter:        "GetBoolField",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsBool()",
+	}
+
+	optionalInt32Entry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalInt32",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalInt32>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalInt32>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalInt32>",
+		FieldType:         "F" + ts + "OptionalInt32",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalInt32>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%d",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonCast:          "static_cast<int32>",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
+	optionalUInt32Entry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalInt32",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalInt32>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalInt32>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalInt32>",
+		FieldType:         "F" + ts + "OptionalInt32",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalInt32>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%d",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonCast:          "static_cast<uint32>",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
+	optionalInt64Entry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalInt64",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalInt64>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalInt64>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalInt64>",
+		FieldType:         "F" + ts + "OptionalInt64",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalInt64>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%lld",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonCast:          "static_cast<int64>",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
+	optionalUInt64Entry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalInt64",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalInt64>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalInt64>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalInt64>",
+		FieldType:         "F" + ts + "OptionalInt64",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalInt64>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%lld",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonCast:          "static_cast<uint64>",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
+	optionalFloatEntry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalFloat",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalFloat>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalFloat>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalFloat>",
+		FieldType:         "F" + ts + "OptionalFloat",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalFloat>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%f",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
+	optionalDoubleEntry := modules.TypeEntry{
+		Param:             "F" + ts + "OptionalDouble",
+		RepeatedParam:     "const TArray<F" + ts + "OptionalDouble>&",
+		MapParam:          "const TMap<FString, F" + ts + "OptionalDouble>&",
+		MapType:           "TMap<FString, F" + ts + "OptionalDouble>",
+		FieldType:         "F" + ts + "OptionalDouble",
+		RepeatedFieldType: "TArray<F" + ts + "OptionalDouble>",
+		JsonArrayValue:    "Number",
+		QueryFormat:       "%f",
+		EmptyCheck:        "IsEmpty",
+		JsonSetter:        "SetNumberField",
+		JsonGetter:        "GetNumberField",
+		JsonSerializeFn:   ".GetValue()",
+		JsonToTypeMethod:  "AsNumber()",
+	}
+
 	return &UnrealTypeMapper{
 		targetSystem: targetSystem,
 		entries: map[string]modules.TypeEntry{
@@ -232,28 +351,28 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 			"StringValue": stringEntry,
 
 			"bool":      boolEntry,
-			"BoolValue": boolEntry,
+			"BoolValue": optionalBoolEntry,
 
 			"int":         int32Entry,
 			"int32":       int32Entry,
-			"Int32Value":  int32Entry,
+			"Int32Value":  optionalInt32Entry,
 			"uint32":      uint32Entry,
-			"UInt32Value": uint32Entry,
+			"UInt32Value": optionalUInt32Entry,
 
 			"int64":       int64Entry,
-			"Int64Value":  int64Entry,
+			"Int64Value":  optionalInt64Entry,
 			"uint64":      uint64Entry,
-			"UInt64Value": uint64Entry,
+			"UInt64Value": optionalUInt64Entry,
 
 			"float":       floatEntry,
-			"FloatValue":  floatEntry,
+			"FloatValue":  optionalFloatEntry,
 			"double":      doubleEntry,
-			"DoubleValue": doubleEntry,
+			"DoubleValue": optionalDoubleEntry,
 
 			"bytes":      bytesEntry,
 			"BytesValue": bytesEntry,
 
-			"Timestamp":   timestampEntry,
+			"Timestamp": timestampEntry,
 		},
 	}
 }
@@ -304,7 +423,7 @@ func (r *UnrealTypeMapper) ResolveEntry(intype string) modules.TypeEntry {
 			JsonArrayValue:    "FJsonValueObject",
 			JsonSetter:        "SetObjectField",
 			JsonGetter:        "GetObjectField",
-			JsonSerializeFn:       ".ToJson()",
+			JsonSerializeFn:   ".ToJson()",
 			JsonToTypeMethod:  "AsString()",
 		}
 	}

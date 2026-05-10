@@ -65,14 +65,20 @@ func main() {
 	httpMapper := apimappers.UnrealHttpApiMapper{}
 	rtMapper := apimappers.UnrealRtApiMapper{}
 	bpMapper := apimappers.UnrealBlueprintHttpApiMapper{}
+
 	nakamaTypeMap := typemappers.NewUnrealTypeMapper("Nakama")
 	nakamaRtTypeMap := typemappers.NewUnrealTypeMapper("NakamaRt")
 	satoriTypeMap := typemappers.NewUnrealTypeMapper("Satori")
+
 	funcMap := getFuncMap()
+
+	nakamaApiProtos := []string{"protos/nakama-types.proto", "protos/nakama-api.proto"}
+	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
+	nakamaRtTypesProtos := []string{"protos/realtime.proto"}
+	satoriApiProtos := []string{"protos/satori.proto"}
 
 	//
 	// Nakama HTTP
-	nakamaApiProtos := []string{"protos/nakama-types.proto", "protos/nakama-api.proto"}
 	nakamaHttpRequires, error := modules.MakeProductionRequirements(
 		nakamaApiProtos, httpMapper, nakamaTypeMap, funcMap,
 	)
@@ -80,7 +86,6 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
-	//
 	// Nakama BP
 	nakamaBpHttpRequires, error := modules.MakeProductionRequirements(
 		nakamaApiProtos, bpMapper, nakamaTypeMap, funcMap,
@@ -91,12 +96,14 @@ func main() {
 
 	//
 	// Nakama RT
-	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
-	nakamaRtTypesProtos := []string{"protos/realtime.proto"}
 	nakamaRtApiRequires, error := modules.MakeProductionRequirements(
 		nakamaRtApiProtos, rtMapper, nakamaRtTypeMap, funcMap,
 	)
-	// For type regeneration, do not use the nakama-types; can reuse httpMapper, too.
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
+	// Nakama RT Types — structs only; use nakama-rt types protos + httpMapper
 	nakamaRtTypesRequires, error := modules.MakeProductionRequirements(
 		nakamaRtTypesProtos, httpMapper, nakamaRtTypeMap, funcMap,
 	)
@@ -106,7 +113,6 @@ func main() {
 
 	//
 	// Satori HTTP
-	satoriApiProtos := []string{"protos/satori.proto"}
 	satoriRequires, error := modules.MakeProductionRequirements(
 		satoriApiProtos, httpMapper, satoriTypeMap, funcMap,
 	)
@@ -114,7 +120,6 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
-	//
 	// Satori BP
 	satoriBpRequires, error := modules.MakeProductionRequirements(
 		satoriApiProtos, bpMapper, satoriTypeMap, funcMap,
