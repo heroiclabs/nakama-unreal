@@ -70,6 +70,7 @@ struct NAKAMAAPI_API FNakamaOptionalInt64
 	int64 Value = 0;
 
 	FNakamaOptionalInt64() = default;
+	FNakamaOptionalInt64(int32 InValue) : bIsSet(true), Value(static_cast<int64>(InValue)) {}
 	FNakamaOptionalInt64(int64 InValue) : bIsSet(true), Value(InValue) {}
 	FNakamaOptionalInt64(double InValue) : bIsSet(true), Value(static_cast<int64>(InValue)) {}
 
@@ -117,9 +118,42 @@ struct NAKAMAAPI_API FNakamaOptionalDouble
 	double GetValue() const { return Value; }
 };
 
-using FNakamaRtOptionalBool   = FNakamaOptionalBool;
-using FNakamaRtOptionalInt32  = FNakamaOptionalInt32;
-using FNakamaRtOptionalInt64  = FNakamaOptionalInt64;
-using FNakamaRtOptionalFloat  = FNakamaOptionalFloat;
-using FNakamaRtOptionalDouble = FNakamaOptionalDouble;
+//
+// Aliases for Realtime
+//
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtOptionalBool : public FNakamaOptionalBool
+{
+	GENERATED_BODY()
+	using FNakamaOptionalBool::FNakamaOptionalBool;
+};
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtOptionalInt32 : public FNakamaOptionalInt32
+{
+	GENERATED_BODY()
+	using FNakamaOptionalInt32::FNakamaOptionalInt32;
+};
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtOptionalInt64 : public FNakamaOptionalInt64
+{
+	GENERATED_BODY()
+	using FNakamaOptionalInt64::FNakamaOptionalInt64;
+};
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtOptionalFloat : public FNakamaOptionalFloat
+{
+	GENERATED_BODY()
+	using FNakamaOptionalFloat::FNakamaOptionalFloat;
+};
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRtOptionalDouble : public FNakamaOptionalDouble
+{
+	GENERATED_BODY()
+	using FNakamaOptionalDouble::FNakamaOptionalDouble;
+};
 

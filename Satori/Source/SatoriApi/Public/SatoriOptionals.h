@@ -70,6 +70,7 @@ struct SATORIAPI_API FSatoriOptionalInt64
 	int64 Value = 0;
 
 	FSatoriOptionalInt64() = default;
+	FSatoriOptionalInt64(int32 InValue) : bIsSet(true), Value(static_cast<int64>(InValue)) {}
 	FSatoriOptionalInt64(int64 InValue) : bIsSet(true), Value(InValue) {}
 	FSatoriOptionalInt64(double InValue) : bIsSet(true), Value(static_cast<int64>(InValue)) {}
 
