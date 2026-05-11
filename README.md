@@ -1,6 +1,6 @@
 > [!WARNING]
-> **This version is a frozen 2.* version of the SDK.**
-> It will no longer maintained, except for critical security updates and bug fixes.
+> **This version is a frozen 2.\* version of the SDK.**
+> It will no longer be maintained, except for critical security updates and bug fixes.
 > 
 > **Please switch to version 3 of the SDK.** [Click here](https://github.com/heroiclabs/nakama-unreal).
 
