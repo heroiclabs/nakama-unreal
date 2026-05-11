@@ -1275,7 +1275,6 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   {
     Body->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxCount != 0)
   
   {
     Body->SetNumberField(TEXT("max_count"), MaxCount);
@@ -1356,7 +1355,6 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   {
     Body->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxCount != 0)
   
   {
     Body->SetNumberField(TEXT("max_count"), MaxCount);
@@ -4238,7 +4236,6 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   {
     Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds != 0)
   
   {
     Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
@@ -4328,7 +4325,6 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   {
     Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds != 0)
   
   {
     Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
@@ -8106,7 +8102,6 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   {
     Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds != 0)
   
   {
     Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
@@ -8196,7 +8191,6 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   {
     Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds != 0)
   
   {
     Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);

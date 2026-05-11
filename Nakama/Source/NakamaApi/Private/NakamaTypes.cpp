@@ -155,7 +155,6 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("online"), Online);
   }
-  if (EdgeCount != 0)
   
   {
     Json->SetNumberField(TEXT("edge_count"), EdgeCount);
@@ -643,7 +642,6 @@ TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds != 0)
   
   {
     Json->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
@@ -1697,7 +1695,6 @@ TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), MaxCount);
@@ -2386,12 +2383,10 @@ TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("open"), Open.GetValue());
   }
-  if (EdgeCount != 0)
   
   {
     Json->SetNumberField(TEXT("edge_count"), EdgeCount);
   }
-  if (MaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), MaxCount);
@@ -2752,7 +2747,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (SortOrder != 0)
   
   {
     Json->SetNumberField(TEXT("sort_order"), SortOrder);
@@ -2761,12 +2755,10 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
   }
-  if (PrevReset != 0)
   
   {
     Json->SetNumberField(TEXT("prev_reset"), PrevReset);
   }
-  if (NextReset != 0)
   
   {
     Json->SetNumberField(TEXT("next_reset"), NextReset);
@@ -2907,17 +2899,14 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("username"), Username);
   }
-  if (Score != 0)
   
   {
     Json->SetNumberField(TEXT("score"), Score);
   }
-  if (Subscore != 0)
   
   {
     Json->SetNumberField(TEXT("subscore"), Subscore);
   }
-  if (NumScore != 0)
   
   {
     Json->SetNumberField(TEXT("num_score"), NumScore);
@@ -2938,12 +2927,10 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
   }
-  if (Rank != 0)
   
   {
     Json->SetNumberField(TEXT("rank"), Rank);
   }
-  if (MaxNumScore != 0)
   
   {
     Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
@@ -3032,7 +3019,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
   }
-  if (RankCount != 0)
   
   {
     Json->SetNumberField(TEXT("rank_count"), RankCount);
@@ -3953,12 +3939,10 @@ TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("label"), Label);
   }
-  if (Size != 0)
   
   {
     Json->SetNumberField(TEXT("size"), Size);
   }
-  if (TickRate != 0)
   
   {
     Json->SetNumberField(TEXT("tick_rate"), TickRate);
@@ -4078,7 +4062,6 @@ FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonOb
 TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (TicketCount != 0)
   
   {
     Json->SetNumberField(TEXT("ticket_count"), TicketCount);
@@ -4152,7 +4135,6 @@ TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("content"), Content);
   }
-  if (Code != 0)
   
   {
     Json->SetNumberField(TEXT("code"), Code);
@@ -4497,12 +4479,10 @@ TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("version"), Version);
   }
-  if (PermissionRead != 0)
   
   {
     Json->SetNumberField(TEXT("permission_read"), PermissionRead);
   }
-  if (PermissionWrite != 0)
   
   {
     Json->SetNumberField(TEXT("permission_write"), PermissionWrite);
@@ -4819,27 +4799,22 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("description"), Description);
   }
-  if (Category != 0)
   
   {
     Json->SetNumberField(TEXT("category"), Category);
   }
-  if (SortOrder != 0)
   
   {
     Json->SetNumberField(TEXT("sort_order"), SortOrder);
   }
-  if (Size != 0)
   
   {
     Json->SetNumberField(TEXT("size"), Size);
   }
-  if (MaxSize != 0)
   
   {
     Json->SetNumberField(TEXT("max_size"), MaxSize);
   }
-  if (MaxNumScore != 0)
   
   {
     Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
@@ -4848,12 +4823,10 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("can_enter"), CanEnter);
   }
-  if (EndActive != 0)
   
   {
     Json->SetNumberField(TEXT("end_active"), EndActive);
   }
-  if (NextReset != 0)
   
   {
     Json->SetNumberField(TEXT("next_reset"), NextReset);
@@ -4874,17 +4847,14 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("end_time"), EndTime.ToIso8601());
   }
-  if (Duration != 0)
   
   {
     Json->SetNumberField(TEXT("duration"), Duration);
   }
-  if (StartActive != 0)
   
   {
     Json->SetNumberField(TEXT("start_active"), StartActive);
   }
-  if (PrevReset != 0)
   
   {
     Json->SetNumberField(TEXT("prev_reset"), PrevReset);
@@ -5033,7 +5003,6 @@ TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
   }
-  if (RankCount != 0)
   
   {
     Json->SetNumberField(TEXT("rank_count"), RankCount);
@@ -5926,12 +5895,10 @@ FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FNakamaWriteLeaderboa
 TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Score != 0)
   
   {
     Json->SetNumberField(TEXT("score"), Score);
   }
-  if (Subscore != 0)
   
   {
     Json->SetNumberField(TEXT("subscore"), Subscore);
@@ -6116,12 +6083,10 @@ FNakamaWriteTournamentRecordRequestTournamentRecordWrite FNakamaWriteTournamentR
 TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequestTournamentRecordWrite::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Score != 0)
   
   {
     Json->SetNumberField(TEXT("score"), Score);
   }
-  if (Subscore != 0)
   
   {
     Json->SetNumberField(TEXT("subscore"), Subscore);
@@ -6266,7 +6231,6 @@ TSharedPtr<FJsonObject> FNakamaParty::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("hidden"), Hidden);
   }
-  if (MaxSize != 0)
   
   {
     Json->SetNumberField(TEXT("max_size"), MaxSize);

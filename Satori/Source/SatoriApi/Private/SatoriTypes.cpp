@@ -254,12 +254,10 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("session_id"), SessionId);
   }
-  if (SessionIssuedAt != 0)
   
   {
     Json->SetNumberField(TEXT("session_issued_at"), SessionIssuedAt);
   }
-  if (SessionExpiresAt != 0)
   
   {
     Json->SetNumberField(TEXT("session_expires_at"), SessionExpiresAt);
@@ -632,7 +630,6 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (CreateTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("create_time_sec"), CreateTimeSec);
@@ -934,22 +931,18 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const noexcept
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
-  if (PastRunCount != 0)
   
   {
     Json->SetNumberField(TEXT("past_run_count"), PastRunCount);
   }
-  if (FutureRunCount != 0)
   
   {
     Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
   }
-  if (StartTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
   }
-  if (EndTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
@@ -1026,27 +1019,22 @@ TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("schedule_id"), ScheduleId);
   }
-  if (SendTime != 0)
   
   {
     Json->SetNumberField(TEXT("send_time"), SendTime);
   }
-  if (CreateTime != 0)
   
   {
     Json->SetNumberField(TEXT("create_time"), CreateTime);
   }
-  if (UpdateTime != 0)
   
   {
     Json->SetNumberField(TEXT("update_time"), UpdateTime);
   }
-  if (ReadTime != 0)
   
   {
     Json->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime != 0)
   
   {
     Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
@@ -1116,7 +1104,6 @@ FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TShare
 TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit != 0)
   
   {
     Json->SetNumberField(TEXT("limit"), Limit);
@@ -1377,12 +1364,10 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (ActiveStartTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("active_start_time_sec"), ActiveStartTimeSec);
   }
-  if (ActiveEndTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("active_end_time_sec"), ActiveEndTimeSec);
@@ -1391,17 +1376,14 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (StartTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
   }
-  if (EndTimeSec != 0)
   
   {
     Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
   }
-  if (DurationSec != 0)
   
   {
     Json->SetNumberField(TEXT("duration_sec"), DurationSec);
@@ -1663,12 +1645,10 @@ TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (ReadTime != 0)
   
   {
     Json->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime != 0)
   
   {
     Json->SetNumberField(TEXT("consume_time"), ConsumeTime);

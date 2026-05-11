@@ -933,22 +933,18 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
 	{
     QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
-  if (PastRunCount != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
   }
-  if (FutureRunCount != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
   }
-  if (StartTimeSec != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
   }
-  if (EndTimeSec != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
@@ -1016,22 +1012,18 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
 	{
     QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
-  if (PastRunCount != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
   }
-  if (FutureRunCount != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
   }
-  if (StartTimeSec != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
   }
-  if (EndTimeSec != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
@@ -1779,7 +1771,6 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
@@ -1849,7 +1840,6 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit != 0)
   
   {
     QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
@@ -1929,12 +1919,10 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  if (ReadTime != 0)
   
   {
     Body->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime != 0)
   
   {
     Body->SetNumberField(TEXT("consume_time"), ConsumeTime);
@@ -1993,12 +1981,10 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
   Body = MakeShared<FJsonObject>();
-  if (ReadTime != 0)
   
   {
     Body->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime != 0)
   
   {
     Body->SetNumberField(TEXT("consume_time"), ConsumeTime);

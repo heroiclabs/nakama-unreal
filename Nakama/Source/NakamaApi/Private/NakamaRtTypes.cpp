@@ -202,7 +202,6 @@ TSharedPtr<FJsonObject> FNakamaRtChannelJoin::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("target"), Target);
   }
-  if (Type != 0)
   
   {
     Json->SetNumberField(TEXT("type"), Type);
@@ -593,7 +592,6 @@ FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json) noe
 TSharedPtr<FJsonObject> FNakamaRtError::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Code != 0)
   
   {
     Json->SetNumberField(TEXT("code"), Code);
@@ -679,7 +677,6 @@ TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("label"), Label);
   }
-  if (Size != 0)
   
   {
     Json->SetNumberField(TEXT("size"), Size);
@@ -771,7 +768,6 @@ TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
   }
-  if (OpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
@@ -836,7 +832,6 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  if (OpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
@@ -1064,12 +1059,10 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
 TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (MinCount != 0)
   
   {
     Json->SetNumberField(TEXT("min_count"), MinCount);
   }
-  if (MaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), MaxCount);
@@ -1425,7 +1418,6 @@ TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("hidden"), Hidden);
   }
-  if (MaxSize != 0)
   
   {
     Json->SetNumberField(TEXT("max_size"), MaxSize);
@@ -1488,7 +1480,6 @@ TSharedPtr<FJsonObject> FNakamaRtPartyCreate::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxSize != 0)
   
   {
     Json->SetNumberField(TEXT("max_size"), MaxSize);
@@ -1910,12 +1901,10 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (MinCount != 0)
   
   {
     Json->SetNumberField(TEXT("min_count"), MinCount);
   }
-  if (MaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), MaxCount);
@@ -2057,7 +2046,6 @@ TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const noexcept
   {
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
   }
-  if (OpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
@@ -2099,7 +2087,6 @@ TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (OpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
@@ -2473,7 +2460,6 @@ FNakamaRtStream FNakamaRtStream::FromJson(const TSharedPtr<FJsonObject>& Json) n
 TSharedPtr<FJsonObject> FNakamaRtStream::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Mode != 0)
   
   {
     Json->SetNumberField(TEXT("mode"), Mode);

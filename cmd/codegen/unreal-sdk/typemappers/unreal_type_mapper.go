@@ -67,7 +67,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%d",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
@@ -88,7 +88,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%d",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
@@ -109,7 +109,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%lld",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "int64",
 		RepeatedFieldType: "TArray<int64>",
@@ -130,7 +130,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%lld",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "int64",
 		RepeatedFieldType: "TArray<int64>",
@@ -151,7 +151,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%f",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "float",
 		RepeatedFieldType: "TArray<float>",
@@ -172,7 +172,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Number",
 		QueryFormat:    "%f",
-		EmptyCheck:     "NonZero",
+		EmptyCheck:     "",
 
 		FieldType:         "double",
 		RepeatedFieldType: "TArray<double>",

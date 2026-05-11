@@ -60,7 +60,6 @@ void UNakamaRealtimeClientChannelJoin::Activate()
   {
     Json->SetStringField(TEXT("target"), StoredTarget);
   }
-  if (StoredType != 0)
   
   {
     Json->SetNumberField(TEXT("type"), StoredType);
@@ -506,7 +505,6 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
   {
     Json->SetStringField(TEXT("match_id"), StoredMatchId);
   }
-  if (StoredOpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
@@ -750,12 +748,10 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
   TWeakObjectPtr<UNakamaRealtimeClientMatchmakerAdd> WeakThis(this);
 
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredMinCount != 0)
   
   {
     Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
-  if (StoredMaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
@@ -1285,7 +1281,6 @@ void UNakamaRealtimeClientPartyCreate::Activate()
   {
     Json->SetBoolField(TEXT("open"), StoredOpen);
   }
-  if (StoredMaxSize != 0)
   
   {
     Json->SetNumberField(TEXT("max_size"), StoredMaxSize);
@@ -1858,12 +1853,10 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredMinCount != 0)
   
   {
     Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
-  if (StoredMaxCount != 0)
   
   {
     Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
@@ -2037,7 +2030,6 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredOpCode != 0)
   
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
