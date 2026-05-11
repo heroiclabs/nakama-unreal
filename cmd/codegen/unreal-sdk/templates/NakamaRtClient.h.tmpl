@@ -81,7 +81,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(
       const FNakamaWebSocketConnectionParams& Params
-    ) noexcept;
+    );
 
     {{- range $func := $.Funcs }}
 
@@ -94,7 +94,7 @@ namespace Nakama
       {{- range $idx, $param := $func.Params }}
       {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
       {{- end }}
-    ) noexcept;
+    );
     {{- end }}
 
     // Event callbacks - bind to receive server-pushed events.

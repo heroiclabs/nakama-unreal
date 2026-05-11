@@ -85,8 +85,8 @@ struct NAKAMAAPI_API FNakamaRt{{ $type.Name }}
 
   {{- end }}
 
-  static FNakamaRt{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRt{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 {{- end }}

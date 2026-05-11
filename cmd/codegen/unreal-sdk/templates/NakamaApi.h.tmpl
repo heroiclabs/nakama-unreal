@@ -54,6 +54,6 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   {{ end }}
 }

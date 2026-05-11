@@ -83,10 +83,10 @@ struct NAKAMA_API FNakamaRetryConfig
 namespace Nakama
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
+	NAKAMA_API bool IsTransientError(const FNakamaError& Error);
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept;
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config);
 
   {{- range $func := $.Funcs }}
 
@@ -129,6 +129,6 @@ namespace Nakama
     {{- end }}
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   {{- end }}
 }

@@ -20,7 +20,7 @@
 
 {{- range $type := $.Types }}
 
-FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakama{{ $type.Name }} Result;
   if (!Json.IsValid())
@@ -87,7 +87,7 @@ FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJson
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakama{{ $type.Name }}::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakama{{ $type.Name }}::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   {{- range $member := $type.Members }}

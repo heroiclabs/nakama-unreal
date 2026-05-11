@@ -53,6 +53,6 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   {{ end }}
 }

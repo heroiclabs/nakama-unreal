@@ -35,7 +35,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("{{ $func.Metadata.Endpoint }}");
   // 

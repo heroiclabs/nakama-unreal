@@ -46,7 +46,7 @@ FNakamaRtClient::~FNakamaRtClient()
 
 TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
   const FNakamaWebSocketConnectionParams& Params
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -79,7 +79,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}>> FNakamaRtCl
   {{- range $idx, $param := $func.Params }}
   {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {

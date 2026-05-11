@@ -20,7 +20,7 @@
 
 {{- range $type := $.Types }}
 
-FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FSatori{{ $type.Name }} Result;
   if (!Json.IsValid())
@@ -85,7 +85,7 @@ FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJson
   return Result;
 }
 
-TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const noexcept
+TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   {{- range $member := $type.Members }}

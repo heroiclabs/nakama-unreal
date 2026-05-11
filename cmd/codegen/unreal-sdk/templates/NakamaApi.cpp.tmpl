@@ -35,7 +35,7 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("{{ $func.Metadata.Endpoint }}");
   // 

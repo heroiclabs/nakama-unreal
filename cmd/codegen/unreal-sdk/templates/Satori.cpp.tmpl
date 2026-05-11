@@ -19,7 +19,7 @@
 #include "Satori.h"
 #include "Containers/Ticker.h"
 
-bool Satori::IsTransientError(const FSatoriError& Error) noexcept
+bool Satori::IsTransientError(const FSatoriError& Error)
 {
 	switch (Error.Code)
 	{
@@ -33,7 +33,7 @@ bool Satori::IsTransientError(const FSatoriError& Error) noexcept
 	}
 }
 
-float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config) noexcept
+float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config)
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -50,7 +50,7 @@ void MaybeRefreshThenCall(
   const TSharedRef<TAtomic<bool>>& CancellationToken,
   const TSharedRef<TFunction<void(const FSatoriError&)>>& OnError,
   TFunction<void()> OnReady
-) noexcept
+)
 {
   if (!RetryConfig.bAutoRefreshSession
     || SessionState->RefreshToken.IsEmpty()
@@ -112,7 +112,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::{{ $func.Name }}(
   {{- end }}
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   {{- if ne "" $func.Type }}
 	auto FutureState = MakeShared<TSatoriFuture<{{ $func.Type }}Result>::FState>();
