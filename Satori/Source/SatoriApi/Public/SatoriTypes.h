@@ -83,8 +83,8 @@ struct FSatoriAuthenticateLogoutRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString RefreshToken;
 
-  static FSatoriAuthenticateLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriAuthenticateLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -99,8 +99,8 @@ struct FSatoriAuthenticateRefreshRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString RefreshToken;
 
-  static FSatoriAuthenticateRefreshRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriAuthenticateRefreshRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -127,8 +127,8 @@ struct FSatoriAuthenticateRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Custom;
 
-  static FSatoriAuthenticateRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriAuthenticateRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -143,8 +143,8 @@ struct FSatoriDeleteMessageRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString Id;
 
-  static FSatoriDeleteMessageRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriDeleteMessageRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -191,8 +191,8 @@ struct FSatoriEvent
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Metadata;
 
-  static FSatoriEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -207,8 +207,8 @@ struct FSatoriEventRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FSatoriEvent> Events;
 
-  static FSatoriEventRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriEventRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -239,8 +239,8 @@ struct FSatoriExperiment
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString PhaseVariantName;
 
-  static FSatoriExperiment FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriExperiment FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -255,8 +255,8 @@ struct FSatoriExperimentList
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FSatoriExperiment> Experiments;
 
-  static FSatoriExperimentList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriExperimentList FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -279,8 +279,8 @@ struct FSatoriValueChangeReason
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString VariantName;
 
-  static FSatoriValueChangeReason FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriValueChangeReason FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -311,8 +311,8 @@ struct FSatoriFlag
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> Labels;
 
-  static FSatoriFlag FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriFlag FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -327,8 +327,8 @@ struct FSatoriFlagList
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FSatoriFlag> Flags;
 
-  static FSatoriFlagList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriFlagList FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -359,8 +359,8 @@ struct FSatoriFlagOverrideValue
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   int64 CreateTimeSec = 0;
 
-  static FSatoriFlagOverrideValue FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriFlagOverrideValue FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -383,8 +383,8 @@ struct FSatoriFlagOverride
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> Labels;
 
-  static FSatoriFlagOverride FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriFlagOverride FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -399,8 +399,8 @@ struct FSatoriFlagOverrideList
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FSatoriFlagOverride> Flags;
 
-  static FSatoriFlagOverrideList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriFlagOverrideList FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -419,8 +419,8 @@ struct FSatoriGetExperimentsRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> Labels;
 
-  static FSatoriGetExperimentsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriGetExperimentsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -439,8 +439,8 @@ struct FSatoriGetFlagsRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> Labels;
 
-  static FSatoriGetFlagsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriGetFlagsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -475,8 +475,8 @@ struct FSatoriGetLiveEventsRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   int64 EndTimeSec = 0;
 
-  static FSatoriGetLiveEventsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriGetLiveEventsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -531,8 +531,8 @@ struct FSatoriMessage
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Metadata;
 
-  static FSatoriMessage FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriMessage FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -559,8 +559,8 @@ struct FSatoriGetMessageListRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> MessageIds;
 
-  static FSatoriGetMessageListRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriGetMessageListRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -587,8 +587,8 @@ struct FSatoriGetMessageListResponse
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString CacheableCursor;
 
-  static FSatoriGetMessageListResponse FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriGetMessageListResponse FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -611,8 +611,8 @@ struct FSatoriIdentifyRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Custom;
 
-  static FSatoriIdentifyRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriIdentifyRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -627,8 +627,8 @@ struct FSatoriJoinLiveEventRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   FString Id;
 
-  static FSatoriJoinLiveEventRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriJoinLiveEventRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -687,8 +687,8 @@ struct FSatoriLiveEvent
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FString> Labels;
 
-  static FSatoriLiveEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriLiveEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -707,8 +707,8 @@ struct FSatoriLiveEventList
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TArray<FSatoriLiveEvent> ExplicitJoinLiveEvents;
 
-  static FSatoriLiveEventList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriLiveEventList FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -731,8 +731,8 @@ struct FSatoriProperties
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Custom;
 
-  static FSatoriProperties FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriProperties FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -755,8 +755,8 @@ struct FSatoriUpdatePropertiesRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   TMap<FString, FString> Custom;
 
-  static FSatoriUpdatePropertiesRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriUpdatePropertiesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**
@@ -779,7 +779,7 @@ struct FSatoriUpdateMessageRequest
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
   int64 ConsumeTime = 0;
 
-  static FSatoriUpdateMessageRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FSatoriUpdateMessageRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 

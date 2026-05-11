@@ -56,7 +56,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -77,7 +77,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
@@ -96,7 +96,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete the caller's identity and associated data.
@@ -115,7 +115,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete the caller's identity and associated data.
@@ -134,7 +134,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Publish an event for this session.
@@ -155,7 +155,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Publish an event for this session.
@@ -176,7 +176,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Publish server events for multiple distinct identities.
@@ -197,7 +197,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Publish server events for multiple distinct identities.
@@ -218,7 +218,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get or list all available experiments for this identity.
@@ -241,7 +241,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get or list all available experiments for this identity.
@@ -264,7 +264,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all available flags and their value overrides for this identity.
@@ -287,7 +287,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all available flags and their value overrides for this identity.
@@ -310,7 +310,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all available flags for this identity.
@@ -333,7 +333,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all available flags for this identity.
@@ -356,7 +356,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List available live events.
@@ -387,7 +387,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List available live events.
@@ -418,7 +418,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Join an 'explicit join' live event.
@@ -439,7 +439,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Join an 'explicit join' live event.
@@ -460,7 +460,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A healthcheck which load balancers can use to check the service.
@@ -479,7 +479,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A healthcheck which load balancers can use to check the service.
@@ -498,7 +498,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Enrich/replace the current session with new identifier.
@@ -523,7 +523,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Enrich/replace the current session with new identifier.
@@ -548,7 +548,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List properties associated with this identity.
@@ -567,7 +567,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List properties associated with this identity.
@@ -586,7 +586,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A readycheck which load balancers can use to check the service.
@@ -605,7 +605,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A readycheck which load balancers can use to check the service.
@@ -624,7 +624,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update identity properties.
@@ -649,7 +649,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update identity properties.
@@ -674,7 +674,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get the list of messages for the identity.
@@ -701,7 +701,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get the list of messages for the identity.
@@ -728,7 +728,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Updates a message for an identity.
@@ -753,7 +753,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Updates a message for an identity.
@@ -778,7 +778,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Deletes a message for an identity.
@@ -799,7 +799,7 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Deletes a message for an identity.
@@ -820,6 +820,6 @@ namespace SatoriApi
     TFunction<void(const FSatoriError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
 }

@@ -133,10 +133,10 @@ struct SATORI_API FSatoriRetryConfig
 namespace Satori
 {
   /** Returns true if the error code is considered transient (eligible for retry). */
-  SATORI_API bool IsTransientError(const FSatoriError& Error) noexcept;
+  SATORI_API bool IsTransientError(const FSatoriError& Error);
 
   /** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-  SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config) noexcept;
+  SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config);
 
   /**
   * Authenticate against the server.
@@ -157,7 +157,7 @@ namespace Satori
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -174,7 +174,7 @@ namespace Satori
     const FString& RefreshToken,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
@@ -189,7 +189,7 @@ namespace Satori
     const FString& RefreshToken,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete the caller's identity and associated data.
@@ -204,7 +204,7 @@ namespace Satori
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete the caller's identity and associated data.
@@ -219,7 +219,7 @@ namespace Satori
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Publish an event for this session.
@@ -236,7 +236,7 @@ namespace Satori
     const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Publish an event for this session.
@@ -253,7 +253,7 @@ namespace Satori
     const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Publish server events for multiple distinct identities.
@@ -270,7 +270,7 @@ namespace Satori
     const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Publish server events for multiple distinct identities.
@@ -287,7 +287,7 @@ namespace Satori
     const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get or list all available experiments for this identity.
@@ -306,7 +306,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get or list all available experiments for this identity.
@@ -325,7 +325,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all available flags and their value overrides for this identity.
@@ -344,7 +344,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all available flags and their value overrides for this identity.
@@ -363,7 +363,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all available flags for this identity.
@@ -382,7 +382,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all available flags for this identity.
@@ -401,7 +401,7 @@ namespace Satori
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List available live events.
@@ -428,7 +428,7 @@ namespace Satori
     int64 EndTimeSec,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List available live events.
@@ -455,7 +455,7 @@ namespace Satori
     int64 EndTimeSec,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Join an 'explicit join' live event.
@@ -472,7 +472,7 @@ namespace Satori
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Join an 'explicit join' live event.
@@ -489,7 +489,7 @@ namespace Satori
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A healthcheck which load balancers can use to check the service.
@@ -504,7 +504,7 @@ namespace Satori
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A healthcheck which load balancers can use to check the service.
@@ -519,7 +519,7 @@ namespace Satori
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Enrich/replace the current session with new identifier.
@@ -540,7 +540,7 @@ namespace Satori
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Enrich/replace the current session with new identifier.
@@ -561,7 +561,7 @@ namespace Satori
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List properties associated with this identity.
@@ -576,7 +576,7 @@ namespace Satori
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List properties associated with this identity.
@@ -591,7 +591,7 @@ namespace Satori
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A readycheck which load balancers can use to check the service.
@@ -606,7 +606,7 @@ namespace Satori
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A readycheck which load balancers can use to check the service.
@@ -621,7 +621,7 @@ namespace Satori
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update identity properties.
@@ -642,7 +642,7 @@ namespace Satori
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update identity properties.
@@ -663,7 +663,7 @@ namespace Satori
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get the list of messages for the identity.
@@ -686,7 +686,7 @@ namespace Satori
     const TArray<FString>& MessageIds,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get the list of messages for the identity.
@@ -709,7 +709,7 @@ namespace Satori
     const TArray<FString>& MessageIds,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Updates a message for an identity.
@@ -730,7 +730,7 @@ namespace Satori
     int64 ConsumeTime,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Updates a message for an identity.
@@ -751,7 +751,7 @@ namespace Satori
     int64 ConsumeTime,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Deletes a message for an identity.
@@ -768,7 +768,7 @@ namespace Satori
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Deletes a message for an identity.
@@ -785,5 +785,5 @@ namespace Satori
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 }

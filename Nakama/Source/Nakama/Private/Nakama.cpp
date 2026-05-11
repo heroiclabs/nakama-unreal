@@ -19,7 +19,7 @@
 #include "Nakama.h"
 #include "Containers/Ticker.h"
 
-bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
+bool Nakama::IsTransientError(const FNakamaError& Error)
 {
 	switch (Error.Code)
 	{
@@ -33,7 +33,7 @@ bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
 	}
 }
 
-float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept
+float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config)
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -50,7 +50,7 @@ void MaybeRefreshThenCall(
 	const FNakamaRetryConfig& RetryConfig,
 	const TSharedRef<TAtomic<bool>>& CancellationToken,
 	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
-	TFunction<void()> OnReady) noexcept
+	TFunction<void()> OnReady)
 {
 	if (!RetryConfig.bAutoRefreshSession
 		|| SessionState->RefreshToken.IsEmpty()
@@ -98,7 +98,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
   const FString& Metadata,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -166,7 +166,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
   const FString& Metadata,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -257,7 +257,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -322,7 +322,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -409,7 +409,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -472,7 +472,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
   const FString& RefreshToken,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -537,7 +537,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
   const FString& RefreshToken,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -626,7 +626,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -696,7 +696,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -766,7 +766,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -837,7 +837,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -910,7 +910,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -982,7 +982,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1057,7 +1057,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1137,7 +1137,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1208,7 +1208,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1279,7 +1279,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1344,7 +1344,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -1432,7 +1432,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
   const TArray<FString>& Usernames,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1497,7 +1497,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
   const TArray<FString>& Usernames,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -1589,7 +1589,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
   int32 MaxCount,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1666,7 +1666,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
   int32 MaxCount,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -1764,7 +1764,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
   const FString& HttpKey,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1823,7 +1823,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
   const FNakamaSession& Session,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -1905,7 +1905,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
   const TArray<FString>& Usernames,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -1970,7 +1970,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
   const TArray<FString>& Usernames,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2057,7 +2057,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2119,7 +2119,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2203,7 +2203,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
   const FString& LeaderboardId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2265,7 +2265,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
   const FString& LeaderboardId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2349,7 +2349,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
   const TArray<FString>& Ids,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2411,7 +2411,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
   const TArray<FString>& Ids,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2495,7 +2495,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
   const FString& TournamentId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2557,7 +2557,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
   const FString& TournamentId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2641,7 +2641,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
   const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2703,7 +2703,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
   const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2790,7 +2790,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
   const TMap<FString, FString>& Properties,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -2861,7 +2861,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
   const TMap<FString, FString>& Properties,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -2953,7 +2953,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
   const FString& HttpKey,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaAccountResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3012,7 +3012,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
   const FNakamaSession& Session,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaAccountResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3095,7 +3095,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
   const TArray<FString>& FacebookIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaUsersResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3163,7 +3163,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
   const TArray<FString>& FacebookIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaUsersResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3253,7 +3253,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
   const FString& ProductId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatedSubscriptionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3315,7 +3315,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
   const FString& ProductId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatedSubscriptionResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3398,7 +3398,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
   const FString& HttpKey,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchmakerStatsResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3457,7 +3457,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
   const FNakamaSession& Session,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchmakerStatsResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3537,7 +3537,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
   const FString& HttpKey,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3596,7 +3596,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
   const FNakamaSession& Session,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3679,7 +3679,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3749,7 +3749,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -3843,7 +3843,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -3913,7 +3913,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4005,7 +4005,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4067,7 +4067,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4151,7 +4151,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
   const FString& TournamentId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4213,7 +4213,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
   const FString& TournamentId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4298,7 +4298,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4363,7 +4363,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4450,7 +4450,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4512,7 +4512,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
   const FString& GroupId,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4597,7 +4597,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4662,7 +4662,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4750,7 +4750,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4815,7 +4815,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -4903,7 +4903,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -4968,7 +4968,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5057,7 +5057,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5125,7 +5125,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5217,7 +5217,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5287,7 +5287,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5380,7 +5380,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5445,7 +5445,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5538,7 +5538,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5618,7 +5618,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5721,7 +5721,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5786,7 +5786,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -5875,7 +5875,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -5945,7 +5945,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6040,7 +6040,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaChannelMessageListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6111,7 +6111,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaChannelMessageListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6206,7 +6206,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6274,7 +6274,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6365,7 +6365,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendsOfFriendsListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6430,7 +6430,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendsOfFriendsListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6522,7 +6522,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
   FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6599,7 +6599,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
   FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6701,7 +6701,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupUserListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6772,7 +6772,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupUserListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -6869,7 +6869,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -6943,7 +6943,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7043,7 +7043,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7117,7 +7117,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7218,7 +7218,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
   const FString& Query,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7295,7 +7295,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
   const FString& Query,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7397,7 +7397,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaPartyListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7468,7 +7468,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaPartyListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7562,7 +7562,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
   const FString& CacheableCursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaNotificationListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7627,7 +7627,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
   const FString& CacheableCursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaNotificationListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7717,7 +7717,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7788,7 +7788,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -7882,7 +7882,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSubscriptionListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -7947,7 +7947,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaSubscriptionListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8039,7 +8039,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8116,7 +8116,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8219,7 +8219,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
   FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8293,7 +8293,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
   FNakamaOptionalInt64 Expiry,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8393,7 +8393,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8467,7 +8467,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8566,7 +8566,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaUserGroupListResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8637,7 +8637,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
   const FString& Cursor,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaUserGroupListResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8731,7 +8731,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8796,7 +8796,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -8884,7 +8884,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -8949,7 +8949,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
   const TArray<FString>& UserIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9036,7 +9036,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
   const TArray<FNakamaReadStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectsResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9098,7 +9098,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
   const TArray<FNakamaReadStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectsResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9183,7 +9183,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
   const FString& HttpKey,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaRpcResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9248,7 +9248,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
   const FString& Payload,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaRpcResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9336,7 +9336,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9401,7 +9401,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9489,7 +9489,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9554,7 +9554,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9642,7 +9642,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9707,7 +9707,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9796,7 +9796,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -9864,7 +9864,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -9955,7 +9955,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10020,7 +10020,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10108,7 +10108,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10173,7 +10173,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10266,7 +10266,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10346,7 +10346,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10449,7 +10449,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10514,7 +10514,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10602,7 +10602,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10667,7 +10667,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
   const TMap<FString, FString>& Vars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10759,7 +10759,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
   const FString& Timezone,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -10836,7 +10836,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
   const FString& Timezone,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -10940,7 +10940,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
   FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11017,7 +11017,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
   FNakamaOptionalBool Open,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11117,7 +11117,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11182,7 +11182,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11270,7 +11270,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11335,7 +11335,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11423,7 +11423,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11488,7 +11488,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11576,7 +11576,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11641,7 +11641,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11730,7 +11730,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11798,7 +11798,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -11889,7 +11889,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -11954,7 +11954,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
   FNakamaOptionalBool Persist,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -12045,7 +12045,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
   ENakamaOperator RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -12121,7 +12121,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
   ENakamaOperator RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -12219,7 +12219,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
   const TArray<FNakamaWriteStorageObject>& Objects,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectAcksResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -12281,7 +12281,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
   const TArray<FNakamaWriteStorageObject>& Objects,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectAcksResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);
@@ -12369,7 +12369,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
   ENakamaOperator RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -12445,7 +12445,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
   ENakamaOperator RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
 	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 	auto SessionState = MakeShared<FNakamaSession>(Session);

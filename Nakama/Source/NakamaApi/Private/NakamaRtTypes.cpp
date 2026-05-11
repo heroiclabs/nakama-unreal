@@ -18,7 +18,7 @@
 
 #include "NakamaRtTypes.h"
 
-FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtUserPresence Result;
   if (!Json.IsValid())
@@ -49,7 +49,7 @@ FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObje
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtUserPresence::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtUserPresence::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (UserId.IsEmpty() == false)
@@ -75,7 +75,7 @@ TSharedPtr<FJsonObject> FNakamaRtUserPresence::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannel Result;
   if (!Json.IsValid())
@@ -129,7 +129,7 @@ FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
@@ -168,7 +168,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelJoin FNakamaRtChannelJoin::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelJoin FNakamaRtChannelJoin::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelJoin Result;
   if (!Json.IsValid())
@@ -195,7 +195,7 @@ FNakamaRtChannelJoin FNakamaRtChannelJoin::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelJoin::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelJoin::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Target.IsEmpty() == false)
@@ -217,7 +217,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelJoin::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelLeave FNakamaRtChannelLeave::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelLeave FNakamaRtChannelLeave::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelLeave Result;
   if (!Json.IsValid())
@@ -232,7 +232,7 @@ FNakamaRtChannelLeave FNakamaRtChannelLeave::FromJson(const TSharedPtr<FJsonObje
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelLeave::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelLeave::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -242,7 +242,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelLeave::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelMessageAck FNakamaRtChannelMessageAck::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelMessageAck FNakamaRtChannelMessageAck::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelMessageAck Result;
   if (!Json.IsValid())
@@ -297,7 +297,7 @@ FNakamaRtChannelMessageAck FNakamaRtChannelMessageAck::FromJson(const TSharedPtr
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -347,7 +347,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelMessageSend FNakamaRtChannelMessageSend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelMessageSend FNakamaRtChannelMessageSend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelMessageSend Result;
   if (!Json.IsValid())
@@ -366,7 +366,7 @@ FNakamaRtChannelMessageSend FNakamaRtChannelMessageSend::FromJson(const TSharedP
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelMessageSend::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelMessageSend::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -380,7 +380,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageSend::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelMessageUpdate FNakamaRtChannelMessageUpdate::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelMessageUpdate FNakamaRtChannelMessageUpdate::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelMessageUpdate Result;
   if (!Json.IsValid())
@@ -403,7 +403,7 @@ FNakamaRtChannelMessageUpdate FNakamaRtChannelMessageUpdate::FromJson(const TSha
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelMessageUpdate::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelMessageUpdate::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -421,7 +421,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageUpdate::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelMessageRemove FNakamaRtChannelMessageRemove::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelMessageRemove FNakamaRtChannelMessageRemove::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelMessageRemove Result;
   if (!Json.IsValid())
@@ -440,7 +440,7 @@ FNakamaRtChannelMessageRemove FNakamaRtChannelMessageRemove::FromJson(const TSha
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelMessageRemove::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelMessageRemove::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -454,7 +454,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageRemove::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtChannelPresenceEvent Result;
   if (!Json.IsValid())
@@ -515,7 +515,7 @@ FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSha
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (ChannelId.IsEmpty() == false)
@@ -559,7 +559,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtError Result;
   if (!Json.IsValid())
@@ -589,7 +589,7 @@ FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json) noe
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtError::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtError::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -612,7 +612,7 @@ TSharedPtr<FJsonObject> FNakamaRtError::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatch Result;
   if (!Json.IsValid())
@@ -662,7 +662,7 @@ FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json) noe
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (MatchId.IsEmpty() == false)
@@ -697,7 +697,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchCreate FNakamaRtMatchCreate::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchCreate FNakamaRtMatchCreate::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchCreate Result;
   if (!Json.IsValid())
@@ -712,7 +712,7 @@ FNakamaRtMatchCreate FNakamaRtMatchCreate::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchCreate::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchCreate::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
@@ -722,7 +722,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchCreate::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchData Result;
   if (!Json.IsValid())
@@ -757,7 +757,7 @@ FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& J
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (MatchId.IsEmpty() == false)
@@ -783,7 +783,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchDataSend Result;
   if (!Json.IsValid())
@@ -825,7 +825,7 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (MatchId.IsEmpty() == false)
@@ -856,7 +856,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchJoin Result;
   if (!Json.IsValid())
@@ -886,7 +886,7 @@ FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& J
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Metadata.Num() > 0)
@@ -909,7 +909,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchLeave FNakamaRtMatchLeave::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchLeave FNakamaRtMatchLeave::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchLeave Result;
   if (!Json.IsValid())
@@ -924,7 +924,7 @@ FNakamaRtMatchLeave FNakamaRtMatchLeave::FromJson(const TSharedPtr<FJsonObject>&
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchLeave::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchLeave::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (MatchId.IsEmpty() == false)
@@ -934,7 +934,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchLeave::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchPresenceEvent Result;
   if (!Json.IsValid())
@@ -979,7 +979,7 @@ FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedP
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchPresenceEvent::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchPresenceEvent::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (MatchId.IsEmpty() == false)
@@ -1007,7 +1007,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchPresenceEvent::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchmakerAdd Result;
   if (!Json.IsValid())
@@ -1056,7 +1056,7 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -1096,7 +1096,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchmakerMatchedMatchmakerUser Result;
   if (!Json.IsValid())
@@ -1141,7 +1141,7 @@ FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUse
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatchedMatchmakerUser::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatchedMatchmakerUser::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -1173,7 +1173,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatchedMatchmakerUser::ToJson() const
   return Json;
 }
 
-FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchmakerMatched Result;
   if (!Json.IsValid())
@@ -1219,7 +1219,7 @@ FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Ticket.IsEmpty() == false)
@@ -1250,7 +1250,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchmakerRemove FNakamaRtMatchmakerRemove::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerRemove FNakamaRtMatchmakerRemove::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchmakerRemove Result;
   if (!Json.IsValid())
@@ -1265,7 +1265,7 @@ FNakamaRtMatchmakerRemove FNakamaRtMatchmakerRemove::FromJson(const TSharedPtr<F
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerRemove::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerRemove::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Ticket.IsEmpty() == false)
@@ -1275,7 +1275,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerRemove::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtMatchmakerTicket FNakamaRtMatchmakerTicket::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerTicket FNakamaRtMatchmakerTicket::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtMatchmakerTicket Result;
   if (!Json.IsValid())
@@ -1290,7 +1290,7 @@ FNakamaRtMatchmakerTicket FNakamaRtMatchmakerTicket::FromJson(const TSharedPtr<F
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerTicket::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerTicket::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Ticket.IsEmpty() == false)
@@ -1300,7 +1300,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerTicket::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtNotifications FNakamaRtNotifications::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtNotifications FNakamaRtNotifications::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtNotifications Result;
   if (!Json.IsValid())
@@ -1326,7 +1326,7 @@ FNakamaRtNotifications FNakamaRtNotifications::FromJson(const TSharedPtr<FJsonOb
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtNotifications::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtNotifications::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Notifications.Num() > 0)
@@ -1341,7 +1341,7 @@ TSharedPtr<FJsonObject> FNakamaRtNotifications::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtParty Result;
   if (!Json.IsValid())
@@ -1403,7 +1403,7 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json) noe
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1446,7 +1446,7 @@ TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyCreate FNakamaRtPartyCreate::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyCreate FNakamaRtPartyCreate::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyCreate Result;
   if (!Json.IsValid())
@@ -1473,7 +1473,7 @@ FNakamaRtPartyCreate FNakamaRtPartyCreate::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyCreate::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyCreate::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -1495,7 +1495,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyCreate::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyUpdate FNakamaRtPartyUpdate::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyUpdate FNakamaRtPartyUpdate::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyUpdate Result;
   if (!Json.IsValid())
@@ -1522,7 +1522,7 @@ FNakamaRtPartyUpdate FNakamaRtPartyUpdate::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyUpdate::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyUpdate::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1544,7 +1544,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyUpdate::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyJoin FNakamaRtPartyJoin::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyJoin FNakamaRtPartyJoin::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyJoin Result;
   if (!Json.IsValid())
@@ -1559,7 +1559,7 @@ FNakamaRtPartyJoin FNakamaRtPartyJoin::FromJson(const TSharedPtr<FJsonObject>& J
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyJoin::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyJoin::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1569,7 +1569,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyJoin::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyLeave FNakamaRtPartyLeave::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyLeave FNakamaRtPartyLeave::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyLeave Result;
   if (!Json.IsValid())
@@ -1584,7 +1584,7 @@ FNakamaRtPartyLeave FNakamaRtPartyLeave::FromJson(const TSharedPtr<FJsonObject>&
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyLeave::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyLeave::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1594,7 +1594,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyLeave::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyPromote FNakamaRtPartyPromote::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyPromote FNakamaRtPartyPromote::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyPromote Result;
   if (!Json.IsValid())
@@ -1617,7 +1617,7 @@ FNakamaRtPartyPromote FNakamaRtPartyPromote::FromJson(const TSharedPtr<FJsonObje
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyPromote::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyPromote::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1631,7 +1631,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyPromote::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyLeader FNakamaRtPartyLeader::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyLeader FNakamaRtPartyLeader::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyLeader Result;
   if (!Json.IsValid())
@@ -1654,7 +1654,7 @@ FNakamaRtPartyLeader FNakamaRtPartyLeader::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyLeader::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyLeader::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1668,7 +1668,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyLeader::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyAccept FNakamaRtPartyAccept::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyAccept FNakamaRtPartyAccept::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyAccept Result;
   if (!Json.IsValid())
@@ -1691,7 +1691,7 @@ FNakamaRtPartyAccept FNakamaRtPartyAccept::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyAccept::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyAccept::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1705,7 +1705,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyAccept::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyRemove FNakamaRtPartyRemove::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyRemove FNakamaRtPartyRemove::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyRemove Result;
   if (!Json.IsValid())
@@ -1728,7 +1728,7 @@ FNakamaRtPartyRemove FNakamaRtPartyRemove::FromJson(const TSharedPtr<FJsonObject
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyRemove::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyRemove::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1742,7 +1742,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyRemove::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyClose FNakamaRtPartyClose::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyClose FNakamaRtPartyClose::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyClose Result;
   if (!Json.IsValid())
@@ -1757,7 +1757,7 @@ FNakamaRtPartyClose FNakamaRtPartyClose::FromJson(const TSharedPtr<FJsonObject>&
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyClose::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyClose::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1767,7 +1767,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyClose::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyJoinRequestList FNakamaRtPartyJoinRequestList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyJoinRequestList FNakamaRtPartyJoinRequestList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyJoinRequestList Result;
   if (!Json.IsValid())
@@ -1782,7 +1782,7 @@ FNakamaRtPartyJoinRequestList FNakamaRtPartyJoinRequestList::FromJson(const TSha
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequestList::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequestList::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1792,7 +1792,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequestList::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyJoinRequest FNakamaRtPartyJoinRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyJoinRequest FNakamaRtPartyJoinRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyJoinRequest Result;
   if (!Json.IsValid())
@@ -1822,7 +1822,7 @@ FNakamaRtPartyJoinRequest FNakamaRtPartyJoinRequest::FromJson(const TSharedPtr<F
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequest::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequest::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1841,7 +1841,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequest::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyMatchmakerAdd Result;
   if (!Json.IsValid())
@@ -1894,7 +1894,7 @@ FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedP
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1938,7 +1938,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyMatchmakerRemove FNakamaRtPartyMatchmakerRemove::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyMatchmakerRemove FNakamaRtPartyMatchmakerRemove::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyMatchmakerRemove Result;
   if (!Json.IsValid())
@@ -1957,7 +1957,7 @@ FNakamaRtPartyMatchmakerRemove FNakamaRtPartyMatchmakerRemove::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerRemove::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerRemove::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -1971,7 +1971,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerRemove::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyMatchmakerTicket FNakamaRtPartyMatchmakerTicket::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyMatchmakerTicket FNakamaRtPartyMatchmakerTicket::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyMatchmakerTicket Result;
   if (!Json.IsValid())
@@ -1990,7 +1990,7 @@ FNakamaRtPartyMatchmakerTicket FNakamaRtPartyMatchmakerTicket::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerTicket::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerTicket::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -2004,7 +2004,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerTicket::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyData Result;
   if (!Json.IsValid())
@@ -2035,7 +2035,7 @@ FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& J
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -2057,7 +2057,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyDataSend Result;
   if (!Json.IsValid())
@@ -2080,7 +2080,7 @@ FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonOb
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -2098,7 +2098,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPartyPresenceEvent Result;
   if (!Json.IsValid())
@@ -2143,7 +2143,7 @@ FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedP
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPartyPresenceEvent::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPartyPresenceEvent::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (PartyId.IsEmpty() == false)
@@ -2171,7 +2171,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyPresenceEvent::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtPing FNakamaRtPing::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPing FNakamaRtPing::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPing Result;
   if (!Json.IsValid())
@@ -2182,13 +2182,13 @@ FNakamaRtPing FNakamaRtPing::FromJson(const TSharedPtr<FJsonObject>& Json) noexc
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPing::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPing::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   return Json;
 }
 
-FNakamaRtPong FNakamaRtPong::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtPong FNakamaRtPong::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtPong Result;
   if (!Json.IsValid())
@@ -2199,13 +2199,13 @@ FNakamaRtPong FNakamaRtPong::FromJson(const TSharedPtr<FJsonObject>& Json) noexc
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtPong::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtPong::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   return Json;
 }
 
-FNakamaRtStatus FNakamaRtStatus::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStatus FNakamaRtStatus::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStatus Result;
   if (!Json.IsValid())
@@ -2231,7 +2231,7 @@ FNakamaRtStatus FNakamaRtStatus::FromJson(const TSharedPtr<FJsonObject>& Json) n
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStatus::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStatus::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Presences.Num() > 0)
@@ -2246,7 +2246,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatus::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStatusFollow FNakamaRtStatusFollow::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStatusFollow FNakamaRtStatusFollow::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStatusFollow Result;
   if (!Json.IsValid())
@@ -2279,7 +2279,7 @@ FNakamaRtStatusFollow FNakamaRtStatusFollow::FromJson(const TSharedPtr<FJsonObje
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStatusFollow::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStatusFollow::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (UserIds.Num() > 0)
@@ -2303,7 +2303,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusFollow::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStatusPresenceEvent Result;
   if (!Json.IsValid())
@@ -2344,7 +2344,7 @@ FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TShare
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStatusPresenceEvent::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStatusPresenceEvent::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Joins.Num() > 0)
@@ -2368,7 +2368,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusPresenceEvent::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStatusUnfollow FNakamaRtStatusUnfollow::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStatusUnfollow FNakamaRtStatusUnfollow::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStatusUnfollow Result;
   if (!Json.IsValid())
@@ -2390,7 +2390,7 @@ FNakamaRtStatusUnfollow FNakamaRtStatusUnfollow::FromJson(const TSharedPtr<FJson
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStatusUnfollow::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStatusUnfollow::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (UserIds.Num() > 0)
@@ -2405,7 +2405,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusUnfollow::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStatusUpdate FNakamaRtStatusUpdate::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStatusUpdate FNakamaRtStatusUpdate::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStatusUpdate Result;
   if (!Json.IsValid())
@@ -2420,7 +2420,7 @@ FNakamaRtStatusUpdate FNakamaRtStatusUpdate::FromJson(const TSharedPtr<FJsonObje
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStatusUpdate::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStatusUpdate::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Status.IsEmpty() == false)
@@ -2430,7 +2430,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusUpdate::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStream FNakamaRtStream::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStream FNakamaRtStream::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStream Result;
   if (!Json.IsValid())
@@ -2457,7 +2457,7 @@ FNakamaRtStream FNakamaRtStream::FromJson(const TSharedPtr<FJsonObject>& Json) n
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStream::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStream::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -2479,7 +2479,7 @@ TSharedPtr<FJsonObject> FNakamaRtStream::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStreamData FNakamaRtStreamData::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStreamData FNakamaRtStreamData::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStreamData Result;
   if (!Json.IsValid())
@@ -2514,7 +2514,7 @@ FNakamaRtStreamData FNakamaRtStreamData::FromJson(const TSharedPtr<FJsonObject>&
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStreamData::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStreamData::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   
@@ -2536,7 +2536,7 @@ TSharedPtr<FJsonObject> FNakamaRtStreamData::ToJson() const noexcept
   return Json;
 }
 
-FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRtStreamPresenceEvent Result;
   if (!Json.IsValid())
@@ -2585,7 +2585,7 @@ FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TShare
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtStreamPresenceEvent::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtStreamPresenceEvent::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   

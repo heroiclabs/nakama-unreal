@@ -118,8 +118,8 @@ struct NAKAMAAPI_API FNakamaRtUserPresence
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Status;
 
-  static FNakamaRtUserPresence FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtUserPresence FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -158,8 +158,8 @@ struct NAKAMAAPI_API FNakamaRtChannel
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString UserIdTwo;
 
-  static FNakamaRtChannel FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannel FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -186,8 +186,8 @@ struct NAKAMAAPI_API FNakamaRtChannelJoin
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtOptionalBool Hidden;
 
-  static FNakamaRtChannelJoin FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelJoin FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -202,8 +202,8 @@ struct NAKAMAAPI_API FNakamaRtChannelLeave
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString ChannelId;
 
-  static FNakamaRtChannelLeave FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelLeave FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -258,8 +258,8 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageAck
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString UserIdTwo;
 
-  static FNakamaRtChannelMessageAck FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelMessageAck FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -278,8 +278,8 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageSend
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Content;
 
-  static FNakamaRtChannelMessageSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelMessageSend FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -302,8 +302,8 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageUpdate
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Content;
 
-  static FNakamaRtChannelMessageUpdate FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelMessageUpdate FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -322,8 +322,8 @@ struct NAKAMAAPI_API FNakamaRtChannelMessageRemove
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString MessageId;
 
-  static FNakamaRtChannelMessageRemove FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelMessageRemove FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -362,8 +362,8 @@ struct NAKAMAAPI_API FNakamaRtChannelPresenceEvent
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString UserIdTwo;
 
-  static FNakamaRtChannelPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtChannelPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -386,8 +386,8 @@ struct NAKAMAAPI_API FNakamaRtError
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TMap<FString, FString> Context;
 
-  static FNakamaRtError FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtError FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -422,8 +422,8 @@ struct NAKAMAAPI_API FNakamaRtMatch
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtUserPresence Self_;
 
-  static FNakamaRtMatch FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatch FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -438,8 +438,8 @@ struct NAKAMAAPI_API FNakamaRtMatchCreate
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Name;
 
-  static FNakamaRtMatchCreate FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchCreate FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -470,8 +470,8 @@ struct NAKAMAAPI_API FNakamaRtMatchData
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   bool Reliable = false;
 
-  static FNakamaRtMatchData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchData FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -502,8 +502,8 @@ struct NAKAMAAPI_API FNakamaRtMatchDataSend
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   bool Reliable = false;
 
-  static FNakamaRtMatchDataSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchDataSend FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -526,8 +526,8 @@ struct NAKAMAAPI_API FNakamaRtMatchJoin
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Token;
 
-  static FNakamaRtMatchJoin FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchJoin FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -542,8 +542,8 @@ struct NAKAMAAPI_API FNakamaRtMatchLeave
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString MatchId;
 
-  static FNakamaRtMatchLeave FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchLeave FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -566,8 +566,8 @@ struct NAKAMAAPI_API FNakamaRtMatchPresenceEvent
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Leaves;
 
-  static FNakamaRtMatchPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -602,8 +602,8 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerAdd
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TMap<FString, double> NumericProperties;
 
-  static FNakamaRtMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -630,8 +630,8 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerMatchedMatchmakerUser
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TMap<FString, double> NumericProperties;
 
-  static FNakamaRtMatchmakerMatchedMatchmakerUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchmakerMatchedMatchmakerUser FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -662,8 +662,8 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerMatched
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Token;
 
-  static FNakamaRtMatchmakerMatched FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchmakerMatched FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -678,8 +678,8 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerRemove
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Ticket;
 
-  static FNakamaRtMatchmakerRemove FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchmakerRemove FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -694,8 +694,8 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerTicket
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Ticket;
 
-  static FNakamaRtMatchmakerTicket FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtMatchmakerTicket FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -710,8 +710,8 @@ struct NAKAMAAPI_API FNakamaRtNotifications
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtNotification> Notifications;
 
-  static FNakamaRtNotifications FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtNotifications FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -754,8 +754,8 @@ struct NAKAMAAPI_API FNakamaRtParty
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Label;
 
-  static FNakamaRtParty FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtParty FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -782,8 +782,8 @@ struct NAKAMAAPI_API FNakamaRtPartyCreate
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   bool Hidden = false;
 
-  static FNakamaRtPartyCreate FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyCreate FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -810,8 +810,8 @@ struct NAKAMAAPI_API FNakamaRtPartyUpdate
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   bool Hidden = false;
 
-  static FNakamaRtPartyUpdate FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyUpdate FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -826,8 +826,8 @@ struct NAKAMAAPI_API FNakamaRtPartyJoin
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString PartyId;
 
-  static FNakamaRtPartyJoin FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyJoin FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -842,8 +842,8 @@ struct NAKAMAAPI_API FNakamaRtPartyLeave
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString PartyId;
 
-  static FNakamaRtPartyLeave FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyLeave FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -862,8 +862,8 @@ struct NAKAMAAPI_API FNakamaRtPartyPromote
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtUserPresence Presence;
 
-  static FNakamaRtPartyPromote FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyPromote FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -882,8 +882,8 @@ struct NAKAMAAPI_API FNakamaRtPartyLeader
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtUserPresence Presence;
 
-  static FNakamaRtPartyLeader FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyLeader FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -902,8 +902,8 @@ struct NAKAMAAPI_API FNakamaRtPartyAccept
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtUserPresence Presence;
 
-  static FNakamaRtPartyAccept FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyAccept FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -922,8 +922,8 @@ struct NAKAMAAPI_API FNakamaRtPartyRemove
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FNakamaRtUserPresence Presence;
 
-  static FNakamaRtPartyRemove FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyRemove FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -938,8 +938,8 @@ struct NAKAMAAPI_API FNakamaRtPartyClose
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString PartyId;
 
-  static FNakamaRtPartyClose FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyClose FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -954,8 +954,8 @@ struct NAKAMAAPI_API FNakamaRtPartyJoinRequestList
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString PartyId;
 
-  static FNakamaRtPartyJoinRequestList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyJoinRequestList FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -974,8 +974,8 @@ struct NAKAMAAPI_API FNakamaRtPartyJoinRequest
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Presences;
 
-  static FNakamaRtPartyJoinRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyJoinRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1014,8 +1014,8 @@ struct NAKAMAAPI_API FNakamaRtPartyMatchmakerAdd
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TMap<FString, double> NumericProperties;
 
-  static FNakamaRtPartyMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1034,8 +1034,8 @@ struct NAKAMAAPI_API FNakamaRtPartyMatchmakerRemove
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Ticket;
 
-  static FNakamaRtPartyMatchmakerRemove FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyMatchmakerRemove FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1054,8 +1054,8 @@ struct NAKAMAAPI_API FNakamaRtPartyMatchmakerTicket
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Ticket;
 
-  static FNakamaRtPartyMatchmakerTicket FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyMatchmakerTicket FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1082,8 +1082,8 @@ struct NAKAMAAPI_API FNakamaRtPartyData
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<uint8> Data;
 
-  static FNakamaRtPartyData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyData FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1106,8 +1106,8 @@ struct NAKAMAAPI_API FNakamaRtPartyDataSend
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<uint8> Data;
 
-  static FNakamaRtPartyDataSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyDataSend FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1130,8 +1130,8 @@ struct NAKAMAAPI_API FNakamaRtPartyPresenceEvent
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Leaves;
 
-  static FNakamaRtPartyPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPartyPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1142,8 +1142,8 @@ struct NAKAMAAPI_API FNakamaRtPing
 {
   GENERATED_BODY()
 
-  static FNakamaRtPing FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPing FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1154,8 +1154,8 @@ struct NAKAMAAPI_API FNakamaRtPong
 {
   GENERATED_BODY()
 
-  static FNakamaRtPong FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtPong FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1170,8 +1170,8 @@ struct NAKAMAAPI_API FNakamaRtStatus
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Presences;
 
-  static FNakamaRtStatus FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStatus FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1190,8 +1190,8 @@ struct NAKAMAAPI_API FNakamaRtStatusFollow
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FString> Usernames;
 
-  static FNakamaRtStatusFollow FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStatusFollow FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1210,8 +1210,8 @@ struct NAKAMAAPI_API FNakamaRtStatusPresenceEvent
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Leaves;
 
-  static FNakamaRtStatusPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStatusPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1226,8 +1226,8 @@ struct NAKAMAAPI_API FNakamaRtStatusUnfollow
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FString> UserIds;
 
-  static FNakamaRtStatusUnfollow FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStatusUnfollow FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1242,8 +1242,8 @@ struct NAKAMAAPI_API FNakamaRtStatusUpdate
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Status;
 
-  static FNakamaRtStatusUpdate FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStatusUpdate FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1270,8 +1270,8 @@ struct NAKAMAAPI_API FNakamaRtStream
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   FString Label;
 
-  static FNakamaRtStream FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStream FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1298,8 +1298,8 @@ struct NAKAMAAPI_API FNakamaRtStreamData
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   bool Reliable = false;
 
-  static FNakamaRtStreamData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStreamData FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /*
@@ -1322,6 +1322,6 @@ struct NAKAMAAPI_API FNakamaRtStreamPresenceEvent
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TArray<FNakamaRtUserPresence> Leaves;
 
-  static FNakamaRtStreamPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
+  static FNakamaRtStreamPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
 };

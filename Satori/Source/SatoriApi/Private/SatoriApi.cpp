@@ -36,7 +36,7 @@ SATORIAPI_API void SatoriApi::Authenticate (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/authenticate");
   // 
@@ -113,7 +113,7 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/authenticate/logout");
   // 
@@ -170,7 +170,7 @@ SATORIAPI_API void SatoriApi::AuthenticateRefresh (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/authenticate/refresh");
   // 
@@ -224,7 +224,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/identity");
   // 
@@ -272,7 +272,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/identity");
   // 
@@ -321,7 +321,7 @@ SATORIAPI_API void SatoriApi::Event (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/event");
   // 
@@ -380,7 +380,7 @@ SATORIAPI_API void SatoriApi::Event (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/event");
   // 
@@ -439,7 +439,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/server-event");
   // 
@@ -498,7 +498,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/server-event");
   // 
@@ -558,7 +558,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/experiment");
   // 
@@ -617,7 +617,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/experiment");
   // 
@@ -676,7 +676,7 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/flag/override");
   // 
@@ -735,7 +735,7 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/flag/override");
   // 
@@ -794,7 +794,7 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/flag");
   // 
@@ -853,7 +853,7 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/flag");
   // 
@@ -916,7 +916,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/live-event");
   // 
@@ -995,7 +995,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/live-event");
   // 
@@ -1069,7 +1069,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/live-event/{id}/participation");
   // 
@@ -1120,7 +1120,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/live-event/{id}/participation");
   // 
@@ -1170,7 +1170,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/healthcheck");
   // 
@@ -1218,7 +1218,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/healthcheck");
   // 
@@ -1269,7 +1269,7 @@ SATORIAPI_API void SatoriApi::Identify (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/identify");
   // 
@@ -1344,7 +1344,7 @@ SATORIAPI_API void SatoriApi::Identify (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/identify");
   // 
@@ -1416,7 +1416,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/properties");
   // 
@@ -1465,7 +1465,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/properties");
   // 
@@ -1514,7 +1514,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/readycheck");
   // 
@@ -1562,7 +1562,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/readycheck");
   // 
@@ -1613,7 +1613,7 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/properties");
   // 
@@ -1687,7 +1687,7 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/properties");
   // 
@@ -1762,7 +1762,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message");
   // 
@@ -1831,7 +1831,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message");
   // 
@@ -1899,7 +1899,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message/{id}");
   // 
@@ -1961,7 +1961,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message/{id}");
   // 
@@ -2021,7 +2021,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message/{id}");
   // 
@@ -2072,7 +2072,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
+)
 {
   FString Endpoint = TEXT("/v1/message/{id}");
   // 

@@ -254,10 +254,10 @@ struct NAKAMA_API FNakamaRetryConfig
 namespace Nakama
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
+	NAKAMA_API bool IsTransientError(const FNakamaError& Error);
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept;
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config);
 
   /**
   * Add friends by ID or username to a user's account.
@@ -278,7 +278,7 @@ namespace Nakama
     const FString& Metadata,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add friends by ID or username to a user's account.
@@ -299,7 +299,7 @@ namespace Nakama
     const FString& Metadata,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add users to a group.
@@ -318,7 +318,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add users to a group.
@@ -337,7 +337,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
@@ -354,7 +354,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -373,7 +373,7 @@ namespace Nakama
     const FString& RefreshToken,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -392,7 +392,7 @@ namespace Nakama
     const FString& RefreshToken,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with an Apple ID against the server.
@@ -413,7 +413,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with a custom id against the server.
@@ -434,7 +434,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with a device id against the server.
@@ -455,7 +455,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with an email+password against the server.
@@ -478,7 +478,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with a Facebook OAuth token against the server.
@@ -501,7 +501,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with a Facebook Instant Game token against the server.
@@ -522,7 +522,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with Apple's GameCenter against the server.
@@ -553,7 +553,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with Google against the server.
@@ -574,7 +574,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Authenticate a user with Steam against the server.
@@ -597,7 +597,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Ban a set of users from a group.
@@ -616,7 +616,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Ban a set of users from a group.
@@ -635,7 +635,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Block one or more users by ID or username.
@@ -654,7 +654,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Block one or more users by ID or username.
@@ -673,7 +673,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Create a new group with the current user as the owner.
@@ -700,7 +700,7 @@ namespace Nakama
     int32 MaxCount,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Create a new group with the current user as the owner.
@@ -727,7 +727,7 @@ namespace Nakama
     int32 MaxCount,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete the current user's account.
@@ -742,7 +742,7 @@ namespace Nakama
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete the current user's account.
@@ -757,7 +757,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more users by ID or username.
@@ -776,7 +776,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more users by ID or username.
@@ -795,7 +795,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a group by ID.
@@ -812,7 +812,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a group by ID.
@@ -829,7 +829,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a leaderboard record.
@@ -846,7 +846,7 @@ namespace Nakama
     const FString& LeaderboardId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a leaderboard record.
@@ -863,7 +863,7 @@ namespace Nakama
     const FString& LeaderboardId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more notifications for the current user.
@@ -880,7 +880,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more notifications for the current user.
@@ -897,7 +897,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a tournament record.
@@ -914,7 +914,7 @@ namespace Nakama
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete a tournament record.
@@ -931,7 +931,7 @@ namespace Nakama
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more objects by ID or username.
@@ -948,7 +948,7 @@ namespace Nakama
     const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Delete one or more objects by ID or username.
@@ -965,7 +965,7 @@ namespace Nakama
     const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Submit an event for processing in the server's registered runtime custom events handler.
@@ -988,7 +988,7 @@ namespace Nakama
     const TMap<FString, FString>& Properties,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Submit an event for processing in the server's registered runtime custom events handler.
@@ -1011,7 +1011,7 @@ namespace Nakama
     const TMap<FString, FString>& Properties,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch the current user's account.
@@ -1026,7 +1026,7 @@ namespace Nakama
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch the current user's account.
@@ -1041,7 +1041,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch zero or more users by ID and/or username.
@@ -1062,7 +1062,7 @@ namespace Nakama
     const TArray<FString>& FacebookIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch zero or more users by ID and/or username.
@@ -1083,7 +1083,7 @@ namespace Nakama
     const TArray<FString>& FacebookIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get subscription by product id.
@@ -1100,7 +1100,7 @@ namespace Nakama
     const FString& ProductId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get subscription by product id.
@@ -1117,7 +1117,7 @@ namespace Nakama
     const FString& ProductId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get matchmaker stats.
@@ -1132,7 +1132,7 @@ namespace Nakama
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get matchmaker stats.
@@ -1147,7 +1147,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A healthcheck which load balancers can use to check the service.
@@ -1162,7 +1162,7 @@ namespace Nakama
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * A healthcheck which load balancers can use to check the service.
@@ -1177,7 +1177,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Import Facebook friends and add them to a user's account.
@@ -1198,7 +1198,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Import Facebook friends and add them to a user's account.
@@ -1219,7 +1219,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Import Steam friends and add them to a user's account.
@@ -1240,7 +1240,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Import Steam friends and add them to a user's account.
@@ -1261,7 +1261,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Immediately join an open group, or request to join a closed one.
@@ -1278,7 +1278,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Immediately join an open group, or request to join a closed one.
@@ -1295,7 +1295,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Attempt to join an open and running tournament.
@@ -1312,7 +1312,7 @@ namespace Nakama
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Attempt to join an open and running tournament.
@@ -1329,7 +1329,7 @@ namespace Nakama
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Kick a set of users from a group.
@@ -1348,7 +1348,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Kick a set of users from a group.
@@ -1367,7 +1367,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Leave a group the user is a member of.
@@ -1384,7 +1384,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Leave a group the user is a member of.
@@ -1401,7 +1401,7 @@ namespace Nakama
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add an Apple ID to the social profiles on the current user's account.
@@ -1420,7 +1420,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add an Apple ID to the social profiles on the current user's account.
@@ -1439,7 +1439,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add a custom ID to the social profiles on the current user's account.
@@ -1458,7 +1458,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add a custom ID to the social profiles on the current user's account.
@@ -1477,7 +1477,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add a device ID to the social profiles on the current user's account.
@@ -1496,7 +1496,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add a device ID to the social profiles on the current user's account.
@@ -1515,7 +1515,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add an email+password to the social profiles on the current user's account.
@@ -1536,7 +1536,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add an email+password to the social profiles on the current user's account.
@@ -1557,7 +1557,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Facebook to the social profiles on the current user's account.
@@ -1578,7 +1578,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Facebook to the social profiles on the current user's account.
@@ -1599,7 +1599,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Facebook Instant Game to the social profiles on the current user's account.
@@ -1618,7 +1618,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Facebook Instant Game to the social profiles on the current user's account.
@@ -1637,7 +1637,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Apple's GameCenter to the social profiles on the current user's account.
@@ -1666,7 +1666,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Apple's GameCenter to the social profiles on the current user's account.
@@ -1695,7 +1695,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Google to the social profiles on the current user's account.
@@ -1714,7 +1714,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Google to the social profiles on the current user's account.
@@ -1733,7 +1733,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Steam to the social profiles on the current user's account.
@@ -1754,7 +1754,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Add Steam to the social profiles on the current user's account.
@@ -1775,7 +1775,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List a channel's message history.
@@ -1798,7 +1798,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List a channel's message history.
@@ -1821,7 +1821,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all friends for the current user.
@@ -1842,7 +1842,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all friends for the current user.
@@ -1863,7 +1863,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List friends of friends for the current user.
@@ -1882,7 +1882,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List friends of friends for the current user.
@@ -1901,7 +1901,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List groups based on given filters.
@@ -1928,7 +1928,7 @@ namespace Nakama
     FNakamaOptionalBool Open,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List groups based on given filters.
@@ -1955,7 +1955,7 @@ namespace Nakama
     FNakamaOptionalBool Open,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all users that are part of a group.
@@ -1978,7 +1978,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List all users that are part of a group.
@@ -2001,7 +2001,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List leaderboard records.
@@ -2026,7 +2026,7 @@ namespace Nakama
     FNakamaOptionalInt64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List leaderboard records.
@@ -2051,7 +2051,7 @@ namespace Nakama
     FNakamaOptionalInt64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List leaderboard records around the target ownerId.
@@ -2076,7 +2076,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List leaderboard records around the target ownerId.
@@ -2101,7 +2101,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List running matches and optionally filter by matching criteria.
@@ -2128,7 +2128,7 @@ namespace Nakama
     const FString& Query,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List running matches and optionally filter by matching criteria.
@@ -2155,7 +2155,7 @@ namespace Nakama
     const FString& Query,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List parties and optionally filter by matching criteria.
@@ -2178,7 +2178,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List parties and optionally filter by matching criteria.
@@ -2201,7 +2201,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch list of notifications.
@@ -2220,7 +2220,7 @@ namespace Nakama
     const FString& CacheableCursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Fetch list of notifications.
@@ -2239,7 +2239,7 @@ namespace Nakama
     const FString& CacheableCursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List publicly readable storage objects in a given collection.
@@ -2262,7 +2262,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List publicly readable storage objects in a given collection.
@@ -2285,7 +2285,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List user's subscriptions.
@@ -2304,7 +2304,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List user's subscriptions.
@@ -2323,7 +2323,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List current or upcoming tournaments.
@@ -2350,7 +2350,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List current or upcoming tournaments.
@@ -2377,7 +2377,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List tournament records.
@@ -2402,7 +2402,7 @@ namespace Nakama
     FNakamaOptionalInt64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List tournament records.
@@ -2427,7 +2427,7 @@ namespace Nakama
     FNakamaOptionalInt64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List tournament records for a given owner.
@@ -2452,7 +2452,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List tournament records for a given owner.
@@ -2477,7 +2477,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List groups the current user belongs to.
@@ -2500,7 +2500,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * List groups the current user belongs to.
@@ -2523,7 +2523,7 @@ namespace Nakama
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Promote a set of users in a group to the next role up.
@@ -2542,7 +2542,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Promote a set of users in a group to the next role up.
@@ -2561,7 +2561,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Demote a set of users in a group to the next role down.
@@ -2580,7 +2580,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Demote a set of users in a group to the next role down.
@@ -2599,7 +2599,7 @@ namespace Nakama
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get storage objects.
@@ -2616,7 +2616,7 @@ namespace Nakama
     const TArray<FNakamaReadStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Get storage objects.
@@ -2633,7 +2633,7 @@ namespace Nakama
     const TArray<FNakamaReadStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Execute a Lua function on the server.
@@ -2652,7 +2652,7 @@ namespace Nakama
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Execute a Lua function on the server.
@@ -2671,7 +2671,7 @@ namespace Nakama
     const FString& Payload,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the Apple ID from the social profiles on the current user's account.
@@ -2690,7 +2690,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the Apple ID from the social profiles on the current user's account.
@@ -2709,7 +2709,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the custom ID from the social profiles on the current user's account.
@@ -2728,7 +2728,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the custom ID from the social profiles on the current user's account.
@@ -2747,7 +2747,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the device ID from the social profiles on the current user's account.
@@ -2766,7 +2766,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the device ID from the social profiles on the current user's account.
@@ -2785,7 +2785,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the email+password from the social profiles on the current user's account.
@@ -2806,7 +2806,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove the email+password from the social profiles on the current user's account.
@@ -2827,7 +2827,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Facebook from the social profiles on the current user's account.
@@ -2846,7 +2846,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Facebook from the social profiles on the current user's account.
@@ -2865,7 +2865,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
@@ -2884,7 +2884,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
@@ -2903,7 +2903,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Apple's GameCenter from the social profiles on the current user's account.
@@ -2932,7 +2932,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Apple's GameCenter from the social profiles on the current user's account.
@@ -2961,7 +2961,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Google from the social profiles on the current user's account.
@@ -2980,7 +2980,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Google from the social profiles on the current user's account.
@@ -2999,7 +2999,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Steam from the social profiles on the current user's account.
@@ -3018,7 +3018,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Remove Steam from the social profiles on the current user's account.
@@ -3037,7 +3037,7 @@ namespace Nakama
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update fields in the current user's account.
@@ -3064,7 +3064,7 @@ namespace Nakama
     const FString& Timezone,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update fields in the current user's account.
@@ -3091,7 +3091,7 @@ namespace Nakama
     const FString& Timezone,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update fields in a given group.
@@ -3118,7 +3118,7 @@ namespace Nakama
     FNakamaOptionalBool Open,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Update fields in a given group.
@@ -3145,7 +3145,7 @@ namespace Nakama
     FNakamaOptionalBool Open,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Apple IAP Receipt
@@ -3164,7 +3164,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Apple IAP Receipt
@@ -3183,7 +3183,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Apple Subscription Receipt
@@ -3202,7 +3202,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Apple Subscription Receipt
@@ -3221,7 +3221,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Google IAP Receipt
@@ -3240,7 +3240,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Google IAP Receipt
@@ -3259,7 +3259,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Google Subscription Receipt
@@ -3278,7 +3278,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Google Subscription Receipt
@@ -3297,7 +3297,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Huawei IAP Receipt
@@ -3318,7 +3318,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate Huawei IAP Receipt
@@ -3339,7 +3339,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate FB Instant IAP Receipt
@@ -3358,7 +3358,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Validate FB Instant IAP Receipt
@@ -3377,7 +3377,7 @@ namespace Nakama
     FNakamaOptionalBool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write a record to a leaderboard.
@@ -3402,7 +3402,7 @@ namespace Nakama
     ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write a record to a leaderboard.
@@ -3427,7 +3427,7 @@ namespace Nakama
     ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write objects into the storage engine.
@@ -3444,7 +3444,7 @@ namespace Nakama
     const TArray<FNakamaWriteStorageObject>& Objects,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write objects into the storage engine.
@@ -3461,7 +3461,7 @@ namespace Nakama
     const TArray<FNakamaWriteStorageObject>& Objects,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write a record to a tournament.
@@ -3486,7 +3486,7 @@ namespace Nakama
     ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 
   /**
   * Write a record to a tournament.
@@ -3511,5 +3511,5 @@ namespace Nakama
     ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
 }

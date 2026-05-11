@@ -57,7 +57,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add friends by ID or username to a user's account.
@@ -82,7 +82,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add users to a group.
@@ -105,7 +105,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add users to a group.
@@ -128,7 +128,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
@@ -149,7 +149,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -172,7 +172,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -195,7 +195,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with an Apple ID against the server.
@@ -218,7 +218,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with a custom id against the server.
@@ -241,7 +241,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with a device id against the server.
@@ -264,7 +264,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with an email+password against the server.
@@ -287,7 +287,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with a Facebook OAuth token against the server.
@@ -312,7 +312,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with a Facebook Instant Game token against the server.
@@ -335,7 +335,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with Apple's GameCenter against the server.
@@ -358,7 +358,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with Google against the server.
@@ -381,7 +381,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Authenticate a user with Steam against the server.
@@ -406,7 +406,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Ban a set of users from a group.
@@ -429,7 +429,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Ban a set of users from a group.
@@ -452,7 +452,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Block one or more users by ID or username.
@@ -475,7 +475,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Block one or more users by ID or username.
@@ -498,7 +498,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Create a new group with the current user as the owner.
@@ -529,7 +529,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Create a new group with the current user as the owner.
@@ -560,7 +560,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete the current user's account.
@@ -579,7 +579,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete the current user's account.
@@ -598,7 +598,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more users by ID or username.
@@ -621,7 +621,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more users by ID or username.
@@ -644,7 +644,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a group by ID.
@@ -665,7 +665,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a group by ID.
@@ -686,7 +686,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a leaderboard record.
@@ -707,7 +707,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a leaderboard record.
@@ -728,7 +728,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more notifications for the current user.
@@ -749,7 +749,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more notifications for the current user.
@@ -770,7 +770,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a tournament record.
@@ -791,7 +791,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete a tournament record.
@@ -812,7 +812,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more objects by ID or username.
@@ -833,7 +833,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Delete one or more objects by ID or username.
@@ -854,7 +854,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Submit an event for processing in the server's registered runtime custom events handler.
@@ -881,7 +881,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Submit an event for processing in the server's registered runtime custom events handler.
@@ -908,7 +908,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch the current user's account.
@@ -927,7 +927,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch the current user's account.
@@ -946,7 +946,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch zero or more users by ID and/or username.
@@ -971,7 +971,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch zero or more users by ID and/or username.
@@ -996,7 +996,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get subscription by product id.
@@ -1017,7 +1017,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get subscription by product id.
@@ -1038,7 +1038,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get matchmaker stats.
@@ -1057,7 +1057,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get matchmaker stats.
@@ -1076,7 +1076,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A healthcheck which load balancers can use to check the service.
@@ -1095,7 +1095,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * A healthcheck which load balancers can use to check the service.
@@ -1114,7 +1114,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Import Facebook friends and add them to a user's account.
@@ -1137,7 +1137,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Import Facebook friends and add them to a user's account.
@@ -1160,7 +1160,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Import Steam friends and add them to a user's account.
@@ -1183,7 +1183,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Import Steam friends and add them to a user's account.
@@ -1206,7 +1206,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Immediately join an open group, or request to join a closed one.
@@ -1227,7 +1227,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Immediately join an open group, or request to join a closed one.
@@ -1248,7 +1248,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Attempt to join an open and running tournament.
@@ -1269,7 +1269,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Attempt to join an open and running tournament.
@@ -1290,7 +1290,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Kick a set of users from a group.
@@ -1313,7 +1313,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Kick a set of users from a group.
@@ -1336,7 +1336,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Leave a group the user is a member of.
@@ -1357,7 +1357,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Leave a group the user is a member of.
@@ -1378,7 +1378,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add an Apple ID to the social profiles on the current user's account.
@@ -1401,7 +1401,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add an Apple ID to the social profiles on the current user's account.
@@ -1424,7 +1424,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add a custom ID to the social profiles on the current user's account.
@@ -1447,7 +1447,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add a custom ID to the social profiles on the current user's account.
@@ -1470,7 +1470,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add a device ID to the social profiles on the current user's account.
@@ -1493,7 +1493,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add a device ID to the social profiles on the current user's account.
@@ -1516,7 +1516,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add an email+password to the social profiles on the current user's account.
@@ -1541,7 +1541,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add an email+password to the social profiles on the current user's account.
@@ -1566,7 +1566,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Facebook to the social profiles on the current user's account.
@@ -1589,7 +1589,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Facebook to the social profiles on the current user's account.
@@ -1612,7 +1612,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Facebook Instant Game to the social profiles on the current user's account.
@@ -1635,7 +1635,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Facebook Instant Game to the social profiles on the current user's account.
@@ -1658,7 +1658,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Apple's GameCenter to the social profiles on the current user's account.
@@ -1691,7 +1691,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Apple's GameCenter to the social profiles on the current user's account.
@@ -1724,7 +1724,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Google to the social profiles on the current user's account.
@@ -1747,7 +1747,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Google to the social profiles on the current user's account.
@@ -1770,7 +1770,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Steam to the social profiles on the current user's account.
@@ -1793,7 +1793,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Add Steam to the social profiles on the current user's account.
@@ -1816,7 +1816,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List a channel's message history.
@@ -1843,7 +1843,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List a channel's message history.
@@ -1870,7 +1870,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all friends for the current user.
@@ -1895,7 +1895,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all friends for the current user.
@@ -1920,7 +1920,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List friends of friends for the current user.
@@ -1943,7 +1943,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List friends of friends for the current user.
@@ -1966,7 +1966,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List groups based on given filters.
@@ -1997,7 +1997,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List groups based on given filters.
@@ -2028,7 +2028,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all users that are part of a group.
@@ -2055,7 +2055,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List all users that are part of a group.
@@ -2082,7 +2082,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List leaderboard records.
@@ -2111,7 +2111,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List leaderboard records.
@@ -2140,7 +2140,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List leaderboard records around the target ownerId.
@@ -2169,7 +2169,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List leaderboard records around the target ownerId.
@@ -2198,7 +2198,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List running matches and optionally filter by matching criteria.
@@ -2229,7 +2229,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List running matches and optionally filter by matching criteria.
@@ -2260,7 +2260,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List parties and optionally filter by matching criteria.
@@ -2287,7 +2287,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List parties and optionally filter by matching criteria.
@@ -2314,7 +2314,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch list of notifications.
@@ -2337,7 +2337,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Fetch list of notifications.
@@ -2360,7 +2360,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List publicly readable storage objects in a given collection.
@@ -2387,7 +2387,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List publicly readable storage objects in a given collection.
@@ -2414,7 +2414,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List user's subscriptions.
@@ -2437,7 +2437,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List user's subscriptions.
@@ -2460,7 +2460,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List current or upcoming tournaments.
@@ -2491,7 +2491,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List current or upcoming tournaments.
@@ -2522,7 +2522,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List tournament records.
@@ -2551,7 +2551,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List tournament records.
@@ -2580,7 +2580,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List tournament records for a given owner.
@@ -2609,7 +2609,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List tournament records for a given owner.
@@ -2638,7 +2638,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List groups the current user belongs to.
@@ -2665,7 +2665,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * List groups the current user belongs to.
@@ -2692,7 +2692,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Promote a set of users in a group to the next role up.
@@ -2715,7 +2715,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Promote a set of users in a group to the next role up.
@@ -2738,7 +2738,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Demote a set of users in a group to the next role down.
@@ -2761,7 +2761,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Demote a set of users in a group to the next role down.
@@ -2784,7 +2784,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get storage objects.
@@ -2805,7 +2805,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Get storage objects.
@@ -2826,7 +2826,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Execute a Lua function on the server.
@@ -2849,7 +2849,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Execute a Lua function on the server.
@@ -2872,7 +2872,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the Apple ID from the social profiles on the current user's account.
@@ -2895,7 +2895,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the Apple ID from the social profiles on the current user's account.
@@ -2918,7 +2918,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the custom ID from the social profiles on the current user's account.
@@ -2941,7 +2941,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the custom ID from the social profiles on the current user's account.
@@ -2964,7 +2964,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the device ID from the social profiles on the current user's account.
@@ -2987,7 +2987,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the device ID from the social profiles on the current user's account.
@@ -3010,7 +3010,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the email+password from the social profiles on the current user's account.
@@ -3035,7 +3035,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove the email+password from the social profiles on the current user's account.
@@ -3060,7 +3060,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Facebook from the social profiles on the current user's account.
@@ -3083,7 +3083,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Facebook from the social profiles on the current user's account.
@@ -3106,7 +3106,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
@@ -3129,7 +3129,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
@@ -3152,7 +3152,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Apple's GameCenter from the social profiles on the current user's account.
@@ -3185,7 +3185,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Apple's GameCenter from the social profiles on the current user's account.
@@ -3218,7 +3218,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Google from the social profiles on the current user's account.
@@ -3241,7 +3241,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Google from the social profiles on the current user's account.
@@ -3264,7 +3264,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Steam from the social profiles on the current user's account.
@@ -3287,7 +3287,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Remove Steam from the social profiles on the current user's account.
@@ -3310,7 +3310,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update fields in the current user's account.
@@ -3341,7 +3341,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update fields in the current user's account.
@@ -3372,7 +3372,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update fields in a given group.
@@ -3403,7 +3403,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Update fields in a given group.
@@ -3434,7 +3434,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Apple IAP Receipt
@@ -3457,7 +3457,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Apple IAP Receipt
@@ -3480,7 +3480,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Apple Subscription Receipt
@@ -3503,7 +3503,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Apple Subscription Receipt
@@ -3526,7 +3526,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Google IAP Receipt
@@ -3549,7 +3549,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Google IAP Receipt
@@ -3572,7 +3572,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Google Subscription Receipt
@@ -3595,7 +3595,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Google Subscription Receipt
@@ -3618,7 +3618,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Huawei IAP Receipt
@@ -3643,7 +3643,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate Huawei IAP Receipt
@@ -3668,7 +3668,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate FB Instant IAP Receipt
@@ -3691,7 +3691,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Validate FB Instant IAP Receipt
@@ -3714,7 +3714,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write a record to a leaderboard.
@@ -3737,7 +3737,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write a record to a leaderboard.
@@ -3760,7 +3760,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write objects into the storage engine.
@@ -3781,7 +3781,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write objects into the storage engine.
@@ -3802,7 +3802,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write a record to a tournament.
@@ -3825,7 +3825,7 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
   /*
   * Write a record to a tournament.
@@ -3848,6 +3848,6 @@ namespace NakamaApi
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
+  );
   
 }

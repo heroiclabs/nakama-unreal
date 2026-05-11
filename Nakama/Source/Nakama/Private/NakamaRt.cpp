@@ -46,7 +46,7 @@ FNakamaRtClient::~FNakamaRtClient()
 
 TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
   const FNakamaWebSocketConnectionParams& Params
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -135,7 +135,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
   , int32 Type
   , FNakamaRtOptionalBool Persistence
   , FNakamaRtOptionalBool Hidden
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -199,7 +199,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelLeave(
   const FString& ChannelId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -257,7 +257,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelL
 TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::ChannelMessageSend(
   const FString& ChannelId
   , const FString& Content
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -321,7 +321,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
   const FString& ChannelId
   , const FString& MessageId
   , const FString& Content
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -385,7 +385,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::ChannelMessageRemove(
   const FString& ChannelId
   , const FString& MessageId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -447,7 +447,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchCreate(
   const FString& Name
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -512,7 +512,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDat
   , const TArray<uint8>& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -575,7 +575,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
   const FString& MatchId
   , const FString& Token
   , const TMap<FString, FString>& Metadata
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -638,7 +638,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchLeave(
   const FString& MatchId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -700,7 +700,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
   , FNakamaRtOptionalInt32 CountMultiple
   , const TMap<FString, FString>& StringProperties
   , const TMap<FString, double>& NumericProperties
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -766,7 +766,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchmakerRemove(
   const FString& Ticket
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -825,7 +825,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
   const FString& Id
   , const FString& Payload
   , const FString& HttpKey
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -889,7 +889,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
 TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
   const TArray<FString>& UserIds
   , const TArray<FString>& Usernames
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -951,7 +951,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUnfollow(
   const TArray<FString>& UserIds
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1008,7 +1008,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUn
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUpdate(
   const FString& Status
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1064,7 +1064,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUp
 }
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> FNakamaRtClient::Ping(
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1127,7 +1127,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
   , int32 MaxSize
   , const FString& Label
   , bool Hidden
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1191,7 +1191,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoin(
   const FString& PartyId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1248,7 +1248,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoi
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLeave(
   const FString& PartyId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1306,7 +1306,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLea
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPromote(
   const FString& PartyId
   , const FNakamaRtUserPresence& Presence
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1365,7 +1365,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPro
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAccept(
   const FString& PartyId
   , const FNakamaRtUserPresence& Presence
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1424,7 +1424,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAcc
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRemove(
   const FString& PartyId
   , const FNakamaRtUserPresence& Presence
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1482,7 +1482,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRem
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClose(
   const FString& PartyId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1539,7 +1539,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClo
 
 TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> FNakamaRtClient::PartyJoinRequestList(
   const FString& PartyId
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1606,7 +1606,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
   , FNakamaRtOptionalInt32 CountMultiple
   , const TMap<FString, FString>& StringProperties
   , const TMap<FString, double>& NumericProperties
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1674,7 +1674,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
 TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyMatchmakerRemove(
   const FString& PartyId
   , const FString& Ticket
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1734,7 +1734,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDat
   const FString& PartyId
   , int64 OpCode
   , const TArray<uint8>& Data
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {
@@ -1796,7 +1796,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyUpd
   , const FString& Label
   , bool Open
   , bool Hidden
-) noexcept
+)
 {
   if (!WebSocketSubsystem.IsValid())
   {

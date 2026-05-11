@@ -91,7 +91,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(
       const FNakamaWebSocketConnectionParams& Params
-    ) noexcept;
+    );
 
     /*
     *  Join a realtime chat channel.
@@ -106,7 +106,7 @@ namespace Nakama
       , int32 Type
       , FNakamaRtOptionalBool Persistence
       , FNakamaRtOptionalBool Hidden
-    ) noexcept;
+    );
 
     /*
     *  Leave a realtime chat channel.
@@ -115,7 +115,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> ChannelLeave(
       const FString& ChannelId
-    ) noexcept;
+    );
 
     /*
     *  Send a message to a realtime chat channel.
@@ -126,7 +126,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageSend(
       const FString& ChannelId
       , const FString& Content
-    ) noexcept;
+    );
 
     /*
     *  Update a message previously sent to a realtime chat channel.
@@ -139,7 +139,7 @@ namespace Nakama
       const FString& ChannelId
       , const FString& MessageId
       , const FString& Content
-    ) noexcept;
+    );
 
     /*
     *  Remove a message previously sent to a realtime chat channel.
@@ -150,7 +150,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageRemove(
       const FString& ChannelId
       , const FString& MessageId
-    ) noexcept;
+    );
 
     /*
     *  A client to server request to create a realtime match.
@@ -159,7 +159,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchCreate(
       const FString& Name
-    ) noexcept;
+    );
 
     /*
     *  A client to server request to send data to a realtime match.
@@ -176,7 +176,7 @@ namespace Nakama
       , const TArray<uint8>& Data
       , const TArray<FNakamaRtUserPresence>& Presences
       , bool Reliable
-    ) noexcept;
+    );
 
     /*
     *  A client to server request to join a realtime match.
@@ -189,7 +189,7 @@ namespace Nakama
       const FString& MatchId
       , const FString& Token
       , const TMap<FString, FString>& Metadata
-    ) noexcept;
+    );
 
     /*
     *  A client to server request to leave a realtime match.
@@ -198,7 +198,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchLeave(
       const FString& MatchId
-    ) noexcept;
+    );
 
     /*
     *  Submit a new matchmaking process request.
@@ -217,7 +217,7 @@ namespace Nakama
       , FNakamaRtOptionalInt32 CountMultiple
       , const TMap<FString, FString>& StringProperties
       , const TMap<FString, double>& NumericProperties
-    ) noexcept;
+    );
 
     /*
     *  Cancel a matchmaking process using a ticket.
@@ -226,7 +226,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchmakerRemove(
       const FString& Ticket
-    ) noexcept;
+    );
 
     /*
     *  RPC call or response.
@@ -239,7 +239,7 @@ namespace Nakama
       const FString& Id
       , const FString& Payload
       , const FString& HttpKey
-    ) noexcept;
+    );
 
     /*
     *  Start following some set of users to receive their status updates.
@@ -250,7 +250,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> StatusFollow(
       const TArray<FString>& UserIds
       , const TArray<FString>& Usernames
-    ) noexcept;
+    );
 
     /*
     *  Stop following some set of users to no longer receive their status updates.
@@ -259,7 +259,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUnfollow(
       const TArray<FString>& UserIds
-    ) noexcept;
+    );
 
     /*
     *  Set the user's own status.
@@ -268,14 +268,14 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUpdate(
       const FString& Status
-    ) noexcept;
+    );
 
     /*
     *  Application-level heartbeat and connection check.
     *
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> Ping(
-    ) noexcept;
+    );
 
     /*
     *  Create a party.
@@ -290,7 +290,7 @@ namespace Nakama
       , int32 MaxSize
       , const FString& Label
       , bool Hidden
-    ) noexcept;
+    );
 
     /*
     *  Join a party, or request to join if the party is not open.
@@ -299,7 +299,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyJoin(
       const FString& PartyId
-    ) noexcept;
+    );
 
     /*
     *  Leave a party.
@@ -308,7 +308,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyLeave(
       const FString& PartyId
-    ) noexcept;
+    );
 
     /*
     *  Promote a new party leader.
@@ -319,7 +319,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyPromote(
       const FString& PartyId
       , const FNakamaRtUserPresence& Presence
-    ) noexcept;
+    );
 
     /*
     *  Accept a request to join.
@@ -330,7 +330,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyAccept(
       const FString& PartyId
       , const FNakamaRtUserPresence& Presence
-    ) noexcept;
+    );
 
     /*
     *  Kick a party member, or decline a request to join.
@@ -341,7 +341,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyRemove(
       const FString& PartyId
       , const FNakamaRtUserPresence& Presence
-    ) noexcept;
+    );
 
     /*
     *  End a party, kicking all party members and closing it.
@@ -350,7 +350,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyClose(
       const FString& PartyId
-    ) noexcept;
+    );
 
     /*
     *  Request a list of pending join requests for a party.
@@ -359,7 +359,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> PartyJoinRequestList(
       const FString& PartyId
-    ) noexcept;
+    );
 
     /*
     *  Begin matchmaking as a party.
@@ -380,7 +380,7 @@ namespace Nakama
       , FNakamaRtOptionalInt32 CountMultiple
       , const TMap<FString, FString>& StringProperties
       , const TMap<FString, double>& NumericProperties
-    ) noexcept;
+    );
 
     /*
     *  Cancel a party matchmaking process using a ticket.
@@ -391,7 +391,7 @@ namespace Nakama
     NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyMatchmakerRemove(
       const FString& PartyId
       , const FString& Ticket
-    ) noexcept;
+    );
 
     /*
     *  A client to server request to send data to a party.
@@ -404,7 +404,7 @@ namespace Nakama
       const FString& PartyId
       , int64 OpCode
       , const TArray<uint8>& Data
-    ) noexcept;
+    );
 
     /*
     *  Update Party label and whether it's open or closed.
@@ -419,7 +419,7 @@ namespace Nakama
       , const FString& Label
       , bool Open
       , bool Hidden
-    ) noexcept;
+    );
 
     // Event callbacks - bind to receive server-pushed events.
     FDelegateOnChannelMessage OnChannelMessage;
