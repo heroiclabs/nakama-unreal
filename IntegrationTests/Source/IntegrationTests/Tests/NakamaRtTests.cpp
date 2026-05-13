@@ -1,12 +1,12 @@
 /**
- * FNakamaRtClient Integration Test Suite
+ * NakamaRt Integration Test Suite
  *
- * Tests the typed FNakamaRtClient API layer: ChannelJoin, MatchCreate,
+ * Tests the typed NakamaRt namespace API layer: ChannelJoin, MatchCreate,
  * MatchmakerAdd, StatusUpdate, PartyCreate, and Ping.
  *
- * Each spec creates an isolated UGameInstance (via Init()) so the
- * UNakamaWebSocketSubsystem is fresh per test, matching the isolation strategy
- * used in NakamaWebSocketSubsystemTests.cpp.
+ * Each spec creates an isolated FNakamaRtConnection so the connection is
+ * fresh per test, matching the isolation strategy used in
+ * NakamaWebSocketSubsystemTests.cpp.
  *
  * Requires a running Nakama server (IntegrationTests/server/docker-compose.yml).
  *
@@ -18,12 +18,12 @@
 #include "Misc/Guid.h"
 #include "Nakama.h"
 #include "NakamaRt.h"
-#include "NakamaWebSocketSubsystem.h"
+#include "NakamaRtConnection.h"
+#include "NakamaRtProxy.h"
 #include "WebSocketsModule.h"
-#include "Engine/Engine.h"
-#include "Engine/GameInstance.h"
 
 using namespace Nakama;
+using namespace NakamaRt;
 
 // ---------------------------------------------------------------------------
 // Shared constants and helpers (file-local)
@@ -46,21 +46,13 @@ namespace
         return P;
     }
 
-    /** Create a UGameInstance with a fully-initialised subsystem collection.
-     *
-     *  Calling Init() triggers SubsystemCollection.Initialize(), which
-     *  auto-discovers and registers UNakamaWebSocketSubsystem (and any other
-     *  UGameInstanceSubsystem subclasses).  The caller must AddToRoot() the
-     *  returned instance and call Shutdown() + RemoveFromRoot() after use. */
-    UGameInstance* CreateTestGameInstance()
+    /** Ensure the WebSockets module is loaded before creating connections. */
+    void EnsureWebSocketsLoaded()
     {
         if (!FModuleManager::Get().IsModuleLoaded(TEXT("WebSockets")))
         {
             FModuleManager::Get().LoadModule(TEXT("WebSockets"));
         }
-        UGameInstance* GI = NewObject<UGameInstance>(GetTransientPackage());
-        GI->Init();
-        return GI;
     }
 }
 
@@ -85,8 +77,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtPingSpec, "IntegrationTests.NakamaRt.Ping",
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
@@ -97,8 +88,8 @@ void FNakamaRtPingSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -114,8 +105,7 @@ void FNakamaRtPingSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -125,12 +115,11 @@ void FNakamaRtPingSpec::Define()
     {
         LatentIt("should complete a round-trip status update", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->StatusUpdate(TEXT(""));
+                    return NakamaRt::StatusUpdate(Connection, TEXT(""));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -150,8 +139,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtChannelSpec, "IntegrationTests.NakamaRt.Channel",
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId()       { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
     FString GenerateRoomName() { return TEXT("rt-test-") + FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
@@ -163,8 +151,8 @@ void FNakamaRtChannelSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -180,8 +168,7 @@ void FNakamaRtChannelSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -193,12 +180,11 @@ void FNakamaRtChannelSpec::Define()
     {
         LatentIt("should join a room channel and receive a channel ID", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, false, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, false, false);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> Resp)
                 {
@@ -210,12 +196,11 @@ void FNakamaRtChannelSpec::Define()
 
         LatentIt("should join with persistence=false and hidden=false as explicit Optional booleans", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, false, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, false, false);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> Resp)
                 {
@@ -230,12 +215,11 @@ void FNakamaRtChannelSpec::Define()
     {
         LatentIt("should send a message and receive an ack with a message_id", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, true, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, true, false);
                 })
                 .Next([this, Done](auto JoinResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>
                 {
@@ -247,7 +231,7 @@ void FNakamaRtChannelSpec::Define()
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Err));
                     }
                     TestFalse("Channel ID from join", JoinResp.Data->Id.IsEmpty());
-                    return RtClient->ChannelMessageSend(JoinResp.Data->Id, TEXT("{\"msg\":\"hello\"}"));
+                    return NakamaRt::ChannelMessageSend(Connection, JoinResp.Data->Id, TEXT("{\"msg\":\"hello\"}"));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
@@ -262,12 +246,11 @@ void FNakamaRtChannelSpec::Define()
     {
         LatentIt("should update a sent message without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, true, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, true, false);
                 })
                 .Next([this, Done](auto JoinResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>
                 {
@@ -278,7 +261,7 @@ void FNakamaRtChannelSpec::Define()
                         FNakamaRtError Err = JoinResp.Error.IsSet() ? *JoinResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Err));
                     }
-                    return RtClient->ChannelMessageSend(JoinResp.Data->Id, TEXT("{\"msg\":\"original\"}"));
+                    return NakamaRt::ChannelMessageSend(Connection, JoinResp.Data->Id, TEXT("{\"msg\":\"original\"}"));
                 })
                 .Next([this, Done](auto SendResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>
                 {
@@ -290,7 +273,7 @@ void FNakamaRtChannelSpec::Define()
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Err));
                     }
                     TestFalse("Message ID before update", SendResp.Data->MessageId.IsEmpty());
-                    return RtClient->ChannelMessageUpdate(SendResp.Data->ChannelId, SendResp.Data->MessageId, TEXT("{\"msg\":\"updated\"}"));
+                    return NakamaRt::ChannelMessageUpdate(Connection, SendResp.Data->ChannelId, SendResp.Data->MessageId, TEXT("{\"msg\":\"updated\"}"));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
@@ -304,12 +287,11 @@ void FNakamaRtChannelSpec::Define()
     {
         LatentIt("should remove a sent message without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, true, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, true, false);
                 })
                 .Next([this, Done](auto JoinResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>
                 {
@@ -320,7 +302,7 @@ void FNakamaRtChannelSpec::Define()
                         FNakamaRtError Err = JoinResp.Error.IsSet() ? *JoinResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Err));
                     }
-                    return RtClient->ChannelMessageSend(JoinResp.Data->Id, TEXT("{\"msg\":\"to delete\"}"));
+                    return NakamaRt::ChannelMessageSend(Connection, JoinResp.Data->Id, TEXT("{\"msg\":\"to delete\"}"));
                 })
                 .Next([this, Done](auto SendResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>>
                 {
@@ -331,7 +313,7 @@ void FNakamaRtChannelSpec::Define()
                         FNakamaRtError Err = SendResp.Error.IsSet() ? *SendResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Err));
                     }
-                    return RtClient->ChannelMessageRemove(SendResp.Data->ChannelId, SendResp.Data->MessageId);
+                    return NakamaRt::ChannelMessageRemove(Connection, SendResp.Data->ChannelId, SendResp.Data->MessageId);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
                 {
@@ -345,12 +327,11 @@ void FNakamaRtChannelSpec::Define()
     {
         LatentIt("should leave a channel without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(GenerateRoomName(), 1, false, false);
+                    return NakamaRt::ChannelJoin(Connection, GenerateRoomName(), 1, false, false);
                 })
                 .Next([this, Done](auto JoinResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
@@ -361,7 +342,7 @@ void FNakamaRtChannelSpec::Define()
                         FNakamaRtError Err = JoinResp.Error.IsSet() ? *JoinResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Err));
                     }
-                    return RtClient->ChannelLeave(JoinResp.Data->Id);
+                    return NakamaRt::ChannelLeave(Connection, JoinResp.Data->Id);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -381,8 +362,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtMatchSpec, "IntegrationTests.NakamaRt.Match",
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
@@ -393,8 +373,8 @@ void FNakamaRtMatchSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -410,8 +390,7 @@ void FNakamaRtMatchSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -423,12 +402,11 @@ void FNakamaRtMatchSpec::Define()
     {
         LatentIt("should create a relayed match and receive a match_id", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> Resp)
                 {
@@ -443,12 +421,11 @@ void FNakamaRtMatchSpec::Define()
     {
         LatentIt("should leave a match without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](auto CreateResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
@@ -460,7 +437,7 @@ void FNakamaRtMatchSpec::Define()
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Err));
                     }
                     TestFalse("Match ID before leave", CreateResp.Data->MatchId.IsEmpty());
-                    return RtClient->MatchLeave(CreateResp.Data->MatchId);
+                    return NakamaRt::MatchLeave(Connection, CreateResp.Data->MatchId);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -474,18 +451,17 @@ void FNakamaRtMatchSpec::Define()
     {
         LatentIt("should send match data without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> CreateResp)
                 {
                     RT_FAIL_ON_ERROR(CreateResp, Done);
                     // MatchDataSend is fire-and-forget — the server sends no response.
-                    RtClient->MatchDataSend(CreateResp.Data->MatchId, 1, TArray<uint8>{0x48, 0x65, 0x6C, 0x6C, 0x6F}, {}, true);
+                    NakamaRt::MatchDataSend(Connection, CreateResp.Data->MatchId, 1, TArray<uint8>{0x48, 0x65, 0x6C, 0x6C, 0x6F}, {}, true);
                     Done.Execute();
                 });
         });
@@ -501,8 +477,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtMatchmakerSpec, "IntegrationTests.NakamaRt.Matchmaker
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
@@ -513,8 +488,8 @@ void FNakamaRtMatchmakerSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -530,8 +505,7 @@ void FNakamaRtMatchmakerSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -543,12 +517,11 @@ void FNakamaRtMatchmakerSpec::Define()
     {
         LatentIt("should add to matchmaker and receive a ticket", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 2, {}, {});
+                    return NakamaRt::MatchmakerAdd(Connection, 2, 4, TEXT("*"), 2, {}, {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatchmakerTicket> Resp)
                 {
@@ -563,12 +536,11 @@ void FNakamaRtMatchmakerSpec::Define()
     {
         LatentIt("should cancel matchmaking with the returned ticket", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 2, {}, {});
+                    return NakamaRt::MatchmakerAdd(Connection, 2, 4, TEXT("*"), 2, {}, {});
                 })
                 .Next([this, Done](auto AddResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
@@ -580,7 +552,7 @@ void FNakamaRtMatchmakerSpec::Define()
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Err));
                     }
                     TestFalse("Ticket before remove", AddResp.Data->Ticket.IsEmpty());
-                    return RtClient->MatchmakerRemove(AddResp.Data->Ticket);
+                    return NakamaRt::MatchmakerRemove(Connection, AddResp.Data->Ticket);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -602,13 +574,15 @@ BEGIN_DEFINE_SPEC(FNakamaRtMatchJoinSpec, "IntegrationTests.NakamaRt.MatchJoin",
 
     // Client A — set up by BeforeEach
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     // Client B — set up inline per test
     FNakamaSession      Session2;
-    UGameInstance*      GI2     = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient2;
+    TSharedPtr<FNakamaRtConnection> Connection2;
+
+    // Proxies for event-based tests
+    UNakamaRtProxy* Proxy  = nullptr;
+    UNakamaRtProxy* Proxy2 = nullptr;
 
     // Shared state threaded through the JoinByMatchId chain via a member
     FString PendingMatchId;
@@ -625,8 +599,8 @@ void FNakamaRtMatchJoinSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig     = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI               = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection       = MakeShared<FNakamaRtConnection>();
         PendingMatchId   = TEXT("");
         MatchJoinedCount = 0;
     });
@@ -644,10 +618,10 @@ void FNakamaRtMatchJoinSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        RtClient2.Reset();
-        if (GI)  { GI->Shutdown();  GI->RemoveFromRoot();  GI  = nullptr; }
-        if (GI2) { GI2->Shutdown(); GI2->RemoveFromRoot(); GI2 = nullptr; }
+        if (Connection)  { Connection->Close();  Connection.Reset();  }
+        if (Connection2) { Connection2->Close(); Connection2.Reset(); }
+        if (Proxy)  { Proxy->RemoveFromRoot();  Proxy  = nullptr; }
+        if (Proxy2) { Proxy2->RemoveFromRoot(); Proxy2 = nullptr; }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session)
@@ -668,12 +642,11 @@ void FNakamaRtMatchJoinSpec::Define()
         {
             // Chain: Connect A → Create Match → Auth B → Connect B → MatchJoin(match_id)
             // PendingMatchId threads the match_id through the chain via spec member state.
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](auto CreateResult) -> TNakamaFuture<FNakamaSessionResult>
                 {
@@ -698,15 +671,13 @@ void FNakamaRtMatchJoinSpec::Define()
                         return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{});
                     }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient2->MatchJoin(PendingMatchId, TEXT(""), {});
+                    return NakamaRt::MatchJoin(Connection2, PendingMatchId, TEXT(""), {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
@@ -732,25 +703,29 @@ void FNakamaRtMatchJoinSpec::Define()
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    RtClient = MakeUnique<FNakamaRtClient>(GI);
-                    return RtClient->Connect(MakeConnParams(Session));
+                    Proxy2 = NewObject<UNakamaRtProxy>();
+                    Proxy2->AddToRoot();
+                    SetupRtEventHandlers(Connection2, Proxy2);
+                    return Connection->Connect(MakeConnParams(Session));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR1) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
                     TestFalse("Connect A", CR1.ErrorCode != ENakamaWebSocketError::None);
 
+                    Proxy = NewObject<UNakamaRtProxy>();
+                    Proxy->AddToRoot();
+                    SetupRtEventHandlers(Connection, Proxy);
+
                     // Set up typed event callbacks before adding to the matchmaker queue.
-                    RtClient->OnMatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    Proxy->OnMatchmakerMatchedNative.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
-                        RtClient->MatchJoin(TEXT(""), Matched.Token, {})
+                        NakamaRt::MatchJoin(Connection, TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                             {
                                 if (!JoinResult.bIsSuccess)
@@ -763,9 +738,9 @@ void FNakamaRtMatchJoinSpec::Define()
                             });
                     });
 
-                    RtClient2->OnMatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    Proxy2->OnMatchmakerMatchedNative.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
-                        RtClient2->MatchJoin(TEXT(""), Matched.Token, {})
+                        NakamaRt::MatchJoin(Connection2, TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                             {
                                 if (!JoinResult.bIsSuccess)
@@ -778,7 +753,7 @@ void FNakamaRtMatchJoinSpec::Define()
                             });
                     });
 
-                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
+                    return NakamaRt::MatchmakerAdd(Connection, 2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](auto AddAResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
@@ -789,7 +764,7 @@ void FNakamaRtMatchJoinSpec::Define()
                         FNakamaRtError Err = AddAResp.Error.IsSet() ? *AddAResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Err));
                     }
-                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
+                    return NakamaRt::MatchmakerAdd(Connection2, 2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatchmakerTicket> AddBResp)
                 {
@@ -816,12 +791,12 @@ BEGIN_DEFINE_SPEC(FNakamaRtEventSpec, "IntegrationTests.NakamaRt.Events",
     FNakamaClientConfig ClientConfig;
 
     FNakamaSession Session;
-    UGameInstance* GI       = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
+    UNakamaRtProxy* Proxy = nullptr;
 
     FNakamaSession Session2;
-    UGameInstance* GI2      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient2;
+    TSharedPtr<FNakamaRtConnection> Connection2;
+    UNakamaRtProxy* Proxy2 = nullptr;
 
     // Threaded through chains when two-step setup needs to pass an ID between lambdas.
     FString PendingId;
@@ -836,8 +811,8 @@ void FNakamaRtEventSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
         PendingId = TEXT("");
     });
 
@@ -854,10 +829,10 @@ void FNakamaRtEventSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        RtClient2.Reset();
-        if (GI)  { GI->Shutdown();  GI->RemoveFromRoot();  GI  = nullptr; }
-        if (GI2) { GI2->Shutdown(); GI2->RemoveFromRoot(); GI2 = nullptr; }
+        if (Connection)  { Connection->Close();  Connection.Reset();  }
+        if (Connection2) { Connection2->Close(); Connection2.Reset(); }
+        if (Proxy)  { Proxy->RemoveFromRoot();  Proxy  = nullptr; }
+        if (Proxy2) { Proxy2->RemoveFromRoot(); Proxy2 = nullptr; }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session)
@@ -879,12 +854,11 @@ void FNakamaRtEventSpec::Define()
             // Client A creates a match and registers OnMatchPresenceEvent.
             // Client B authenticates, connects, and joins the same match.
             // Done fires when Client A's callback delivers a non-empty joins list.
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](auto CreateResult) -> TNakamaFuture<FNakamaSessionResult>
                 {
@@ -895,7 +869,11 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchPresenceEvent.AddLambda([this, Done](const FNakamaRtMatchPresenceEvent& Event)
+                    Proxy = NewObject<UNakamaRtProxy>();
+                    Proxy->AddToRoot();
+                    SetupRtEventHandlers(Connection, Proxy);
+
+                    Proxy->OnMatchPresenceEventNative.AddLambda([this, Done](const FNakamaRtMatchPresenceEvent& Event)
                     {
                         TestEqual("Presence event match_id", Event.MatchId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
@@ -908,15 +886,13 @@ void FNakamaRtEventSpec::Define()
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient2->MatchJoin(PendingId, TEXT(""), {});
+                    return NakamaRt::MatchJoin(Connection2, PendingId, TEXT(""), {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
@@ -939,12 +915,11 @@ void FNakamaRtEventSpec::Define()
             // Done fires when Client A's callback delivers the expected opcode.
             static constexpr int64 TestOpCode = 42;
 
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](auto CreateResult) -> TNakamaFuture<FNakamaSessionResult>
                 {
@@ -955,7 +930,11 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
+                    Proxy = NewObject<UNakamaRtProxy>();
+                    Proxy->AddToRoot();
+                    SetupRtEventHandlers(Connection, Proxy);
+
+                    Proxy->OnMatchDataNative.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
@@ -968,15 +947,13 @@ void FNakamaRtEventSpec::Define()
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient2->MatchJoin(PendingId, TEXT(""), {});
+                    return NakamaRt::MatchJoin(Connection2, PendingId, TEXT(""), {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
@@ -987,7 +964,7 @@ void FNakamaRtEventSpec::Define()
                         return;
                     }
                     // Client B sends data; Client A will receive it via OnMatchData.
-                    RtClient2->MatchDataSend(PendingId, TestOpCode, TArray<uint8>{'h','e','l','l','o'}, {}, true);
+                    NakamaRt::MatchDataSend(Connection2, PendingId, TestOpCode, TArray<uint8>{'h','e','l','l','o'}, {}, true);
                 });
         });
 
@@ -999,12 +976,11 @@ void FNakamaRtEventSpec::Define()
             static constexpr int64 TestOpCode = 43;
             static const TArray<uint8> TestPayload = {0x01, 0x02, 0x03};
 
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchCreate(TEXT(""));
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
                 })
                 .Next([this, Done](auto CreateResult) -> TNakamaFuture<FNakamaSessionResult>
                 {
@@ -1015,7 +991,11 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    RtClient->OnMatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
+                    Proxy = NewObject<UNakamaRtProxy>();
+                    Proxy->AddToRoot();
+                    SetupRtEventHandlers(Connection, Proxy);
+
+                    Proxy->OnMatchDataNative.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
@@ -1029,15 +1009,13 @@ void FNakamaRtEventSpec::Define()
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient2->MatchJoin(PendingId, TEXT(""), {});
+                    return NakamaRt::MatchJoin(Connection2, PendingId, TEXT(""), {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
                 {
@@ -1047,7 +1025,7 @@ void FNakamaRtEventSpec::Define()
                         Done.Execute();
                         return;
                     }
-                    RtClient2->MatchDataSend(PendingId, TestOpCode, TestPayload, {}, true);
+                    NakamaRt::MatchDataSend(Connection2, PendingId, TestOpCode, TestPayload, {}, true);
                 });
         });
     });
@@ -1061,12 +1039,11 @@ void FNakamaRtEventSpec::Define()
             // Done fires when Client A's callback delivers a non-empty joins list.
             FString RoomName = GenerateRoomName();
 
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this, RoomName](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->ChannelJoin(RoomName, 1, false, false);
+                    return NakamaRt::ChannelJoin(Connection, RoomName, 1, false, false);
                 })
                 .Next([this, Done](auto JoinResult) -> TNakamaFuture<FNakamaSessionResult>
                 {
@@ -1077,7 +1054,11 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = JoinResult.Data->Id;
 
-                    RtClient->OnChannelPresenceEvent.AddLambda([this, Done](const FNakamaRtChannelPresenceEvent& Event)
+                    Proxy = NewObject<UNakamaRtProxy>();
+                    Proxy->AddToRoot();
+                    SetupRtEventHandlers(Connection, Proxy);
+
+                    Proxy->OnChannelPresenceEventNative.AddLambda([this, Done](const FNakamaRtChannelPresenceEvent& Event)
                     {
                         TestEqual("Presence event channel_id", Event.ChannelId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
@@ -1090,15 +1071,13 @@ void FNakamaRtEventSpec::Define()
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
                     Session2 = R2.Value;
-                    GI2 = CreateTestGameInstance();
-                    GI2->AddToRoot();
-                    RtClient2 = MakeUnique<FNakamaRtClient>(GI2);
-                    return RtClient2->Connect(MakeConnParams(Session2));
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
                 })
                 .Next([this, Done, RoomName](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient2->ChannelJoin(RoomName, 1, false, false);
+                    return NakamaRt::ChannelJoin(Connection2, RoomName, 1, false, false);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> JoinResult)
                 {
@@ -1122,8 +1101,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtStatusSpec, "IntegrationTests.NakamaRt.Status",
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
@@ -1134,8 +1112,8 @@ void FNakamaRtStatusSpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1151,8 +1129,7 @@ void FNakamaRtStatusSpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -1164,12 +1141,11 @@ void FNakamaRtStatusSpec::Define()
     {
         LatentIt("should set a status string without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->StatusUpdate(TEXT("Playing a game"));
+                    return NakamaRt::StatusUpdate(Connection, TEXT("Playing a game"));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -1180,12 +1156,11 @@ void FNakamaRtStatusSpec::Define()
 
         LatentIt("should clear status by passing an empty string", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->StatusUpdate(TEXT(""));
+                    return NakamaRt::StatusUpdate(Connection, TEXT(""));
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -1201,12 +1176,11 @@ void FNakamaRtStatusSpec::Define()
         {
             // Nakama accepts follow requests for non-existent users and returns
             // an empty presence list, so a random UUID is fine here.
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->StatusFollow({ GenerateId() }, {});
+                    return NakamaRt::StatusFollow(Connection, { GenerateId() }, {});
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtStatus> Resp)
                 {
@@ -1218,12 +1192,11 @@ void FNakamaRtStatusSpec::Define()
         LatentIt("should follow and then unfollow a user ID", [this](const FDoneDelegate& Done)
         {
             FString FakeUserId = GenerateId();
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this, FakeUserId](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->StatusFollow({ FakeUserId }, {});
+                    return NakamaRt::StatusFollow(Connection, { FakeUserId }, {});
                 })
                 .Next([this, FakeUserId, Done](auto FollowResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
@@ -1234,7 +1207,7 @@ void FNakamaRtStatusSpec::Define()
                         FNakamaRtError Err = FollowResp.Error.IsSet() ? *FollowResp.Error : FNakamaRtError{};
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Err));
                     }
-                    return RtClient->StatusUnfollow({ FakeUserId });
+                    return NakamaRt::StatusUnfollow(Connection, { FakeUserId });
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -1254,8 +1227,7 @@ BEGIN_DEFINE_SPEC(FNakamaRtPartySpec, "IntegrationTests.NakamaRt.Party",
 
     FNakamaClientConfig ClientConfig;
     FNakamaSession      Session;
-    UGameInstance*      GI      = nullptr;
-    TUniquePtr<FNakamaRtClient> RtClient;
+    TSharedPtr<FNakamaRtConnection> Connection;
 
     FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
@@ -1266,8 +1238,8 @@ void FNakamaRtPartySpec::Define()
     BeforeEach([this]()
     {
         ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
-        GI = CreateTestGameInstance();
-        GI->AddToRoot();
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
     });
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1283,8 +1255,7 @@ void FNakamaRtPartySpec::Define()
 
     LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        RtClient.Reset();
-        if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+        if (Connection) { Connection->Close(); Connection.Reset(); }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
@@ -1296,12 +1267,11 @@ void FNakamaRtPartySpec::Define()
     {
         LatentIt("should create a party and receive a party_id", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtParty>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->PartyCreate(true, 4, TEXT(""), false);
+                    return NakamaRt::PartyCreate(Connection, true, 4, TEXT(""), false);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtParty> Resp)
                 {
@@ -1316,12 +1286,11 @@ void FNakamaRtPartySpec::Define()
     {
         LatentIt("should close a party without error", [this](const FDoneDelegate& Done)
         {
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
-            RtClient->Connect(MakeConnParams(Session))
+            Connection->Connect(MakeConnParams(Session))
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtParty>>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->PartyCreate(true, 4, TEXT(""), false);
+                    return NakamaRt::PartyCreate(Connection, true, 4, TEXT(""), false);
                 })
                 .Next([this, Done](auto CreateResp) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
                 {
@@ -1333,7 +1302,7 @@ void FNakamaRtPartySpec::Define()
                         return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Err));
                     }
                     TestFalse("Party ID before close", CreateResp.Data->PartyId.IsEmpty());
-                    return RtClient->PartyClose(CreateResp.Data->PartyId);
+                    return NakamaRt::PartyClose(Connection, CreateResp.Data->PartyId);
                 })
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
@@ -1351,40 +1320,25 @@ void FNakamaRtPartySpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec, "IntegrationTests.NakamaRt.SubsystemLifetime",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-    TUniquePtr<FNakamaRtClient> RtClient;
-
 END_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec)
 
 void FNakamaRtSubsystemLifetimeSpec::Define()
 {
-    AfterEach([this]()
-    {
-        RtClient.Reset();
-    });
-
     Describe("StaledSubsystem", [this]()
     {
         LatentIt("should return an error future instead of crashing when subsystem is destroyed", [this](const FDoneDelegate& Done)
         {
-            // 1. Stand up a fresh GameInstance — this creates UNakamaWebSocketSubsystem.
-            UGameInstance* GI = CreateTestGameInstance();
-            GI->AddToRoot();
-            RtClient = MakeUnique<FNakamaRtClient>(GI);
+            // 1. Create a local connection and immediately reset it to null,
+            //    simulating a destroyed/stale connection pointer.
+            TSharedPtr<FNakamaRtConnection> NullConnection = MakeShared<FNakamaRtConnection>();
+            NullConnection.Reset();
 
-            // 2. Tear down the GameInstance, simulating a level transition or PIE stop.
-            //    UNakamaWebSocketSubsystem is marked for GC; the TWeakObjectPtr
-            //    inside RtClient goes stale on the next collection pass.
-            GI->Shutdown();
-            GI->RemoveFromRoot();
-            GI = nullptr;
-            CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
-
-            // 3. Call a method while the subsystem is stale.
+            // 2. Call a method while the connection is null/stale.
             //    Without the validity guard the generated template emits
-            //      WebSocketSubsystem->Send(...)
-            //    on a null/stale pointer — guaranteed crash.
+            //      Connection->Send(...)
+            //    on a null pointer — guaranteed crash.
             //    After the fix it must immediately resolve to an error.
-            RtClient->StatusUpdate(TEXT(""))
+            NakamaRt::StatusUpdate(NullConnection, TEXT(""))
                 .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
                 {
                     TestFalse(
