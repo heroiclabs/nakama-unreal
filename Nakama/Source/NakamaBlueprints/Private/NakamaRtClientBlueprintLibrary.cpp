@@ -17,11 +17,10 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "NakamaRtClientBlueprintLibrary.h"
-#include "NakamaApi.h"
+#include "NakamaRt.h"
 
 UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Target
   , int32 Type
   , FNakamaRtOptionalBool Persistence
@@ -29,13 +28,12 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
 )
 {
   UNakamaRealtimeClientChannelJoin* Action = NewObject<UNakamaRealtimeClientChannelJoin>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredTarget = Target;
   Action->StoredType = Type;
   Action->StoredPersistence = Persistence;
   Action->StoredHidden = Hidden;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -44,77 +42,52 @@ void UNakamaRealtimeClientChannelJoin::Activate()
   static const TCHAR* TraceScope_ChannelJoin = TEXT("NakamaRTBP_ChannelJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelJoin);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientChannelJoin> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredTarget.IsEmpty() == false)
+  NakamaRt::ChannelJoin(
+    StoredConnection
+    , StoredTarget
+    , StoredType
+    , StoredPersistence
+    , StoredHidden
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtChannel> Resp)
   {
-    Json->SetStringField(TEXT("target"), StoredTarget);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("type"), StoredType);
-  }
-  if (StoredPersistence.IsEmpty() == false)
-  {
-    Json->SetBoolField(TEXT("persistence"), StoredPersistence.GetValue());
-  }
-  if (StoredHidden.IsEmpty() == false)
-  {
-    Json->SetBoolField(TEXT("hidden"), StoredHidden.GetValue());
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("channel_join"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtChannel Result = FNakamaRtChannel::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLeave(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
 )
 {
   UNakamaRealtimeClientChannelLeave* Action = NewObject<UNakamaRealtimeClientChannelLeave>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredChannelId = ChannelId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -123,66 +96,51 @@ void UNakamaRealtimeClientChannelLeave::Activate()
   static const TCHAR* TraceScope_ChannelLeave = TEXT("NakamaRTBP_ChannelLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelLeave);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientChannelLeave> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredChannelId.IsEmpty() == false)
+  NakamaRt::ChannelLeave(
+    StoredConnection
+    , StoredChannelId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("channel_id"), StoredChannelId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("channel_leave"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend::ChannelMessageSend(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& Content
 )
 {
   UNakamaRealtimeClientChannelMessageSend* Action = NewObject<UNakamaRealtimeClientChannelMessageSend>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredChannelId = ChannelId;
   Action->StoredContent = Content;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -191,73 +149,54 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
   static const TCHAR* TraceScope_ChannelMessageSend = TEXT("NakamaRTBP_ChannelMessageSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageSend);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientChannelMessageSend> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredChannelId.IsEmpty() == false)
+  NakamaRt::ChannelMessageSend(
+    StoredConnection
+    , StoredChannelId
+    , StoredContent
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
   {
-    Json->SetStringField(TEXT("channel_id"), StoredChannelId);
-  }
-  if (StoredContent.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("content"), StoredContent);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("channel_message_send"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUpdate::ChannelMessageUpdate(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& MessageId
   , const FString& Content
 )
 {
   UNakamaRealtimeClientChannelMessageUpdate* Action = NewObject<UNakamaRealtimeClientChannelMessageUpdate>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredChannelId = ChannelId;
   Action->StoredMessageId = MessageId;
   Action->StoredContent = Content;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -266,75 +205,53 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
   static const TCHAR* TraceScope_ChannelMessageUpdate = TEXT("NakamaRTBP_ChannelMessageUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageUpdate);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientChannelMessageUpdate> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredChannelId.IsEmpty() == false)
+  NakamaRt::ChannelMessageUpdate(
+    StoredConnection
+    , StoredChannelId
+    , StoredMessageId
+    , StoredContent
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
   {
-    Json->SetStringField(TEXT("channel_id"), StoredChannelId);
-  }
-  if (StoredMessageId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("message_id"), StoredMessageId);
-  }
-  if (StoredContent.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("content"), StoredContent);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("channel_message_update"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRemove::ChannelMessageRemove(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& MessageId
 )
 {
   UNakamaRealtimeClientChannelMessageRemove* Action = NewObject<UNakamaRealtimeClientChannelMessageRemove>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredChannelId = ChannelId;
   Action->StoredMessageId = MessageId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -343,69 +260,50 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
   static const TCHAR* TraceScope_ChannelMessageRemove = TEXT("NakamaRTBP_ChannelMessageRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageRemove);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientChannelMessageRemove> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredChannelId.IsEmpty() == false)
+  NakamaRt::ChannelMessageRemove(
+    StoredConnection
+    , StoredChannelId
+    , StoredMessageId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtChannelMessageAck> Resp)
   {
-    Json->SetStringField(TEXT("channel_id"), StoredChannelId);
-  }
-  if (StoredMessageId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("message_id"), StoredMessageId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("channel_message_remove"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtChannelMessageAck Result = FNakamaRtChannelMessageAck::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Name
 )
 {
   UNakamaRealtimeClientMatchCreate* Action = NewObject<UNakamaRealtimeClientMatchCreate>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredName = Name;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -414,57 +312,42 @@ void UNakamaRealtimeClientMatchCreate::Activate()
   static const TCHAR* TraceScope_MatchCreate = TEXT("NakamaRTBP_MatchCreate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchCreate);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchCreate> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredName.IsEmpty() == false)
+  NakamaRt::MatchCreate(
+    StoredConnection
+    , StoredName
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtMatch> Resp)
   {
-    Json->SetStringField(TEXT("name"), StoredName);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("match_create"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDataSend(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
   , int64 OpCode
   , const TArray<uint8>& Data
@@ -473,14 +356,13 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
 )
 {
   UNakamaRealtimeClientMatchDataSend* Action = NewObject<UNakamaRealtimeClientMatchDataSend>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredMatchId = MatchId;
   Action->StoredOpCode = OpCode;
   Action->StoredData = Data;
   Action->StoredPresences = Presences;
   Action->StoredReliable = Reliable;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -489,89 +371,57 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
   static const TCHAR* TraceScope_MatchDataSend = TEXT("NakamaRTBP_MatchDataSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchDataSend);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchDataSend> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredMatchId.IsEmpty() == false)
+  NakamaRt::MatchDataSend(
+    StoredConnection
+    , StoredMatchId
+    , StoredOpCode
+    , StoredData
+    , StoredPresences
+    , StoredReliable
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("match_id"), StoredMatchId);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("op_code"), StoredOpCode);
-  }
-  if (StoredData.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("data"), FBase64::Encode(StoredData.GetData(), StoredData.Num()));
-  }
-  if (StoredPresences.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : StoredPresences)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+      return;
     }
-    Json->SetArrayField(TEXT("presences"), Array);
-  }
-  
-  {
-    Json->SetBoolField(TEXT("reliable"), StoredReliable);
-  }
 
-  StoredWebSocketSubsystem->Send(TEXT("match_data_send"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    if (Resp.bIsSuccess)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
   , const FString& Token
   , const TMap<FString, FString>& Metadata
 )
 {
   UNakamaRealtimeClientMatchJoin* Action = NewObject<UNakamaRealtimeClientMatchJoin>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredMatchId = MatchId;
   Action->StoredToken = Token;
   Action->StoredMetadata = Metadata;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -580,78 +430,51 @@ void UNakamaRealtimeClientMatchJoin::Activate()
   static const TCHAR* TraceScope_MatchJoin = TEXT("NakamaRTBP_MatchJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchJoin);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchJoin> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredMatchId.IsEmpty() == false)
+  NakamaRt::MatchJoin(
+    StoredConnection
+    , StoredMatchId
+    , StoredToken
+    , StoredMetadata
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtMatch> Resp)
   {
-    Json->SetStringField(TEXT("match_id"), StoredMatchId);
-  }
-  if (StoredToken.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), StoredToken);
-  }
-  if (StoredMetadata.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : StoredMetadata)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      return;
     }
-    Json->SetObjectField(TEXT("metadata"), MapObj);
-  }
 
-  StoredWebSocketSubsystem->Send(TEXT("match_join"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    if (Resp.bIsSuccess)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtMatch Result = FNakamaRtMatch::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
 )
 {
   UNakamaRealtimeClientMatchLeave* Action = NewObject<UNakamaRealtimeClientMatchLeave>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredMatchId = MatchId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -660,56 +483,42 @@ void UNakamaRealtimeClientMatchLeave::Activate()
   static const TCHAR* TraceScope_MatchLeave = TEXT("NakamaRTBP_MatchLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchLeave);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchLeave> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredMatchId.IsEmpty() == false)
+  NakamaRt::MatchLeave(
+    StoredConnection
+    , StoredMatchId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("match_id"), StoredMatchId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("match_leave"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::MatchmakerAdd(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
@@ -719,7 +528,7 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
 )
 {
   UNakamaRealtimeClientMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientMatchmakerAdd>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredMinCount = MinCount;
   Action->StoredMaxCount = MaxCount;
   Action->StoredQuery = Query;
@@ -727,7 +536,6 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
   Action->StoredStringProperties = StringProperties;
   Action->StoredNumericProperties = NumericProperties;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -736,95 +544,54 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
   static const TCHAR* TraceScope_MatchmakerAdd = TEXT("NakamaRTBP_MatchmakerAdd");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchmakerAdd);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchmakerAdd> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  
+  NakamaRt::MatchmakerAdd(
+    StoredConnection
+    , StoredMinCount
+    , StoredMaxCount
+    , StoredQuery
+    , StoredCountMultiple
+    , StoredStringProperties
+    , StoredNumericProperties
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtMatchmakerTicket> Resp)
   {
-    Json->SetNumberField(TEXT("min_count"), StoredMinCount);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
-  }
-  if (StoredQuery.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("query"), StoredQuery);
-  }
-  if (StoredCountMultiple.IsEmpty() == false)
-  {
-    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple.GetValue());
-  }
-  if (StoredStringProperties.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : StoredStringProperties)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      return;
     }
-    Json->SetObjectField(TEXT("string_properties"), MapObj);
-  }
-  if (StoredNumericProperties.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : StoredNumericProperties)
+
+    if (Resp.bIsSuccess)
     {
-      MapObj->SetNumberField(Pair.Key, Pair.Value);
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
     }
-    Json->SetObjectField(TEXT("numeric_properties"), MapObj);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("matchmaker_add"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    else
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtMatchmakerTicket Result = FNakamaRtMatchmakerTicket::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::MatchmakerRemove(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Ticket
 )
 {
   UNakamaRealtimeClientMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientMatchmakerRemove>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredTicket = Ticket;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -833,68 +600,53 @@ void UNakamaRealtimeClientMatchmakerRemove::Activate()
   static const TCHAR* TraceScope_MatchmakerRemove = TEXT("NakamaRTBP_MatchmakerRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchmakerRemove);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientMatchmakerRemove> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredTicket.IsEmpty() == false)
+  NakamaRt::MatchmakerRemove(
+    StoredConnection
+    , StoredTicket
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("ticket"), StoredTicket);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("matchmaker_remove"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Id
   , const FString& Payload
   , const FString& HttpKey
 )
 {
   UNakamaRealtimeClientRpc* Action = NewObject<UNakamaRealtimeClientRpc>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredId = Id;
   Action->StoredPayload = Payload;
   Action->StoredHttpKey = HttpKey;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -903,75 +655,53 @@ void UNakamaRealtimeClientRpc::Activate()
   static const TCHAR* TraceScope_Rpc = TEXT("NakamaRTBP_Rpc");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Rpc);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientRpc> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredId.IsEmpty() == false)
+  NakamaRt::Rpc(
+    StoredConnection
+    , StoredId
+    , StoredPayload
+    , StoredHttpKey
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtRpc> Resp)
   {
-    Json->SetStringField(TEXT("id"), StoredId);
-  }
-  if (StoredPayload.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("payload"), StoredPayload);
-  }
-  if (StoredHttpKey.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("http_key"), StoredHttpKey);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("rpc"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtRpc Result = FNakamaRtRpc::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFollow(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const TArray<FString>& UserIds
   , const TArray<FString>& Usernames
 )
 {
   UNakamaRealtimeClientStatusFollow* Action = NewObject<UNakamaRealtimeClientStatusFollow>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredUserIds = UserIds;
   Action->StoredUsernames = Usernames;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -980,79 +710,50 @@ void UNakamaRealtimeClientStatusFollow::Activate()
   static const TCHAR* TraceScope_StatusFollow = TEXT("NakamaRTBP_StatusFollow");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusFollow);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientStatusFollow> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredUserIds.Num() > 0)
+  NakamaRt::StatusFollow(
+    StoredConnection
+    , StoredUserIds
+    , StoredUsernames
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtStatus> Resp)
   {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : StoredUserIds)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      Array.Add(MakeShared<FJsonValueString>(Item));
+      return;
     }
-    Json->SetArrayField(TEXT("user_ids"), Array);
-  }
-  if (StoredUsernames.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : StoredUsernames)
+
+    if (Resp.bIsSuccess)
     {
-      Array.Add(MakeShared<FJsonValueString>(Item));
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
     }
-    Json->SetArrayField(TEXT("usernames"), Array);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("status_follow"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    else
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtStatus Result = FNakamaRtStatus::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::StatusUnfollow(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const TArray<FString>& UserIds
 )
 {
   UNakamaRealtimeClientStatusUnfollow* Action = NewObject<UNakamaRealtimeClientStatusUnfollow>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredUserIds = UserIds;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1061,69 +762,49 @@ void UNakamaRealtimeClientStatusUnfollow::Activate()
   static const TCHAR* TraceScope_StatusUnfollow = TEXT("NakamaRTBP_StatusUnfollow");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusUnfollow);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientStatusUnfollow> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredUserIds.Num() > 0)
+  NakamaRt::StatusUnfollow(
+    StoredConnection
+    , StoredUserIds
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : StoredUserIds)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      Array.Add(MakeShared<FJsonValueString>(Item));
+      return;
     }
-    Json->SetArrayField(TEXT("user_ids"), Array);
-  }
 
-  StoredWebSocketSubsystem->Send(TEXT("status_unfollow"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    if (Resp.bIsSuccess)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpdate(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Status
 )
 {
   UNakamaRealtimeClientStatusUpdate* Action = NewObject<UNakamaRealtimeClientStatusUpdate>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredStatus = Status;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1132,62 +813,47 @@ void UNakamaRealtimeClientStatusUpdate::Activate()
   static const TCHAR* TraceScope_StatusUpdate = TEXT("NakamaRTBP_StatusUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusUpdate);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientStatusUpdate> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredStatus.IsEmpty() == false)
+  NakamaRt::StatusUpdate(
+    StoredConnection
+    , StoredStatus
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("status"), StoredStatus);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("status_update"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPing* UNakamaRealtimeClientPing::Ping(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
 )
 {
   UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1196,53 +862,41 @@ void UNakamaRealtimeClientPing::Activate()
   static const TCHAR* TraceScope_Ping = TEXT("NakamaRTBP_Ping");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Ping);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPing> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-
-  StoredWebSocketSubsystem->Send(TEXT("ping"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+  NakamaRt::Ping(
+    StoredConnection
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtPong> Resp)
+  {
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtPong Result = FNakamaRtPong::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , bool Open
   , int32 MaxSize
   , const FString& Label
@@ -1250,13 +904,12 @@ UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
 )
 {
   UNakamaRealtimeClientPartyCreate* Action = NewObject<UNakamaRealtimeClientPartyCreate>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredOpen = Open;
   Action->StoredMaxSize = MaxSize;
   Action->StoredLabel = Label;
   Action->StoredHidden = Hidden;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1265,77 +918,52 @@ void UNakamaRealtimeClientPartyCreate::Activate()
   static const TCHAR* TraceScope_PartyCreate = TEXT("NakamaRTBP_PartyCreate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyCreate);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyCreate> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  
+  NakamaRt::PartyCreate(
+    StoredConnection
+    , StoredOpen
+    , StoredMaxSize
+    , StoredLabel
+    , StoredHidden
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtParty> Resp)
   {
-    Json->SetBoolField(TEXT("open"), StoredOpen);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("max_size"), StoredMaxSize);
-  }
-  if (StoredLabel.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("label"), StoredLabel);
-  }
-  
-  {
-    Json->SetBoolField(TEXT("hidden"), StoredHidden);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_create"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtParty Result = FNakamaRtParty::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
   UNakamaRealtimeClientPartyJoin* Action = NewObject<UNakamaRealtimeClientPartyJoin>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1344,64 +972,49 @@ void UNakamaRealtimeClientPartyJoin::Activate()
   static const TCHAR* TraceScope_PartyJoin = TEXT("NakamaRTBP_PartyJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyJoin);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyJoin> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyJoin(
+    StoredConnection
+    , StoredPartyId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_join"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
   UNakamaRealtimeClientPartyLeave* Action = NewObject<UNakamaRealtimeClientPartyLeave>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1410,66 +1023,51 @@ void UNakamaRealtimeClientPartyLeave::Activate()
   static const TCHAR* TraceScope_PartyLeave = TEXT("NakamaRTBP_PartyLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyLeave);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyLeave> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyLeave(
+    StoredConnection
+    , StoredPartyId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_leave"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromote(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyPromote* Action = NewObject<UNakamaRealtimeClientPartyPromote>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1478,70 +1076,52 @@ void UNakamaRealtimeClientPartyPromote::Activate()
   static const TCHAR* TraceScope_PartyPromote = TEXT("NakamaRTBP_PartyPromote");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyPromote);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyPromote> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyPromote(
+    StoredConnection
+    , StoredPartyId
+    , StoredPresence
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  
-  {
-    Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_promote"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyAccept* Action = NewObject<UNakamaRealtimeClientPartyAccept>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1550,70 +1130,52 @@ void UNakamaRealtimeClientPartyAccept::Activate()
   static const TCHAR* TraceScope_PartyAccept = TEXT("NakamaRTBP_PartyAccept");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyAccept);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyAccept> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyAccept(
+    StoredConnection
+    , StoredPartyId
+    , StoredPresence
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  
-  {
-    Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_accept"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyRemove* Action = NewObject<UNakamaRealtimeClientPartyRemove>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1622,68 +1184,50 @@ void UNakamaRealtimeClientPartyRemove::Activate()
   static const TCHAR* TraceScope_PartyRemove = TEXT("NakamaRTBP_PartyRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyRemove);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyRemove> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyRemove(
+    StoredConnection
+    , StoredPartyId
+    , StoredPresence
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  
-  {
-    Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_remove"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
   UNakamaRealtimeClientPartyClose* Action = NewObject<UNakamaRealtimeClientPartyClose>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1692,64 +1236,49 @@ void UNakamaRealtimeClientPartyClose::Activate()
   static const TCHAR* TraceScope_PartyClose = TEXT("NakamaRTBP_PartyClose");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyClose);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyClose> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyClose(
+    StoredConnection
+    , StoredPartyId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_close"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequestList::PartyJoinRequestList(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
   UNakamaRealtimeClientPartyJoinRequestList* Action = NewObject<UNakamaRealtimeClientPartyJoinRequestList>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1758,57 +1287,42 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
   static const TCHAR* TraceScope_PartyJoinRequestList = TEXT("NakamaRTBP_PartyJoinRequestList");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyJoinRequestList);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyJoinRequestList> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyJoinRequestList(
+    StoredConnection
+    , StoredPartyId
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtPartyJoinRequest> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_join_request_list"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtPartyJoinRequest Result = FNakamaRtPartyJoinRequest::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd::PartyMatchmakerAdd(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , int32 MinCount
   , int32 MaxCount
@@ -1819,7 +1333,7 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
 )
 {
   UNakamaRealtimeClientPartyMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerAdd>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredMinCount = MinCount;
   Action->StoredMaxCount = MaxCount;
@@ -1828,7 +1342,6 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
   Action->StoredStringProperties = StringProperties;
   Action->StoredNumericProperties = NumericProperties;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1837,101 +1350,57 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
   static const TCHAR* TraceScope_PartyMatchmakerAdd = TEXT("NakamaRTBP_PartyMatchmakerAdd");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerAdd);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err, {});
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyMatchmakerAdd> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyMatchmakerAdd(
+    StoredConnection
+    , StoredPartyId
+    , StoredMinCount
+    , StoredMaxCount
+    , StoredQuery
+    , StoredCountMultiple
+    , StoredStringProperties
+    , StoredNumericProperties
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("min_count"), StoredMinCount);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
-  }
-  if (StoredQuery.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("query"), StoredQuery);
-  }
-  if (StoredCountMultiple.IsEmpty() == false)
-  {
-    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple.GetValue());
-  }
-  if (StoredStringProperties.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : StoredStringProperties)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      return;
     }
-    Json->SetObjectField(TEXT("string_properties"), MapObj);
-  }
-  if (StoredNumericProperties.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : StoredNumericProperties)
+
+    if (Resp.bIsSuccess)
     {
-      MapObj->SetNumberField(Pair.Key, Pair.Value);
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
     }
-    Json->SetObjectField(TEXT("numeric_properties"), MapObj);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_matchmaker_add"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    else
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
-
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        FNakamaRtPartyMatchmakerTicket Result = FNakamaRtPartyMatchmakerTicket::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err, {});
-      }
-      Self->SetReadyToDestroy();
-    });
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmakerRemove::PartyMatchmakerRemove(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FString& Ticket
 )
 {
   UNakamaRealtimeClientPartyMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerRemove>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredTicket = Ticket;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1940,72 +1409,54 @@ void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
   static const TCHAR* TraceScope_PartyMatchmakerRemove = TEXT("NakamaRTBP_PartyMatchmakerRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerRemove);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyMatchmakerRemove> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyMatchmakerRemove(
+    StoredConnection
+    , StoredPartyId
+    , StoredTicket
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  if (StoredTicket.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("ticket"), StoredTicket);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDataSend(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , int64 OpCode
   , const TArray<uint8>& Data
 )
 {
   UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredOpCode = OpCode;
   Action->StoredData = Data;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -2014,64 +1465,44 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
   static const TCHAR* TraceScope_PartyDataSend = TEXT("NakamaRTBP_PartyDataSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyDataSend);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyDataSend> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyDataSend(
+    StoredConnection
+    , StoredPartyId
+    , StoredOpCode
+    , StoredData
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("op_code"), StoredOpCode);
-  }
-  if (StoredData.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("data"), FBase64::Encode(StoredData.GetData(), StoredData.Num()));
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_data_send"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
-  UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FString& Label
   , bool Open
@@ -2079,13 +1510,12 @@ UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
 )
 {
   UNakamaRealtimeClientPartyUpdate* Action = NewObject<UNakamaRealtimeClientPartyUpdate>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
   Action->StoredLabel = Label;
   Action->StoredOpen = Open;
   Action->StoredHidden = Hidden;
 
-  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -2094,61 +1524,39 @@ void UNakamaRealtimeClientPartyUpdate::Activate()
   static const TCHAR* TraceScope_PartyUpdate = TEXT("NakamaRTBP_PartyUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyUpdate);
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     OnError.Broadcast(Err);
     SetReadyToDestroy();
     return;
   }
 
   TWeakObjectPtr<UNakamaRealtimeClientPartyUpdate> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredPartyId.IsEmpty() == false)
+  NakamaRt::PartyUpdate(
+    StoredConnection
+    , StoredPartyId
+    , StoredLabel
+    , StoredOpen
+    , StoredHidden
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
   {
-    Json->SetStringField(TEXT("party_id"), StoredPartyId);
-  }
-  if (StoredLabel.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("label"), StoredLabel);
-  }
-  
-  {
-    Json->SetBoolField(TEXT("open"), StoredOpen);
-  }
-  
-  {
-    Json->SetBoolField(TEXT("hidden"), StoredHidden);
-  }
-
-  StoredWebSocketSubsystem->Send(TEXT("party_update"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        Self->OnSuccess.Broadcast({});
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        Self->OnError.Broadcast(Err);
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      Self->OnSuccess.Broadcast({});
+    }
+    else
+    {
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+    }
+    Self->SetReadyToDestroy();
+  });
 }

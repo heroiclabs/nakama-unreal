@@ -19,11 +19,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaWebSocketSubsystem.h"
-#include "NakamaApi.h"
+#include "NakamaRtConnection.h"
 #include "NakamaRtTypes.h"
 
-namespace Nakama
+namespace NakamaRt
 {
   template<typename T>
   struct FNakamaRtResult
@@ -49,392 +48,360 @@ namespace Nakama
     }
   };
 
-  struct FNakamaRtEmptyResponse
-  {
-  };
+  /*
+  *  Join a realtime chat channel.
+  *
+  * @param Target	 The user ID to DM with, group ID to chat with, or room channel name to join.
+  * @param Type	 The type of the chat channel.
+  * @param Persistence	 Whether messages sent on this channel should be persistent.
+  * @param Hidden	 Whether the user should appear in the channel's presence list and events.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> ChannelJoin(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& Target
+    , int32 Type
+    , FNakamaRtOptionalBool Persistence
+    , FNakamaRtOptionalBool Hidden
+  );
 
-  //
-  // Delegates for event callbacks
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelMessage, const FNakamaRtChannelMessage&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchData, const FNakamaRtMatchData&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchmakerMatched, const FNakamaRtMatchmakerMatched&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnNotifications, const FNakamaRtNotifications&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyLeader, const FNakamaRtPartyLeader&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyJoinRequest, const FNakamaRtPartyJoinRequest&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyData, const FNakamaRtPartyData&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyPresenceEvent, const FNakamaRtPartyPresenceEvent&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStatusPresenceEvent, const FNakamaRtStatusPresenceEvent&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamData, const FNakamaRtStreamData&);
-  DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&);
-  
-  class FNakamaRtClient
-  {
-  private:
-    TWeakObjectPtr<UNakamaWebSocketSubsystem> WebSocketSubsystem;
-    FDelegateHandle EventHandle;
-    void HandleServerEvent(const FString& Json);
+  /*
+  *  Leave a realtime chat channel.
+  *
+  * @param ChannelId	 The ID of the channel to leave.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> ChannelLeave(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& ChannelId
+  );
 
-  public:
-    NAKAMA_API explicit FNakamaRtClient(UGameInstance* InGi);
-    NAKAMA_API ~FNakamaRtClient();
+  /*
+  *  Send a message to a realtime chat channel.
+  *
+  * @param ChannelId	 The channel to sent to.
+  * @param Content	 Message content.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageSend(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& ChannelId
+    , const FString& Content
+  );
 
-    FNakamaRtClient(const FNakamaRtClient&) = delete;
-    FNakamaRtClient& operator=(const FNakamaRtClient&) = delete;
-    FNakamaRtClient(FNakamaRtClient&&) = delete;
-    FNakamaRtClient& operator=(FNakamaRtClient&&) = delete;
+  /*
+  *  Update a message previously sent to a realtime chat channel.
+  *
+  * @param ChannelId	 The channel the message was sent to.
+  * @param MessageId	 The ID assigned to the message to update.
+  * @param Content	 New message content.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageUpdate(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& ChannelId
+    , const FString& MessageId
+    , const FString& Content
+  );
 
-    /*
-    *  Connect (or reconnect) the WebSocket.
-    *  Returns a future that resolves once the handshake completes or fails.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(
-      const FNakamaWebSocketConnectionParams& Params
-    );
+  /*
+  *  Remove a message previously sent to a realtime chat channel.
+  *
+  * @param ChannelId	 The channel the message was sent to.
+  * @param MessageId	 The ID assigned to the message to update.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageRemove(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& ChannelId
+    , const FString& MessageId
+  );
 
-    /*
-    *  Join a realtime chat channel.
-    *
-    * @param Target	 The user ID to DM with, group ID to chat with, or room channel name to join.
-    * @param Type	 The type of the chat channel.
-    * @param Persistence	 Whether messages sent on this channel should be persistent.
-    * @param Hidden	 Whether the user should appear in the channel's presence list and events.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> ChannelJoin(
-      const FString& Target
-      , int32 Type
-      , FNakamaRtOptionalBool Persistence
-      , FNakamaRtOptionalBool Hidden
-    );
+  /*
+  *  A client to server request to create a realtime match.
+  *
+  * @param Name	 Optional name to use when creating the match.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchCreate(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& Name
+  );
 
-    /*
-    *  Leave a realtime chat channel.
-    *
-    * @param ChannelId	 The ID of the channel to leave.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> ChannelLeave(
-      const FString& ChannelId
-    );
+  /*
+  *  A client to server request to send data to a realtime match.
+  *
+  * @param MatchId	 The match unique ID.
+  * @param OpCode	 Op code value.
+  * @param Data	 Data payload, if any.
+  * @param Presences	 List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match.
+  * @param Reliable	 True if the data should be sent reliably, false otherwise.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchDataSend(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& MatchId
+    , int64 OpCode
+    , const TArray<uint8>& Data
+    , const TArray<FNakamaRtUserPresence>& Presences
+    , bool Reliable
+  );
 
-    /*
-    *  Send a message to a realtime chat channel.
-    *
-    * @param ChannelId	 The channel to sent to.
-    * @param Content	 Message content.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageSend(
-      const FString& ChannelId
-      , const FString& Content
-    );
+  /*
+  *  A client to server request to join a realtime match.
+  *
+  * @param MatchId	 The match unique ID.
+  * @param Token	 A matchmaking result token.
+  * @param Metadata	 An optional set of key-value metadata pairs to be passed to the match handler, if any.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchJoin(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& MatchId
+    , const FString& Token
+    , const TMap<FString, FString>& Metadata
+  );
 
-    /*
-    *  Update a message previously sent to a realtime chat channel.
-    *
-    * @param ChannelId	 The channel the message was sent to.
-    * @param MessageId	 The ID assigned to the message to update.
-    * @param Content	 New message content.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageUpdate(
-      const FString& ChannelId
-      , const FString& MessageId
-      , const FString& Content
-    );
+  /*
+  *  A client to server request to leave a realtime match.
+  *
+  * @param MatchId	 The match unique ID.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchLeave(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& MatchId
+  );
 
-    /*
-    *  Remove a message previously sent to a realtime chat channel.
-    *
-    * @param ChannelId	 The channel the message was sent to.
-    * @param MessageId	 The ID assigned to the message to update.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageRemove(
-      const FString& ChannelId
-      , const FString& MessageId
-    );
+  /*
+  *  Submit a new matchmaking process request.
+  *
+  * @param MinCount	 Minimum total user count to match together.
+  * @param MaxCount	 Maximum total user count to match together.
+  * @param Query	 Filter query used to identify suitable users.
+  * @param CountMultiple	 Optional multiple of the count that must be satisfied.
+  * @param StringProperties	 String properties.
+  * @param NumericProperties	 Numeric properties.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> MatchmakerAdd(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , int32 MinCount
+    , int32 MaxCount
+    , const FString& Query
+    , FNakamaRtOptionalInt32 CountMultiple
+    , const TMap<FString, FString>& StringProperties
+    , const TMap<FString, double>& NumericProperties
+  );
 
-    /*
-    *  A client to server request to create a realtime match.
-    *
-    * @param Name	 Optional name to use when creating the match.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchCreate(
-      const FString& Name
-    );
+  /*
+  *  Cancel a matchmaking process using a ticket.
+  *
+  * @param Ticket	 The ticket to cancel.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchmakerRemove(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& Ticket
+  );
 
-    /*
-    *  A client to server request to send data to a realtime match.
-    *
-    * @param MatchId	 The match unique ID.
-    * @param OpCode	 Op code value.
-    * @param Data	 Data payload, if any.
-    * @param Presences	 List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match.
-    * @param Reliable	 True if the data should be sent reliably, false otherwise.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchDataSend(
-      const FString& MatchId
-      , int64 OpCode
-      , const TArray<uint8>& Data
-      , const TArray<FNakamaRtUserPresence>& Presences
-      , bool Reliable
-    );
+  /*
+  *  RPC call or response.
+  *
+  * @param Id	 The identifier of the function.
+  * @param Payload	 The payload of the function which must be a JSON object.
+  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& Id
+    , const FString& Payload
+    , const FString& HttpKey
+  );
 
-    /*
-    *  A client to server request to join a realtime match.
-    *
-    * @param MatchId	 The match unique ID.
-    * @param Token	 A matchmaking result token.
-    * @param Metadata	 An optional set of key-value metadata pairs to be passed to the match handler, if any.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchJoin(
-      const FString& MatchId
-      , const FString& Token
-      , const TMap<FString, FString>& Metadata
-    );
+  /*
+  *  Start following some set of users to receive their status updates.
+  *
+  * @param UserIds	 User IDs to follow.
+  * @param Usernames	 Usernames to follow.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> StatusFollow(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const TArray<FString>& UserIds
+    , const TArray<FString>& Usernames
+  );
 
-    /*
-    *  A client to server request to leave a realtime match.
-    *
-    * @param MatchId	 The match unique ID.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchLeave(
-      const FString& MatchId
-    );
+  /*
+  *  Stop following some set of users to no longer receive their status updates.
+  *
+  * @param UserIds	 Users to unfollow.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUnfollow(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const TArray<FString>& UserIds
+  );
 
-    /*
-    *  Submit a new matchmaking process request.
-    *
-    * @param MinCount	 Minimum total user count to match together.
-    * @param MaxCount	 Maximum total user count to match together.
-    * @param Query	 Filter query used to identify suitable users.
-    * @param CountMultiple	 Optional multiple of the count that must be satisfied.
-    * @param StringProperties	 String properties.
-    * @param NumericProperties	 Numeric properties.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> MatchmakerAdd(
-      int32 MinCount
-      , int32 MaxCount
-      , const FString& Query
-      , FNakamaRtOptionalInt32 CountMultiple
-      , const TMap<FString, FString>& StringProperties
-      , const TMap<FString, double>& NumericProperties
-    );
+  /*
+  *  Set the user's own status.
+  *
+  * @param Status	 Status string to set, if not present the user will appear offline.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUpdate(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& Status
+  );
 
-    /*
-    *  Cancel a matchmaking process using a ticket.
-    *
-    * @param Ticket	 The ticket to cancel.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchmakerRemove(
-      const FString& Ticket
-    );
+  /*
+  *  Application-level heartbeat and connection check.
+  *
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> Ping(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+  );
 
-    /*
-    *  RPC call or response.
-    *
-    * @param Id	 The identifier of the function.
-    * @param Payload	 The payload of the function which must be a JSON object.
-    * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
-      const FString& Id
-      , const FString& Payload
-      , const FString& HttpKey
-    );
+  /*
+  *  Create a party.
+  *
+  * @param Open	 Whether or not the party will require join requests to be approved by the party leader.
+  * @param MaxSize	 Maximum number of party members.
+  * @param Label	 Label
+  * @param Hidden	 Whether the party is visible in party listings.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> PartyCreate(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , bool Open
+    , int32 MaxSize
+    , const FString& Label
+    , bool Hidden
+  );
 
-    /*
-    *  Start following some set of users to receive their status updates.
-    *
-    * @param UserIds	 User IDs to follow.
-    * @param Usernames	 Usernames to follow.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> StatusFollow(
-      const TArray<FString>& UserIds
-      , const TArray<FString>& Usernames
-    );
+  /*
+  *  Join a party, or request to join if the party is not open.
+  *
+  * @param PartyId	 Party ID to join.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyJoin(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+  );
 
-    /*
-    *  Stop following some set of users to no longer receive their status updates.
-    *
-    * @param UserIds	 Users to unfollow.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUnfollow(
-      const TArray<FString>& UserIds
-    );
+  /*
+  *  Leave a party.
+  *
+  * @param PartyId	 Party ID to leave.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyLeave(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+  );
 
-    /*
-    *  Set the user's own status.
-    *
-    * @param Status	 Status string to set, if not present the user will appear offline.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUpdate(
-      const FString& Status
-    );
+  /*
+  *  Promote a new party leader.
+  *
+  * @param PartyId	 Party ID to promote a new leader for.
+  * @param Presence	 The presence of an existing party member to promote as the new leader.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyPromote(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , const FNakamaRtUserPresence& Presence
+  );
 
-    /*
-    *  Application-level heartbeat and connection check.
-    *
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> Ping(
-    );
+  /*
+  *  Accept a request to join.
+  *
+  * @param PartyId	 Party ID to accept a join request for.
+  * @param Presence	 The presence to accept as a party member.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyAccept(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , const FNakamaRtUserPresence& Presence
+  );
 
-    /*
-    *  Create a party.
-    *
-    * @param Open	 Whether or not the party will require join requests to be approved by the party leader.
-    * @param MaxSize	 Maximum number of party members.
-    * @param Label	 Label
-    * @param Hidden	 Whether the party is visible in party listings.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> PartyCreate(
-      bool Open
-      , int32 MaxSize
-      , const FString& Label
-      , bool Hidden
-    );
+  /*
+  *  Kick a party member, or decline a request to join.
+  *
+  * @param PartyId	 Party ID to remove/reject from.
+  * @param Presence	 The presence to remove or reject.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyRemove(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , const FNakamaRtUserPresence& Presence
+  );
 
-    /*
-    *  Join a party, or request to join if the party is not open.
-    *
-    * @param PartyId	 Party ID to join.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyJoin(
-      const FString& PartyId
-    );
+  /*
+  *  End a party, kicking all party members and closing it.
+  *
+  * @param PartyId	 Party ID to close.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyClose(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+  );
 
-    /*
-    *  Leave a party.
-    *
-    * @param PartyId	 Party ID to leave.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyLeave(
-      const FString& PartyId
-    );
+  /*
+  *  Request a list of pending join requests for a party.
+  *
+  * @param PartyId	 Party ID to get a list of join requests for.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> PartyJoinRequestList(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+  );
 
-    /*
-    *  Promote a new party leader.
-    *
-    * @param PartyId	 Party ID to promote a new leader for.
-    * @param Presence	 The presence of an existing party member to promote as the new leader.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyPromote(
-      const FString& PartyId
-      , const FNakamaRtUserPresence& Presence
-    );
+  /*
+  *  Begin matchmaking as a party.
+  *
+  * @param PartyId	 Party ID.
+  * @param MinCount	 Minimum total user count to match together.
+  * @param MaxCount	 Maximum total user count to match together.
+  * @param Query	 Filter query used to identify suitable users.
+  * @param CountMultiple	 Optional multiple of the count that must be satisfied.
+  * @param StringProperties	 String properties.
+  * @param NumericProperties	 Numeric properties.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> PartyMatchmakerAdd(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , int32 MinCount
+    , int32 MaxCount
+    , const FString& Query
+    , FNakamaRtOptionalInt32 CountMultiple
+    , const TMap<FString, FString>& StringProperties
+    , const TMap<FString, double>& NumericProperties
+  );
 
-    /*
-    *  Accept a request to join.
-    *
-    * @param PartyId	 Party ID to accept a join request for.
-    * @param Presence	 The presence to accept as a party member.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyAccept(
-      const FString& PartyId
-      , const FNakamaRtUserPresence& Presence
-    );
+  /*
+  *  Cancel a party matchmaking process using a ticket.
+  *
+  * @param PartyId	 Party ID.
+  * @param Ticket	 The ticket to cancel.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyMatchmakerRemove(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , const FString& Ticket
+  );
 
-    /*
-    *  Kick a party member, or decline a request to join.
-    *
-    * @param PartyId	 Party ID to remove/reject from.
-    * @param Presence	 The presence to remove or reject.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyRemove(
-      const FString& PartyId
-      , const FNakamaRtUserPresence& Presence
-    );
+  /*
+  *  A client to server request to send data to a party.
+  *
+  * @param PartyId	 Party ID to send to.
+  * @param OpCode	 Op code value.
+  * @param Data	 Data payload, if any.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyDataSend(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , int64 OpCode
+    , const TArray<uint8>& Data
+  );
 
-    /*
-    *  End a party, kicking all party members and closing it.
-    *
-    * @param PartyId	 Party ID to close.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyClose(
-      const FString& PartyId
-    );
-
-    /*
-    *  Request a list of pending join requests for a party.
-    *
-    * @param PartyId	 Party ID to get a list of join requests for.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> PartyJoinRequestList(
-      const FString& PartyId
-    );
-
-    /*
-    *  Begin matchmaking as a party.
-    *
-    * @param PartyId	 Party ID.
-    * @param MinCount	 Minimum total user count to match together.
-    * @param MaxCount	 Maximum total user count to match together.
-    * @param Query	 Filter query used to identify suitable users.
-    * @param CountMultiple	 Optional multiple of the count that must be satisfied.
-    * @param StringProperties	 String properties.
-    * @param NumericProperties	 Numeric properties.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> PartyMatchmakerAdd(
-      const FString& PartyId
-      , int32 MinCount
-      , int32 MaxCount
-      , const FString& Query
-      , FNakamaRtOptionalInt32 CountMultiple
-      , const TMap<FString, FString>& StringProperties
-      , const TMap<FString, double>& NumericProperties
-    );
-
-    /*
-    *  Cancel a party matchmaking process using a ticket.
-    *
-    * @param PartyId	 Party ID.
-    * @param Ticket	 The ticket to cancel.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyMatchmakerRemove(
-      const FString& PartyId
-      , const FString& Ticket
-    );
-
-    /*
-    *  A client to server request to send data to a party.
-    *
-    * @param PartyId	 Party ID to send to.
-    * @param OpCode	 Op code value.
-    * @param Data	 Data payload, if any.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyDataSend(
-      const FString& PartyId
-      , int64 OpCode
-      , const TArray<uint8>& Data
-    );
-
-    /*
-    *  Update Party label and whether it's open or closed.
-    *
-    * @param PartyId	 Party ID.
-    * @param Label	 Label to set.
-    * @param Open	 Change the party to open or closed.
-    * @param Hidden	 Whether the party is visible in party listings.
-    */
-    NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyUpdate(
-      const FString& PartyId
-      , const FString& Label
-      , bool Open
-      , bool Hidden
-    );
-
-    // Event callbacks - bind to receive server-pushed events.
-    FDelegateOnChannelMessage OnChannelMessage;
-    FDelegateOnChannelPresenceEvent OnChannelPresenceEvent;
-    FDelegateOnMatchData OnMatchData;
-    FDelegateOnMatchPresenceEvent OnMatchPresenceEvent;
-    FDelegateOnMatchmakerMatched OnMatchmakerMatched;
-    FDelegateOnNotifications OnNotifications;
-    FDelegateOnPartyLeader OnPartyLeader;
-    FDelegateOnPartyJoinRequest OnPartyJoinRequest;
-    FDelegateOnPartyData OnPartyData;
-    FDelegateOnPartyPresenceEvent OnPartyPresenceEvent;
-    FDelegateOnStatusPresenceEvent OnStatusPresenceEvent;
-    FDelegateOnStreamData OnStreamData;
-    FDelegateOnStreamPresenceEvent OnStreamPresenceEvent;
-  };
+  /*
+  *  Update Party label and whether it's open or closed.
+  *
+  * @param PartyId	 Party ID.
+  * @param Label	 Label to set.
+  * @param Open	 Change the party to open or closed.
+  * @param Hidden	 Whether the party is visible in party listings.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyUpdate(
+    const TSharedPtr<FNakamaRtConnection>& Connection
+    , const FString& PartyId
+    , const FString& Label
+    , bool Open
+    , bool Hidden
+  );
 }
 

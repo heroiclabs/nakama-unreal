@@ -28,29 +28,37 @@
 USTRUCT(BlueprintType)
 struct FNakamaRtNotification : public FNakamaNotification
 {
-    GENERATED_BODY()
-    static FNakamaRtNotification FromJson(const TSharedPtr<FJsonObject>& Shared)
-    {
-      return static_cast<FNakamaRtNotification>(FNakamaNotification::FromJson(Shared));
-    }
+  GENERATED_BODY()
+
+  static FNakamaRtNotification FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtNotification>(FNakamaNotification::FromJson(Shared));
+  }
 };
 USTRUCT(BlueprintType)
 struct FNakamaRtRpc : public FNakamaRpc
 {
-    GENERATED_BODY()
-    static FNakamaRtRpc FromJson(const TSharedPtr<FJsonObject>& Shared)
-    {
-      return static_cast<FNakamaRtRpc>(FNakamaRpc::FromJson(Shared));
-    }
+  GENERATED_BODY()
+
+  static FNakamaRtRpc FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtRpc>(FNakamaRpc::FromJson(Shared));
+  }
 };
 USTRUCT(BlueprintType)
 struct FNakamaRtChannelMessage : public FNakamaChannelMessage
 {
-    GENERATED_BODY()
-    static FNakamaRtChannelMessage FromJson(const TSharedPtr<FJsonObject>& Shared)
-    {
-      return static_cast<FNakamaRtChannelMessage>(FNakamaChannelMessage::FromJson(Shared));
-    }
+  GENERATED_BODY()
+  static FNakamaRtChannelMessage FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtChannelMessage>(FNakamaChannelMessage::FromJson(Shared));
+  }
+};
+
+USTRUCT(BlueprintType)
+struct FNakamaRtEmptyResponse
+{
+  GENERATED_BODY();
 };
 /*
 * 

@@ -18,130 +18,22 @@
 
 #include "NakamaRt.h"
 
-namespace Nakama
+namespace NakamaRt
 {
 
-FNakamaRtClient::FNakamaRtClient(UGameInstance* InGi)
-{
-  if (InGi == nullptr)
-  {
-    UE_LOG(LogNakama, Error, TEXT("FNakamaRtClient constructor received null GameInstance pointer."));
-    return;
-  }
-  WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
-  if (WebSocketSubsystem.IsValid())
-  {
-    EventHandle = WebSocketSubsystem->ServerEventReceived.AddRaw(this, &FNakamaRtClient::HandleServerEvent);
-  }
-}
-
-FNakamaRtClient::~FNakamaRtClient()
-{
-  if (WebSocketSubsystem.IsValid())
-  {
-    WebSocketSubsystem->ServerEventReceived.Remove(EventHandle);
-    WebSocketSubsystem->Close();
-  }
-}
-
-TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
-  const FNakamaWebSocketConnectionParams& Params
-)
-{
-  if (!WebSocketSubsystem.IsValid())
-  {
-    return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-  }
-  return WebSocketSubsystem->Connect(Params);
-}
-
-void FNakamaRtClient::HandleServerEvent(const FString& Json)
-{
-  TSharedPtr<FJsonObject> Envelope;
-  TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
-  if (!FJsonSerializer::Deserialize(Reader, Envelope) || !Envelope.IsValid())
-  {
-    return;
-  }
-  if (OnChannelMessage.IsBound() && Envelope->HasField(TEXT("channel_message")))
-  {
-    OnChannelMessage.Broadcast(FNakamaRtChannelMessage::FromJson(Envelope->GetObjectField(TEXT("channel_message"))));
-    return;
-  }
-  if (OnChannelPresenceEvent.IsBound() && Envelope->HasField(TEXT("channel_presence_event")))
-  {
-    OnChannelPresenceEvent.Broadcast(FNakamaRtChannelPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("channel_presence_event"))));
-    return;
-  }
-  if (OnMatchData.IsBound() && Envelope->HasField(TEXT("match_data")))
-  {
-    OnMatchData.Broadcast(FNakamaRtMatchData::FromJson(Envelope->GetObjectField(TEXT("match_data"))));
-    return;
-  }
-  if (OnMatchPresenceEvent.IsBound() && Envelope->HasField(TEXT("match_presence_event")))
-  {
-    OnMatchPresenceEvent.Broadcast(FNakamaRtMatchPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("match_presence_event"))));
-    return;
-  }
-  if (OnMatchmakerMatched.IsBound() && Envelope->HasField(TEXT("matchmaker_matched")))
-  {
-    OnMatchmakerMatched.Broadcast(FNakamaRtMatchmakerMatched::FromJson(Envelope->GetObjectField(TEXT("matchmaker_matched"))));
-    return;
-  }
-  if (OnNotifications.IsBound() && Envelope->HasField(TEXT("notifications")))
-  {
-    OnNotifications.Broadcast(FNakamaRtNotifications::FromJson(Envelope->GetObjectField(TEXT("notifications"))));
-    return;
-  }
-  if (OnPartyLeader.IsBound() && Envelope->HasField(TEXT("party_leader")))
-  {
-    OnPartyLeader.Broadcast(FNakamaRtPartyLeader::FromJson(Envelope->GetObjectField(TEXT("party_leader"))));
-    return;
-  }
-  if (OnPartyJoinRequest.IsBound() && Envelope->HasField(TEXT("party_join_request")))
-  {
-    OnPartyJoinRequest.Broadcast(FNakamaRtPartyJoinRequest::FromJson(Envelope->GetObjectField(TEXT("party_join_request"))));
-    return;
-  }
-  if (OnPartyData.IsBound() && Envelope->HasField(TEXT("party_data")))
-  {
-    OnPartyData.Broadcast(FNakamaRtPartyData::FromJson(Envelope->GetObjectField(TEXT("party_data"))));
-    return;
-  }
-  if (OnPartyPresenceEvent.IsBound() && Envelope->HasField(TEXT("party_presence_event")))
-  {
-    OnPartyPresenceEvent.Broadcast(FNakamaRtPartyPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("party_presence_event"))));
-    return;
-  }
-  if (OnStatusPresenceEvent.IsBound() && Envelope->HasField(TEXT("status_presence_event")))
-  {
-    OnStatusPresenceEvent.Broadcast(FNakamaRtStatusPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("status_presence_event"))));
-    return;
-  }
-  if (OnStreamData.IsBound() && Envelope->HasField(TEXT("stream_data")))
-  {
-    OnStreamData.Broadcast(FNakamaRtStreamData::FromJson(Envelope->GetObjectField(TEXT("stream_data"))));
-    return;
-  }
-  if (OnStreamPresenceEvent.IsBound() && Envelope->HasField(TEXT("stream_presence_event")))
-  {
-    OnStreamPresenceEvent.Broadcast(FNakamaRtStreamPresenceEvent::FromJson(Envelope->GetObjectField(TEXT("stream_presence_event"))));
-    return;
-  }
-}
-
-TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
-  const FString& Target
+TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> ChannelJoin(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& Target
   , int32 Type
   , FNakamaRtOptionalBool Persistence
   , FNakamaRtOptionalBool Hidden
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtChannel> ErrorResult
       = FNakamaRtResult<FNakamaRtChannel>::Failure(Error);
@@ -154,58 +46,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> FNakamaRtClient::ChannelJoin(
   RequestMsg.Persistence = Persistence;
   RequestMsg.Hidden = Hidden;
 
-  return WebSocketSubsystem->Send(TEXT("channel_join"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("channel_join"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtChannel ResultData = FNakamaRtChannel::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtChannel> Result
+          = FNakamaRtResult<FNakamaRtChannel>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtChannel> ErrorResult
-          = FNakamaRtResult<FNakamaRtChannel>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtChannel ResultData = FNakamaRtChannel::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannel> Result
-        = FNakamaRtResult<FNakamaRtChannel>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtChannel> ErrorResult
+        = FNakamaRtResult<FNakamaRtChannel>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelLeave(
-  const FString& ChannelId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> ChannelLeave(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& ChannelId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -215,55 +110,58 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::ChannelL
   FNakamaRtChannelLeave RequestMsg;
   RequestMsg.ChannelId = ChannelId;
 
-  return WebSocketSubsystem->Send(TEXT("channel_leave"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("channel_leave"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::ChannelMessageSend(
-  const FString& ChannelId
+TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageSend(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& ChannelId
   , const FString& Content
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
@@ -274,60 +172,63 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
   RequestMsg.ChannelId = ChannelId;
   RequestMsg.Content = Content;
 
-  return WebSocketSubsystem->Send(TEXT("channel_message_send"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("channel_message_send"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtChannelMessageAck> Result
+          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
-          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
-        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
+        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::ChannelMessageUpdate(
-  const FString& ChannelId
+TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageUpdate(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& ChannelId
   , const FString& MessageId
   , const FString& Content
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
@@ -339,59 +240,62 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
   RequestMsg.MessageId = MessageId;
   RequestMsg.Content = Content;
 
-  return WebSocketSubsystem->Send(TEXT("channel_message_update"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("channel_message_update"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtChannelMessageAck> Result
+          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
-          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
-        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
+        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::ChannelMessageRemove(
-  const FString& ChannelId
+TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> ChannelMessageRemove(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& ChannelId
   , const FString& MessageId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
       = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
@@ -402,58 +306,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtChannelMessageAck>> FNakamaRtClient::Chan
   RequestMsg.ChannelId = ChannelId;
   RequestMsg.MessageId = MessageId;
 
-  return WebSocketSubsystem->Send(TEXT("channel_message_remove"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("channel_message_remove"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtChannelMessageAck> Result
+          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
-          = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtChannelMessageAck ResultData = FNakamaRtChannelMessageAck::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtChannelMessageAck> Result
-        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtChannelMessageAck> ErrorResult
+        = FNakamaRtResult<FNakamaRtChannelMessageAck>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchCreate(
-  const FString& Name
+TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchCreate(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& Name
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtMatch> ErrorResult
       = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
@@ -463,62 +370,65 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchCreate(
   FNakamaRtMatchCreate RequestMsg;
   RequestMsg.Name = Name;
 
-  return WebSocketSubsystem->Send(TEXT("match_create"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("match_create"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtMatch> Result
+          = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtMatch> ErrorResult
-          = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatch> Result
-        = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtMatch> ErrorResult
+        = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDataSend(
-  const FString& MatchId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchDataSend(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& MatchId
   , int64 OpCode
   , const TArray<uint8>& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -532,56 +442,59 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchDat
   RequestMsg.Presences = Presences;
   RequestMsg.Reliable = Reliable;
 
-  return WebSocketSubsystem->Send(TEXT("match_data_send"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("match_data_send"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
-  const FString& MatchId
+TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> MatchJoin(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& MatchId
   , const FString& Token
   , const TMap<FString, FString>& Metadata
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtMatch> ErrorResult
       = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
@@ -593,58 +506,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>> FNakamaRtClient::MatchJoin(
   RequestMsg.Token = Token;
   RequestMsg.Metadata = Metadata;
 
-  return WebSocketSubsystem->Send(TEXT("match_join"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("match_join"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtMatch> Result
+          = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtMatch> ErrorResult
-          = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtMatch ResultData = FNakamaRtMatch::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatch> Result
-        = FNakamaRtResult<FNakamaRtMatch>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtMatch> ErrorResult
+        = FNakamaRtResult<FNakamaRtMatch>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchLeave(
-  const FString& MatchId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchLeave(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& MatchId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -654,47 +570,50 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchLea
   FNakamaRtMatchLeave RequestMsg;
   RequestMsg.MatchId = MatchId;
 
-  return WebSocketSubsystem->Send(TEXT("match_leave"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("match_leave"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::MatchmakerAdd(
-  int32 MinCount
+TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> MatchmakerAdd(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , int32 MinCount
   , int32 MaxCount
   , const FString& Query
   , FNakamaRtOptionalInt32 CountMultiple
@@ -702,11 +621,11 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
   , const TMap<FString, double>& NumericProperties
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtMatchmakerTicket> ErrorResult
       = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Error);
@@ -721,58 +640,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>> FNakamaRtClient::Match
   RequestMsg.StringProperties = StringProperties;
   RequestMsg.NumericProperties = NumericProperties;
 
-  return WebSocketSubsystem->Send(TEXT("matchmaker_add"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("matchmaker_add"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtMatchmakerTicket ResultData = FNakamaRtMatchmakerTicket::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtMatchmakerTicket> Result
+          = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtMatchmakerTicket> ErrorResult
-          = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtMatchmakerTicket ResultData = FNakamaRtMatchmakerTicket::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtMatchmakerTicket> Result
-        = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtMatchmakerTicket> ErrorResult
+        = FNakamaRtResult<FNakamaRtMatchmakerTicket>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::MatchmakerRemove(
-  const FString& Ticket
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchmakerRemove(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& Ticket
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -782,56 +704,59 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::Matchmak
   FNakamaRtMatchmakerRemove RequestMsg;
   RequestMsg.Ticket = Ticket;
 
-  return WebSocketSubsystem->Send(TEXT("matchmaker_remove"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("matchmaker_remove"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
-  const FString& Id
+TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& Id
   , const FString& Payload
   , const FString& HttpKey
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtRpc> ErrorResult
       = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
@@ -843,59 +768,62 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> FNakamaRtClient::Rpc(
   RequestMsg.Payload = Payload;
   RequestMsg.HttpKey = HttpKey;
 
-  return WebSocketSubsystem->Send(TEXT("rpc"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("rpc"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtRpc ResultData = FNakamaRtRpc::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtRpc> Result
+          = FNakamaRtResult<FNakamaRtRpc>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtRpc> ErrorResult
-          = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtRpc ResultData = FNakamaRtRpc::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtRpc> Result
-        = FNakamaRtResult<FNakamaRtRpc>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtRpc> ErrorResult
+        = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
-  const TArray<FString>& UserIds
+TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> StatusFollow(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const TArray<FString>& UserIds
   , const TArray<FString>& Usernames
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtStatus> ErrorResult
       = FNakamaRtResult<FNakamaRtStatus>::Failure(Error);
@@ -906,58 +834,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtStatus>> FNakamaRtClient::StatusFollow(
   RequestMsg.UserIds = UserIds;
   RequestMsg.Usernames = Usernames;
 
-  return WebSocketSubsystem->Send(TEXT("status_follow"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("status_follow"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtStatus ResultData = FNakamaRtStatus::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtStatus> Result
+          = FNakamaRtResult<FNakamaRtStatus>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtStatus> ErrorResult
-          = FNakamaRtResult<FNakamaRtStatus>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtStatus ResultData = FNakamaRtStatus::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtStatus> Result
-        = FNakamaRtResult<FNakamaRtStatus>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtStatus> ErrorResult
+        = FNakamaRtResult<FNakamaRtStatus>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUnfollow(
-  const TArray<FString>& UserIds
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUnfollow(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const TArray<FString>& UserIds
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -967,54 +898,57 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUn
   FNakamaRtStatusUnfollow RequestMsg;
   RequestMsg.UserIds = UserIds;
 
-  return WebSocketSubsystem->Send(TEXT("status_unfollow"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("status_unfollow"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUpdate(
-  const FString& Status
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> StatusUpdate(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& Status
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1024,53 +958,56 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::StatusUp
   FNakamaRtStatusUpdate RequestMsg;
   RequestMsg.Status = Status;
 
-  return WebSocketSubsystem->Send(TEXT("status_update"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("status_update"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> FNakamaRtClient::Ping(
+TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> Ping(
+  const TSharedPtr<FNakamaRtConnection>& Connection
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtPong> ErrorResult
       = FNakamaRtResult<FNakamaRtPong>::Failure(Error);
@@ -1079,61 +1016,64 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPong>> FNakamaRtClient::Ping(
 
   FNakamaRtPing RequestMsg;
 
-  return WebSocketSubsystem->Send(TEXT("ping"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("ping"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtPong ResultData = FNakamaRtPong::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtPong> Result
+          = FNakamaRtResult<FNakamaRtPong>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtPong> ErrorResult
-          = FNakamaRtResult<FNakamaRtPong>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtPong ResultData = FNakamaRtPong::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPong> Result
-        = FNakamaRtResult<FNakamaRtPong>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtPong> ErrorResult
+        = FNakamaRtResult<FNakamaRtPong>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
-  bool Open
+TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> PartyCreate(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , bool Open
   , int32 MaxSize
   , const FString& Label
   , bool Hidden
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtParty> ErrorResult
       = FNakamaRtResult<FNakamaRtParty>::Failure(Error);
@@ -1146,58 +1086,61 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtParty>> FNakamaRtClient::PartyCreate(
   RequestMsg.Label = Label;
   RequestMsg.Hidden = Hidden;
 
-  return WebSocketSubsystem->Send(TEXT("party_create"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_create"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtParty ResultData = FNakamaRtParty::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtParty> Result
+          = FNakamaRtResult<FNakamaRtParty>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtParty> ErrorResult
-          = FNakamaRtResult<FNakamaRtParty>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtParty ResultData = FNakamaRtParty::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtParty> Result
-        = FNakamaRtResult<FNakamaRtParty>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtParty> ErrorResult
+        = FNakamaRtResult<FNakamaRtParty>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoin(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyJoin(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1207,54 +1150,57 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyJoi
   FNakamaRtPartyJoin RequestMsg;
   RequestMsg.PartyId = PartyId;
 
-  return WebSocketSubsystem->Send(TEXT("party_join"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_join"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLeave(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyLeave(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1264,55 +1210,58 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyLea
   FNakamaRtPartyLeave RequestMsg;
   RequestMsg.PartyId = PartyId;
 
-  return WebSocketSubsystem->Send(TEXT("party_leave"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_leave"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPromote(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyPromote(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1323,55 +1272,58 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyPro
   RequestMsg.PartyId = PartyId;
   RequestMsg.Presence = Presence;
 
-  return WebSocketSubsystem->Send(TEXT("party_promote"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_promote"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAccept(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyAccept(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1382,55 +1334,58 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyAcc
   RequestMsg.PartyId = PartyId;
   RequestMsg.Presence = Presence;
 
-  return WebSocketSubsystem->Send(TEXT("party_accept"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_accept"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRemove(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyRemove(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1441,54 +1396,57 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyRem
   RequestMsg.PartyId = PartyId;
   RequestMsg.Presence = Presence;
 
-  return WebSocketSubsystem->Send(TEXT("party_remove"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_remove"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClose(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyClose(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1498,54 +1456,57 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyClo
   FNakamaRtPartyClose RequestMsg;
   RequestMsg.PartyId = PartyId;
 
-  return WebSocketSubsystem->Send(TEXT("party_close"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_close"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> FNakamaRtClient::PartyJoinRequestList(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> PartyJoinRequestList(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtPartyJoinRequest> ErrorResult
       = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Failure(Error);
@@ -1555,51 +1516,54 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyJoinRequest>> FNakamaRtClient::Party
   FNakamaRtPartyJoinRequestList RequestMsg;
   RequestMsg.PartyId = PartyId;
 
-  return WebSocketSubsystem->Send(TEXT("party_join_request_list"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_join_request_list"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtPartyJoinRequest ResultData = FNakamaRtPartyJoinRequest::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtPartyJoinRequest> Result
+          = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtPartyJoinRequest> ErrorResult
-          = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtPartyJoinRequest ResultData = FNakamaRtPartyJoinRequest::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPartyJoinRequest> Result
-        = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtPartyJoinRequest> ErrorResult
+        = FNakamaRtResult<FNakamaRtPartyJoinRequest>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::PartyMatchmakerAdd(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> PartyMatchmakerAdd(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
@@ -1608,11 +1572,11 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
   , const TMap<FString, double>& NumericProperties
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> ErrorResult
       = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Failure(Error);
@@ -1628,59 +1592,62 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>> FNakamaRtClient::
   RequestMsg.StringProperties = StringProperties;
   RequestMsg.NumericProperties = NumericProperties;
 
-  return WebSocketSubsystem->Send(TEXT("party_matchmaker_add"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_matchmaker_add"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        FNakamaRtPartyMatchmakerTicket ResultData = FNakamaRtPartyMatchmakerTicket::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> Result
+          = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Success(ResultData);
+
+        return MakeCompletedFuture(Result);
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> ErrorResult
-          = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      FNakamaRtPartyMatchmakerTicket ResultData = FNakamaRtPartyMatchmakerTicket::FromJson(Response.Data);
-      FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> Result
-        = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Success(ResultData);
 
-      return MakeCompletedFuture(Result);
-
+      FNakamaRtResult<FNakamaRtPartyMatchmakerTicket> ErrorResult
+        = FNakamaRtResult<FNakamaRtPartyMatchmakerTicket>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyMatchmakerRemove(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyMatchmakerRemove(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , const FString& Ticket
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1691,56 +1658,59 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyMat
   RequestMsg.PartyId = PartyId;
   RequestMsg.Ticket = Ticket;
 
-  return WebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_matchmaker_remove"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDataSend(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyDataSend(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , int64 OpCode
   , const TArray<uint8>& Data
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1752,57 +1722,60 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyDat
   RequestMsg.OpCode = OpCode;
   RequestMsg.Data = Data;
 
-  return WebSocketSubsystem->Send(TEXT("party_data_send"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_data_send"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyUpdate(
-  const FString& PartyId
+TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> PartyUpdate(
+  const TSharedPtr<FNakamaRtConnection>& Connection
+  , const FString& PartyId
   , const FString& Label
   , bool Open
   , bool Hidden
 )
 {
-  if (!WebSocketSubsystem.IsValid())
+  if (!Connection.IsValid())
   {
     FNakamaRtError Error;
     Error.Code = -1;
-    Error.Message = TEXT("WebSocketSubsystem is not initialized or is invalid.");
+    Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
     FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
       = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
@@ -1815,42 +1788,44 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> FNakamaRtClient::PartyUpd
   RequestMsg.Open = Open;
   RequestMsg.Hidden = Hidden;
 
-  return WebSocketSubsystem->Send(TEXT("party_update"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("party_update"), RequestMsg.ToJson())
     .Next([](FNakamaWebSocketResponse Response)
     {
+      if (Response.ErrorCode == ENakamaWebSocketError::None)
+      {
+        return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
+      }
+
       FNakamaRtError Error;
       Error.Code = -1;
-
-      if (Response.ErrorCode != ENakamaWebSocketError::None)
+      switch (Response.ErrorCode)
       {
-        switch (Response.ErrorCode)
-        {
-          case ENakamaWebSocketError::ConnectionAlreadyInProgress:
-            Error.Message = TEXT("WebSocketSubsystem connection is in progress.");
-            break;
-          case ENakamaWebSocketError::ConnectionFailed:
-            Error.Message = TEXT("WebSocketSubsystem failed to connect.");
-            break;
-          case ENakamaWebSocketError::NotConnected:
-            Error.Message = TEXT("WebSocketSubsystem is not connected.");
-            break;
-          case ENakamaWebSocketError::ConnectionClosed:
-            Error.Message = TEXT("WebSocketSubsystem connection was closed.");
-            break;
-          case ENakamaWebSocketError::ServerError:
-            Error = FNakamaRtError::FromJson(Response.Data);
-            break;
-          default:
-            Error.Message = TEXT("Unknown error.");
-            break;
-        }
-
-        FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
-          = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
-        return MakeCompletedFuture(ErrorResult);
+        case ENakamaWebSocketError::ConnectionAlreadyInProgress:
+          Error.Message = TEXT("Connection is in progress.");
+          break;
+        case ENakamaWebSocketError::ConnectionFailed:
+          Error.Message = TEXT("WebSocket failed to connect.");
+          break;
+        case ENakamaWebSocketError::ConnectionAborted:
+          Error.Message = TEXT("WebSocket connection aborted.");
+          break;
+        case ENakamaWebSocketError::NotConnected:
+          Error.Message = TEXT("WebSocket is not connected.");
+          break;
+        case ENakamaWebSocketError::ConnectionClosed:
+          Error.Message = TEXT("WebSocket connection was closed.");
+          break;
+        case ENakamaWebSocketError::ServerError:
+          Error = FNakamaRtError::FromJson(Response.Data);
+          break;
+        default:
+          Error.Message = TEXT("Unknown error.");
+          break;
       }
-      return MakeCompletedFuture(FNakamaRtResult<FNakamaRtEmptyResponse>::Success({}));
 
+      FNakamaRtResult<FNakamaRtEmptyResponse> ErrorResult
+        = FNakamaRtResult<FNakamaRtEmptyResponse>::Failure(Error);
+      return MakeCompletedFuture(ErrorResult);
     });
 }
 
