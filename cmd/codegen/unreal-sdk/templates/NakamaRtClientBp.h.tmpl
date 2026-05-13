@@ -21,7 +21,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "NakamaRtTypes.h"
-#include "NakamaWebSocketSubsystem.h"
+#include "NakamaRtConnection.h"
 
 #include "NakamaRtClientBlueprintLibrary.generated.h"
 
@@ -63,7 +63,7 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtEmptyResponse OnError;
-  {{- end -}}
+  {{- end }}
 
   UFUNCTION(
     BlueprintCallable
@@ -84,7 +84,7 @@ public:
   )
   static UNakamaRealtimeClient{{ $func.Name }}* {{ $func.Name }}(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     {{- range $idx, $param := $func.Params }}
     , {{ $param.Metadata.ParamType }} {{ $param.Name }}
     {{- end }}
@@ -93,7 +93,7 @@ public:
   virtual void Activate() override;
 
 private:
-  TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
+  TSharedPtr<FNakamaRtConnection> StoredConnection;
 
   {{- range $param := $func.Params }}
   {{ $param.Type }} Stored{{ $param.Name }};

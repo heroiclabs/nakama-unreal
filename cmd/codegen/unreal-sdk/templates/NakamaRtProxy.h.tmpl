@@ -1,0 +1,77 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NakamaRt.h"
+#include "NakamaRtProxy.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnected, const FNakamaWebSocketConnectionResult&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnWebSocketClosed, int32, StatusCode, const FString&, Reason, bool, WasClean);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateOnMessageError, EWebSocketMessageError, ErrorType, const FString&, Message);
+
+//
+// Delegates for event callbacks (dynamic = BlueprintAssignable; native = C++ AddLambda)
+{{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOn{{ $t.Name }}, const FNakamaRt{{ $t.Name }}&, Data);
+DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOn{{ $t.Name }}, const FNakamaRt{{ $t.Name }}&);
+{{- end }}{{- end }}
+
+UCLASS(BlueprintType)
+class NAKAMA_API UNakamaRtProxy : public UObject
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(BlueprintReadonly, Category = "Nakama|Realtime")
+  FNakamaRtConnectionHandle ConnectionHandle;
+
+  UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
+  FDelegateOnWebSocketConnected OnConnected;
+
+  UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
+  FDelegateOnWebSocketClosed OnClosed;
+
+  UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
+  FDelegateOnMessageError OnMessageError;
+
+  {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+
+  UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
+  FDelegateOn{{ $t.Name }} On{{ $t.Name }};
+
+  FNativeDelegateOn{{ $t.Name }} On{{ $t.Name }}Native;
+  {{- end }}{{- end }}
+
+  UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
+  static UNakamaRtProxy* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
+
+  UFUNCTION(BlueprintCallable)
+  int32 GetPendingRequestCount()
+  {
+    if (!ConnectionHandle.Connection.IsValid())
+    {
+      return 0;
+    }
+    return ConnectionHandle.Connection->GetPendingRequestCount();
+  }
+};
+
+NAKAMA_API void SetupRtEventHandlers(const TSharedPtr<FNakamaRtConnection>& Connection, UNakamaRtProxy* Proxy);
+NAKAMA_API void HandleServerEvent(UNakamaRtProxy* Proxy, const TSharedPtr<FJsonObject>& Envelope);

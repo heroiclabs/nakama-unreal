@@ -17,20 +17,20 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "NakamaRtClientBlueprintLibrary.h"
-#include "NakamaApi.h"
+#include "NakamaRt.h"
 
 {{- range $func := $.Funcs }}
 
 UNakamaRealtimeClient{{ $func.Name }}* UNakamaRealtimeClient{{ $func.Name }}::{{ $func.Name }}(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   {{- range $idx, $param := $func.Params }}
   , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 )
 {
   UNakamaRealtimeClient{{ $func.Name }}* Action = NewObject<UNakamaRealtimeClient{{ $func.Name }}>(GetTransientPackage());
-  Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+  Action->StoredConnection = ConnectionHandle.Connection;
 
   {{- range $param := $func.Params }}
   Action->Stored{{ $param.Name }} = {{ $param.Name }};
@@ -45,10 +45,10 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
   static const TCHAR* TraceScope_{{ $func.Name }} = TEXT("NakamaRTBP_{{ $func.Name }}");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $func.Name }});
 
-  if (!StoredWebSocketSubsystem)
+  if (!StoredConnection.IsValid())
   {
     FNakamaRtError Err;
-    Err.Message = TEXT("WebSocket subsystem is null");
+    Err.Message = TEXT("Realtime Connection is invalid");
     {{- if ne $func.ReturnType.Name "EmptyResponse" }}
     OnError.Broadcast(Err, {});
     {{- else }}
@@ -59,81 +59,38 @@ void UNakamaRealtimeClient{{ $func.Name }}::Activate()
   }
 
   TWeakObjectPtr<UNakamaRealtimeClient{{ $func.Name }}> WeakThis(this);
-
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  {{- range $param := $func.Params }}
-
-  {{- if $param.Metadata.Repeated }}
-  if (Stored{{ $param.Name }}.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : Stored{{ $param.Name }})
-    {
-      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.JsonSerializeFn }}));
-    }
-    Json->SetArrayField(TEXT("{{ $param.Metadata.JsonFieldName }}"), Array);
-  }
-  {{- else if $param.Metadata.IsMap }}
-  if (Stored{{ $param.Name }}.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Stored{{ $param.Name }})
-    {
-      MapObj->{{ $param.TypeEntry.JsonSetter }}(Pair.Key, Pair.Value);
-    }
-    Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
-  }
-  {{- else }}
-  {{ if eq "NonZero" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }} != 0)
-  {{ else if ne "" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
-  {
-    {{- if eq "TArray<uint8>" $param.TypeEntry.FieldType }}
-    Json->SetStringField(TEXT("{{ $param.Metadata.JsonFieldName }}"), FBase64::Encode(Stored{{ $param.Name }}.GetData(), Stored{{ $param.Name }}.Num()));
-    {{- else }}
-    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.JsonSerializeFn }});
+  NakamaRt::{{ $func.Name }}(
+    StoredConnection
+    {{- range $param := $func.Params }}
+    , Stored{{ $param.Name }}
     {{- end }}
-  }
-  {{- end }}
-
-  {{- end }}
-
-  StoredWebSocketSubsystem->Send(TEXT("{{ $func.Metadata.RpcName }}"), Json)
-    .Next([WeakThis](FNakamaWebSocketResponse Resp)
+  )
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRt{{ $func.ReturnType.Name }}> Resp)
+  {
+    auto* Self = WeakThis.Get();
+    if (!Self)
     {
-      auto* Self = WeakThis.Get();
-      if (!Self)
-      {
-        return;
-      }
+      return;
+    }
 
-      if (Resp.ErrorCode == ENakamaWebSocketError::None)
-      {
-        {{- if ne $func.ReturnType.Name "EmptyResponse" }}
-        FNakamaRt{{ $func.ReturnType.Name }} Result = FNakamaRt{{ $func.ReturnType.Name }}::FromJson(Resp.Data);
-        Self->OnSuccess.Broadcast({}, Result);
-        {{- else }}
-        Self->OnSuccess.Broadcast({});
-        {{- end }}
-      }
-      else
-      {
-        FNakamaRtError Err;
-        if (Resp.Data.IsValid())
-        {
-          Err = FNakamaRtError::FromJson(Resp.Data);
-        }
-        else
-        {
-          Err.Code = static_cast<int32>(Resp.ErrorCode);
-        }
-        {{- if ne $func.ReturnType.Name "EmptyResponse" }}
-        Self->OnError.Broadcast(Err, {});
-        {{- else }}
-        Self->OnError.Broadcast(Err);
-        {{- end }}
-      }
-      Self->SetReadyToDestroy();
-    });
+    if (Resp.bIsSuccess)
+    {
+      {{- if ne $func.ReturnType.Name "EmptyResponse" }}
+      Self->OnSuccess.Broadcast({}, Resp.Data.GetValue());
+      {{- else }}
+      Self->OnSuccess.Broadcast({});
+      {{- end }}
+    }
+    else
+    {
+      {{- if ne $func.ReturnType.Name "EmptyResponse" }}
+      Self->OnError.Broadcast(Resp.Error.GetValue(), {});
+      {{- else }}
+      Self->OnError.Broadcast(Resp.Error.GetValue());
+      {{- end }}
+    }
+    Self->SetReadyToDestroy();
+  });
 }
 
 {{- end }}
