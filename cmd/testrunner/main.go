@@ -31,7 +31,7 @@ func addTestShard(name string, reportDir string) {
 var defaultShardNames = []string{
 	"IntegrationTests.Nakama",
 	"IntegrationTests.NakamaBlueprint",
-	"IntegrationTests.NakamaWebSocketSubsystem",
+	"IntegrationTests.NakamaRtConnection",
 	"IntegrationTests.NakamaRt",
 	"IntegrationTests.Satori",
 	"IntegrationTests.SatoriBlueprint",
