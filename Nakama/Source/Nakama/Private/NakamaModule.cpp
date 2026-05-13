@@ -20,6 +20,11 @@
 void FNakamaModule::StartupModule()
 {
 	UE_LOG(LogNakama, Log, TEXT("Nakama module starting"));
+	
+	if (!FModuleManager::Get().IsModuleLoaded("WebSockets"))
+	{
+		FModuleManager::Get().LoadModule("WebSockets");
+	}
 }
 
 void FNakamaModule::ShutdownModule()
