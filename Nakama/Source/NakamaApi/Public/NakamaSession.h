@@ -24,11 +24,11 @@ USTRUCT(BlueprintType)
 struct NAKAMAAPI_API FNakamaSession
 {
 	GENERATED_BODY()
-
-	/** True if the corresponding account was just created, false otherwise. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
-	bool Created = false;
 	
+	/** Session variables from the auth token JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	TMap<FString, FString> Vars;
+
 	/** Authentication credentials. */
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
 	FString Token;
@@ -57,9 +57,9 @@ struct NAKAMAAPI_API FNakamaSession
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
 	int64 RefreshTokenExpiresAt = 0;
 
-	/** Session variables from the auth token JWT. */
+	/** True if the corresponding account was just created, false otherwise. */
 	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
-	TMap<FString, FString> Vars;
+	bool Created = false;
 
 	/** True if the auth token expires within BufferSeconds from now. */
 	bool IsExpired(int64 BufferSeconds = 0) const noexcept;
