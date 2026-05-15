@@ -1,0 +1,131 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "SatoriTypes.h"
+
+{{- range $type := $.Types }}
+
+FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FSatori{{ $type.Name }} Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+
+  {{- range $member := $type.Members }}
+  if (Json->HasField(TEXT("{{ $member.Metadata.JsonFieldName }}")))
+  {
+    {{- if $member.Metadata.Repeated }}
+      const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+      if (Json->TryGetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), ArrayPtr))
+      {
+        for (const auto& Item : *ArrayPtr)
+        {
+          {{- if not $member.Metadata.IsMessageType }}
+          {{- if $member.TypeEntry.JsonDeserializeFn }}
+          {{ $member.TypeEntry.FieldType }} TmpVal;
+          {{ $member.TypeEntry.JsonDeserializeFn }}(*Item->{{ $member.TypeEntry.JsonToTypeMethod }}, TmpVal);
+          Result.{{ $member.Name }}.Add(TmpVal);
+          {{- else }}
+          Result.{{ $member.Name }}.Add({{ $member.TypeEntry.JsonCast }}(Item->{{ $member.TypeEntry.JsonToTypeMethod }}));
+          {{- end }}
+          {{- else }}
+          const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+          if (Item->TryGetObject(ItemObj) && ItemObj)
+          {
+            Result.{{ $member.Name }}.Add({{ $member.TypeEntry.FieldType }}::FromJson(*ItemObj));
+          }
+          {{- end }}
+        }
+      }
+    {{- else if $member.Metadata.IsMap }}
+      const TSharedPtr<FJsonObject>* MapObj;
+      if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), MapObj))
+      {
+        for (const auto& Pair : (*MapObj)->Values)
+        {
+          Result.{{ $member.Name }}.Add(Pair.Key, Pair.Value->{{ $member.TypeEntry.JsonToTypeMethod }});
+        }
+      }
+    {{- else }}
+      {{- if $member.Metadata.IsEnumType }}
+      Result.{{ $member.Name }} = static_cast<{{ $member.Type }}>(Json->GetIntegerField(TEXT("{{ $member.Metadata.JsonFieldName }}")));
+      {{- else if not $member.Metadata.IsMessageType }}
+      {{- if $member.TypeEntry.JsonDeserializeFn }}
+      {{ $member.TypeEntry.JsonDeserializeFn }}(*Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}")), Result.{{ $member.Name }});
+      {{- else }}
+      Result.{{ $member.Name }} = Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"));
+      {{- end }}
+      {{- else }}
+      const TSharedPtr<FJsonObject>* NestedObj;
+      if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))
+      {
+        Result.{{ $member.Name }} = ({{ $member.Type }}::FromJson(*NestedObj));
+      }
+      {{- end }}
+    {{- end }}
+  }
+  {{- end }}
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  {{- range $member := $type.Members }}
+
+  {{- if $member.Metadata.Repeated }}
+  if ({{ $member.Name }}.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : {{ $member.Name }})
+    {
+      Array.Add(MakeShared<{{ $member.TypeEntry.JsonArrayValue }}>(Item{{ $member.TypeEntry.JsonSerializeFn }}));
+    }
+    Json->SetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), Array);
+  }
+  {{- else if $member.Metadata.IsMap }}
+  if ({{ $member.Name }}.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : {{ $member.Name }})
+    {
+      MapObj->{{ $member.TypeEntry.JsonSetter }}(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), MapObj);
+  }
+  {{- else }}
+  {{ if eq "NonZero" $member.TypeEntry.EmptyCheck }}if ({{ $member.Name }} != 0)
+  {{ else if ne "" $member.TypeEntry.EmptyCheck }}if ({{ $member.Name }}.{{ $member.TypeEntry.EmptyCheck }}() == false){{ end }}
+  {
+    {{- if $member.Metadata.IsEnumType }}
+    Json->SetNumberField(TEXT("{{ $member.Metadata.JsonFieldName }}"), static_cast<int32>({{ $member.Name }}));
+    {{- else }}
+    Json->{{ $member.TypeEntry.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.TypeEntry.JsonSerializeFn }});
+    {{- end }}
+  }
+  {{- end }}
+
+  {{- end }}
+
+  return Json;
+}
+
+{{- end }}
+

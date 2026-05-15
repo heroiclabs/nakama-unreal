@@ -1,0 +1,156 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaApi.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+#include "NakamaHttpHelper.h"
+
+DEFINE_LOG_CATEGORY(LogNakama);
+
+using namespace NakamaHttpInternal;
+
+{{ range $func := $.Funcs }}
+
+NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
+  const FNakamaClientConfig& Config,
+  {{- range $idx, $param := $func.Params }}
+  {{ $param.Metadata.ParamType }} {{ $param.Name }},
+  {{- end }}
+  TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
+  TFunction<void(const FNakamaError&)> OnError,
+  float Timeout,
+  TSharedRef<TAtomic<bool>> CancellationToken
+)
+{
+  FString Endpoint = TEXT("{{ $func.Metadata.Endpoint }}");
+  // 
+  // Fill Path Params
+  {{- range $pathParam := $func.Metadata.PathParams }}
+  const FString Encoded_{{ $pathParam.Name }} = FGenericPlatformHttp::UrlEncode({{ $pathParam.Name }});
+  Endpoint = Endpoint.Replace(TEXT("{ {{- $pathParam.PathName -}} }"), *Encoded_{{ $pathParam.Name }});
+  {{- end }}
+
+  // 
+  // Fill Query Params
+  TArray<FString> QueryParams;
+  {{- range $queryParam := $func.Metadata.QueryParams }}
+  {{- if $queryParam.Repeated }}
+  for ({{ $queryParam.Param }} Item : {{ $queryParam.Name }})
+  {
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item)));
+  }
+  {{- else }}
+  {{ if eq "NonZero" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }} != 0)
+  {{ else if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
+  {
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }}{{ $queryParam.JsonSerializeFn }})));
+  }
+  {{- end }}
+  {{- end }}
+  if (QueryParams.Num() > 0)
+  {
+    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+  }
+
+  //
+  // Fill Body Params
+  {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+  {{- $bodyParam := index $func.Metadata.BodyParams 0 }}
+  FString RawBody;
+  {{ if eq "NonZero" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }} != 0)
+  {{ else if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
+  {
+    FString Escaped = {{ $bodyParam.Name }}.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    RawBody = TEXT("\"") + Escaped + TEXT("\"");
+  }
+  {{- else }}
+  TSharedPtr<FJsonObject> Body;
+  {{- if $func.Metadata.BodyParams }}
+  {{- if $func.Metadata.IsScalarBody }}
+  {{- $bodyParam := index $func.Metadata.BodyParams 0 }}
+  Body = {{ $bodyParam.Name }}{{ $bodyParam.JsonSerializeFn }};
+  {{- else }}
+  Body = MakeShared<FJsonObject>();
+  {{- range $bodyParam := $func.Metadata.BodyParams }}
+
+  {{- if $bodyParam.Repeated }}
+  if ({{ $bodyParam.Name }}.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for ({{ $bodyParam.Param }} Item : {{ $bodyParam.Name }})
+    {
+      Array.Add(MakeShared<{{ $bodyParam.JsonArrayValue }}>(Item{{ $bodyParam.JsonSerializeFn }}));
+    }
+    Body->SetArrayField(TEXT("{{ $bodyParam.JsonFieldName }}"), Array);
+  }
+  {{- else if $bodyParam.IsMap }}
+  if ({{ $bodyParam.Name }}.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : {{ $bodyParam.Name }})
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("{{ $bodyParam.JsonFieldName }}"), MapObj);
+  }
+  {{- else }}
+  {{ if eq "NonZero" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }} != 0)
+  {{ else if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
+  {
+    Body->{{ $bodyParam.JsonSetter }}(TEXT("{{ $bodyParam.JsonFieldName }}"), {{ $bodyParam.Name }}{{ $bodyParam.JsonSerializeFn }});
+  }
+  {{- end }}
+
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+
+  //
+  // Make the request
+  {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+  SendRequest(
+  {{- else }}
+  MakeRequest(
+  {{- end }}
+    Config,
+    Endpoint,
+    TEXT("{{ $func.Metadata.Method }}"),
+    {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+    RawBody,
+    {{- else }}
+    Body,
+    {{- end }}
+    ENakamaRequestAuth::{{ $func.Metadata.AuthType }},
+    {{ $func.Metadata.AuthKey }},
+    [OnSuccess](TSharedPtr<FJsonObject> Json)
+    {
+      if (OnSuccess)
+      {
+      {{ if ne "" $func.Metadata.ReturnTypeName }}
+        {{ $func.Metadata.ReturnTypeName }} Result = {{ $func.Metadata.ReturnTypeName }}::FromJson(Json);
+        OnSuccess(Result);
+      {{ else }}
+        OnSuccess();
+      {{ end }}
+      }
+    },
+    OnError, Timeout, CancellationToken);
+}
+
+{{ end }}

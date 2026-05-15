@@ -1,0 +1,99 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NakamaOptionals.h"
+#include "NakamaTypes.h"
+#include "NakamaRtTypes.generated.h"
+
+//
+// Shadow these from the other Nakama Types.
+USTRUCT(BlueprintType)
+struct FNakamaRtNotification : public FNakamaNotification
+{
+  GENERATED_BODY()
+
+  static FNakamaRtNotification FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtNotification>(FNakamaNotification::FromJson(Shared));
+  }
+};
+USTRUCT(BlueprintType)
+struct FNakamaRtRpc : public FNakamaRpc
+{
+  GENERATED_BODY()
+
+  static FNakamaRtRpc FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtRpc>(FNakamaRpc::FromJson(Shared));
+  }
+};
+USTRUCT(BlueprintType)
+struct FNakamaRtChannelMessage : public FNakamaChannelMessage
+{
+  GENERATED_BODY()
+  static FNakamaRtChannelMessage FromJson(const TSharedPtr<FJsonObject>& Shared)
+  {
+    return static_cast<FNakamaRtChannelMessage>(FNakamaChannelMessage::FromJson(Shared));
+  }
+};
+
+USTRUCT(BlueprintType)
+struct FNakamaRtEmptyResponse
+{
+  GENERATED_BODY();
+};
+
+{{- range $enum := $.Enums }}
+/*
+* {{ $enum.Comment }}
+*/
+UENUM(BlueprintType)
+enum class ENakamaRt{{ $enum.Name }} : uint8
+{
+  {{- range $idx, $field := $enum.Fields }}
+  {{ if ne 0 $idx }}, {{ end }}{{ $field.Name }} = {{ $field.Value }} // {{ $field.Comment }}
+  {{- end }}
+};
+{{- end }}
+
+{{- range $type := $.Types }}
+
+/*
+* {{ $type.Comment }}
+*/
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRt{{ $type.Name }}
+{
+  GENERATED_BODY()
+
+  {{- range $member := $type.Members }}
+
+  /** {{ $member.Comment }} */
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
+  {{ $member.Type }} {{ $member.Name }}{{ if and (not $member.Metadata.IsMap) (not $member.Metadata.Repeated) ($member.TypeEntry.DefaultValue) }} = {{ $member.TypeEntry.DefaultValue }}{{ end }};
+
+  {{- end }}
+
+  static FNakamaRt{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+{{- end }}

@@ -1,0 +1,111 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaRtProxy.h"
+
+UNakamaRtProxy* UNakamaRtProxy::CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params)
+{
+  UNakamaRtProxy* Proxy = NewObject<UNakamaRtProxy>();
+
+  FNakamaRtConnectionHandle Handle;
+  Handle.Connection = MakeShared<FNakamaRtConnection>();
+
+  TWeakObjectPtr<UNakamaRtProxy> WeakProxy = Proxy;
+  Handle.Connection->Connect(Params)
+    .Next([Handle, WeakProxy](const FNakamaWebSocketConnectionResult& Result)
+    {
+      UNakamaRtProxy* StrongProxy = WeakProxy.Get();
+      if (!StrongProxy)
+      {
+        return;
+      }
+      if (Result.ErrorCode == ENakamaWebSocketError::None)
+      {
+        SetupRtEventHandlers(Handle.Connection, StrongProxy);
+      }
+      StrongProxy->OnConnected.Broadcast(Result);
+    });
+
+  Proxy->ConnectionHandle = Handle;
+
+  return Proxy;
+}
+
+void SetupRtEventHandlers(const TSharedPtr<FNakamaRtConnection>& Connection, UNakamaRtProxy* Proxy)
+{
+  TWeakObjectPtr<UNakamaRtProxy> WeakProxy = Proxy;
+
+  Connection->ServerEventReceived.AddLambda([WeakProxy](const TSharedPtr<FJsonObject>& Envelope)
+  {
+    AsyncTask(ENamedThreads::GameThread, [WeakProxy, Envelope]
+    {
+      if (UNakamaRtProxy* StrongProxy = WeakProxy.Get())
+      {
+        HandleServerEvent(StrongProxy, Envelope);
+      }
+    });
+  });
+
+  Connection->Closed.AddLambda([WeakProxy](int32 StatusCode, const FString& Reason, bool bWasClean)
+  {
+    AsyncTask(ENamedThreads::GameThread, [WeakProxy, StatusCode, Reason, bWasClean]
+    {
+      if (UNakamaRtProxy* StrongProxy = WeakProxy.Get())
+      {
+        StrongProxy->OnClosed.Broadcast(StatusCode, Reason, bWasClean);
+      }
+    });
+  });
+
+  Connection->MessageError.AddLambda([WeakProxy](EWebSocketMessageError ErrorType, const FString& Message)
+  {
+    AsyncTask(ENamedThreads::GameThread, [WeakProxy, ErrorType, Message]
+    {
+      if (UNakamaRtProxy* StrongProxy = WeakProxy.Get())
+      {
+        StrongProxy->OnMessageError.Broadcast(ErrorType, Message);
+      }
+    });
+  });
+}
+
+void HandleServerEvent(UNakamaRtProxy* Proxy, const TSharedPtr<FJsonObject>& Envelope)
+{
+  if (!Envelope.IsValid())
+  {
+    return;
+  }
+  {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
+  if (Envelope->HasField(TEXT("{{ $t.Metadata.JsonFieldName }}")))
+  {
+    if (Proxy->On{{ $t.Name }}.IsBound() || Proxy->On{{ $t.Name }}Native.IsBound())
+    {
+      const FNakamaRt{{ $t.Name }} Data = FNakamaRt{{ $t.Name }}::FromJson(Envelope->GetObjectField(TEXT("{{ $t.Metadata.JsonFieldName }}")));
+      if (Proxy->On{{ $t.Name }}.IsBound())
+      {
+        Proxy->On{{ $t.Name }}.Broadcast(Data);
+      }
+      if (Proxy->On{{ $t.Name }}Native.IsBound())
+      {
+        Proxy->On{{ $t.Name }}Native.Broadcast(Data);
+      }
+    }
+    return;
+  }
+  {{- end }}{{- end }}
+}
