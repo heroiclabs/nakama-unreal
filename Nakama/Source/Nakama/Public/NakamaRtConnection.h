@@ -122,12 +122,6 @@ private:
 	TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> ConnectionPromise;
 	std::atomic<ENakamaRtConnectionState> ConnectionState { ENakamaRtConnectionState::Disconnected };
 
-	//
-	// Epoch uniquely identifies a socket instance. Callbacks capture it so
-	// stale events from a previous socket are silently dropped
-	// even after the new socket has already connected.
-	std::atomic<uint32> SocketEpoch { 0 };
-	
 public:
 	FNakamaRtConnection();
 	virtual ~FNakamaRtConnection();

@@ -60,52 +60,52 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtConnection::Connect(con
 	Url += TokenParam;
 
 	// Create the websocket
-	this->WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+	TSharedPtr<IWebSocket> ThisWebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+	this->WebSocket = ThisWebSocket;
 
-	const uint32 Epoch = ++SocketEpoch;
 	TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
 
 	//
 	// Connectivity
-	WebSocket->OnConnected().AddLambda([WeakSelf, Epoch]()
+	WebSocket->OnConnected().AddLambda([WeakSelf, ThisWebSocket]()
 	{
 		if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
 		{
-			if (StrongThis->SocketEpoch == Epoch) StrongThis->OnConnected();
+			if (StrongThis->WebSocket == ThisWebSocket) StrongThis->OnConnected();
 		}
 	});
-	WebSocket->OnConnectionError().AddLambda([WeakSelf, Epoch](const FString& Error)
+	WebSocket->OnConnectionError().AddLambda([WeakSelf, ThisWebSocket](const FString& Error)
 	{
 		if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
 		{
-			if (StrongThis->SocketEpoch == Epoch) StrongThis->OnConnectionError(Error);
+			if (StrongThis->WebSocket == ThisWebSocket) StrongThis->OnConnectionError(Error);
 		}
 	});
 
 	//
 	// Messages
-	WebSocket->OnMessage().AddLambda([WeakSelf, Epoch](const FString& Message)
+	WebSocket->OnMessage().AddLambda([WeakSelf, ThisWebSocket](const FString& Message)
 	{
 		if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
 		{
-			if (StrongThis->SocketEpoch == Epoch) StrongThis->OnMessage(Message);
+			if (StrongThis->WebSocket == ThisWebSocket) StrongThis->OnMessage(Message);
 		}
 	});
-	WebSocket->OnMessageSent().AddLambda([WeakSelf, Epoch](const FString& Message)
+	WebSocket->OnMessageSent().AddLambda([WeakSelf, ThisWebSocket](const FString& Message)
 	{
 		if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
 		{
-			if (StrongThis->SocketEpoch == Epoch) StrongThis->OnMessageSent(Message);
+			if (StrongThis->WebSocket == ThisWebSocket) StrongThis->OnMessageSent(Message);
 		}
 	});
 
 	//
 	// Disconnections
-	WebSocket->OnClosed().AddLambda([WeakSelf, Epoch](int32 StatusCode, const FString& Reason, bool bWasClean)
+	WebSocket->OnClosed().AddLambda([WeakSelf, ThisWebSocket](int32 StatusCode, const FString& Reason, bool bWasClean)
 	{
 		if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
 		{
-			if (StrongThis->SocketEpoch == Epoch) StrongThis->OnClosed(StatusCode, Reason, bWasClean);
+			if (StrongThis->WebSocket == ThisWebSocket) StrongThis->OnClosed(StatusCode, Reason, bWasClean);
 		}
 	});
 
