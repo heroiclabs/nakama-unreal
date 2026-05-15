@@ -20,7 +20,8 @@
 #include "NakamaRt.h"
 
 UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Target
   , int32 Type
   , FNakamaRtOptionalBool Persistence
@@ -34,6 +35,7 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   Action->StoredPersistence = Persistence;
   Action->StoredHidden = Hidden;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -80,7 +82,8 @@ void UNakamaRealtimeClientChannelJoin::Activate()
 }
 
 UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLeave(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
 )
 {
@@ -88,6 +91,7 @@ UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLea
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredChannelId = ChannelId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -131,7 +135,8 @@ void UNakamaRealtimeClientChannelLeave::Activate()
 }
 
 UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend::ChannelMessageSend(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& Content
 )
@@ -141,6 +146,7 @@ UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend
   Action->StoredChannelId = ChannelId;
   Action->StoredContent = Content;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -185,7 +191,8 @@ void UNakamaRealtimeClientChannelMessageSend::Activate()
 }
 
 UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUpdate::ChannelMessageUpdate(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& MessageId
   , const FString& Content
@@ -197,6 +204,7 @@ UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUp
   Action->StoredMessageId = MessageId;
   Action->StoredContent = Content;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -242,7 +250,8 @@ void UNakamaRealtimeClientChannelMessageUpdate::Activate()
 }
 
 UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRemove::ChannelMessageRemove(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& ChannelId
   , const FString& MessageId
 )
@@ -252,6 +261,7 @@ UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRe
   Action->StoredChannelId = ChannelId;
   Action->StoredMessageId = MessageId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -296,7 +306,8 @@ void UNakamaRealtimeClientChannelMessageRemove::Activate()
 }
 
 UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Name
 )
 {
@@ -304,6 +315,7 @@ UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredName = Name;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -347,7 +359,8 @@ void UNakamaRealtimeClientMatchCreate::Activate()
 }
 
 UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDataSend(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
   , int64 OpCode
   , const TArray<uint8>& Data
@@ -363,6 +376,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
   Action->StoredPresences = Presences;
   Action->StoredReliable = Reliable;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -410,7 +424,8 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
 }
 
 UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
   , const FString& Token
   , const TMap<FString, FString>& Metadata
@@ -422,6 +437,7 @@ UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
   Action->StoredToken = Token;
   Action->StoredMetadata = Metadata;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -467,7 +483,8 @@ void UNakamaRealtimeClientMatchJoin::Activate()
 }
 
 UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& MatchId
 )
 {
@@ -475,6 +492,7 @@ UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredMatchId = MatchId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -518,7 +536,8 @@ void UNakamaRealtimeClientMatchLeave::Activate()
 }
 
 UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::MatchmakerAdd(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
@@ -536,6 +555,7 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
   Action->StoredStringProperties = StringProperties;
   Action->StoredNumericProperties = NumericProperties;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -584,7 +604,8 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
 }
 
 UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::MatchmakerRemove(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Ticket
 )
 {
@@ -592,6 +613,7 @@ UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::Ma
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredTicket = Ticket;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -635,7 +657,8 @@ void UNakamaRealtimeClientMatchmakerRemove::Activate()
 }
 
 UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Id
   , const FString& Payload
   , const FString& HttpKey
@@ -647,6 +670,7 @@ UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
   Action->StoredPayload = Payload;
   Action->StoredHttpKey = HttpKey;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -692,7 +716,8 @@ void UNakamaRealtimeClientRpc::Activate()
 }
 
 UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFollow(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const TArray<FString>& UserIds
   , const TArray<FString>& Usernames
 )
@@ -702,6 +727,7 @@ UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFoll
   Action->StoredUserIds = UserIds;
   Action->StoredUsernames = Usernames;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -746,7 +772,8 @@ void UNakamaRealtimeClientStatusFollow::Activate()
 }
 
 UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::StatusUnfollow(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const TArray<FString>& UserIds
 )
 {
@@ -754,6 +781,7 @@ UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::Status
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredUserIds = UserIds;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -797,7 +825,8 @@ void UNakamaRealtimeClientStatusUnfollow::Activate()
 }
 
 UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpdate(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& Status
 )
 {
@@ -805,6 +834,7 @@ UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpda
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredStatus = Status;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -848,12 +878,14 @@ void UNakamaRealtimeClientStatusUpdate::Activate()
 }
 
 UNakamaRealtimeClientPing* UNakamaRealtimeClientPing::Ping(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
 )
 {
   UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(GetTransientPackage());
   Action->StoredConnection = ConnectionHandle.Connection;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -896,7 +928,8 @@ void UNakamaRealtimeClientPing::Activate()
 }
 
 UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , bool Open
   , int32 MaxSize
   , const FString& Label
@@ -910,6 +943,7 @@ UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
   Action->StoredLabel = Label;
   Action->StoredHidden = Hidden;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -956,7 +990,8 @@ void UNakamaRealtimeClientPartyCreate::Activate()
 }
 
 UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
@@ -964,6 +999,7 @@ UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1007,7 +1043,8 @@ void UNakamaRealtimeClientPartyJoin::Activate()
 }
 
 UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
@@ -1015,6 +1052,7 @@ UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1058,7 +1096,8 @@ void UNakamaRealtimeClientPartyLeave::Activate()
 }
 
 UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromote(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1068,6 +1107,7 @@ UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromo
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1112,7 +1152,8 @@ void UNakamaRealtimeClientPartyPromote::Activate()
 }
 
 UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1122,6 +1163,7 @@ UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1166,7 +1208,8 @@ void UNakamaRealtimeClientPartyAccept::Activate()
 }
 
 UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1176,6 +1219,7 @@ UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1220,7 +1264,8 @@ void UNakamaRealtimeClientPartyRemove::Activate()
 }
 
 UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
@@ -1228,6 +1273,7 @@ UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1271,7 +1317,8 @@ void UNakamaRealtimeClientPartyClose::Activate()
 }
 
 UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequestList::PartyJoinRequestList(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
 )
 {
@@ -1279,6 +1326,7 @@ UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequest
   Action->StoredConnection = ConnectionHandle.Connection;
   Action->StoredPartyId = PartyId;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1322,7 +1370,8 @@ void UNakamaRealtimeClientPartyJoinRequestList::Activate()
 }
 
 UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd::PartyMatchmakerAdd(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , int32 MinCount
   , int32 MaxCount
@@ -1342,6 +1391,7 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
   Action->StoredStringProperties = StringProperties;
   Action->StoredNumericProperties = NumericProperties;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1391,7 +1441,8 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
 }
 
 UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmakerRemove::PartyMatchmakerRemove(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FString& Ticket
 )
@@ -1401,6 +1452,7 @@ UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmaker
   Action->StoredPartyId = PartyId;
   Action->StoredTicket = Ticket;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1445,7 +1497,8 @@ void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
 }
 
 UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDataSend(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , int64 OpCode
   , const TArray<uint8>& Data
@@ -1457,6 +1510,7 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
   Action->StoredOpCode = OpCode;
   Action->StoredData = Data;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 
@@ -1502,7 +1556,8 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
 }
 
 UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
-  const FNakamaRtConnectionHandle& ConnectionHandle
+  UObject* WorldContextObject
+  , const FNakamaRtConnectionHandle& ConnectionHandle
   , const FString& PartyId
   , const FString& Label
   , bool Open
@@ -1516,6 +1571,7 @@ UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
   Action->StoredOpen = Open;
   Action->StoredHidden = Hidden;
 
+  Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
 }
 

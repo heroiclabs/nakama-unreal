@@ -66,11 +66,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "ChannelJoin")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientChannelJoin* ChannelJoin(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& Target
     , int32 Type
     , FNakamaRtOptionalBool Persistence
@@ -105,11 +107,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "ChannelLeave")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientChannelLeave* ChannelLeave(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& ChannelId
   );
 
@@ -138,11 +142,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "ChannelMessageSend")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientChannelMessageSend* ChannelMessageSend(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& ChannelId
     , const FString& Content
   );
@@ -173,11 +179,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "ChannelMessageUpdate")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientChannelMessageUpdate* ChannelMessageUpdate(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& ChannelId
     , const FString& MessageId
     , const FString& Content
@@ -210,11 +218,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "ChannelMessageRemove")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientChannelMessageRemove* ChannelMessageRemove(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& ChannelId
     , const FString& MessageId
   );
@@ -245,11 +255,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchCreate")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchCreate* MatchCreate(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& Name
   );
 
@@ -278,11 +290,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchDataSend")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchDataSend* MatchDataSend(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& MatchId
     , int64 OpCode
     , const TArray<uint8>& Data
@@ -319,11 +333,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchJoin", AutoCreateRefTerm = "Metadata")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchJoin* MatchJoin(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& MatchId
     , const FString& Token
     , const TMap<FString, FString>& Metadata
@@ -356,11 +372,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchLeave")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchLeave* MatchLeave(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& MatchId
   );
 
@@ -389,11 +407,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchmakerAdd", AutoCreateRefTerm = "StringProperties,NumericProperties")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchmakerAdd* MatchmakerAdd(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , int32 MinCount
     , int32 MaxCount
     , const FString& Query
@@ -432,11 +452,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "MatchmakerRemove")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientMatchmakerRemove* MatchmakerRemove(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& Ticket
   );
 
@@ -465,11 +487,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "Rpc")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientRpc* Rpc(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& Id
     , const FString& Payload
     , const FString& HttpKey
@@ -502,11 +526,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "StatusFollow")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientStatusFollow* StatusFollow(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const TArray<FString>& UserIds
     , const TArray<FString>& Usernames
   );
@@ -537,11 +563,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "StatusUnfollow")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientStatusUnfollow* StatusUnfollow(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const TArray<FString>& UserIds
   );
 
@@ -570,11 +598,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "StatusUpdate")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientStatusUpdate* StatusUpdate(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& Status
   );
 
@@ -603,11 +633,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "Ping")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPing* Ping(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
   );
 
   virtual void Activate() override;
@@ -634,11 +666,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyCreate")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyCreate* PartyCreate(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , bool Open
     , int32 MaxSize
     , const FString& Label
@@ -673,11 +707,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyJoin")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyJoin* PartyJoin(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
   );
 
@@ -706,11 +742,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyLeave")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyLeave* PartyLeave(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
   );
 
@@ -739,11 +777,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyPromote")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyPromote* PartyPromote(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -774,11 +814,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyAccept")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyAccept* PartyAccept(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -809,11 +851,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyRemove")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyRemove* PartyRemove(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -844,11 +888,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyClose")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyClose* PartyClose(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
   );
 
@@ -877,11 +923,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyJoinRequestList")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyJoinRequestList* PartyJoinRequestList(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
   );
 
@@ -910,11 +958,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyMatchmakerAdd", AutoCreateRefTerm = "StringProperties,NumericProperties")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyMatchmakerAdd* PartyMatchmakerAdd(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , int32 MinCount
     , int32 MaxCount
@@ -955,11 +1005,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyMatchmakerRemove")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyMatchmakerRemove* PartyMatchmakerRemove(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , const FString& Ticket
   );
@@ -990,11 +1042,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyDataSend")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyDataSend* PartyDataSend(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , int64 OpCode
     , const TArray<uint8>& Data
@@ -1027,11 +1081,13 @@ public:
     BlueprintCallable
     , meta = (
       BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
       , DisplayName = "PartyUpdate")
     , Category = "Nakama|RealtimeClient"
   )
   static UNakamaRealtimeClientPartyUpdate* PartyUpdate(
-    const FNakamaRtConnectionHandle& ConnectionHandle
+    UObject* WorldContextObject
+    , const FNakamaRtConnectionHandle& ConnectionHandle
     , const FString& PartyId
     , const FString& Label
     , bool Open
