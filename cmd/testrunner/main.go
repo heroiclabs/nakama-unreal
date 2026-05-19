@@ -29,12 +29,12 @@ func addTestShard(name string, reportDir string) {
 }
 
 var defaultShardNames = []string{
-	"IntegrationTests.Nakama",
-	"IntegrationTests.NakamaBlueprint",
-	"IntegrationTests.NakamaRtConnection",
-	"IntegrationTests.NakamaRt",
-	"IntegrationTests.Satori",
-	"IntegrationTests.SatoriBlueprint",
+	"IntegrationTests.NakamaTests",
+	"IntegrationTests.NakamaBlueprintTests",
+	"IntegrationTests.NakamaRtTests",
+	"IntegrationTests.NakamaRtConnectionTests",
+	"IntegrationTests.SatoriTests",
+	"IntegrationTests.SatoriBlueprintTests",
 }
 
 var editorFlags = []string{
