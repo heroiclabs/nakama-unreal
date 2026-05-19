@@ -20,7 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaRt.h"
-#include "NakamaRtProxy.generated.h"
+#include "NakamaRtHandle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnected, const FNakamaWebSocketConnectionResult&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnWebSocketClosed, int32, StatusCode, const FString&, Reason, bool, WasClean);
@@ -29,128 +29,89 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateOnMessageError, EWebSocket
 //
 // Delegates for event callbacks (dynamic = BlueprintAssignable; native = C++ AddLambda)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelMessage, const FNakamaRtChannelMessage&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnChannelMessage, const FNakamaRtChannelMessage&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchData, const FNakamaRtMatchData&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnMatchData, const FNakamaRtMatchData&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchmakerMatched, const FNakamaRtMatchmakerMatched&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnMatchmakerMatched, const FNakamaRtMatchmakerMatched&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnNotifications, const FNakamaRtNotifications&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnNotifications, const FNakamaRtNotifications&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyLeader, const FNakamaRtPartyLeader&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnPartyLeader, const FNakamaRtPartyLeader&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyJoinRequest, const FNakamaRtPartyJoinRequest&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnPartyJoinRequest, const FNakamaRtPartyJoinRequest&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyData, const FNakamaRtPartyData&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnPartyData, const FNakamaRtPartyData&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnPartyPresenceEvent, const FNakamaRtPartyPresenceEvent&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnPartyPresenceEvent, const FNakamaRtPartyPresenceEvent&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStatusPresenceEvent, const FNakamaRtStatusPresenceEvent&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnStatusPresenceEvent, const FNakamaRtStatusPresenceEvent&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamData, const FNakamaRtStreamData&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnStreamData, const FNakamaRtStreamData&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOnStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&);
 
 UCLASS(BlueprintType)
-class NAKAMA_API UNakamaRtProxy : public UObject
+class NAKAMABLUEPRINTS_API UNakamaRtHandle : public UObject
 {
   GENERATED_BODY()
 
 public:
-  UPROPERTY(BlueprintReadonly, Category = "Nakama|Realtime")
-  FNakamaRtConnectionHandle ConnectionHandle;
+  TSharedPtr<FNakamaRtConnection> Connection;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnWebSocketConnected OnConnected;
+  FDelegateOnWebSocketConnected Connected;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnWebSocketClosed OnClosed;
+  FDelegateOnWebSocketClosed Closed;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnMessageError OnMessageError;
+  FDelegateOnMessageError MessageError;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnChannelMessage OnChannelMessage;
-
-  FNativeDelegateOnChannelMessage OnChannelMessageNative;
+  FDelegateOnChannelMessage ChannelMessage;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnChannelPresenceEvent OnChannelPresenceEvent;
-
-  FNativeDelegateOnChannelPresenceEvent OnChannelPresenceEventNative;
+  FDelegateOnChannelPresenceEvent ChannelPresenceEvent;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnMatchData OnMatchData;
-
-  FNativeDelegateOnMatchData OnMatchDataNative;
+  FDelegateOnMatchData MatchData;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnMatchPresenceEvent OnMatchPresenceEvent;
-
-  FNativeDelegateOnMatchPresenceEvent OnMatchPresenceEventNative;
+  FDelegateOnMatchPresenceEvent MatchPresenceEvent;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnMatchmakerMatched OnMatchmakerMatched;
-
-  FNativeDelegateOnMatchmakerMatched OnMatchmakerMatchedNative;
+  FDelegateOnMatchmakerMatched MatchmakerMatched;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnNotifications OnNotifications;
-
-  FNativeDelegateOnNotifications OnNotificationsNative;
+  FDelegateOnNotifications Notifications;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnPartyLeader OnPartyLeader;
-
-  FNativeDelegateOnPartyLeader OnPartyLeaderNative;
+  FDelegateOnPartyLeader PartyLeader;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnPartyJoinRequest OnPartyJoinRequest;
-
-  FNativeDelegateOnPartyJoinRequest OnPartyJoinRequestNative;
+  FDelegateOnPartyJoinRequest PartyJoinRequest;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnPartyData OnPartyData;
-
-  FNativeDelegateOnPartyData OnPartyDataNative;
+  FDelegateOnPartyData PartyData;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnPartyPresenceEvent OnPartyPresenceEvent;
-
-  FNativeDelegateOnPartyPresenceEvent OnPartyPresenceEventNative;
+  FDelegateOnPartyPresenceEvent PartyPresenceEvent;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnStatusPresenceEvent OnStatusPresenceEvent;
-
-  FNativeDelegateOnStatusPresenceEvent OnStatusPresenceEventNative;
+  FDelegateOnStatusPresenceEvent StatusPresenceEvent;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnStreamData OnStreamData;
-
-  FNativeDelegateOnStreamData OnStreamDataNative;
+  FDelegateOnStreamData StreamData;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnStreamPresenceEvent OnStreamPresenceEvent;
-
-  FNativeDelegateOnStreamPresenceEvent OnStreamPresenceEventNative;
+  FDelegateOnStreamPresenceEvent StreamPresenceEvent;
 
   UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
-  static UNakamaRtProxy* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
+  static UNakamaRtHandle* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
 
   UFUNCTION(BlueprintCallable)
   int32 GetPendingRequestCount()
   {
-    if (!ConnectionHandle.Connection.IsValid())
+    if (!Connection.IsValid())
     {
       return 0;
     }
-    return ConnectionHandle.Connection->GetPendingRequestCount();
+    return Connection->GetPendingRequestCount();
   }
+
+private:
+  void SetupRtEventHandlers();
 };
 
-NAKAMA_API void SetupRtEventHandlers(const TSharedPtr<FNakamaRtConnection>& Connection, UNakamaRtProxy* Proxy);
-NAKAMA_API void HandleServerEvent(UNakamaRtProxy* Proxy, const TSharedPtr<FJsonObject>& Envelope);

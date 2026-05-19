@@ -22,6 +22,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "NakamaRtTypes.h"
 #include "NakamaRtConnection.h"
+#include "NakamaRtHandle.h"
 
 #include "NakamaRtClientBlueprintLibrary.generated.h"
 
@@ -72,7 +73,7 @@ public:
   )
   static UNakamaRealtimeClientChannelJoin* ChannelJoin(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& Target
     , int32 Type
     , FNakamaRtOptionalBool Persistence
@@ -113,7 +114,7 @@ public:
   )
   static UNakamaRealtimeClientChannelLeave* ChannelLeave(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& ChannelId
   );
 
@@ -148,7 +149,7 @@ public:
   )
   static UNakamaRealtimeClientChannelMessageSend* ChannelMessageSend(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& ChannelId
     , const FString& Content
   );
@@ -185,7 +186,7 @@ public:
   )
   static UNakamaRealtimeClientChannelMessageUpdate* ChannelMessageUpdate(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& ChannelId
     , const FString& MessageId
     , const FString& Content
@@ -224,7 +225,7 @@ public:
   )
   static UNakamaRealtimeClientChannelMessageRemove* ChannelMessageRemove(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& ChannelId
     , const FString& MessageId
   );
@@ -261,7 +262,7 @@ public:
   )
   static UNakamaRealtimeClientMatchCreate* MatchCreate(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& Name
   );
 
@@ -296,7 +297,7 @@ public:
   )
   static UNakamaRealtimeClientMatchDataSend* MatchDataSend(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& MatchId
     , int64 OpCode
     , const TArray<uint8>& Data
@@ -339,7 +340,7 @@ public:
   )
   static UNakamaRealtimeClientMatchJoin* MatchJoin(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& MatchId
     , const FString& Token
     , const TMap<FString, FString>& Metadata
@@ -378,7 +379,7 @@ public:
   )
   static UNakamaRealtimeClientMatchLeave* MatchLeave(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& MatchId
   );
 
@@ -413,7 +414,7 @@ public:
   )
   static UNakamaRealtimeClientMatchmakerAdd* MatchmakerAdd(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , int32 MinCount
     , int32 MaxCount
     , const FString& Query
@@ -458,7 +459,7 @@ public:
   )
   static UNakamaRealtimeClientMatchmakerRemove* MatchmakerRemove(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& Ticket
   );
 
@@ -493,7 +494,7 @@ public:
   )
   static UNakamaRealtimeClientRpc* Rpc(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& Id
     , const FString& Payload
     , const FString& HttpKey
@@ -532,7 +533,7 @@ public:
   )
   static UNakamaRealtimeClientStatusFollow* StatusFollow(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const TArray<FString>& UserIds
     , const TArray<FString>& Usernames
   );
@@ -569,7 +570,7 @@ public:
   )
   static UNakamaRealtimeClientStatusUnfollow* StatusUnfollow(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const TArray<FString>& UserIds
   );
 
@@ -604,7 +605,7 @@ public:
   )
   static UNakamaRealtimeClientStatusUpdate* StatusUpdate(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& Status
   );
 
@@ -639,7 +640,7 @@ public:
   )
   static UNakamaRealtimeClientPing* Ping(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
   );
 
   virtual void Activate() override;
@@ -672,7 +673,7 @@ public:
   )
   static UNakamaRealtimeClientPartyCreate* PartyCreate(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , bool Open
     , int32 MaxSize
     , const FString& Label
@@ -713,7 +714,7 @@ public:
   )
   static UNakamaRealtimeClientPartyJoin* PartyJoin(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
   );
 
@@ -748,7 +749,7 @@ public:
   )
   static UNakamaRealtimeClientPartyLeave* PartyLeave(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
   );
 
@@ -783,7 +784,7 @@ public:
   )
   static UNakamaRealtimeClientPartyPromote* PartyPromote(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -820,7 +821,7 @@ public:
   )
   static UNakamaRealtimeClientPartyAccept* PartyAccept(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -857,7 +858,7 @@ public:
   )
   static UNakamaRealtimeClientPartyRemove* PartyRemove(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , const FNakamaRtUserPresence& Presence
   );
@@ -894,7 +895,7 @@ public:
   )
   static UNakamaRealtimeClientPartyClose* PartyClose(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
   );
 
@@ -929,7 +930,7 @@ public:
   )
   static UNakamaRealtimeClientPartyJoinRequestList* PartyJoinRequestList(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
   );
 
@@ -964,7 +965,7 @@ public:
   )
   static UNakamaRealtimeClientPartyMatchmakerAdd* PartyMatchmakerAdd(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , int32 MinCount
     , int32 MaxCount
@@ -1011,7 +1012,7 @@ public:
   )
   static UNakamaRealtimeClientPartyMatchmakerRemove* PartyMatchmakerRemove(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , const FString& Ticket
   );
@@ -1048,7 +1049,7 @@ public:
   )
   static UNakamaRealtimeClientPartyDataSend* PartyDataSend(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , int64 OpCode
     , const TArray<uint8>& Data
@@ -1087,7 +1088,7 @@ public:
   )
   static UNakamaRealtimeClientPartyUpdate* PartyUpdate(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     , const FString& PartyId
     , const FString& Label
     , bool Open
