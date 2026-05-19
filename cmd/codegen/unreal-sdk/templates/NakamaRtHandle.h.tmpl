@@ -20,7 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaRt.h"
-#include "NakamaRtProxy.generated.h"
+#include "NakamaRtHandle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnected, const FNakamaWebSocketConnectionResult&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnWebSocketClosed, int32, StatusCode, const FString&, Reason, bool, WasClean);
@@ -30,48 +30,45 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateOnMessageError, EWebSocket
 // Delegates for event callbacks (dynamic = BlueprintAssignable; native = C++ AddLambda)
 {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOn{{ $t.Name }}, const FNakamaRt{{ $t.Name }}&, Data);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateOn{{ $t.Name }}, const FNakamaRt{{ $t.Name }}&);
 {{- end }}{{- end }}
 
 UCLASS(BlueprintType)
-class NAKAMA_API UNakamaRtProxy : public UObject
+class NAKAMABLUEPRINTS_API UNakamaRtHandle : public UObject
 {
   GENERATED_BODY()
 
 public:
-  UPROPERTY(BlueprintReadonly, Category = "Nakama|Realtime")
-  FNakamaRtConnectionHandle ConnectionHandle;
+  TSharedPtr<FNakamaRtConnection> Connection;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnWebSocketConnected OnConnected;
+  FDelegateOnWebSocketConnected Connected;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnWebSocketClosed OnClosed;
+  FDelegateOnWebSocketClosed Closed;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnMessageError OnMessageError;
+  FDelegateOnMessageError MessageError;
 
   {{- range $t := $.Types }}{{- if $t.Metadata.IsEvent }}
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOn{{ $t.Name }} On{{ $t.Name }};
-
-  FNativeDelegateOn{{ $t.Name }} On{{ $t.Name }}Native;
+  FDelegateOn{{ $t.Name }} {{ $t.Name }};
   {{- end }}{{- end }}
 
   UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
-  static UNakamaRtProxy* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
+  static UNakamaRtHandle* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
 
   UFUNCTION(BlueprintCallable)
   int32 GetPendingRequestCount()
   {
-    if (!ConnectionHandle.Connection.IsValid())
+    if (!Connection.IsValid())
     {
       return 0;
     }
-    return ConnectionHandle.Connection->GetPendingRequestCount();
+    return Connection->GetPendingRequestCount();
   }
+
+private:
+  void SetupRtEventHandlers();
 };
 
-NAKAMA_API void SetupRtEventHandlers(const TSharedPtr<FNakamaRtConnection>& Connection, UNakamaRtProxy* Proxy);
-NAKAMA_API void HandleServerEvent(UNakamaRtProxy* Proxy, const TSharedPtr<FJsonObject>& Envelope);

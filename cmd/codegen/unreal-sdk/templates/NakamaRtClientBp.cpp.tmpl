@@ -23,14 +23,14 @@
 
 UNakamaRealtimeClient{{ $func.Name }}* UNakamaRealtimeClient{{ $func.Name }}::{{ $func.Name }}(
   UObject* WorldContextObject
-  , const FNakamaRtConnectionHandle& ConnectionHandle
+  , UNakamaRtHandle* ConnectionHandle
   {{- range $idx, $param := $func.Params }}
   , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 )
 {
   UNakamaRealtimeClient{{ $func.Name }}* Action = NewObject<UNakamaRealtimeClient{{ $func.Name }}>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle.Connection;
+  Action->StoredConnection = ConnectionHandle->Connection;
 
   {{- range $param := $func.Params }}
   Action->Stored{{ $param.Name }} = {{ $param.Name }};

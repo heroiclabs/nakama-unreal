@@ -22,6 +22,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "NakamaRtTypes.h"
 #include "NakamaRtConnection.h"
+#include "NakamaRtHandle.h"
 
 #include "NakamaRtClientBlueprintLibrary.generated.h"
 
@@ -84,7 +85,7 @@ public:
   )
   static UNakamaRealtimeClient{{ $func.Name }}* {{ $func.Name }}(
     UObject* WorldContextObject
-    , const FNakamaRtConnectionHandle& ConnectionHandle
+    , UNakamaRtHandle* ConnectionHandle
     {{- range $idx, $param := $func.Params }}
     , {{ $param.Metadata.ParamType }} {{ $param.Name }}
     {{- end }}

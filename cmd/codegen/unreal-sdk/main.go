@@ -192,13 +192,23 @@ func main() {
 			},
 			{
 				Requires: nakamaRtApiRequires,
-				Template: "templates/NakamaRtProxy.h.tmpl",
-				Output:   "Nakama/Source/Nakama/Public/NakamaRtProxy.h",
+				Template: "templates/NakamaRtHandle.h.tmpl",
+				Output:   "Nakama/Source/NakamaBlueprints/Public/NakamaRtHandle.h",
 			},
 			{
 				Requires: nakamaRtApiRequires,
-				Template: "templates/NakamaRtProxy.cpp.tmpl",
-				Output:   "Nakama/Source/Nakama/Private/NakamaRtProxy.cpp",
+				Template: "templates/NakamaRtHandle.cpp.tmpl",
+				Output:   "Nakama/Source/NakamaBlueprints/Private/NakamaRtHandle.cpp",
+			},
+			{
+				Requires: nakamaRtApiRequires,
+				Template: "templates/NakamaRtConnection.h.tmpl",
+				Output:   "Nakama/Source/Nakama/Public/NakamaRtConnection.h",
+			},
+			{
+				Requires: nakamaRtApiRequires,
+				Template: "templates/NakamaRtConnection.cpp.tmpl",
+				Output:   "Nakama/Source/Nakama/Private/NakamaRtConnection.cpp",
 			},
 			{
 				Requires: nakamaRtApiRequires,
