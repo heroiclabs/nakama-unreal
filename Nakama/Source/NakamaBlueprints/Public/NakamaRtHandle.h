@@ -22,7 +22,7 @@
 #include "NakamaRt.h"
 #include "NakamaRtHandle.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnected, const FNakamaWebSocketConnectionResult&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnectCompleted, const FNakamaWebSocketConnectionResult&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnWebSocketClosed, int32, StatusCode, const FString&, Reason, bool, WasClean);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateOnMessageError, EWebSocketMessageError, ErrorType, const FString&, Message);
 
@@ -51,7 +51,7 @@ public:
   TSharedPtr<FNakamaRtConnection> Connection;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
-  FDelegateOnWebSocketConnected Connected;
+  FDelegateOnWebSocketConnectCompleted ConnectCompleted;
 
   UPROPERTY(BlueprintAssignable, Category = "Nakama|Realtime")
   FDelegateOnWebSocketClosed Closed;
@@ -99,7 +99,10 @@ public:
   FDelegateOnStreamPresenceEvent StreamPresenceEvent;
 
   UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
-  static UNakamaRtHandle* CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params);
+  static UNakamaRtHandle* CreateNakamaRtConnection();
+
+  UFUNCTION(BlueprintCallable)
+  void Connect(const FNakamaWebSocketConnectionParams& Params);
 
   UFUNCTION(BlueprintCallable)
   int32 GetPendingRequestCount()

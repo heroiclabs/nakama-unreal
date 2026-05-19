@@ -18,24 +18,34 @@
 
 #include "NakamaRtHandle.h"
 
-UNakamaRtHandle* UNakamaRtHandle::CreateAndSetupNakamaRtConnection(const FNakamaWebSocketConnectionParams& Params)
+UNakamaRtHandle* UNakamaRtHandle::CreateNakamaRtConnection()
 {
   UNakamaRtHandle* Handle = NewObject<UNakamaRtHandle>();
 
   Handle->Connection = MakeShared<FNakamaRtConnection>();
   Handle->SetupRtEventHandlers();
 
-  TWeakObjectPtr<UNakamaRtHandle> WeakHandle(Handle);
-  Handle->Connection->Connect(Params)
+  return Handle;
+}
+
+void UNakamaRtHandle::Connect(const FNakamaWebSocketConnectionParams& Params)
+{
+  if (!Connection.IsValid())
+  {
+    ConnectCompleted.Broadcast(FNakamaWebSocketConnectionResult { ENakamaWebSocketError::ConnectionFailed });
+    return;
+  }
+
+  TWeakObjectPtr<UNakamaRtHandle> WeakHandle(this);
+
+  Connection->Connect(Params)
     .Next([WeakHandle](const FNakamaWebSocketConnectionResult& Result)
     {
       if (TStrongObjectPtr<UNakamaRtHandle> StrongHandle = WeakHandle.Pin())
       {
-        StrongHandle->Connected.Broadcast(Result);
+        StrongHandle->ConnectCompleted.Broadcast(Result);
       }
     });
-
-  return Handle;
 }
 
 void UNakamaRtHandle::SetupRtEventHandlers()

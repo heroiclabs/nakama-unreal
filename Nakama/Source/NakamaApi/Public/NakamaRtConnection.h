@@ -26,8 +26,6 @@
 #include "NakamaRtTypes.h"
 #include "NakamaRtConnection.generated.h"
 
-NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakamaWebSocket, Log, All);
-
 UENUM(BlueprintType)
 enum class ENakamaWebSocketError : uint8
 {
@@ -98,9 +96,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMessageSent, const FString&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateMessageError, EWebSocketMessageError, const FString&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateClosed, int32, const FString&, bool);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBpDelegateWebSocketConnected, const FNakamaWebSocketConnectionResult&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FBpDelegateWebSocketClosed, int32, StatusCode, const FString&, Reason, bool, WasClean);
-
 //
 // Delegates for event callbacks
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelMessage, const FNakamaRtChannelMessage&);
@@ -124,7 +119,7 @@ enum class ENakamaRtConnectionState : uint8
   Connected,
 };
   
-class NAKAMA_API FNakamaRtConnection : public TSharedFromThis<FNakamaRtConnection>
+class NAKAMAAPI_API FNakamaRtConnection : public TSharedFromThis<FNakamaRtConnection>
 {
 private:
   // Current ongoing requests

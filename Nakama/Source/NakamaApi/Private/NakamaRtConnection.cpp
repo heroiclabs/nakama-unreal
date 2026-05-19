@@ -20,8 +20,6 @@
 #include "WebSocketsModule.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
-DEFINE_LOG_CATEGORY(LogNakamaWebSocket)
-
 FNakamaRtConnection::FNakamaRtConnection()
 {
   
@@ -193,7 +191,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtConnection::Send(const FString&
 
     if (ConnectionState != ENakamaRtConnectionState::Connected || !WebSocket.IsValid())
     {
-      UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket is not connected or invalid."));
+      UE_LOG(LogNakama, Warning, TEXT("WebSocket is not connected or invalid."));
       return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::NotConnected });
     }
 
@@ -275,7 +273,7 @@ void FNakamaRtConnection::OnConnected()
   }
   ConnectionState = ENakamaRtConnectionState::Connected;
 
-  UE_LOG(LogNakamaWebSocket, Display, TEXT("WebSocket Connected."));
+  UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
 
   TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
   ServerEventReceived.AddLambda([WeakSelf](const TSharedPtr<FJsonObject>& Envelope)
@@ -300,7 +298,7 @@ void FNakamaRtConnection::OnConnected()
 
 void FNakamaRtConnection::OnConnectionError(const FString& Error)
 {
-  UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket Connection Error: %s"), *Error);
+  UE_LOG(LogNakama, Warning, TEXT("WebSocket Connection Error: %s"), *Error);
 
   ConnectionState = ENakamaRtConnectionState::Disconnected;
 
@@ -331,7 +329,7 @@ void FNakamaRtConnection::OnMessage(const FString& Message)
   const bool bIsPong = JsonObject->HasField(TEXT("pong"));
   if (!bIsPong)
   {
-    UE_LOG(LogNakamaWebSocket, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
+    UE_LOG(LogNakama, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
   }
 
   //
@@ -408,7 +406,7 @@ void FNakamaRtConnection::OnMessage(const FString& Message)
     }
     else
     {
-      UE_LOG(LogNakamaWebSocket, Warning, TEXT("No matching request for CID %s"), *Cid);
+      UE_LOG(LogNakama, Warning, TEXT("No matching request for CID %s"), *Cid);
       if (MessageError.IsBound())
       {
         MessageError.Broadcast(EWebSocketMessageError::WS_ERROR_RESPONSE_NOCID, TEXT("No matching request for CID"));
@@ -432,7 +430,7 @@ void FNakamaRtConnection::OnMessage(const FString& Message)
 
 void FNakamaRtConnection::OnMessageSent(const FString& Message)
 {
-  UE_LOG(LogNakamaWebSocket, Verbose, TEXT("Message Sent: %s"), *Message);
+  UE_LOG(LogNakama, Verbose, TEXT("Message Sent: %s"), *Message);
 
   if (MessageSent.IsBound())
   {
@@ -452,7 +450,7 @@ void FNakamaRtConnection::OnClosed(int32 StatusCode, const FString& Reason, bool
   if (bWasClean)
   {
     UE_LOG(
-      LogNakamaWebSocket,
+      LogNakama,
       Display,
       TEXT("WebSocket closed cleanly with status code: %d"),
       StatusCode);
@@ -460,7 +458,7 @@ void FNakamaRtConnection::OnClosed(int32 StatusCode, const FString& Reason, bool
   else
   {
     UE_LOG(
-      LogNakamaWebSocket,
+      LogNakama,
       Warning,
       TEXT("Web Socket closed non-cleanly with status code: %d. Reason: %s."),
       StatusCode,

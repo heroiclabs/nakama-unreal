@@ -203,12 +203,12 @@ func main() {
 			{
 				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtConnection.h.tmpl",
-				Output:   "Nakama/Source/Nakama/Public/NakamaRtConnection.h",
+				Output:   "Nakama/Source/NakamaApi/Public/NakamaRtConnection.h",
 			},
 			{
 				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtConnection.cpp.tmpl",
-				Output:   "Nakama/Source/Nakama/Private/NakamaRtConnection.cpp",
+				Output:   "Nakama/Source/NakamaApi/Private/NakamaRtConnection.cpp",
 			},
 			{
 				Requires: nakamaRtApiRequires,

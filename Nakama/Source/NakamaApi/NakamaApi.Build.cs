@@ -40,7 +40,7 @@ public class NakamaApi : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "JsonUtilities"
+				"Core", "HTTP", "JsonUtilities", "WebSockets" 
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
