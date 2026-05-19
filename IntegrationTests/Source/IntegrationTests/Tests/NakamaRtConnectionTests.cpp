@@ -57,7 +57,7 @@ namespace
 // CONNECTION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionConnectionSpec, "IntegrationTests.NakamaRtConnection.Connection",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionConnectionSpec, "IntegrationTests.NakamaRtConnectionTests.Connection",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -236,7 +236,7 @@ void FNakamaRtConnectionConnectionSpec::Define()
 // PING TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionPingSpec, "IntegrationTests.NakamaRtConnection.Ping",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionPingSpec, "IntegrationTests.NakamaRtConnectionTests.Ping",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -387,7 +387,7 @@ void FNakamaRtConnectionPingSpec::Define()
 // CHANNEL TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionChannelSpec, "IntegrationTests.NakamaRtConnection.Channel",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionChannelSpec, "IntegrationTests.NakamaRtConnectionTests.Channel",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -541,7 +541,7 @@ void FNakamaRtConnectionChannelSpec::Define()
 // MATCH TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionMatchSpec, "IntegrationTests.NakamaRtConnection.Match",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionMatchSpec, "IntegrationTests.NakamaRtConnectionTests.Match",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -650,7 +650,7 @@ void FNakamaRtConnectionMatchSpec::Define()
 // MATCHMAKER TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionMatchmakerSpec, "IntegrationTests.NakamaRtConnection.Matchmaker",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionMatchmakerSpec, "IntegrationTests.NakamaRtConnectionTests.Matchmaker",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -768,7 +768,7 @@ void FNakamaRtConnectionMatchmakerSpec::Define()
 // STATUS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionStatusSpec, "IntegrationTests.NakamaRtConnection.Status",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionStatusSpec, "IntegrationTests.NakamaRtConnectionTests.Status",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -912,7 +912,7 @@ void FNakamaRtConnectionStatusSpec::Define()
 // DELEGATE TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtConnectionDelegatesSpec, "IntegrationTests.NakamaRtConnection.Delegates",
+BEGIN_DEFINE_SPEC(FNakamaRtConnectionDelegatesSpec, "IntegrationTests.NakamaRtConnectionTests.Delegates",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;
@@ -1042,7 +1042,7 @@ void FNakamaRtConnectionDelegatesSpec::Define()
 // ============================================================================
 
 BEGIN_DEFINE_SPEC(FNakamaRtConnectionDataRaceSpec,
-    "IntegrationTests.NakamaRtConnection.DataRace",
+    "IntegrationTests.NakamaRtConnectionTests.DataRace",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig  ClientConfig;

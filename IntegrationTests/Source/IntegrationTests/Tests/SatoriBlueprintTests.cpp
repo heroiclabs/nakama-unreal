@@ -44,7 +44,7 @@ static void VerifyWhenComplete(UBlueprintAsyncActionBase* Action, TFunction<void
 // HEALTHCHECK TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPHealthcheckSpec, "IntegrationTests.SatoriBlueprint.Healthcheck",
+BEGIN_DEFINE_SPEC(FSatoriBPHealthcheckSpec, "IntegrationTests.SatoriBlueprintTests.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriSession Session;
@@ -144,7 +144,7 @@ void FSatoriBPHealthcheckSpec::Define()
 // AUTHENTICATION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPAuthSpec, "IntegrationTests.SatoriBlueprint.Auth",
+BEGIN_DEFINE_SPEC(FSatoriBPAuthSpec, "IntegrationTests.SatoriBlueprintTests.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -292,7 +292,7 @@ void FSatoriBPAuthSpec::Define()
 // IDENTITY TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPIdentitySpec, "IntegrationTests.SatoriBlueprint.Identity",
+BEGIN_DEFINE_SPEC(FSatoriBPIdentitySpec, "IntegrationTests.SatoriBlueprintTests.Identity",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -384,7 +384,7 @@ void FSatoriBPIdentitySpec::Define()
 // PROPERTIES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPPropertiesSpec, "IntegrationTests.SatoriBlueprint.Properties",
+BEGIN_DEFINE_SPEC(FSatoriBPPropertiesSpec, "IntegrationTests.SatoriBlueprintTests.Properties",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -498,7 +498,7 @@ void FSatoriBPPropertiesSpec::Define()
 // EVENT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPEventSpec, "IntegrationTests.SatoriBlueprint.Event",
+BEGIN_DEFINE_SPEC(FSatoriBPEventSpec, "IntegrationTests.SatoriBlueprintTests.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -583,7 +583,7 @@ void FSatoriBPEventSpec::Define()
 // FLAGS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPFlagsSpec, "IntegrationTests.SatoriBlueprint.Flags",
+BEGIN_DEFINE_SPEC(FSatoriBPFlagsSpec, "IntegrationTests.SatoriBlueprintTests.Flags",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -693,7 +693,7 @@ void FSatoriBPFlagsSpec::Define()
 // EXPERIMENTS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPExperimentsSpec, "IntegrationTests.SatoriBlueprint.Experiments",
+BEGIN_DEFINE_SPEC(FSatoriBPExperimentsSpec, "IntegrationTests.SatoriBlueprintTests.Experiments",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -777,7 +777,7 @@ void FSatoriBPExperimentsSpec::Define()
 // LIVE EVENTS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPLiveEventsSpec, "IntegrationTests.SatoriBlueprint.LiveEvents",
+BEGIN_DEFINE_SPEC(FSatoriBPLiveEventsSpec, "IntegrationTests.SatoriBlueprintTests.LiveEvents",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -861,7 +861,7 @@ void FSatoriBPLiveEventsSpec::Define()
 // MESSAGES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriBPMessagesSpec, "IntegrationTests.SatoriBlueprint.Messages",
+BEGIN_DEFINE_SPEC(FSatoriBPMessagesSpec, "IntegrationTests.SatoriBlueprintTests.Messages",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;

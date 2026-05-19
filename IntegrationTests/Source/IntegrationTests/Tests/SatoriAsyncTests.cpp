@@ -24,7 +24,7 @@
 // AUTHENTICATION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncAuthSpec, "IntegrationTests.Satori.Auth",
+BEGIN_DEFINE_SPEC(FSatoriAsyncAuthSpec, "IntegrationTests.SatoriTests.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -193,7 +193,7 @@ void FSatoriAsyncAuthSpec::Define()
 // HEALTHCHECK TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncHealthcheckSpec, "IntegrationTests.Satori.Healthcheck",
+BEGIN_DEFINE_SPEC(FSatoriAsyncHealthcheckSpec, "IntegrationTests.SatoriTests.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -254,7 +254,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 // IDENTITY TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncIdentitySpec, "IntegrationTests.Satori.Identity",
+BEGIN_DEFINE_SPEC(FSatoriAsyncIdentitySpec, "IntegrationTests.SatoriTests.Identity",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -338,7 +338,7 @@ void FSatoriAsyncIdentitySpec::Define()
 // PROPERTIES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncPropertiesSpec, "IntegrationTests.Satori.Properties",
+BEGIN_DEFINE_SPEC(FSatoriAsyncPropertiesSpec, "IntegrationTests.SatoriTests.Properties",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -456,7 +456,7 @@ void FSatoriAsyncPropertiesSpec::Define()
 // EVENT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncEventSpec, "IntegrationTests.Satori.Event",
+BEGIN_DEFINE_SPEC(FSatoriAsyncEventSpec, "IntegrationTests.SatoriTests.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -566,7 +566,7 @@ void FSatoriAsyncEventSpec::Define()
 // FLAGS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncFlagsSpec, "IntegrationTests.Satori.Flags",
+BEGIN_DEFINE_SPEC(FSatoriAsyncFlagsSpec, "IntegrationTests.SatoriTests.Flags",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -659,7 +659,7 @@ void FSatoriAsyncFlagsSpec::Define()
 // EXPERIMENTS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncExperimentsSpec, "IntegrationTests.Satori.Experiments",
+BEGIN_DEFINE_SPEC(FSatoriAsyncExperimentsSpec, "IntegrationTests.SatoriTests.Experiments",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -735,7 +735,7 @@ void FSatoriAsyncExperimentsSpec::Define()
 // LIVE EVENTS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec, "IntegrationTests.Satori.LiveEvents",
+BEGIN_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec, "IntegrationTests.SatoriTests.LiveEvents",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -811,7 +811,7 @@ void FSatoriAsyncLiveEventsSpec::Define()
 // MESSAGES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncMessagesSpec, "IntegrationTests.Satori.Messages",
+BEGIN_DEFINE_SPEC(FSatoriAsyncMessagesSpec, "IntegrationTests.SatoriTests.Messages",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
@@ -888,7 +888,7 @@ void FSatoriAsyncMessagesSpec::Define()
 // SESSION LIFECYCLE TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FSatoriAsyncSessionSpec, "IntegrationTests.Satori.Session",
+BEGIN_DEFINE_SPEC(FSatoriAsyncSessionSpec, "IntegrationTests.SatoriTests.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;

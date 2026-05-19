@@ -19,8 +19,6 @@
 #include "Nakama.h"
 #include "NakamaRt.h"
 #include "NakamaRtConnection.h"
-#include "NakamaRtProxy.h"
-#include "WebSocketsModule.h"
 
 using namespace Nakama;
 using namespace NakamaRt;
@@ -72,7 +70,7 @@ namespace
 // PING TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtPingSpec, "IntegrationTests.NakamaRt.Ping",
+BEGIN_DEFINE_SPEC(FNakamaRtPingSpec, "IntegrationTests.NakamaRtTests.Ping",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -134,7 +132,7 @@ void FNakamaRtPingSpec::Define()
 // CHANNEL TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtChannelSpec, "IntegrationTests.NakamaRt.Channel",
+BEGIN_DEFINE_SPEC(FNakamaRtChannelSpec, "IntegrationTests.NakamaRtTests.Channel",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -357,7 +355,7 @@ void FNakamaRtChannelSpec::Define()
 // MATCH TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtMatchSpec, "IntegrationTests.NakamaRt.Match",
+BEGIN_DEFINE_SPEC(FNakamaRtMatchSpec, "IntegrationTests.NakamaRtTests.Match",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -472,7 +470,7 @@ void FNakamaRtMatchSpec::Define()
 // MATCHMAKER TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtMatchmakerSpec, "IntegrationTests.NakamaRt.Matchmaker",
+BEGIN_DEFINE_SPEC(FNakamaRtMatchmakerSpec, "IntegrationTests.NakamaRtTests.Matchmaker",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -567,7 +565,7 @@ void FNakamaRtMatchmakerSpec::Define()
 // MATCH JOIN TESTS  (two-client: match_id path and matchmaker-token path)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtMatchJoinSpec, "IntegrationTests.NakamaRt.MatchJoin",
+BEGIN_DEFINE_SPEC(FNakamaRtMatchJoinSpec, "IntegrationTests.NakamaRtTests.MatchJoin",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -579,10 +577,6 @@ BEGIN_DEFINE_SPEC(FNakamaRtMatchJoinSpec, "IntegrationTests.NakamaRt.MatchJoin",
     // Client B — set up inline per test
     FNakamaSession      Session2;
     TSharedPtr<FNakamaRtConnection> Connection2;
-
-    // Proxies for event-based tests
-    UNakamaRtProxy* Proxy  = nullptr;
-    UNakamaRtProxy* Proxy2 = nullptr;
 
     // Shared state threaded through the JoinByMatchId chain via a member
     FString PendingMatchId;
@@ -620,8 +614,6 @@ void FNakamaRtMatchJoinSpec::Define()
     {
         if (Connection)  { Connection->Close();  Connection.Reset();  }
         if (Connection2) { Connection2->Close(); Connection2.Reset(); }
-        if (Proxy)  { Proxy->RemoveFromRoot();  Proxy  = nullptr; }
-        if (Proxy2) { Proxy2->RemoveFromRoot(); Proxy2 = nullptr; }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session)
@@ -709,21 +701,14 @@ void FNakamaRtMatchJoinSpec::Define()
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
                     TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
-                    Proxy2 = NewObject<UNakamaRtProxy>();
-                    Proxy2->AddToRoot();
-                    SetupRtEventHandlers(Connection2, Proxy2);
                     return Connection->Connect(MakeConnParams(Session));
                 })
                 .Next([this, Done](FNakamaWebSocketConnectionResult CR1) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatchmakerTicket>>
                 {
                     TestFalse("Connect A", CR1.ErrorCode != ENakamaWebSocketError::None);
 
-                    Proxy = NewObject<UNakamaRtProxy>();
-                    Proxy->AddToRoot();
-                    SetupRtEventHandlers(Connection, Proxy);
-
                     // Set up typed event callbacks before adding to the matchmaker queue.
-                    Proxy->OnMatchmakerMatchedNative.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    Connection->MatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         NakamaRt::MatchJoin(Connection, TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
@@ -738,7 +723,7 @@ void FNakamaRtMatchJoinSpec::Define()
                             });
                     });
 
-                    Proxy2->OnMatchmakerMatchedNative.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
+                    Connection2->MatchmakerMatched.AddLambda([this, Done](const FNakamaRtMatchmakerMatched& Matched)
                     {
                         NakamaRt::MatchJoin(Connection2, TEXT(""), Matched.Token, {})
                             .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> JoinResult)
@@ -785,18 +770,16 @@ void FNakamaRtMatchJoinSpec::Define()
 // SERVER-PUSH EVENT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtEventSpec, "IntegrationTests.NakamaRt.Events",
+BEGIN_DEFINE_SPEC(FNakamaRtEventSpec, "IntegrationTests.NakamaRtTests.Events",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
 
     FNakamaSession Session;
     TSharedPtr<FNakamaRtConnection> Connection;
-    UNakamaRtProxy* Proxy = nullptr;
 
     FNakamaSession Session2;
     TSharedPtr<FNakamaRtConnection> Connection2;
-    UNakamaRtProxy* Proxy2 = nullptr;
 
     // Threaded through chains when two-step setup needs to pass an ID between lambdas.
     FString PendingId;
@@ -831,8 +814,6 @@ void FNakamaRtEventSpec::Define()
     {
         if (Connection)  { Connection->Close();  Connection.Reset();  }
         if (Connection2) { Connection2->Close(); Connection2.Reset(); }
-        if (Proxy)  { Proxy->RemoveFromRoot();  Proxy  = nullptr; }
-        if (Proxy2) { Proxy2->RemoveFromRoot(); Proxy2 = nullptr; }
 
         if (Session.Token.IsEmpty()) { Done.Execute(); return; }
         Nakama::DeleteAccount(ClientConfig, Session)
@@ -869,11 +850,7 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    Proxy = NewObject<UNakamaRtProxy>();
-                    Proxy->AddToRoot();
-                    SetupRtEventHandlers(Connection, Proxy);
-
-                    Proxy->OnMatchPresenceEventNative.AddLambda([this, Done](const FNakamaRtMatchPresenceEvent& Event)
+                    Connection->MatchPresenceEvent.AddLambda([this, Done](const FNakamaRtMatchPresenceEvent& Event)
                     {
                         TestEqual("Presence event match_id", Event.MatchId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
@@ -901,7 +878,7 @@ void FNakamaRtEventSpec::Define()
                         AddError(TEXT("Client B MatchJoin failed"));
                         Done.Execute();
                     }
-                    // Done fires via OnMatchPresenceEvent on Client A, not here.
+                    // Done fires via MatchPresenceEvent on Client A, not here.
                 });
         });
     });
@@ -930,11 +907,7 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    Proxy = NewObject<UNakamaRtProxy>();
-                    Proxy->AddToRoot();
-                    SetupRtEventHandlers(Connection, Proxy);
-
-                    Proxy->OnMatchDataNative.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
+                    Connection->MatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
@@ -963,7 +936,7 @@ void FNakamaRtEventSpec::Define()
                         Done.Execute();
                         return;
                     }
-                    // Client B sends data; Client A will receive it via OnMatchData.
+                    // Client B sends data; Client A will receive it via MatchData.
                     NakamaRt::MatchDataSend(Connection2, PendingId, TestOpCode, TArray<uint8>{'h','e','l','l','o'}, {}, true);
                 });
         });
@@ -991,11 +964,7 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = CreateResult.Data->MatchId;
 
-                    Proxy = NewObject<UNakamaRtProxy>();
-                    Proxy->AddToRoot();
-                    SetupRtEventHandlers(Connection, Proxy);
-
-                    Proxy->OnMatchDataNative.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
+                    Connection->MatchData.AddLambda([this, Done](const FNakamaRtMatchData& MatchData)
                     {
                         TestEqual("MatchData match_id", MatchData.MatchId, PendingId);
                         TestEqual("MatchData opcode", MatchData.OpCode, TestOpCode);
@@ -1054,11 +1023,7 @@ void FNakamaRtEventSpec::Define()
                     }
                     PendingId = JoinResult.Data->Id;
 
-                    Proxy = NewObject<UNakamaRtProxy>();
-                    Proxy->AddToRoot();
-                    SetupRtEventHandlers(Connection, Proxy);
-
-                    Proxy->OnChannelPresenceEventNative.AddLambda([this, Done](const FNakamaRtChannelPresenceEvent& Event)
+                    Connection->ChannelPresenceEvent.AddLambda([this, Done](const FNakamaRtChannelPresenceEvent& Event)
                     {
                         TestEqual("Presence event channel_id", Event.ChannelId, PendingId);
                         TestFalse("Joins list should be non-empty", Event.Joins.IsEmpty());
@@ -1096,7 +1061,7 @@ void FNakamaRtEventSpec::Define()
 // STATUS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtStatusSpec, "IntegrationTests.NakamaRt.Status",
+BEGIN_DEFINE_SPEC(FNakamaRtStatusSpec, "IntegrationTests.NakamaRtTests.Status",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -1222,7 +1187,7 @@ void FNakamaRtStatusSpec::Define()
 // PARTY TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtPartySpec, "IntegrationTests.NakamaRt.Party",
+BEGIN_DEFINE_SPEC(FNakamaRtPartySpec, "IntegrationTests.NakamaRtTests.Party",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
     FNakamaClientConfig ClientConfig;
@@ -1317,7 +1282,7 @@ void FNakamaRtPartySpec::Define()
 // SUBSYSTEM LIFETIME TESTS (no server required)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec, "IntegrationTests.NakamaRt.SubsystemLifetime",
+BEGIN_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec, "IntegrationTests.NakamaRtTests.SubsystemLifetime",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 END_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec)
