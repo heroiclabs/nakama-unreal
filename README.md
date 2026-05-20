@@ -127,35 +127,33 @@ As you can see, this returns a session object that will be passed into other fun
 
 ![image createclient-4](./images/Client-4.png)
 
-After you have created a default client you'll be able to set up a Web Socket connection with the server if you wish to use real-time features.
+## Setting up the Real-time Listeners and Binding to Events
 
-Get the **NakamaWebSocketSubsystem** and bind to the connected and closed events to handle the connection lifecycle. Then you can call **BeginConnect** to establish the connection by passing in the params, including the auth token from the session that you stored earlier. In this screenshot, we have split the Params struct pin to keep the nodes tidy.
+After you have authenticated and have received an auth token, you'll be able to set up a socket connection with the server if you wish to use real-time features.
 
-![image createclient-5](./images/Client-5.png)
-
-Once connected, you can now use real-time functions by passing in the **NakamaWebSocketSubsystem**. Keep in mind that this will only work if the web socket connection has been successfully established.
-
-## Setting up Listeners and Binding to Events
-
-After establishing your web socket connection, you are ready to bind to its events by first creating the event proxy.
+First, create the Nakama Rt Connection object and store the handle for use later.
 
 ![image binding-1](./images/Bindings-1.png)
 
-After creating the event proxy, you are ready to bind to the callbacks.
+Using the Rt Handle, bind to the `ConnectCompleted` and `Closed` events to handle the connection lifecycle. Then you can call **Connect** to establish the connection by passing in the params, including the auth token from the session that you stored earlier. In this screenshot, we have split the Params struct pin to keep the nodes tidy.
 
 ![image binding-2](./images/Bindings-2.png)
 
-Create a custom event and give it a meaningful name.
+Using the Rt Handle, you are also able to bind more events to receive updates from various real-time systems. These can be bound right before connecting to make sure that the callbacks are ready immediately upon connecting the socket.
 
 ![image binding-3](./images/Bindings-3.png)
 
+For this example, we'll be using the `Notifications` callback. Create a custom event and give it a meaningful name.
+
+![image binding-4](./images/Bindings-4.png)
+
  In the example below, we setup a listener for notifications, then we bind to the event, loop over notifications and print them as debug strings on the screen.
 
- ![image binding-4](./images/Bindings-4.png)
+ ![image binding-5](./images/Bindings-5.png)
 
 In the next example we listen to matchmaker matched event then bind to it and handle the response by joining a match with the returned token or match id, which then returns a Match including the match id, presences, label and so on.
 
-![image binding-5](./images/Bindings-5.png)
+![image binding-6](./images/Bindings-6.png)
 
 ## Session Management
 
