@@ -53,6 +53,9 @@ struct FNakamaWebSocketConnectionResult
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
+  bool bSuccess = false;
+
+  UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
   ENakamaWebSocketError ErrorCode = ENakamaWebSocketError::None;
 };
 

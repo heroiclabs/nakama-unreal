@@ -32,7 +32,7 @@ void UNakamaRtHandle::Connect(const FNakamaWebSocketConnectionParams& Params)
 {
   if (!Connection.IsValid())
   {
-    ConnectCompleted.Broadcast(FNakamaWebSocketConnectionResult { ENakamaWebSocketError::ConnectionFailed });
+    ConnectCompleted.Broadcast(FNakamaWebSocketConnectionResult { .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
     return;
   }
 

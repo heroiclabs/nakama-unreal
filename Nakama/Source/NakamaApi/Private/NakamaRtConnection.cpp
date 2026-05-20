@@ -33,11 +33,11 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtConnection::Connect(con
 {
   if (ConnectionState == ENakamaRtConnectionState::Connected)
   {
-    return MakeCompletedFuture(FNakamaWebSocketConnectionResult { });
+    return MakeCompletedFuture(FNakamaWebSocketConnectionResult { .bSuccess = true });
   }
   if (ConnectionState == ENakamaRtConnectionState::ConnectionInProgress)
   {
-    return MakeCompletedFuture(FNakamaWebSocketConnectionResult { ENakamaWebSocketError::ConnectionAlreadyInProgress });
+    return MakeCompletedFuture(FNakamaWebSocketConnectionResult { .ErrorCode = ENakamaWebSocketError::ConnectionAlreadyInProgress });
   }
   
   ConnectionParams = Params;
@@ -292,7 +292,7 @@ void FNakamaRtConnection::OnConnected()
   TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> LocalState = MoveTemp(ConnectionPromise);
   if (LocalState.IsValid())
   {
-    LocalState->Resolve(FNakamaWebSocketConnectionResult{});
+    LocalState->Resolve(FNakamaWebSocketConnectionResult{ .bSuccess = true });
   }
 }
 
