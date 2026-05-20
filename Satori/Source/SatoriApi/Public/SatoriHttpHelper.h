@@ -193,9 +193,22 @@ inline void DoHttpRequest(
 	Request->ProcessRequest();
 }
 
+inline FString BuildQueryString(const TArray<TPair<FString, FString>>& QueryParams)
+{
+	if (QueryParams.Num() == 0) return FString{};
+	TArray<FString> Parts;
+	Parts.Reserve(QueryParams.Num());
+	for (const auto& P : QueryParams)
+	{
+		Parts.Add(P.Key + TEXT("=") + FGenericPlatformHttp::UrlEncode(P.Value));
+	}
+	return TEXT("?") + FString::Join(Parts, TEXT("&"));
+}
+
 inline void SendRequest(
 	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
+	const TArray<TPair<FString, FString>>& QueryParams,
 	const FString& Method,
 	const FString& BodyString,
 	ESatoriRequestAuth AuthType,
@@ -214,12 +227,13 @@ inline void SendRequest(
 		return;
 	}
 
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
+	DoHttpRequest(Config, Endpoint + BuildQueryString(QueryParams), Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 inline void MakeRequest(
 	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
+	const TArray<TPair<FString, FString>>& QueryParams,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
 	ESatoriRequestAuth AuthType,
@@ -234,7 +248,7 @@ inline void MakeRequest(
 	{
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
+	SendRequest(Config, Endpoint, QueryParams, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 } // namespace SatoriHttpInternal
