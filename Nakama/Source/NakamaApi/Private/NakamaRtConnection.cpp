@@ -18,6 +18,7 @@
 
 #include "NakamaRtConnection.h"
 #include "WebSocketsModule.h"
+#include "NakamaApi.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
 FNakamaRtConnection::FNakamaRtConnection()

@@ -4,10 +4,10 @@ silent: true
 dotenv: ['.env']
 
 vars:
-  PROTO_FILE: "cmd/codegen/unreal-sdk/protos/nakama-types.proto"
-  PROTO_SERVICE_FILE: "cmd/codegen/unreal-sdk/protos/nakama-api.proto"
-  PROTO_RT_FILE: "cmd/codegen/unreal-sdk/protos/realtime.proto"
-  PROTO_SATORI_FILE: "cmd/codegen/unreal-sdk/protos/satori.proto"
+  PROTO_FILE: "cmd/codegen/unreal-sdk/proto/nakama-types.proto"
+  PROTO_SERVICE_FILE: "cmd/codegen/unreal-sdk/proto/nakama-api.proto"
+  PROTO_RT_FILE: "cmd/codegen/unreal-sdk/proto/realtime.proto"
+  PROTO_SATORI_FILE: "cmd/codegen/unreal-sdk/proto/satori.proto"
   CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
   GITHUB_TOKEN:

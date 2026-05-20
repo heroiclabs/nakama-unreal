@@ -72,10 +72,10 @@ func main() {
 
 	funcMap := getFuncMap()
 
-	nakamaApiProtos := []string{"protos/nakama-types.proto", "protos/nakama-api.proto"}
-	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
-	nakamaRtTypesProtos := []string{"protos/realtime.proto"}
-	satoriApiProtos := []string{"protos/satori.proto"}
+	nakamaApiProtos := []string{"proto/nakama-types.proto", "proto/nakama-api.proto"}
+	nakamaRtApiProtos := []string{"proto/nakama-types.proto", "proto/realtime.proto"}
+	nakamaRtTypesProtos := []string{"proto/realtime.proto"}
+	satoriApiProtos := []string{"proto/satori.proto"}
 
 	//
 	// Nakama HTTP
