@@ -42,13 +42,9 @@ SATORIAPI_API void SatoriApi::Authenticate (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -86,6 +82,7 @@ SATORIAPI_API void SatoriApi::Authenticate (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Basic,
@@ -119,13 +116,9 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -145,6 +138,7 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -176,13 +170,9 @@ SATORIAPI_API void SatoriApi::AuthenticateRefresh (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -198,6 +188,7 @@ SATORIAPI_API void SatoriApi::AuthenticateRefresh (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Basic,
@@ -230,13 +221,9 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -247,6 +234,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -278,13 +266,9 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -295,6 +279,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -327,13 +312,9 @@ SATORIAPI_API void SatoriApi::Event (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -354,6 +335,7 @@ SATORIAPI_API void SatoriApi::Event (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -386,13 +368,9 @@ SATORIAPI_API void SatoriApi::Event (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -413,6 +391,7 @@ SATORIAPI_API void SatoriApi::Event (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -445,13 +424,9 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -472,6 +447,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -504,13 +480,9 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -531,6 +503,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -564,20 +537,16 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -589,6 +558,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -623,20 +593,16 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -648,6 +614,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -682,20 +649,16 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -707,6 +670,7 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -741,20 +705,16 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -766,6 +726,7 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -800,20 +761,16 @@ SATORIAPI_API void SatoriApi::GetFlags (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -825,6 +782,7 @@ SATORIAPI_API void SatoriApi::GetFlags (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -859,20 +817,16 @@ SATORIAPI_API void SatoriApi::GetFlags (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -884,6 +838,7 @@ SATORIAPI_API void SatoriApi::GetFlags (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -922,36 +877,32 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
+    QueryParams.Add({TEXT("past_run_count"), FString::Printf(TEXT("%d"), (PastRunCount))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
+    QueryParams.Add({TEXT("future_run_count"), FString::Printf(TEXT("%d"), (FutureRunCount))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
+    QueryParams.Add({TEXT("start_time_sec"), FString::Printf(TEXT("%lld"), (StartTimeSec))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("end_time_sec"), FString::Printf(TEXT("%lld"), (EndTimeSec))});
   }
 
   //
@@ -963,6 +914,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1001,36 +953,32 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
+    QueryParams.Add({TEXT("names"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
+    QueryParams.Add({TEXT("labels"), FString::Printf(TEXT("%s"), *(Item))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
+    QueryParams.Add({TEXT("past_run_count"), FString::Printf(TEXT("%d"), (PastRunCount))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
+    QueryParams.Add({TEXT("future_run_count"), FString::Printf(TEXT("%d"), (FutureRunCount))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
+    QueryParams.Add({TEXT("start_time_sec"), FString::Printf(TEXT("%lld"), (StartTimeSec))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("end_time_sec"), FString::Printf(TEXT("%lld"), (EndTimeSec))});
   }
 
   //
@@ -1042,6 +990,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1077,13 +1026,9 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1094,6 +1039,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1128,13 +1074,9 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1145,6 +1087,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1176,13 +1119,9 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1193,6 +1132,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1224,13 +1164,9 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1241,6 +1177,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1275,13 +1212,9 @@ SATORIAPI_API void SatoriApi::Identify (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1315,6 +1248,7 @@ SATORIAPI_API void SatoriApi::Identify (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1350,13 +1284,9 @@ SATORIAPI_API void SatoriApi::Identify (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1390,6 +1320,7 @@ SATORIAPI_API void SatoriApi::Identify (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1422,13 +1353,9 @@ SATORIAPI_API void SatoriApi::ListProperties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1439,6 +1366,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1471,13 +1399,9 @@ SATORIAPI_API void SatoriApi::ListProperties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1488,6 +1412,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1520,13 +1445,9 @@ SATORIAPI_API void SatoriApi::Readycheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1537,6 +1458,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1568,13 +1490,9 @@ SATORIAPI_API void SatoriApi::Readycheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1585,6 +1503,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1619,13 +1538,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1659,6 +1574,7 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1693,13 +1609,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1733,6 +1645,7 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1768,28 +1681,24 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
+    QueryParams.Add({TEXT("forward"), FString::Printf(TEXT("%s"), *LexToString(Forward))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("message_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("message_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1801,6 +1710,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1837,28 +1747,24 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit))});
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
+    QueryParams.Add({TEXT("forward"), FString::Printf(TEXT("%s"), *LexToString(Forward))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("message_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("message_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1870,6 +1776,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -1907,13 +1814,9 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1933,6 +1836,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -1969,13 +1873,9 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1995,6 +1895,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ESatoriRequestAuth::Bearer,
@@ -2029,13 +1930,9 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2046,6 +1943,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ESatoriRequestAuth::HttpKey,
@@ -2080,13 +1978,9 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2097,6 +1991,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ESatoriRequestAuth::Bearer,

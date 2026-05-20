@@ -45,27 +45,23 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   Endpoint = Endpoint.Replace(TEXT("{ {{- $pathParam.PathName -}} }"), *Encoded_{{ $pathParam.Name }});
   {{- end }}
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   {{- range $queryParam := $func.Metadata.QueryParams }}
   {{- if $queryParam.Repeated }}
   for ({{ $queryParam.Param }} Item : {{ $queryParam.Name }})
 	{
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item)));
+    QueryParams.Add({TEXT("{{ $queryParam.QueryStringKey }}"), FString::Printf(TEXT("{{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item))});
   }
   {{- else }}
   {{ if eq "NonZero" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }} != 0)
   {{ else if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
   {
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }}{{ $queryParam.JsonSerializeFn }})));
+    QueryParams.Add({TEXT("{{ $queryParam.QueryStringKey }}"), FString::Printf(TEXT("{{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }}{{ $queryParam.JsonSerializeFn }}))});
   }
   {{- end }}
   {{- end }}
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
 
   //
   // Fill Body Params
@@ -130,6 +126,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   {{- end }}
     Config,
     Endpoint,
+    QueryParams,
     TEXT("{{ $func.Metadata.Method }}"),
     {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
     RawBody,

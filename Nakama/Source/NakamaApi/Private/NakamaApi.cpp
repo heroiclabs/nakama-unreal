@@ -42,24 +42,20 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Metadata.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *(Metadata)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("metadata"), FString::Printf(TEXT("%s"), *(Metadata))});
   }
 
   //
@@ -71,6 +67,7 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -105,24 +102,20 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Metadata.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *(Metadata)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("metadata"), FString::Printf(TEXT("%s"), *(Metadata))});
   }
 
   //
@@ -134,6 +127,7 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -169,16 +163,12 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -190,6 +180,7 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -225,16 +216,12 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -246,6 +233,7 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -278,13 +266,9 @@ NAKAMAAPI_API void NakamaApi::SessionRefresh (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -309,6 +293,7 @@ NAKAMAAPI_API void NakamaApi::SessionRefresh (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -343,13 +328,9 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -369,6 +350,7 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -402,13 +384,9 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -428,6 +406,7 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -461,20 +440,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -487,6 +462,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -521,20 +497,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -547,6 +519,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -581,20 +554,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -607,6 +576,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -641,20 +611,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -667,6 +633,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -702,24 +669,20 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
   if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("sync"), FString::Printf(TEXT("%s"), *LexToString(Sync.GetValue()))});
   }
 
   //
@@ -732,6 +695,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -766,20 +730,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -792,6 +752,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -826,20 +787,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -852,6 +809,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -886,20 +844,16 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
 
   //
@@ -912,6 +866,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -947,24 +902,20 @@ NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Create.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("create=%s"), *LexToString(Create.GetValue())));
+    QueryParams.Add({TEXT("create"), FString::Printf(TEXT("%s"), *LexToString(Create.GetValue()))});
   }
   if (Username.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("username=%s"), *(Username)));
+    QueryParams.Add({TEXT("username"), FString::Printf(TEXT("%s"), *(Username))});
   }
   if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("sync"), FString::Printf(TEXT("%s"), *LexToString(Sync.GetValue()))});
   }
 
   //
@@ -977,6 +928,7 @@ NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Basic,
@@ -1013,16 +965,12 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1034,6 +982,7 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1069,16 +1018,12 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1090,6 +1035,7 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1123,20 +1069,16 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1148,6 +1090,7 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1181,20 +1124,16 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1206,6 +1145,7 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1243,13 +1183,9 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1285,6 +1221,7 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1323,13 +1260,9 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1365,6 +1298,7 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1397,13 +1331,9 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1414,6 +1344,7 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1445,13 +1376,9 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1462,6 +1389,7 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1495,20 +1423,16 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1520,6 +1444,7 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1553,20 +1478,16 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1578,6 +1499,7 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1612,13 +1534,9 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1629,6 +1547,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1663,13 +1582,9 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1680,6 +1595,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1714,13 +1630,9 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1731,6 +1643,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1765,13 +1678,9 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1782,6 +1691,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1814,16 +1724,12 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1835,6 +1741,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1867,16 +1774,12 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -1888,6 +1791,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -1922,13 +1826,9 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1939,6 +1839,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -1973,13 +1874,9 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -1990,6 +1887,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("DELETE"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2022,13 +1920,9 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2049,6 +1943,7 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2081,13 +1976,9 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2108,6 +1999,7 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2143,13 +2035,9 @@ NAKAMAAPI_API void NakamaApi::Event (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2182,6 +2070,7 @@ NAKAMAAPI_API void NakamaApi::Event (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2217,13 +2106,9 @@ NAKAMAAPI_API void NakamaApi::Event (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2256,6 +2141,7 @@ NAKAMAAPI_API void NakamaApi::Event (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2287,13 +2173,9 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2304,6 +2186,7 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2336,13 +2219,9 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2353,6 +2232,7 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2388,24 +2268,20 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : FacebookIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("facebook_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -2417,6 +2293,7 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2452,24 +2329,20 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *(Item)));
+    QueryParams.Add({TEXT("usernames"), FString::Printf(TEXT("%s"), *(Item))});
   }
   for (const FString& Item : FacebookIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("facebook_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -2481,6 +2354,7 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2516,13 +2390,9 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId);
   Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2533,6 +2403,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2568,13 +2439,9 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId);
   Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2585,6 +2452,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2617,13 +2485,9 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2634,6 +2498,7 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2666,13 +2531,9 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2683,6 +2544,7 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2715,13 +2577,9 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2732,6 +2590,7 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2763,13 +2622,9 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -2780,6 +2635,7 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2813,16 +2669,12 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("reset"), FString::Printf(TEXT("%s"), *LexToString(Reset.GetValue()))});
   }
 
   //
@@ -2835,6 +2687,7 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2868,16 +2721,12 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("reset"), FString::Printf(TEXT("%s"), *LexToString(Reset.GetValue()))});
   }
 
   //
@@ -2890,6 +2739,7 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -2923,16 +2773,12 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("reset"), FString::Printf(TEXT("%s"), *LexToString(Reset.GetValue()))});
   }
 
   //
@@ -2945,6 +2791,7 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -2978,16 +2825,12 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Reset.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("reset=%s"), *LexToString(Reset.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("reset"), FString::Printf(TEXT("%s"), *LexToString(Reset.GetValue()))});
   }
 
   //
@@ -3000,6 +2843,7 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3034,13 +2878,9 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3051,6 +2891,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3085,13 +2926,9 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3102,6 +2939,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3136,13 +2974,9 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3153,6 +2987,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3187,13 +3022,9 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3204,6 +3035,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3239,16 +3071,12 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -3260,6 +3088,7 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3295,16 +3124,12 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -3316,6 +3141,7 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3350,13 +3176,9 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3367,6 +3189,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3401,13 +3224,9 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3418,6 +3237,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3451,13 +3271,9 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3482,6 +3298,7 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3515,13 +3332,9 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3546,6 +3359,7 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3579,13 +3393,9 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3610,6 +3420,7 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3643,13 +3454,9 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3674,6 +3481,7 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3707,13 +3515,9 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3738,6 +3542,7 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3771,13 +3576,9 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3802,6 +3603,7 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3836,13 +3638,9 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3871,6 +3669,7 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -3905,13 +3704,9 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -3940,6 +3735,7 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -3973,16 +3769,12 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("sync"), FString::Printf(TEXT("%s"), *LexToString(Sync.GetValue()))});
   }
 
   //
@@ -3995,6 +3787,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4028,16 +3821,12 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Sync.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("sync=%s"), *LexToString(Sync.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("sync"), FString::Printf(TEXT("%s"), *LexToString(Sync.GetValue()))});
   }
 
   //
@@ -4050,6 +3839,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4083,13 +3873,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4114,6 +3900,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4147,13 +3934,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4178,6 +3961,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4216,13 +4000,9 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4267,6 +4047,7 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4305,13 +4086,9 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4356,6 +4133,7 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4389,13 +4167,9 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4420,6 +4194,7 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4453,13 +4228,9 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4484,6 +4255,7 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4517,13 +4289,9 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4543,6 +4311,7 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4576,13 +4345,9 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -4602,6 +4367,7 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4639,24 +4405,20 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId);
   Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Forward.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward.GetValue())));
+    QueryParams.Add({TEXT("forward"), FString::Printf(TEXT("%s"), *LexToString(Forward.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4668,6 +4430,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4706,24 +4469,20 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId);
   Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Forward.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward.GetValue())));
+    QueryParams.Add({TEXT("forward"), FString::Printf(TEXT("%s"), *LexToString(Forward.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4735,6 +4494,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4770,24 +4530,20 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4799,6 +4555,7 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4834,24 +4591,20 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4863,6 +4616,7 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -4897,20 +4651,16 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4922,6 +4672,7 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -4956,20 +4707,16 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -4981,6 +4728,7 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5019,36 +4767,32 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Name.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("name=%s"), *(Name)));
+    QueryParams.Add({TEXT("name"), FString::Printf(TEXT("%s"), *(Name))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (LangTag.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *(LangTag)));
+    QueryParams.Add({TEXT("lang_tag"), FString::Printf(TEXT("%s"), *(LangTag))});
   }
   if (Members.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members.GetValue())));
+    QueryParams.Add({TEXT("members"), FString::Printf(TEXT("%d"), (Members.GetValue()))});
   }
   if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("open"), FString::Printf(TEXT("%s"), *LexToString(Open.GetValue()))});
   }
 
   //
@@ -5060,6 +4804,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5098,36 +4843,32 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Name.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("name=%s"), *(Name)));
+    QueryParams.Add({TEXT("name"), FString::Printf(TEXT("%s"), *(Name))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (LangTag.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *(LangTag)));
+    QueryParams.Add({TEXT("lang_tag"), FString::Printf(TEXT("%s"), *(LangTag))});
   }
   if (Members.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("members=%d"), (Members.GetValue())));
+    QueryParams.Add({TEXT("members"), FString::Printf(TEXT("%d"), (Members.GetValue()))});
   }
   if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("open"), FString::Printf(TEXT("%s"), *LexToString(Open.GetValue()))});
   }
 
   //
@@ -5139,6 +4880,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5177,24 +4919,20 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5206,6 +4944,7 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5244,24 +4983,20 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5273,6 +5008,7 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5312,28 +5048,24 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("owner_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
 
   //
@@ -5345,6 +5077,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5384,28 +5117,24 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("owner_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
 
   //
@@ -5417,6 +5146,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5458,24 +5188,20 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
   Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5487,6 +5213,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5528,24 +5255,20 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
   Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5557,6 +5280,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5595,36 +5319,32 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Authoritative.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative.GetValue())));
+    QueryParams.Add({TEXT("authoritative"), FString::Printf(TEXT("%s"), *LexToString(Authoritative.GetValue()))});
   }
   if (Label.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("label=%s"), *(Label)));
+    QueryParams.Add({TEXT("label"), FString::Printf(TEXT("%s"), *(Label))});
   }
   if (MinSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize.GetValue())));
+    QueryParams.Add({TEXT("min_size"), FString::Printf(TEXT("%d"), (MinSize.GetValue()))});
   }
   if (MaxSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize.GetValue())));
+    QueryParams.Add({TEXT("max_size"), FString::Printf(TEXT("%d"), (MaxSize.GetValue()))});
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("query=%s"), *(Query)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("query"), FString::Printf(TEXT("%s"), *(Query))});
   }
 
   //
@@ -5636,6 +5356,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5674,36 +5395,32 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Authoritative.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), *LexToString(Authoritative.GetValue())));
+    QueryParams.Add({TEXT("authoritative"), FString::Printf(TEXT("%s"), *LexToString(Authoritative.GetValue()))});
   }
   if (Label.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("label=%s"), *(Label)));
+    QueryParams.Add({TEXT("label"), FString::Printf(TEXT("%s"), *(Label))});
   }
   if (MinSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("min_size=%d"), (MinSize.GetValue())));
+    QueryParams.Add({TEXT("min_size"), FString::Printf(TEXT("%d"), (MinSize.GetValue()))});
   }
   if (MaxSize.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("max_size=%d"), (MaxSize.GetValue())));
+    QueryParams.Add({TEXT("max_size"), FString::Printf(TEXT("%d"), (MaxSize.GetValue()))});
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("query=%s"), *(Query)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("query"), FString::Printf(TEXT("%s"), *(Query))});
   }
 
   //
@@ -5715,6 +5432,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5751,28 +5469,24 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
+    QueryParams.Add({TEXT("open"), FString::Printf(TEXT("%s"), *LexToString(Open.GetValue()))});
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("query=%s"), *(Query)));
+    QueryParams.Add({TEXT("query"), FString::Printf(TEXT("%s"), *(Query))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5784,6 +5498,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5820,28 +5535,24 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Open.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("open=%s"), *LexToString(Open.GetValue())));
+    QueryParams.Add({TEXT("open"), FString::Printf(TEXT("%s"), *LexToString(Open.GetValue()))});
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("query=%s"), *(Query)));
+    QueryParams.Add({TEXT("query"), FString::Printf(TEXT("%s"), *(Query))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -5853,6 +5564,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -5887,20 +5599,16 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (CacheableCursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *(CacheableCursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cacheable_cursor"), FString::Printf(TEXT("%s"), *(CacheableCursor))});
   }
 
   //
@@ -5912,6 +5620,7 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -5946,20 +5655,16 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (CacheableCursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *(CacheableCursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cacheable_cursor"), FString::Printf(TEXT("%s"), *(CacheableCursor))});
   }
 
   //
@@ -5971,6 +5676,7 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6009,24 +5715,20 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection);
   Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (UserId.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *(UserId)));
+    QueryParams.Add({TEXT("user_id"), FString::Printf(TEXT("%s"), *(UserId))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6038,6 +5740,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6076,24 +5779,20 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection);
   Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (UserId.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *(UserId)));
+    QueryParams.Add({TEXT("user_id"), FString::Printf(TEXT("%s"), *(UserId))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6105,6 +5804,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6139,13 +5839,9 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -6165,6 +5861,7 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6199,13 +5896,9 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -6225,6 +5918,7 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6263,36 +5957,32 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (CategoryStart.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart.GetValue())));
+    QueryParams.Add({TEXT("category_start"), FString::Printf(TEXT("%d"), (CategoryStart.GetValue()))});
   }
   if (CategoryEnd.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd.GetValue())));
+    QueryParams.Add({TEXT("category_end"), FString::Printf(TEXT("%d"), (CategoryEnd.GetValue()))});
   }
   if (StartTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime.GetValue())));
+    QueryParams.Add({TEXT("start_time"), FString::Printf(TEXT("%d"), (StartTime.GetValue()))});
   }
   if (EndTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime.GetValue())));
+    QueryParams.Add({TEXT("end_time"), FString::Printf(TEXT("%d"), (EndTime.GetValue()))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6304,6 +5994,7 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6342,36 +6033,32 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (CategoryStart.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_start=%d"), (CategoryStart.GetValue())));
+    QueryParams.Add({TEXT("category_start"), FString::Printf(TEXT("%d"), (CategoryStart.GetValue()))});
   }
   if (CategoryEnd.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("category_end=%d"), (CategoryEnd.GetValue())));
+    QueryParams.Add({TEXT("category_end"), FString::Printf(TEXT("%d"), (CategoryEnd.GetValue()))});
   }
   if (StartTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("start_time=%d"), (StartTime.GetValue())));
+    QueryParams.Add({TEXT("start_time"), FString::Printf(TEXT("%d"), (StartTime.GetValue()))});
   }
   if (EndTime.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("end_time=%d"), (EndTime.GetValue())));
+    QueryParams.Add({TEXT("end_time"), FString::Printf(TEXT("%d"), (EndTime.GetValue()))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6383,6 +6070,7 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6422,28 +6110,24 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("owner_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
 
   //
@@ -6455,6 +6139,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6494,28 +6179,24 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *(Item)));
+    QueryParams.Add({TEXT("owner_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
 
   //
@@ -6527,6 +6208,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6568,24 +6250,20 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
   Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6597,6 +6275,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6638,24 +6317,20 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
   Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (Expiry.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), (Expiry.GetValue())));
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), (Expiry.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6667,6 +6342,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6705,24 +6381,20 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId);
   Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6734,6 +6406,7 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6772,24 +6445,20 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId);
   Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (Limit.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit.GetValue())));
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), (Limit.GetValue()))});
   }
   if (State.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("state=%d"), (State.GetValue())));
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), (State.GetValue()))});
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("cursor"), FString::Printf(TEXT("%s"), *(Cursor))});
   }
 
   //
@@ -6801,6 +6470,7 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("GET"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6837,16 +6507,12 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -6858,6 +6524,7 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -6893,16 +6560,12 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -6914,6 +6577,7 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -6949,16 +6613,12 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -6970,6 +6630,7 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7005,16 +6666,12 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *(Item)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("user_ids"), FString::Printf(TEXT("%s"), *(Item))});
   }
 
   //
@@ -7026,6 +6683,7 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7058,13 +6716,9 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7085,6 +6739,7 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7118,13 +6773,9 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7145,6 +6796,7 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7181,16 +6833,12 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
+  TArray<TPair<FString, FString>> QueryParams;
   if (HttpKey.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("http_key=%s"), *(HttpKey)));
-  }
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+    QueryParams.Add({TEXT("http_key"), FString::Printf(TEXT("%s"), *(HttpKey))});
   }
 
   //
@@ -7207,6 +6855,7 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   SendRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     RawBody,
     ENakamaRequestAuth::HttpKey,
@@ -7243,13 +6892,9 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
   Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7265,6 +6910,7 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   SendRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     RawBody,
     ENakamaRequestAuth::Bearer,
@@ -7299,13 +6945,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7330,6 +6972,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7363,13 +7006,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7394,6 +7033,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7427,13 +7067,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7458,6 +7094,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7491,13 +7128,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7522,6 +7155,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7555,13 +7189,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7586,6 +7216,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7619,13 +7250,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7650,6 +7277,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7684,13 +7312,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7719,6 +7343,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7753,13 +7378,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7788,6 +7409,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7821,13 +7443,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7852,6 +7470,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -7885,13 +7504,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7916,6 +7531,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -7949,13 +7565,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -7980,6 +7592,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8013,13 +7626,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8044,6 +7653,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8082,13 +7692,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8133,6 +7739,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8171,13 +7778,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8222,6 +7825,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8255,13 +7859,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8286,6 +7886,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8319,13 +7920,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8350,6 +7947,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8383,13 +7981,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8414,6 +8008,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8447,13 +8042,9 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8478,6 +8069,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8515,13 +8107,9 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8557,6 +8145,7 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8594,13 +8183,9 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8636,6 +8221,7 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8675,13 +8261,9 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8713,6 +8295,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8752,13 +8335,9 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
   Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8790,6 +8369,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8823,13 +8403,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8849,6 +8425,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -8883,13 +8460,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8909,6 +8482,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -8943,13 +8517,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -8969,6 +8539,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9003,13 +8574,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9029,6 +8596,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9063,13 +8631,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9089,6 +8653,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9123,13 +8688,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9149,6 +8710,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9183,13 +8745,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9209,6 +8767,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9243,13 +8802,9 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9269,6 +8824,7 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9304,13 +8860,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9334,6 +8886,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9369,13 +8922,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9399,6 +8948,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9433,13 +8983,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9459,6 +9005,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9493,13 +9040,9 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9519,6 +9062,7 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9555,13 +9099,9 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9573,6 +9113,7 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9609,13 +9150,9 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
   Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9627,6 +9164,7 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("POST"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9660,13 +9198,9 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9687,6 +9221,7 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9720,13 +9255,9 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
   // 
   // Fill Path Params
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9747,6 +9278,7 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::Bearer,
@@ -9783,13 +9315,9 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9801,6 +9329,7 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::HttpKey,
@@ -9837,13 +9366,9 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
   Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
-  // 
+  //
   // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
+  TArray<TPair<FString, FString>> QueryParams;
 
   //
   // Fill Body Params
@@ -9855,6 +9380,7 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   MakeRequest(
     Config,
     Endpoint,
+    QueryParams,
     TEXT("PUT"),
     Body,
     ENakamaRequestAuth::Bearer,
