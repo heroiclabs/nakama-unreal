@@ -173,7 +173,9 @@ func LoadApi(protoFiles []string) (Api, error) {
 	// Updates maps internally, so each subsequent
 	// file will have previous context to work with.
 	for _, f := range protoFiles {
-		api.addFile(f)
+		if err := api.addFile(f); err != nil {
+			return Api{}, err
+		}
 	}
 
 	return api, nil
