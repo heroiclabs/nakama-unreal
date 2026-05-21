@@ -1,7 +1,7 @@
 go 1.22.2
 
 use (
-  ./yacg
-  ./unreal-sdk
-  ./typescript-sdk
+	./typescript-sdk
+	./unreal-sdk
+	./yacg
 )
