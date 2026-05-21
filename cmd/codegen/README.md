@@ -137,7 +137,7 @@ Keep wire names separate from SDK names. Proto field names like `group_id` are w
 
 ## 3. Implement HTTP `ApiMapper`
 
-For a first language target, implement HTTP generation before realtime generation.
+HTTP generation maps protobuf service RPCs and `google.api.http` annotations into request/response operations for the target SDK.
 
 The HTTP mapper should:
 
@@ -160,7 +160,46 @@ The HTTP mapper should:
 
 Do not parse proto files, walk proto ASTs, or inspect templates from the mapper. The mapper should only transform `yacg.Api` into `modules.ApiMap`.
 
-## 4. Implement templates
+## 4. Implement realtime `ApiMapper`
+
+A complete Nakama SDK generator must include realtime/WebSocket operations as well as HTTP operations. Realtime generation is not based on normal protobuf `service` RPCs. It is derived from the annotated realtime `Envelope.oneof message` schema.
+
+The realtime mapper should:
+
+- iterate `api.Enums` and `api.Messages` to generate realtime data models
+- locate the `Envelope` message
+- skip generating the literal envelope type unless the target SDK explicitly needs it
+- inspect `Envelope.OneofFields`
+- treat oneof fields with `(category) = REQUEST` as client-to-server realtime operations
+- treat oneof fields with `(category) = EVENT` as server-to-client event payloads
+- treat oneof fields with `(category) = RESPONSE` as response payloads where useful for the target SDK
+- use `(response_field)` to map a request field to its expected response message type
+- use an empty response model or target-language equivalent when a request has no response field
+- preserve the envelope wire field name in metadata; this is the JSON key sent over or received from the WebSocket
+- use `typeMapper.ResolveIdentifier` for operation names, event names, and SDK field names
+- use `typeMapper.ResolveEntry` for request, response, event, enum, and model types
+
+The realtime mapper may synthesize `modules.Function` values from envelope request fields. This is the expected pattern because realtime requests are implicit in the envelope rather than declared as protobuf RPCs.
+
+Realtime function metadata should include enough information for templates to print target-language WebSocket operations without rediscovering schema semantics, typically:
+
+- envelope request field name
+- SDK operation name
+- request model type
+- response model type
+- whether the response is empty or absent
+
+Do not require `(response_field)` to correspond to a separate envelope oneof field categorized as `RESPONSE`. In the Nakama realtime schema it is best treated first as a protobuf message type name. Some response types also appear as separate response envelope fields, but some do not; for example, a request can use `(response_field) = "Rpc"` where the response message type is `Rpc` and there is no distinct `RESPONSE` envelope field. If the target transport needs to correlate responses, correlation should primarily use the envelope `cid`; any response envelope field name should be optional metadata only when it can be resolved.
+
+Realtime event metadata should include enough information for templates to print event registration/dispatch code, typically:
+
+- envelope event field name
+- SDK event name
+- event payload model type
+
+Do not make templates infer request/response/event categories from names. Category and response-field semantics belong in the realtime `ApiMapper`.
+
+## 5. Implement templates
 
 Templates should be dumb printers over `modules.ApiMap`.
 
@@ -175,7 +214,9 @@ Templates should use:
 - `$.Funcs` for SDK functions
 - `DataDecl.Metadata` for target-specific generation details
 
-## 5. Wire generation in `main.go`
+Generate separate files or one combined file based on the target SDK structure. The important rule is that both HTTP and realtime templates should consume mapper-produced `modules.ApiMap` values, not raw `yacg.Api` values.
+
+## 6. Wire generation in `main.go`
 
 `main.go` should:
 
@@ -192,9 +233,17 @@ For Nakama HTTP generation, use:
 nakamaApiProtos := []string{"proto/nakama-types.proto", "proto/nakama-api.proto"}
 ```
 
+For Nakama realtime generation, use:
+
+```go
+nakamaRtApiProtos := []string{"proto/nakama-types.proto", "proto/realtime.proto"}
+```
+
+If the target SDK has both HTTP and realtime support, create separate production requirements for each proto set and mapper pair, then add productions for both sets of templates.
+
 The command should normally be run from the SDK module directory, matching the existing Unreal generator convention.
 
-## 6. Verify framework usage
+## 7. Verify framework usage
 
 Before judging language-specific style, verify these framework integration points:
 
@@ -206,8 +255,10 @@ Before judging language-specific style, verify these framework integration point
 - all SDK identifiers/types come from the type mapper
 - wire names remain available in metadata and are not replaced by SDK identifiers
 - templates consume `modules.ApiMap` rather than custom global state
+- complete SDK targets generate both HTTP operations and realtime/WebSocket operations
+- realtime operations are synthesized from annotated envelope fields by an `ApiMapper`, not by template name matching
 
-## 7. Common mistakes
+## 8. Common mistakes
 
 - Do not bypass `ApiMapper` by generating directly from `yacg.Api` inside templates.
 - Do not put all type decisions in templates. Put them in `TypeMapper` and mapper metadata.
@@ -215,3 +266,5 @@ Before judging language-specific style, verify these framework integration point
 - Do not assume current `master` protos have realtime annotations. Use the flattened proto branches referenced by `Taskfile.yml`.
 - Do not rely on nested protobuf messages being resolved correctly. The current parser assumes flattened schemas.
 - Do not use raw proto field names as SDK identifiers. Keep both SDK identifier and wire name where both are needed.
+- Do not stop at HTTP-only generation for a language SDK unless explicitly building an HTTP-only target.
+- Do not put realtime request/event/response classification in templates; put it in the realtime `ApiMapper`.

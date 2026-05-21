@@ -40,15 +40,24 @@ func main() {
 	}
 
 	nakamaApiProtos := []string{"proto/nakama-types.proto", "proto/nakama-api.proto"}
+	nakamaRtApiProtos := []string{"proto/nakama-types.proto", "proto/realtime.proto"}
 	typeMapper := typemappers.NewTypeScriptTypeMapper()
-	apiMapper := apimappers.TypeScriptHttpApiMapper{}
+	httpApiMapper := apimappers.TypeScriptHttpApiMapper{}
+	rtApiMapper := apimappers.TypeScriptRealtimeApiMapper{}
 	funcMap := getFuncMap()
 
 	nakamaHttpRequires, err := modules.MakeProductionRequirements(
-		nakamaApiProtos, apiMapper, typeMapper, funcMap,
+		nakamaApiProtos, httpApiMapper, typeMapper, funcMap,
 	)
 	if err != nil {
-		log.Fatalf("Failed to make production requirements: %s", err)
+		log.Fatalf("Failed to make HTTP production requirements: %s", err)
+	}
+
+	nakamaRtRequires, err := modules.MakeProductionRequirements(
+		nakamaRtApiProtos, rtApiMapper, typeMapper, funcMap,
+	)
+	if err != nil {
+		log.Fatalf("Failed to make realtime production requirements: %s", err)
 	}
 
 	module := modules.Module{
@@ -57,6 +66,11 @@ func main() {
 				Requires: nakamaHttpRequires,
 				Template: "templates/nakama.ts.tmpl",
 				Output:   "nakama.ts",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/nakama-realtime.ts.tmpl",
+				Output:   "nakama-realtime.ts",
 			},
 		},
 	}
