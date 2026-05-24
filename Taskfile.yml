@@ -4,24 +4,15 @@ silent: true
 dotenv: ['.env']
 
 vars:
-  PROTO_FILE: "cmd/codegen/unreal-sdk/proto/nakama-types.proto"
-  PROTO_SERVICE_FILE: "cmd/codegen/unreal-sdk/proto/nakama-api.proto"
-  PROTO_RT_FILE: "cmd/codegen/unreal-sdk/proto/realtime.proto"
-  PROTO_SATORI_FILE: "cmd/codegen/unreal-sdk/proto/satori.proto"
-  CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
+  PROTO_FILE: "cmd/codegen/proto/nakama-types.proto"
+  PROTO_SERVICE_FILE: "cmd/codegen/proto/nakama-api.proto"
+  PROTO_RT_FILE: "cmd/codegen/proto/realtime.proto"
+  PROTO_SATORI_FILE: "cmd/codegen/proto/satori.proto"
+  TEMPLATE_VERSION_FILE: "cmd/codegen/templates/nakama.version.tmpl"
+  TEMPLATE_NAKAMA_H: "cmd/codegen/templates/Nakama.h.tmpl"
+  TEMPLATE_NAKAMA_CPP: "cmd/codegen/templates/Nakama.cpp.tmpl"
+  CODEGEN: './build/codegen{{if eq OS "windows"}}.exe{{end}}'
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
-  GITHUB_TOKEN:
-    sh: |
-      if [ -n "$GITHUB_TOKEN" ]; then
-        echo "$GITHUB_TOKEN"
-      else
-        creds=$(printf "protocol=https\nhost=github.com\n" | git credential fill)
-        for line in $creds; do
-          case $line in
-            password=*) echo "${line#password=}" ;;
-          esac
-        done
-      fi
 
 tasks:
   codegen:
@@ -29,8 +20,10 @@ tasks:
     cmds:
     - task: fetch-protos
     - cmd: |
-        cd cmd/codegen/unreal-sdk && go build -o ../../../{{.CODEGEN}} && cd ../../..
-        cd cmd/codegen/unreal-sdk && ../../../{{.CODEGEN}} --outdir ../../..
+        go build -C ./cmd/codegen -o ../../{{.CODEGEN}}  
+        {{.CODEGEN}} --proto {{.PROTO_FILE}} --template {{.TEMPLATE_VERSION_FILE}} > Nakama/Resources/nakama.version
+        {{.CODEGEN}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} --template {{.TEMPLATE_NAKAMA_H}} > Nakama/Source/Nakama/Public/Nakama.gen.h
+        {{.CODEGEN}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} --template {{.TEMPLATE_NAKAMA_CPP}} > Nakama/Source/Nakama/Private/Nakama.gen.cpp
 
   start-server:
     cmds:
@@ -198,10 +191,10 @@ tasks:
   fetch-protos:
     internal: true
     vars:
-      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
-      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
-      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
-      PROTO_SATORI_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori.proto?ref=feat%2Freorder-proto'
+      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/master/api/api.proto'
+      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/master/apigrpc/apigrpc.proto'
+      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/master/rtapi/realtime.proto'
+      PROTO_SATORI_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori.proto'
     cmds:
     - cmd: |
         mkdir -p proto
@@ -210,9 +203,20 @@ tasks:
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
+        if [ -z "$GITHUB_TOKEN" ]; then
+          creds=$(printf "protocol=https\nhost=github.com\n" | git credential fill)
+          for line in $creds; do
+            case "$line" in
+              password=*)
+                GITHUB_TOKEN="${line#password=}"
+                ;;
+            esac
+          done
+        fi
+
         # Satori is private, so need credentials
         curl -o "{{.PROTO_SATORI_FILE}}" \
-          -H "Authorization: token {{.GITHUB_TOKEN}}" \
+          -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3.raw" \
           "{{.PROTO_SATORI_URL}}"
 

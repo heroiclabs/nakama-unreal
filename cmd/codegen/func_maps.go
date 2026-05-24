@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"os/exec"
 	"slices"
 	"strings"
 	"text/template"
@@ -75,6 +77,19 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		},
 		"stripDot": func(s string) string {
 			return TrimUntilLastDot(s)
+		},
+		"getVersionData": func() string {
+			args := []string{"rev-parse", "HEAD"}
+			cmd := exec.Command("git", args...)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+
+			err := cmd.Run()
+			if err != nil {
+				return "unknown-build"
+			}
+
+			return strings.TrimSpace(out.String())
 		},
 	}
 
