@@ -1,4 +1,4 @@
-module heroiclabs.com/modular-codegen
+module heroiclabs.com/codegen
 
 go 1.22.2
 

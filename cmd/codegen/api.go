@@ -9,7 +9,7 @@
 // this material is strictly forbidden unless prior written permission is obtained
 // from GameUp Online, Inc.
 
-package yacg
+package main
 
 import (
 	"bytes"
@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"github.com/emicklei/proto"
-	"heroiclabs.com/yacg/internal"
 )
 
 type Api struct {
@@ -123,7 +122,7 @@ func (api *Api) addFile(protoFile string) error {
 						return nil
 					} else {
 						// We get something like `api.MyRequestType`, so trim until the last dot.
-						t, ok := api.MessagesByName[internal.TrimUntilLastDot(fullTypeName)]
+						t, ok := api.MessagesByName[TrimUntilLastDot(fullTypeName)]
 						if !ok {
 							log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
 						}

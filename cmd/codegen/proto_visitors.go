@@ -9,7 +9,7 @@
 // this material is strictly forbidden unless prior written permission is obtained
 // from GameUp Online, Inc.
 
-package yacg
+package main
 
 import (
 	"regexp"
@@ -18,8 +18,11 @@ import (
 	"text/scanner"
 
 	"github.com/emicklei/proto"
-	"heroiclabs.com/yacg/internal"
 )
+
+func TrimUntilLastDot(s string) string {
+	return s[strings.LastIndex(s, ".")+1:]
+}
 
 // --------------------
 // Enums
@@ -95,7 +98,7 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 			Lines:    []string{},
 		}
 	}
-	nf.Type = internal.TrimUntilLastDot(nf.Type)
+	nf.Type = TrimUntilLastDot(nf.Type)
 	v.Message.Fields = append(v.Message.Fields, nf)
 }
 
@@ -106,7 +109,7 @@ func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
 			Lines:    []string{},
 		}
 	}
-	mf.Type = internal.TrimUntilLastDot(mf.Type)
+	mf.Type = TrimUntilLastDot(mf.Type)
 	v.Message.MapFields = append(v.Message.MapFields, mf)
 }
 
@@ -117,8 +120,8 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 }
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
-	oneof.Name = internal.TrimUntilLastDot(oneof.Name)
-	oneof.Type = internal.TrimUntilLastDot(oneof.Type)
+	oneof.Name = TrimUntilLastDot(oneof.Name)
+	oneof.Type = TrimUntilLastDot(oneof.Type)
 
 	field := &ProtoOneofField{OneOfField: oneof}
 	for _, opt := range oneof.Options {

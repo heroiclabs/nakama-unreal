@@ -1,0 +1,101 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+{{ $prefix := "Nakama" }}
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Nakama.gen.generated.h"
+
+{{/*--------------- ENUMS ---------------------*/}}
+{{ range $enum := .Enums }}
+UENUM(BlueprintType)
+enum class E{{ $prefix }}{{ $enum.Name }} : uint8
+{
+  {{ range $field := $enum.Fields }}
+  {{ $field.Name }} = {{ $field.Integer }},
+  {{- end }}
+};
+{{- end }}
+
+{{/*--------------- TYPES ---------------------*/}}
+{{ range $message := .Messages }}
+
+USTRUCT(BlueprintType)
+struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
+{
+  GENERATED_BODY() 
+
+  {{- range $member := $message.Fields }}
+
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
+  {{- if $member.Repeated }} 
+  TArray<{{ $member.Type | toUnrealType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{- else }}
+  {{ $member.Type | toUnrealType }} {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{- end }}
+  {{- end }}
+  {{- range $member := $message.MapFields }}
+
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
+  TMap<FString, {{ $member.Type | toUnrealType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{- end }}
+
+  static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+{{- end }}
+
+{{/*--------------- RESPONSES (For Futures) ---------------------*/}}
+
+/** Tag type used as the value type for RPCs that return no data. */
+struct NAKAMA_API FNakamaVoid {};
+struct NAKAMA_API FNakamaVoidResult
+{
+	using ValueType = FNakamaVoid;
+	FNakamaVoid Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+{{ range $rpc := .Rpcs }}
+{{- if ne nil $rpc.ReturnType }}
+struct NAKAMA_API F{{ $prefix }}{{ $rpc.ReturnType.Name }}Result
+{
+  using ValueType = F{{ $prefix }}{{ $rpc.ReturnType.Name }};
+  F{{ $prefix }}{{ $rpc.ReturnType.Name }} Value {};
+  FNakamaError Error;
+  bool bIsError = true;
+};
+{{- end }}
+{{- end }}
+
+{{/*--------------- REQUESTS ---------------------*/}}
+namespace NakamaInternal
+{
+{{- range $rpc := .Rpcs }}
+
+FNakamaApiRequestModel NAKAMA_API Build{{ $rpc.Name }}Request (
+  {{- if ne nil $rpc.RequestType }}
+  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params;
+  {{- end }}
+);
+{{- end }}
+}
+
