@@ -22,7 +22,7 @@
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaClientConfig
+struct NAKAMA_API FNakamaClientConfig
 {
 	GENERATED_BODY()
 
@@ -42,7 +42,7 @@ struct NAKAMAAPI_API FNakamaClientConfig
 };
 
 UCLASS()
-class NAKAMAAPI_API UNakamaClientConfigFunctions : public UBlueprintFunctionLibrary
+class NAKAMA_API UNakamaClientConfigFunctions : public UBlueprintFunctionLibrary
 {
   GENERATED_BODY()
 

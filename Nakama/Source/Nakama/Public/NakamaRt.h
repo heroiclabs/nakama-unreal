@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -56,7 +54,8 @@ namespace NakamaRt
   * @param Persistence	 Whether messages sent on this channel should be persistent.
   * @param Hidden	 Whether the user should appear in the channel's presence list and events.
   */
-  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> ChannelJoin(
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>> 
+  ChannelJoin(
     const TSharedPtr<FNakamaRtConnection>& Connection
     , const FString& Target
     , int32 Type

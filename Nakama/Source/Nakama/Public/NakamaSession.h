@@ -21,7 +21,7 @@
 #include "NakamaSession.generated.h"
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaSession
+struct NAKAMA_API FNakamaSession
 {
 	GENERATED_BODY()
 	
@@ -79,7 +79,7 @@ private:
 };
 
 UCLASS()
-class NAKAMAAPI_API UNakamaSessionFunctions : public UBlueprintFunctionLibrary
+class NAKAMA_API UNakamaSessionFunctions : public UBlueprintFunctionLibrary
 {
   GENERATED_BODY()
 

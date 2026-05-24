@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #include "NakamaRtConnection.h"
 #include "WebSocketsModule.h"
 #include "NakamaApi.h"

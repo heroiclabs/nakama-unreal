@@ -24,8 +24,6 @@ DEFINE_LOG_CATEGORY(LogNakama);
 
 using namespace NakamaHttpInternal;
 
-
-
 NAKAMAAPI_API void NakamaApi::AddFriends (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,

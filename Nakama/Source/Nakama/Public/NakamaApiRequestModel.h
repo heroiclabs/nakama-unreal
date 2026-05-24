@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-#include "NakamaModule.h"
-#include "NakamaApi.h"
+#include "CoreMinimal.h"
 
-void FNakamaModule::StartupModule()
+struct NAKAMA_API FNakamaApiRequestModel
 {
-	UE_LOG(LogNakama, Log, TEXT("Nakama module starting"));
-	if (!FModuleManager::Get().IsModuleLoaded("WebSockets"))
-	{
-		FModuleManager::Get().LoadModule("WebSockets");
-	}
-}
+  FString Url;
 
-void FNakamaModule::ShutdownModule()
-{
-	UE_LOG(LogNakama, Log, TEXT("Nakama module shutting down"));
-}
-
-IMPLEMENT_MODULE(FNakamaModule, Nakama)
-
+  // TODO: Request Method
+  
+  // TODO: Request Body
+};

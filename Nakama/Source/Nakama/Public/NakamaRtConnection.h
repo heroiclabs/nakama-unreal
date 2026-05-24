@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include <atomic>
@@ -122,7 +120,7 @@ enum class ENakamaRtConnectionState : uint8
   Connected,
 };
   
-class NAKAMAAPI_API FNakamaRtConnection : public TSharedFromThis<FNakamaRtConnection>
+class NAKAMA_API FNakamaRtConnection : public TSharedFromThis<FNakamaRtConnection>
 {
 private:
   // Current ongoing requests

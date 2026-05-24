@@ -18,164 +18,22 @@
 
 #include "NakamaTypes.h"
 
+#include "JsonObjectConverter.h"
+
 FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUser Result;
-  if (!Json.IsValid())
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUser>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    return Result;
+    UE_LOG(LogTemp, Log, TEXT("Failed to create FNakamaUser from JSON"));
   }
-  if (Json->HasField(TEXT("id")))
-  {
-      Result.Id = Json->GetStringField(TEXT("id"));
-  }
-  if (Json->HasField(TEXT("username")))
-  {
-      Result.Username = Json->GetStringField(TEXT("username"));
-  }
-  if (Json->HasField(TEXT("display_name")))
-  {
-      Result.DisplayName = Json->GetStringField(TEXT("display_name"));
-  }
-  if (Json->HasField(TEXT("avatar_url")))
-  {
-      Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
-  }
-  if (Json->HasField(TEXT("lang_tag")))
-  {
-      Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
-  }
-  if (Json->HasField(TEXT("location")))
-  {
-      Result.Location = Json->GetStringField(TEXT("location"));
-  }
-  if (Json->HasField(TEXT("timezone")))
-  {
-      Result.Timezone = Json->GetStringField(TEXT("timezone"));
-  }
-  if (Json->HasField(TEXT("metadata")))
-  {
-      Result.Metadata = Json->GetStringField(TEXT("metadata"));
-  }
-  if (Json->HasField(TEXT("facebook_id")))
-  {
-      Result.FacebookId = Json->GetStringField(TEXT("facebook_id"));
-  }
-  if (Json->HasField(TEXT("google_id")))
-  {
-      Result.GoogleId = Json->GetStringField(TEXT("google_id"));
-  }
-  if (Json->HasField(TEXT("gamecenter_id")))
-  {
-      Result.GamecenterId = Json->GetStringField(TEXT("gamecenter_id"));
-  }
-  if (Json->HasField(TEXT("steam_id")))
-  {
-      Result.SteamId = Json->GetStringField(TEXT("steam_id"));
-  }
-  if (Json->HasField(TEXT("online")))
-  {
-      Result.Online = Json->GetBoolField(TEXT("online"));
-  }
-  if (Json->HasField(TEXT("edge_count")))
-  {
-      Result.EdgeCount = Json->GetNumberField(TEXT("edge_count"));
-  }
-  if (Json->HasField(TEXT("create_time")))
-  {
-      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
-  }
-  if (Json->HasField(TEXT("update_time")))
-  {
-      FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
-  }
-  if (Json->HasField(TEXT("facebook_instant_game_id")))
-  {
-      Result.FacebookInstantGameId = Json->GetStringField(TEXT("facebook_instant_game_id"));
-  }
-  if (Json->HasField(TEXT("apple_id")))
-  {
-      Result.AppleId = Json->GetStringField(TEXT("apple_id"));
-  }
+    
   return Result;
 }
 
 TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
 {
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Id.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("id"), Id);
-  }
-  if (Username.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("username"), Username);
-  }
-  if (DisplayName.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("display_name"), DisplayName);
-  }
-  if (AvatarUrl.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
-  }
-  if (LangTag.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("lang_tag"), LangTag);
-  }
-  if (Location.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("location"), Location);
-  }
-  if (Timezone.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("timezone"), Timezone);
-  }
-  if (Metadata.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("metadata"), Metadata);
-  }
-  if (FacebookId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("facebook_id"), FacebookId);
-  }
-  if (GoogleId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("google_id"), GoogleId);
-  }
-  if (GamecenterId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("gamecenter_id"), GamecenterId);
-  }
-  if (SteamId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("steam_id"), SteamId);
-  }
-  
-  {
-    Json->SetBoolField(TEXT("online"), Online);
-  }
-  
-  {
-    Json->SetNumberField(TEXT("edge_count"), EdgeCount);
-  }
-  
-  {
-    Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
-  }
-  
-  {
-    Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
-  }
-  if (FacebookInstantGameId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("facebook_instant_game_id"), FacebookInstantGameId);
-  }
-  if (AppleId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("apple_id"), AppleId);
-  }
-  return Json;
+  return FJsonObjectConverter::UStructToJsonObject(this);
 }
 
 FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)

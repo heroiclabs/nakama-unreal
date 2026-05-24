@@ -20,7 +20,7 @@
 #include "NakamaOptionals.generated.h"
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaOptionalBool
+struct NAKAMA_API FNakamaOptionalBool
 {
 	GENERATED_BODY()
 
@@ -39,7 +39,7 @@ struct NAKAMAAPI_API FNakamaOptionalBool
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaOptionalInt32
+struct NAKAMA_API FNakamaOptionalInt32
 {
 	GENERATED_BODY()
 
@@ -59,7 +59,7 @@ struct NAKAMAAPI_API FNakamaOptionalInt32
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaOptionalInt64
+struct NAKAMA_API FNakamaOptionalInt64
 {
 	GENERATED_BODY()
 
@@ -80,7 +80,7 @@ struct NAKAMAAPI_API FNakamaOptionalInt64
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaOptionalFloat
+struct NAKAMA_API FNakamaOptionalFloat
 {
 	GENERATED_BODY()
 
@@ -100,7 +100,7 @@ struct NAKAMAAPI_API FNakamaOptionalFloat
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaOptionalDouble
+struct NAKAMA_API FNakamaOptionalDouble
 {
 	GENERATED_BODY()
 
@@ -123,35 +123,35 @@ struct NAKAMAAPI_API FNakamaOptionalDouble
 //
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtOptionalBool : public FNakamaOptionalBool
+struct NAKAMA_API FNakamaRtOptionalBool : public FNakamaOptionalBool
 {
 	GENERATED_BODY()
 	using FNakamaOptionalBool::FNakamaOptionalBool;
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtOptionalInt32 : public FNakamaOptionalInt32
+struct NAKAMA_API FNakamaRtOptionalInt32 : public FNakamaOptionalInt32
 {
 	GENERATED_BODY()
 	using FNakamaOptionalInt32::FNakamaOptionalInt32;
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtOptionalInt64 : public FNakamaOptionalInt64
+struct NAKAMA_API FNakamaRtOptionalInt64 : public FNakamaOptionalInt64
 {
 	GENERATED_BODY()
 	using FNakamaOptionalInt64::FNakamaOptionalInt64;
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtOptionalFloat : public FNakamaOptionalFloat
+struct NAKAMA_API FNakamaRtOptionalFloat : public FNakamaOptionalFloat
 {
 	GENERATED_BODY()
 	using FNakamaOptionalFloat::FNakamaOptionalFloat;
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtOptionalDouble : public FNakamaOptionalDouble
+struct NAKAMA_API FNakamaRtOptionalDouble : public FNakamaOptionalDouble
 {
 	GENERATED_BODY()
 	using FNakamaOptionalDouble::FNakamaOptionalDouble;
