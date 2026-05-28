@@ -89,25 +89,25 @@ struct NAKAMA_API FNakamaAccount
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  User_TODO User;
+  FNakamaUser User;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "wallet"))
-  string_TODO Wallet;
+  FString Wallet;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
-  string_TODO Email;
+  FString Email;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "devices")) 
-  TArray<AccountDevice_TODO> Devices;
+  TArray<FNakamaAccountDevice> Devices;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "custom_id"))
-  string_TODO CustomId;
+  FString CustomId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
-  Timestamp_TODO VerifyTime;
+  FDateTime VerifyTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
-  Timestamp_TODO DisableTime;
+  FDateTime DisableTime;
 
   static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -119,10 +119,10 @@ struct NAKAMA_API FNakamaAccountRefresh
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountRefresh FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -134,10 +134,10 @@ struct NAKAMA_API FNakamaAccountApple
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountApple FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -149,10 +149,10 @@ struct NAKAMA_API FNakamaAccountCustom
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountCustom FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -164,10 +164,10 @@ struct NAKAMA_API FNakamaAccountDevice
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountDevice FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -179,13 +179,13 @@ struct NAKAMA_API FNakamaAccountEmail
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
-  string_TODO Email;
+  FString Email;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "password"))
-  string_TODO Password;
+  FString Password;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountEmail FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -197,10 +197,10 @@ struct NAKAMA_API FNakamaAccountFacebook
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountFacebook FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -212,10 +212,10 @@ struct NAKAMA_API FNakamaAccountFacebookInstantGame
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "signed_player_info"))
-  string_TODO SignedPlayerInfo;
+  FString SignedPlayerInfo;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountFacebookInstantGame FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -227,25 +227,25 @@ struct NAKAMA_API FNakamaAccountGameCenter
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "player_id"))
-  string_TODO PlayerId;
+  FString PlayerId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "bundle_id"))
-  string_TODO BundleId;
+  FString BundleId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "timestamp_seconds"))
-  int64_TODO TimestampSeconds;
+  int64 TimestampSeconds = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "salt"))
-  string_TODO Salt;
+  FString Salt;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "signature"))
-  string_TODO Signature;
+  FString Signature;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "public_key_url"))
-  string_TODO PublicKeyUrl;
+  FString PublicKeyUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountGameCenter FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -257,10 +257,10 @@ struct NAKAMA_API FNakamaAccountGoogle
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountGoogle FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -272,10 +272,10 @@ struct NAKAMA_API FNakamaAccountSteam
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaAccountSteam FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -287,13 +287,13 @@ struct NAKAMA_API FNakamaAddFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ids")) 
-  TArray<string_TODO> Ids;
+  TArray<FString> Ids;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "usernames")) 
-  TArray<string_TODO> Usernames;
+  TArray<FString> Usernames;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   static FNakamaAddFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -305,10 +305,10 @@ struct NAKAMA_API FNakamaAddGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_ids")) 
-  TArray<string_TODO> UserIds;
+  TArray<FString> UserIds;
 
   static FNakamaAddGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -320,10 +320,10 @@ struct NAKAMA_API FNakamaSessionRefreshRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, string_TODO> Vars;
+  TMap<FString, FString> Vars;
 
   static FNakamaSessionRefreshRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -335,10 +335,10 @@ struct NAKAMA_API FNakamaSessionLogoutRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refresh_token"))
-  string_TODO RefreshToken;
+  FString RefreshToken;
 
   static FNakamaSessionLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -350,13 +350,13 @@ struct NAKAMA_API FNakamaAuthenticateAppleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountApple_TODO Account;
+  FNakamaAccountApple Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -368,13 +368,13 @@ struct NAKAMA_API FNakamaAuthenticateCustomRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountCustom_TODO Account;
+  FNakamaAccountCustom Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -386,13 +386,13 @@ struct NAKAMA_API FNakamaAuthenticateDeviceRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountDevice_TODO Account;
+  FNakamaAccountDevice Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -404,13 +404,13 @@ struct NAKAMA_API FNakamaAuthenticateEmailRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountEmail_TODO Account;
+  FNakamaAccountEmail Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -422,16 +422,16 @@ struct NAKAMA_API FNakamaAuthenticateFacebookRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountFacebook_TODO Account;
+  FNakamaAccountFacebook Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  BoolValue_TODO Sync;
+  FNakamaOptionalBool Sync;
 
   static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -443,13 +443,13 @@ struct NAKAMA_API FNakamaAuthenticateFacebookInstantGameRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountFacebookInstantGame_TODO Account;
+  FNakamaAccountFacebookInstantGame Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -461,13 +461,13 @@ struct NAKAMA_API FNakamaAuthenticateGameCenterRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountGameCenter_TODO Account;
+  FNakamaAccountGameCenter Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -479,13 +479,13 @@ struct NAKAMA_API FNakamaAuthenticateGoogleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountGoogle_TODO Account;
+  FNakamaAccountGoogle Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -497,16 +497,16 @@ struct NAKAMA_API FNakamaAuthenticateSteamRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountSteam_TODO Account;
+  FNakamaAccountSteam Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  BoolValue_TODO Create;
+  FNakamaOptionalBool Create;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  BoolValue_TODO Sync;
+  FNakamaOptionalBool Sync;
 
   static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -518,10 +518,10 @@ struct NAKAMA_API FNakamaBanGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_ids")) 
-  TArray<string_TODO> UserIds;
+  TArray<FString> UserIds;
 
   static FNakamaBanGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -533,10 +533,10 @@ struct NAKAMA_API FNakamaBlockFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ids")) 
-  TArray<string_TODO> Ids;
+  TArray<FString> Ids;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "usernames")) 
-  TArray<string_TODO> Usernames;
+  TArray<FString> Usernames;
 
   static FNakamaBlockFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -548,43 +548,43 @@ struct NAKAMA_API FNakamaChannelMessage
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "channel_id"))
-  string_TODO ChannelId;
+  FString ChannelId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "message_id"))
-  string_TODO MessageId;
+  FString MessageId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "code"))
-  Int32Value_TODO Code;
+  FNakamaOptionalInt32 Code;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sender_id"))
-  string_TODO SenderId;
+  FString SenderId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "content"))
-  string_TODO Content;
+  FString Content;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persistent"))
-  BoolValue_TODO Persistent;
+  FNakamaOptionalBool Persistent;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "room_name"))
-  string_TODO RoomName;
+  FString RoomName;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id_one"))
-  string_TODO UserIdOne;
+  FString UserIdOne;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id_two"))
-  string_TODO UserIdTwo;
+  FString UserIdTwo;
 
   static FNakamaChannelMessage FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -596,16 +596,16 @@ struct NAKAMA_API FNakamaChannelMessageList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "messages")) 
-  TArray<ChannelMessage_TODO> Messages;
+  TArray<FNakamaChannelMessage> Messages;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  string_TODO NextCursor;
+  FString NextCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  string_TODO PrevCursor;
+  FString PrevCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
-  string_TODO CacheableCursor;
+  FString CacheableCursor;
 
   static FNakamaChannelMessageList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -617,22 +617,22 @@ struct NAKAMA_API FNakamaCreateGroupRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "name"))
-  string_TODO Name;
+  FString Name;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "description"))
-  string_TODO Description;
+  FString Description;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  string_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "avatar_url"))
-  string_TODO AvatarUrl;
+  FString AvatarUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  bool_TODO Open;
+  bool Open = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_count"))
-  int32_TODO MaxCount;
+  int32 MaxCount = 0;
 
   static FNakamaCreateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -644,10 +644,10 @@ struct NAKAMA_API FNakamaDeleteFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ids")) 
-  TArray<string_TODO> Ids;
+  TArray<FString> Ids;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "usernames")) 
-  TArray<string_TODO> Usernames;
+  TArray<FString> Usernames;
 
   static FNakamaDeleteFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -659,7 +659,7 @@ struct NAKAMA_API FNakamaDeleteGroupRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   static FNakamaDeleteGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -671,7 +671,7 @@ struct NAKAMA_API FNakamaDeleteLeaderboardRecordRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  string_TODO LeaderboardId;
+  FString LeaderboardId;
 
   static FNakamaDeleteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -683,7 +683,7 @@ struct NAKAMA_API FNakamaDeleteNotificationsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ids")) 
-  TArray<string_TODO> Ids;
+  TArray<FString> Ids;
 
   static FNakamaDeleteNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -695,7 +695,7 @@ struct NAKAMA_API FNakamaDeleteTournamentRecordRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  string_TODO TournamentId;
+  FString TournamentId;
 
   static FNakamaDeleteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -707,13 +707,13 @@ struct NAKAMA_API FNakamaDeleteStorageObjectId
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "key"))
-  string_TODO Key;
+  FString Key;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "version"))
-  string_TODO Version;
+  FString Version;
 
   static FNakamaDeleteStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -725,7 +725,7 @@ struct NAKAMA_API FNakamaDeleteStorageObjectsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
-  TArray<DeleteStorageObjectId_TODO> ObjectIds;
+  TArray<FNakamaDeleteStorageObjectId> ObjectIds;
 
   static FNakamaDeleteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -737,16 +737,16 @@ struct NAKAMA_API FNakamaEvent
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "name"))
-  string_TODO Name;
+  FString Name;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "timestamp"))
-  Timestamp_TODO Timestamp;
+  FDateTime Timestamp;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "external"))
-  bool_TODO External;
+  bool External = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "properties"))
-  TMap<FString, string_TODO> Properties;
+  TMap<FString, FString> Properties;
 
   static FNakamaEvent FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -758,16 +758,16 @@ struct NAKAMA_API FNakamaFriend
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  User_TODO User;
+  FNakamaUser User;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -779,10 +779,10 @@ struct NAKAMA_API FNakamaFriendList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends")) 
-  TArray<Friend_TODO> Friends;
+  TArray<FNakamaFriend> Friends;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaFriendList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -794,10 +794,10 @@ struct NAKAMA_API FNakamaFriendsOfFriendsList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends_of_friends")) 
-  TArray<FriendOfFriend_TODO> FriendsOfFriends;
+  TArray<FNakamaFriendOfFriend> FriendsOfFriends;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaFriendsOfFriendsList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -809,10 +809,10 @@ struct NAKAMA_API FNakamaFriendOfFriend
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "referrer"))
-  string_TODO Referrer;
+  FString Referrer;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  User_TODO User;
+  FNakamaUser User;
 
   static FNakamaFriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -824,13 +824,13 @@ struct NAKAMA_API FNakamaGetUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ids")) 
-  TArray<string_TODO> Ids;
+  TArray<FString> Ids;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "usernames")) 
-  TArray<string_TODO> Usernames;
+  TArray<FString> Usernames;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "facebook_ids")) 
-  TArray<string_TODO> FacebookIds;
+  TArray<FString> FacebookIds;
 
   static FNakamaGetUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -842,7 +842,7 @@ struct NAKAMA_API FNakamaGetSubscriptionRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "product_id"))
-  string_TODO ProductId;
+  FString ProductId;
 
   static FNakamaGetSubscriptionRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -854,40 +854,40 @@ struct NAKAMA_API FNakamaGroup
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "creator_id"))
-  string_TODO CreatorId;
+  FString CreatorId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "name"))
-  string_TODO Name;
+  FString Name;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "description"))
-  string_TODO Description;
+  FString Description;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  string_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "avatar_url"))
-  string_TODO AvatarUrl;
+  FString AvatarUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  BoolValue_TODO Open;
+  FNakamaOptionalBool Open;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "edge_count"))
-  int32_TODO EdgeCount;
+  int32 EdgeCount = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_count"))
-  int32_TODO MaxCount;
+  int32 MaxCount = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaGroup FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -899,10 +899,10 @@ struct NAKAMA_API FNakamaGroupList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "groups")) 
-  TArray<Group_TODO> Groups;
+  TArray<FNakamaGroup> Groups;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -914,10 +914,10 @@ struct NAKAMA_API FNakamaGroupUserList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_users")) 
-  TArray<GroupUser_TODO> GroupUsers;
+  TArray<FNakamaGroupUser> GroupUsers;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -929,10 +929,10 @@ struct NAKAMA_API FNakamaGroupUser
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  User_TODO User;
+  FNakamaUser User;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   static FNakamaGroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -944,10 +944,10 @@ struct NAKAMA_API FNakamaImportFacebookFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountFacebook_TODO Account;
+  FNakamaAccountFacebook Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  BoolValue_TODO Reset;
+  FNakamaOptionalBool Reset;
 
   static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -959,10 +959,10 @@ struct NAKAMA_API FNakamaImportSteamFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountSteam_TODO Account;
+  FNakamaAccountSteam Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  BoolValue_TODO Reset;
+  FNakamaOptionalBool Reset;
 
   static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -974,7 +974,7 @@ struct NAKAMA_API FNakamaJoinGroupRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   static FNakamaJoinGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -986,7 +986,7 @@ struct NAKAMA_API FNakamaJoinTournamentRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  string_TODO TournamentId;
+  FString TournamentId;
 
   static FNakamaJoinTournamentRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -998,10 +998,10 @@ struct NAKAMA_API FNakamaKickGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_ids")) 
-  TArray<string_TODO> UserIds;
+  TArray<FString> UserIds;
 
   static FNakamaKickGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1013,28 +1013,28 @@ struct NAKAMA_API FNakamaLeaderboard
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sort_order"))
-  uint32_TODO SortOrder;
+  int32 SortOrder = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  Operator_TODO Operator;
+  ENakamaOperator Operator;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_reset"))
-  uint32_TODO PrevReset;
+  int32 PrevReset = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_reset"))
-  uint32_TODO NextReset;
+  int32 NextReset = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
-  bool_TODO Authoritative;
+  bool Authoritative = false;
 
   static FNakamaLeaderboard FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1046,10 +1046,10 @@ struct NAKAMA_API FNakamaLeaderboardList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboards")) 
-  TArray<Leaderboard_TODO> Leaderboards;
+  TArray<FNakamaLeaderboard> Leaderboards;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaLeaderboardList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1061,40 +1061,40 @@ struct NAKAMA_API FNakamaLeaderboardRecord
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  string_TODO LeaderboardId;
+  FString LeaderboardId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_id"))
-  string_TODO OwnerId;
+  FString OwnerId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  StringValue_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "score"))
-  int64_TODO Score;
+  int64 Score = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "subscore"))
-  int64_TODO Subscore;
+  int64 Subscore = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "num_score"))
-  int32_TODO NumScore;
+  int32 NumScore = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry_time"))
-  Timestamp_TODO ExpiryTime;
+  FDateTime ExpiryTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank"))
-  int64_TODO Rank;
+  int64 Rank = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_num_score"))
-  uint32_TODO MaxNumScore;
+  int32 MaxNumScore = 0;
 
   static FNakamaLeaderboardRecord FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1106,19 +1106,19 @@ struct NAKAMA_API FNakamaLeaderboardRecordList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
-  TArray<LeaderboardRecord_TODO> Records;
+  TArray<FNakamaLeaderboardRecord> Records;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
-  TArray<LeaderboardRecord_TODO> OwnerRecords;
+  TArray<FNakamaLeaderboardRecord> OwnerRecords;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  string_TODO NextCursor;
+  FString NextCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  string_TODO PrevCursor;
+  FString PrevCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
-  int64_TODO RankCount;
+  int64 RankCount = 0;
 
   static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1130,7 +1130,7 @@ struct NAKAMA_API FNakamaLeaveGroupRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   static FNakamaLeaveGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1142,10 +1142,10 @@ struct NAKAMA_API FNakamaLinkFacebookRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountFacebook_TODO Account;
+  FNakamaAccountFacebook Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  BoolValue_TODO Sync;
+  FNakamaOptionalBool Sync;
 
   static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1157,10 +1157,10 @@ struct NAKAMA_API FNakamaLinkSteamRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  AccountSteam_TODO Account;
+  FNakamaAccountSteam Account;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  BoolValue_TODO Sync;
+  FNakamaOptionalBool Sync;
 
   static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1172,16 +1172,16 @@ struct NAKAMA_API FNakamaListChannelMessagesRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "channel_id"))
-  string_TODO ChannelId;
+  FString ChannelId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "forward"))
-  BoolValue_TODO Forward;
+  FNakamaOptionalBool Forward;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListChannelMessagesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1193,13 +1193,13 @@ struct NAKAMA_API FNakamaListFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1211,10 +1211,10 @@ struct NAKAMA_API FNakamaListFriendsOfFriendsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListFriendsOfFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1226,22 +1226,22 @@ struct NAKAMA_API FNakamaListGroupsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "name"))
-  string_TODO Name;
+  FString Name;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  string_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "members"))
-  Int32Value_TODO Members;
+  FNakamaOptionalInt32 Members;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  BoolValue_TODO Open;
+  FNakamaOptionalBool Open;
 
   static FNakamaListGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1253,16 +1253,16 @@ struct NAKAMA_API FNakamaListGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1274,19 +1274,19 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsAroundOwnerRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  string_TODO LeaderboardId;
+  FString LeaderboardId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  UInt32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_id"))
-  string_TODO OwnerId;
+  FString OwnerId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  Int64Value_TODO Expiry;
+  FNakamaOptionalInt64 Expiry;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListLeaderboardRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1298,19 +1298,19 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  string_TODO LeaderboardId;
+  FString LeaderboardId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_ids")) 
-  TArray<string_TODO> OwnerIds;
+  TArray<FString> OwnerIds;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  Int64Value_TODO Expiry;
+  FNakamaOptionalInt64 Expiry;
 
   static FNakamaListLeaderboardRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1322,22 +1322,22 @@ struct NAKAMA_API FNakamaListMatchesRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
-  BoolValue_TODO Authoritative;
+  FNakamaOptionalBool Authoritative;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "label"))
-  StringValue_TODO Label;
+  FString Label;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "min_size"))
-  Int32Value_TODO MinSize;
+  FNakamaOptionalInt32 MinSize;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_size"))
-  Int32Value_TODO MaxSize;
+  FNakamaOptionalInt32 MaxSize;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "query"))
-  StringValue_TODO Query;
+  FString Query;
 
   static FNakamaListMatchesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1349,10 +1349,10 @@ struct NAKAMA_API FNakamaListNotificationsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
-  string_TODO CacheableCursor;
+  FString CacheableCursor;
 
   static FNakamaListNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1364,16 +1364,16 @@ struct NAKAMA_API FNakamaListStorageObjectsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1385,10 +1385,10 @@ struct NAKAMA_API FNakamaListSubscriptionsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListSubscriptionsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1400,19 +1400,19 @@ struct NAKAMA_API FNakamaListTournamentRecordsAroundOwnerRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  string_TODO TournamentId;
+  FString TournamentId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  UInt32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_id"))
-  string_TODO OwnerId;
+  FString OwnerId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  Int64Value_TODO Expiry;
+  FNakamaOptionalInt64 Expiry;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListTournamentRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1424,19 +1424,19 @@ struct NAKAMA_API FNakamaListTournamentRecordsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  string_TODO TournamentId;
+  FString TournamentId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_ids")) 
-  TArray<string_TODO> OwnerIds;
+  TArray<FString> OwnerIds;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  Int64Value_TODO Expiry;
+  FNakamaOptionalInt64 Expiry;
 
   static FNakamaListTournamentRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1448,22 +1448,22 @@ struct NAKAMA_API FNakamaListTournamentsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category_start"))
-  UInt32Value_TODO CategoryStart;
+  FNakamaOptionalInt32 CategoryStart;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category_end"))
-  UInt32Value_TODO CategoryEnd;
+  FNakamaOptionalInt32 CategoryEnd;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_time"))
-  UInt32Value_TODO StartTime;
+  FNakamaOptionalInt32 StartTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_time"))
-  UInt32Value_TODO EndTime;
+  FNakamaOptionalInt32 EndTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListTournamentsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1475,16 +1475,16 @@ struct NAKAMA_API FNakamaListUserGroupsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListUserGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1496,22 +1496,22 @@ struct NAKAMA_API FNakamaMatch
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "match_id"))
-  string_TODO MatchId;
+  FString MatchId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
-  bool_TODO Authoritative;
+  bool Authoritative = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "label"))
-  StringValue_TODO Label;
+  FString Label;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "size"))
-  int32_TODO Size;
+  int32 Size = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tick_rate"))
-  int32_TODO TickRate;
+  int32 TickRate = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "handler_name"))
-  string_TODO HandlerName;
+  FString HandlerName;
 
   static FNakamaMatch FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1523,7 +1523,7 @@ struct NAKAMA_API FNakamaMatchList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "matches")) 
-  TArray<Match_TODO> Matches;
+  TArray<FNakamaMatch> Matches;
 
   static FNakamaMatchList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1535,10 +1535,10 @@ struct NAKAMA_API FNakamaMatchmakerCompletionStats
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "complete_time"))
-  Timestamp_TODO CompleteTime;
+  FDateTime CompleteTime;
 
   static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1550,13 +1550,13 @@ struct NAKAMA_API FNakamaMatchmakerStats
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ticket_count"))
-  int32_TODO TicketCount;
+  int32 TicketCount = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "oldest_ticket_create_time"))
-  Timestamp_TODO OldestTicketCreateTime;
+  FDateTime OldestTicketCreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "completions")) 
-  TArray<MatchmakerCompletionStats_TODO> Completions;
+  TArray<FNakamaMatchmakerCompletionStats> Completions;
 
   static FNakamaMatchmakerStats FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1568,25 +1568,25 @@ struct NAKAMA_API FNakamaNotification
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "subject"))
-  string_TODO Subject;
+  FString Subject;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "content"))
-  string_TODO Content;
+  FString Content;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "code"))
-  int32_TODO Code;
+  int32 Code = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sender_id"))
-  string_TODO SenderId;
+  FString SenderId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persistent"))
-  bool_TODO Persistent;
+  bool Persistent = false;
 
   static FNakamaNotification FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1598,10 +1598,10 @@ struct NAKAMA_API FNakamaNotificationList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "notifications")) 
-  TArray<Notification_TODO> Notifications;
+  TArray<FNakamaNotification> Notifications;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
-  string_TODO CacheableCursor;
+  FString CacheableCursor;
 
   static FNakamaNotificationList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1613,10 +1613,10 @@ struct NAKAMA_API FNakamaPromoteGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_ids")) 
-  TArray<string_TODO> UserIds;
+  TArray<FString> UserIds;
 
   static FNakamaPromoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1628,10 +1628,10 @@ struct NAKAMA_API FNakamaDemoteGroupUsersRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_ids")) 
-  TArray<string_TODO> UserIds;
+  TArray<FString> UserIds;
 
   static FNakamaDemoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1643,13 +1643,13 @@ struct NAKAMA_API FNakamaReadStorageObjectId
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "key"))
-  string_TODO Key;
+  FString Key;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   static FNakamaReadStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1661,7 +1661,7 @@ struct NAKAMA_API FNakamaReadStorageObjectsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
-  TArray<ReadStorageObjectId_TODO> ObjectIds;
+  TArray<FNakamaReadStorageObjectId> ObjectIds;
 
   static FNakamaReadStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1673,13 +1673,13 @@ struct NAKAMA_API FNakamaRpc
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "payload"))
-  string_TODO Payload;
+  FString Payload;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "http_key"))
-  string_TODO HttpKey;
+  FString HttpKey;
 
   static FNakamaRpc FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1691,13 +1691,13 @@ struct NAKAMA_API FNakamaSession
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "created"))
-  bool_TODO Created;
+  bool Created = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  string_TODO Token;
+  FString Token;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refresh_token"))
-  string_TODO RefreshToken;
+  FString RefreshToken;
 
   static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1709,31 +1709,31 @@ struct NAKAMA_API FNakamaStorageObject
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "key"))
-  string_TODO Key;
+  FString Key;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "value"))
-  string_TODO Value;
+  FString Value;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "version"))
-  string_TODO Version;
+  FString Version;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_read"))
-  int32_TODO PermissionRead;
+  int32 PermissionRead = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_write"))
-  int32_TODO PermissionWrite;
+  int32 PermissionWrite = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1745,22 +1745,22 @@ struct NAKAMA_API FNakamaStorageObjectAck
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "key"))
-  string_TODO Key;
+  FString Key;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "version"))
-  string_TODO Version;
+  FString Version;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   static FNakamaStorageObjectAck FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1772,7 +1772,7 @@ struct NAKAMA_API FNakamaStorageObjectAcks
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "acks")) 
-  TArray<StorageObjectAck_TODO> Acks;
+  TArray<FNakamaStorageObjectAck> Acks;
 
   static FNakamaStorageObjectAcks FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1784,7 +1784,7 @@ struct NAKAMA_API FNakamaStorageObjects
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<StorageObject_TODO> Objects;
+  TArray<FNakamaStorageObject> Objects;
 
   static FNakamaStorageObjects FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1796,10 +1796,10 @@ struct NAKAMA_API FNakamaStorageObjectList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<StorageObject_TODO> Objects;
+  TArray<FNakamaStorageObject> Objects;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaStorageObjectList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1811,67 +1811,67 @@ struct NAKAMA_API FNakamaTournament
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "title"))
-  string_TODO Title;
+  FString Title;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "description"))
-  string_TODO Description;
+  FString Description;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category"))
-  uint32_TODO Category;
+  int32 Category = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sort_order"))
-  uint32_TODO SortOrder;
+  int32 SortOrder = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "size"))
-  uint32_TODO Size;
+  int32 Size = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_size"))
-  uint32_TODO MaxSize;
+  int32 MaxSize = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_num_score"))
-  uint32_TODO MaxNumScore;
+  int32 MaxNumScore = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "can_enter"))
-  bool_TODO CanEnter;
+  bool CanEnter = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_active"))
-  uint32_TODO EndActive;
+  int32 EndActive = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_reset"))
-  uint32_TODO NextReset;
+  int32 NextReset = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_time"))
-  Timestamp_TODO StartTime;
+  FDateTime StartTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_time"))
-  Timestamp_TODO EndTime;
+  FDateTime EndTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "duration"))
-  uint32_TODO Duration;
+  int32 Duration = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_active"))
-  uint32_TODO StartActive;
+  int32 StartActive = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_reset"))
-  uint32_TODO PrevReset;
+  int32 PrevReset = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  Operator_TODO Operator;
+  ENakamaOperator Operator;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
-  bool_TODO Authoritative;
+  bool Authoritative = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "join_required"))
-  bool_TODO JoinRequired;
+  bool JoinRequired = false;
 
   static FNakamaTournament FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1883,10 +1883,10 @@ struct NAKAMA_API FNakamaTournamentList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournaments")) 
-  TArray<Tournament_TODO> Tournaments;
+  TArray<FNakamaTournament> Tournaments;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaTournamentList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1898,19 +1898,19 @@ struct NAKAMA_API FNakamaTournamentRecordList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
-  TArray<LeaderboardRecord_TODO> Records;
+  TArray<FNakamaLeaderboardRecord> Records;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
-  TArray<LeaderboardRecord_TODO> OwnerRecords;
+  TArray<FNakamaLeaderboardRecord> OwnerRecords;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  string_TODO NextCursor;
+  FString NextCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  string_TODO PrevCursor;
+  FString PrevCursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
-  int64_TODO RankCount;
+  int64 RankCount = 0;
 
   static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1922,22 +1922,22 @@ struct NAKAMA_API FNakamaUpdateAccountRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  StringValue_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "display_name"))
-  StringValue_TODO DisplayName;
+  FString DisplayName;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "avatar_url"))
-  StringValue_TODO AvatarUrl;
+  FString AvatarUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  StringValue_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "location"))
-  StringValue_TODO Location;
+  FString Location;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "timezone"))
-  StringValue_TODO Timezone;
+  FString Timezone;
 
   static FNakamaUpdateAccountRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1949,22 +1949,22 @@ struct NAKAMA_API FNakamaUpdateGroupRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_id"))
-  string_TODO GroupId;
+  FString GroupId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "name"))
-  StringValue_TODO Name;
+  FString Name;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "description"))
-  StringValue_TODO Description;
+  FString Description;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  StringValue_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "avatar_url"))
-  StringValue_TODO AvatarUrl;
+  FString AvatarUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  BoolValue_TODO Open;
+  FNakamaOptionalBool Open;
 
   static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -1976,58 +1976,58 @@ struct NAKAMA_API FNakamaUser
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  string_TODO Id;
+  FString Id;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  string_TODO Username;
+  FString Username;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "display_name"))
-  string_TODO DisplayName;
+  FString DisplayName;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "avatar_url"))
-  string_TODO AvatarUrl;
+  FString AvatarUrl;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
-  string_TODO LangTag;
+  FString LangTag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "location"))
-  string_TODO Location;
+  FString Location;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "timezone"))
-  string_TODO Timezone;
+  FString Timezone;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "facebook_id"))
-  string_TODO FacebookId;
+  FString FacebookId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "google_id"))
-  string_TODO GoogleId;
+  FString GoogleId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "gamecenter_id"))
-  string_TODO GamecenterId;
+  FString GamecenterId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "steam_id"))
-  string_TODO SteamId;
+  FString SteamId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "online"))
-  bool_TODO Online;
+  bool Online = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "edge_count"))
-  int32_TODO EdgeCount;
+  int32 EdgeCount = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "facebook_instant_game_id"))
-  string_TODO FacebookInstantGameId;
+  FString FacebookInstantGameId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "apple_id"))
-  string_TODO AppleId;
+  FString AppleId;
 
   static FNakamaUser FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2039,10 +2039,10 @@ struct NAKAMA_API FNakamaUserGroupList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_groups")) 
-  TArray<UserGroup_TODO> UserGroups;
+  TArray<FNakamaUserGroup> UserGroups;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaUserGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2054,10 +2054,10 @@ struct NAKAMA_API FNakamaUserGroup
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group"))
-  Group_TODO Group;
+  FNakamaGroup Group;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  Int32Value_TODO State;
+  FNakamaOptionalInt32 State;
 
   static FNakamaUserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2069,7 +2069,7 @@ struct NAKAMA_API FNakamaUsers
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "users")) 
-  TArray<User_TODO> Users;
+  TArray<FNakamaUser> Users;
 
   static FNakamaUsers FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2081,10 +2081,10 @@ struct NAKAMA_API FNakamaValidatePurchaseAppleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "receipt"))
-  string_TODO Receipt;
+  FString Receipt;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidatePurchaseAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2096,10 +2096,10 @@ struct NAKAMA_API FNakamaValidateSubscriptionAppleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "receipt"))
-  string_TODO Receipt;
+  FString Receipt;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidateSubscriptionAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2111,10 +2111,10 @@ struct NAKAMA_API FNakamaValidatePurchaseGoogleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase"))
-  string_TODO Purchase;
+  FString Purchase;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidatePurchaseGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2126,10 +2126,10 @@ struct NAKAMA_API FNakamaValidateSubscriptionGoogleRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "receipt"))
-  string_TODO Receipt;
+  FString Receipt;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidateSubscriptionGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2141,13 +2141,13 @@ struct NAKAMA_API FNakamaValidatePurchaseHuaweiRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase"))
-  string_TODO Purchase;
+  FString Purchase;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "signature"))
-  string_TODO Signature;
+  FString Signature;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidatePurchaseHuaweiRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2159,10 +2159,10 @@ struct NAKAMA_API FNakamaValidatePurchaseFacebookInstantRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "signed_request"))
-  string_TODO SignedRequest;
+  FString SignedRequest;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  BoolValue_TODO Persist;
+  FNakamaOptionalBool Persist;
 
   static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2174,37 +2174,37 @@ struct NAKAMA_API FNakamaValidatedPurchase
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "product_id"))
-  string_TODO ProductId;
+  FString ProductId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "transaction_id"))
-  string_TODO TransactionId;
+  FString TransactionId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "store"))
-  StoreProvider_TODO Store;
+  ENakamaStoreProvider Store;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase_time"))
-  Timestamp_TODO PurchaseTime;
+  FDateTime PurchaseTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refund_time"))
-  Timestamp_TODO RefundTime;
+  FDateTime RefundTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_response"))
-  string_TODO ProviderResponse;
+  FString ProviderResponse;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "environment"))
-  StoreEnvironment_TODO Environment;
+  ENakamaStoreEnvironment Environment;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "seen_before"))
-  bool_TODO SeenBefore;
+  bool SeenBefore = false;
 
   static FNakamaValidatedPurchase FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2216,7 +2216,7 @@ struct NAKAMA_API FNakamaValidatePurchaseResponse
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
-  TArray<ValidatedPurchase_TODO> ValidatedPurchases;
+  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
 
   static FNakamaValidatePurchaseResponse FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2228,7 +2228,7 @@ struct NAKAMA_API FNakamaValidateSubscriptionResponse
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscription"))
-  ValidatedSubscription_TODO ValidatedSubscription;
+  FNakamaValidatedSubscription ValidatedSubscription;
 
   static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2240,43 +2240,43 @@ struct NAKAMA_API FNakamaValidatedSubscription
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_id"))
-  string_TODO UserId;
+  FString UserId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "product_id"))
-  string_TODO ProductId;
+  FString ProductId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "original_transaction_id"))
-  string_TODO OriginalTransactionId;
+  FString OriginalTransactionId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "store"))
-  StoreProvider_TODO Store;
+  ENakamaStoreProvider Store;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase_time"))
-  Timestamp_TODO PurchaseTime;
+  FDateTime PurchaseTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  Timestamp_TODO CreateTime;
+  FDateTime CreateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  Timestamp_TODO UpdateTime;
+  FDateTime UpdateTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "environment"))
-  StoreEnvironment_TODO Environment;
+  ENakamaStoreEnvironment Environment;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry_time"))
-  Timestamp_TODO ExpiryTime;
+  FDateTime ExpiryTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refund_time"))
-  Timestamp_TODO RefundTime;
+  FDateTime RefundTime;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_response"))
-  string_TODO ProviderResponse;
+  FString ProviderResponse;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_notification"))
-  string_TODO ProviderNotification;
+  FString ProviderNotification;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "active"))
-  bool_TODO Active;
+  bool Active = false;
 
   static FNakamaValidatedSubscription FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2288,13 +2288,13 @@ struct NAKAMA_API FNakamaPurchaseList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
-  TArray<ValidatedPurchase_TODO> ValidatedPurchases;
+  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  string_TODO PrevCursor;
+  FString PrevCursor;
 
   static FNakamaPurchaseList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2306,13 +2306,13 @@ struct NAKAMA_API FNakamaSubscriptionList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscriptions")) 
-  TArray<ValidatedSubscription_TODO> ValidatedSubscriptions;
+  TArray<FNakamaValidatedSubscription> ValidatedSubscriptions;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  string_TODO PrevCursor;
+  FString PrevCursor;
 
   static FNakamaSubscriptionList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2324,10 +2324,10 @@ struct NAKAMA_API FNakamaWriteLeaderboardRecordRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  string_TODO LeaderboardId;
+  FString LeaderboardId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
-  LeaderboardRecordWrite_TODO Record;
+  FNakamaLeaderboardRecordWrite Record;
 
   static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2339,16 +2339,16 @@ struct NAKAMA_API FNakamaLeaderboardRecordWrite
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "score"))
-  int64_TODO Score;
+  int64 Score = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "subscore"))
-  int64_TODO Subscore;
+  int64 Subscore = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  Operator_TODO Operator;
+  ENakamaOperator Operator;
 
   static FNakamaLeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2360,22 +2360,22 @@ struct NAKAMA_API FNakamaWriteStorageObject
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "collection"))
-  string_TODO Collection;
+  FString Collection;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "key"))
-  string_TODO Key;
+  FString Key;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "value"))
-  string_TODO Value;
+  FString Value;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "version"))
-  string_TODO Version;
+  FString Version;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_read"))
-  Int32Value_TODO PermissionRead;
+  FNakamaOptionalInt32 PermissionRead;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_write"))
-  Int32Value_TODO PermissionWrite;
+  FNakamaOptionalInt32 PermissionWrite;
 
   static FNakamaWriteStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2387,7 +2387,7 @@ struct NAKAMA_API FNakamaWriteStorageObjectsRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<WriteStorageObject_TODO> Objects;
+  TArray<FNakamaWriteStorageObject> Objects;
 
   static FNakamaWriteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2399,10 +2399,10 @@ struct NAKAMA_API FNakamaWriteTournamentRecordRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  string_TODO TournamentId;
+  FString TournamentId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
-  TournamentRecordWrite_TODO Record;
+  FNakamaTournamentRecordWrite Record;
 
   static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2414,16 +2414,16 @@ struct NAKAMA_API FNakamaTournamentRecordWrite
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "score"))
-  int64_TODO Score;
+  int64 Score = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "subscore"))
-  int64_TODO Subscore;
+  int64 Subscore = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  string_TODO Metadata;
+  FString Metadata;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  Operator_TODO Operator;
+  ENakamaOperator Operator;
 
   static FNakamaTournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2435,16 +2435,16 @@ struct NAKAMA_API FNakamaListPartiesRequest
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  Int32Value_TODO Limit;
+  FNakamaOptionalInt32 Limit;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  BoolValue_TODO Open;
+  FNakamaOptionalBool Open;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "query"))
-  StringValue_TODO Query;
+  FString Query;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  StringValue_TODO Cursor;
+  FString Cursor;
 
   static FNakamaListPartiesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2456,19 +2456,19 @@ struct NAKAMA_API FNakamaParty
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "party_id"))
-  string_TODO PartyId;
+  FString PartyId;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  bool_TODO Open;
+  bool Open = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "hidden"))
-  bool_TODO Hidden;
+  bool Hidden = false;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_size"))
-  int32_TODO MaxSize;
+  int32 MaxSize = 0;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "label"))
-  string_TODO Label;
+  FString Label;
 
   static FNakamaParty FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;
@@ -2480,10 +2480,10 @@ struct NAKAMA_API FNakamaPartyList
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "parties")) 
-  TArray<Party_TODO> Parties;
+  TArray<FNakamaParty> Parties;
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  string_TODO Cursor;
+  FString Cursor;
 
   static FNakamaPartyList FromJson(const TSharedPtr<FJsonObject>& Json);
   TSharedPtr<FJsonObject> ToJson() const;

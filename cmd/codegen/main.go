@@ -56,7 +56,7 @@ func main() {
 	//
 	// Make function maps that we will use in templates.
 	generalFuncMap := getGeneralFuncMap(api)
-	unrealFuncMap := getUnrealFuncMap()
+	unrealFuncMap := getUnrealFuncMap(api)
 
 	combinedFuncMap := mergeFuncMaps(generalFuncMap, unrealFuncMap)
 

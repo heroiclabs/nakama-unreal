@@ -46,15 +46,15 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   {{- if $member.Repeated }} 
-  TArray<{{ $member.Type | toUnrealType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  TArray<{{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- else }}
-  {{ $member.Type | toUnrealType }} {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{ toUnrealType $prefix $member.Type }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $member.Type }};
   {{- end }}
   {{- end }}
   {{- range $member := $message.MapFields }}
 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
-  TMap<FString, {{ $member.Type | toUnrealType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  TMap<FString, {{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- end }}
 
   static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
