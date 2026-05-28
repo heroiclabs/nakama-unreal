@@ -27,17 +27,25 @@
 F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   F{{ $prefix }}{{ $message.Name }} Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
   if (!FJsonObjectConverter::JsonObjectToUStruct<F{{ $prefix }}{{ $message.Name }}>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Log, TEXT("Failed to create F{{ $prefix }}{{ $message.Name }} from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create F{{ $prefix }}{{ $message.Name }} from JSON"));
   }
-    
   return Result;
 }
 
 TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
 {
-  return FJsonObjectConverter::UStructToJsonObject(this);
+  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
+  if (!Result.IsValid())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert F{{ $prefix }}{{ $message.Name }} to JSON"));
+  }
+  return Result;
 }
 
 {{- end }}
