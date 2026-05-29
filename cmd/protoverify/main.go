@@ -89,42 +89,56 @@ func verifyFile(filename string, seen map[string]bool) []orderError {
 		}
 	}
 
-	proto.Walk(
-		parsed,
-		proto.WithEnum(func(enum *proto.Enum) {
-			name := enum.Name
-			if enum.Parent != nil {
-				if parentMsg, ok := enum.Parent.(*proto.Message); ok {
-					name = parentMsg.Name + "_" + enum.Name
-				}
-			}
-			seen[name] = true
-		}),
-		proto.WithMessage(func(message *proto.Message) {
-			if message.Name == "google.protobuf.EnumValueOptions" {
-				return
-			}
+	parseEnum := func(enum *proto.Enum) {
+		name := enum.Name
+		seen[name] = true
+	}
 
-			// Register this message as seen before checking its fields,
-			// so self-referential types work.
-			seen[message.Name] = true
+	var parseMessage func(message *proto.Message)
+	parseMessage = func(message *proto.Message) {
+		if message.Name == "google.protobuf.EnumValueOptions" {
+			return
+		}
 
-			// Check field types within this message.
-			for _, elem := range message.Elements {
-				switch f := elem.(type) {
-				case *proto.NormalField:
-					checkType(fmt.Sprintf("message %s field %s", message.Name, f.Name), f.Type)
-				case *proto.MapField:
-					checkType(fmt.Sprintf("message %s map field %s key", message.Name, f.Name), f.KeyType)
-					checkType(fmt.Sprintf("message %s map field %s value", message.Name, f.Name), f.Type)
-				case *proto.Oneof:
-					for _, oe := range f.Elements {
-						if oof, ok := oe.(*proto.OneOfField); ok {
-							checkType(fmt.Sprintf("message %s oneof field %s", message.Name, oof.Name), oof.Type)
-						}
+		// Register this message as seen before checking its fields,
+		// so self-referential types work.
+		seen[message.Name] = true
+
+		// Process nested enums/messages first.
+		for _, elem := range message.Elements {
+			switch f := elem.(type) {
+			case *proto.Message:
+				parseMessage(f)
+			case *proto.Enum:
+				parseEnum(f)
+			}
+		}
+
+		// Check field types within this message.
+		for _, elem := range message.Elements {
+			switch f := elem.(type) {
+			case *proto.NormalField:
+				checkType(fmt.Sprintf("message %s field %s", message.Name, f.Name), f.Type)
+			case *proto.MapField:
+				checkType(fmt.Sprintf("message %s map field %s key", message.Name, f.Name), f.KeyType)
+				checkType(fmt.Sprintf("message %s map field %s value", message.Name, f.Name), f.Type)
+			case *proto.Oneof:
+				for _, oe := range f.Elements {
+					if oof, ok := oe.(*proto.OneOfField); ok {
+						checkType(fmt.Sprintf("message %s oneof field %s", message.Name, oof.Name), oof.Type)
 					}
 				}
 			}
+		}
+	}
+
+	proto.Walk(
+		parsed,
+		proto.WithEnum(func(enum *proto.Enum) {
+			parseEnum(enum)
+		}),
+		proto.WithMessage(func(message *proto.Message) {
+			parseMessage(message)
 		}),
 		proto.WithRPC(func(rpc *proto.RPC) {
 			checkType(fmt.Sprintf("rpc %s request", rpc.Name), rpc.RequestType)
