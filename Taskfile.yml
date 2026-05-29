@@ -191,17 +191,15 @@ tasks:
   fetch-protos:
     internal: true
     vars:
-      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/master/api/api.proto'
+      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/reorder-proto/api/api.proto'
       PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/master/apigrpc/apigrpc.proto'
-      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/master/rtapi/realtime.proto'
-      PROTO_SATORI_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori.proto'
+      PROTO_SATORI_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori.proto?ref=feat%2Freorder-proto-2'
     cmds:
     - cmd: |
         mkdir -p proto
 
         curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
-        curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
         if [ -z "$GITHUB_TOKEN" ]; then
           creds=$(printf "protocol=https\nhost=github.com\n" | git credential fill)
