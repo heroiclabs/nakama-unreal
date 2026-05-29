@@ -24,26 +24,26 @@
 
 
 
-FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaAccount Result;
+  FNakamaUser Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccount>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUser>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccount from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUser from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccount to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUser to JSON"));
   }
   return Result;
 }
@@ -284,6 +284,30 @@ TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
   if (!Result.IsValid())
   {
     UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountSteam to JSON"));
+  }
+  return Result;
+}
+
+FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAccount Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccount>(Json.ToSharedRef(), &Result, 0, 0))
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccount from JSON"));
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
+{
+  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
+  if (!Result.IsValid())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccount to JSON"));
   }
   return Result;
 }
@@ -984,26 +1008,26 @@ TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const
   return Result;
 }
 
-FNakamaFriendOfFriend FNakamaFriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaFriendOfFriend Result;
+  FNakamaFriendsOfFriendsList_FriendOfFriend Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriendOfFriend>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriendsOfFriendsList_FriendOfFriend>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriendOfFriend from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriendsOfFriendsList_FriendOfFriend from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendOfFriend::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriendOfFriend to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriendsOfFriendsList_FriendOfFriend to JSON"));
   }
   return Result;
 }
@@ -1128,26 +1152,26 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
   return Result;
 }
 
-FNakamaGroupUser FNakamaGroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaGroupUser Result;
+  FNakamaGroupUserList_GroupUser Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroupUser>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroupUserList_GroupUser>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroupUser from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroupUserList_GroupUser from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupUser::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroupUser to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroupUserList_GroupUser to JSON"));
   }
   return Result;
 }
@@ -2328,30 +2352,6 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
   return Result;
 }
 
-FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-  FNakamaUser Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUser>(Json.ToSharedRef(), &Result, 0, 0))
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUser from JSON"));
-  }
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
-{
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUser to JSON"));
-  }
-  return Result;
-}
-
 FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUserGroupList Result;
@@ -2376,26 +2376,26 @@ TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const
   return Result;
 }
 
-FNakamaUserGroup FNakamaUserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaUserGroup Result;
+  FNakamaUserGroupList_UserGroup Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUserGroup>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUserGroupList_UserGroup>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUserGroup from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUserGroupList_UserGroup from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUserGroup::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUserGroup to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUserGroupList_UserGroup to JSON"));
   }
   return Result;
 }
@@ -2616,30 +2616,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const
   return Result;
 }
 
-FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-  FNakamaValidateSubscriptionResponse Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidateSubscriptionResponse>(Json.ToSharedRef(), &Result, 0, 0))
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidateSubscriptionResponse from JSON"));
-  }
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
-{
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidateSubscriptionResponse to JSON"));
-  }
-  return Result;
-}
-
 FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatedSubscription Result;
@@ -2660,6 +2636,30 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
   if (!Result.IsValid())
   {
     UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatedSubscription to JSON"));
+  }
+  return Result;
+}
+
+FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaValidateSubscriptionResponse Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidateSubscriptionResponse>(Json.ToSharedRef(), &Result, 0, 0))
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidateSubscriptionResponse from JSON"));
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
+{
+  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
+  if (!Result.IsValid())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidateSubscriptionResponse to JSON"));
   }
   return Result;
 }
@@ -2736,26 +2736,26 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
   return Result;
 }
 
-FNakamaLeaderboardRecordWrite FNakamaLeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaLeaderboardRecordWrite Result;
+  FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaderboardRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaderboardRecordWrite from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboardRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaderboardRecordWrite to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite to JSON"));
   }
   return Result;
 }
@@ -2832,26 +2832,26 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
   return Result;
 }
 
-FNakamaTournamentRecordWrite FNakamaTournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaTournamentRecordWrite Result;
+  FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaTournamentRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
+  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteTournamentRecordRequest_TournamentRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaTournamentRecordWrite from JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteTournamentRecordRequest_TournamentRecordWrite from JSON"));
   }
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaTournamentRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
   if (!Result.IsValid())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaTournamentRecordWrite to JSON"));
+    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteTournamentRecordRequest_TournamentRecordWrite to JSON"));
   }
   return Result;
 }
