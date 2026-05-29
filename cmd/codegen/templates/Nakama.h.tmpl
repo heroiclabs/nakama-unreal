@@ -25,11 +25,14 @@
 
 {{/*--------------- ENUMS ---------------------*/}}
 {{ range $enum := .Enums }}
+/*
+* {{ $enum.Comment }}
+*/
 UENUM(BlueprintType)
 enum class E{{ $prefix }}{{ $enum.Name }} : uint8
 {
   {{ range $field := $enum.Fields }}
-  {{ $field.Name }} = {{ $field.Integer }},
+  {{ $field.Name }} = {{ $field.Integer }}, // {{ $field.Comment.Message }}
   {{- end }}
 };
 {{- end }}
@@ -37,6 +40,9 @@ enum class E{{ $prefix }}{{ $enum.Name }} : uint8
 {{/*--------------- TYPES ---------------------*/}}
 {{ range $message := .Messages }}
 
+/*
+* {{ $message.Comment }}
+*/
 USTRUCT(BlueprintType)
 struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
 {
@@ -44,6 +50,7 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
 
   {{- range $member := $message.Fields }}
 
+  // {{ $member.Comment.Message }}
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   {{- if $member.Repeated }} 
   TArray<{{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
@@ -53,11 +60,15 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
   {{- end }}
   {{- range $member := $message.MapFields }}
 
+  // {{ $member.Comment.Message }}
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   TMap<FString, {{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- end }}
 
+  // Creates a {{ $message.Name }} from the given FJsonObject.
   static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this {{ $message.Name }} to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 {{- end }}
