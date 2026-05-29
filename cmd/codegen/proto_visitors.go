@@ -43,6 +43,12 @@ type enumVisitor struct {
 	Enum *ProtoEnum
 }
 
+func (v *enumVisitor) VisitParentMessage(parent *proto.Message) {
+	if parent != nil {
+		v.Enum.Name = parent.Name + "_" + v.Enum.Name
+	}
+}
+
 func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 	if ef.Comment == nil {
 		ef.Comment = &proto.Comment{
@@ -84,6 +90,7 @@ type ProtoMessage struct {
 	MapFields   []*proto.MapField
 	OneofFields []*ProtoOneofField
 	Name        string
+	protoMsg    *proto.Message // unexported; used for post-processing field type resolution
 }
 
 type messageVisitor struct {
@@ -98,7 +105,6 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 			Lines:    []string{},
 		}
 	}
-	nf.Type = TrimUntilLastDot(nf.Type)
 	v.Message.Fields = append(v.Message.Fields, nf)
 }
 
@@ -109,7 +115,6 @@ func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
 			Lines:    []string{},
 		}
 	}
-	mf.Type = TrimUntilLastDot(mf.Type)
 	v.Message.MapFields = append(v.Message.MapFields, mf)
 }
 
@@ -121,7 +126,6 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 	oneof.Name = TrimUntilLastDot(oneof.Name)
-	oneof.Type = TrimUntilLastDot(oneof.Type)
 
 	field := &ProtoOneofField{OneOfField: oneof}
 	for _, opt := range oneof.Options {

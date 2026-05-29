@@ -33,6 +33,77 @@ type Api struct {
 	RpcsByName     map[string]*ProtoRpc
 }
 
+// fullMessagePrefix builds the full flattened name for a proto.Message by walking
+// its ancestor chain, e.g. GrandParent > Parent > Child → "GrandParent_Parent_Child".
+func fullMessagePrefix(msg *proto.Message) string {
+	if msg == nil {
+		return ""
+	}
+	if parent, ok := msg.Parent.(*proto.Message); ok {
+		return fullMessagePrefix(parent) + "_" + msg.Name
+	}
+	return msg.Name
+}
+
+// resolveFieldType converts a raw proto field type (possibly dotted, possibly relative)
+// to the fully-qualified flattened name used in the API maps.
+func (api *Api) resolveFieldType(rawType string, container *proto.Message) string {
+	parts := strings.Split(rawType, ".")
+	var localName string
+	if len(parts) > 1 {
+		if len(parts[0]) > 0 && parts[0][0] >= 'A' && parts[0][0] <= 'Z' {
+			// Relative dotted path (e.g. NestedMessage.NestedEnum) — join with underscore.
+			localName = strings.Join(parts, "_")
+		} else {
+			// Package-qualified absolute name (e.g. google.protobuf.Timestamp) — take last component.
+			localName = parts[len(parts)-1]
+		}
+	} else {
+		localName = rawType
+	}
+
+	// Walk up the container's ancestor chain from most-specific to least-specific,
+	// trying to find a matching message or enum in the flattened maps.
+	prefix := fullMessagePrefix(container)
+	for prefix != "" {
+		candidate := prefix + "_" + localName
+		if _, ok := api.MessagesByName[candidate]; ok {
+			return candidate
+		}
+		if _, ok := api.EnumsByName[candidate]; ok {
+			return candidate
+		}
+		i := strings.LastIndex(prefix, "_")
+		if i < 0 {
+			break
+		}
+		prefix = prefix[:i]
+	}
+
+	// Try the local name without any prefix (top-level type or primitive).
+	return localName
+}
+
+// resolveAllFieldTypes resolves field types for all collected messages using the
+// fully-populated MessagesByName and EnumsByName maps. Must be called after all
+// proto files have been parsed.
+func (api *Api) resolveAllFieldTypes() {
+	for _, msg := range api.Messages {
+		if msg.protoMsg == nil {
+			continue
+		}
+		for _, field := range msg.Fields {
+			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
+		}
+		for _, field := range msg.MapFields {
+			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
+		}
+		for _, field := range msg.OneofFields {
+			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
+		}
+	}
+}
+
 func (api *Api) addFile(protoFile string) error {
 	fileBytes, err := os.ReadFile(protoFile)
 	if err != nil {
@@ -62,11 +133,11 @@ func (api *Api) addFile(protoFile string) error {
 					}
 				}
 
-				// Build fully qualified enum name including parent message if nested
+				// Build fully qualified enum name by walking the full ancestor chain.
 				enumName := enum.Name
 				if enum.Parent != nil {
 					if parentMsg, ok := enum.Parent.(*proto.Message); ok {
-						enumName = parentMsg.Name + "_" + enum.Name
+						enumName = fullMessagePrefix(parentMsg) + "_" + enum.Name
 					}
 				}
 
@@ -94,12 +165,16 @@ func (api *Api) addFile(protoFile string) error {
 				if message.Comment != nil {
 					comment = message.Comment.Message()
 				}
+				// Build fully qualified message name by walking the full ancestor chain.
+				messageName := fullMessagePrefix(message)
+
 				visitor := &messageVisitor{
 					Message: &ProtoMessage{
 						Comment:   comment,
 						Fields:    make([]*proto.NormalField, 0),
 						MapFields: make([]*proto.MapField, 0),
-						Name:      message.Name,
+						Name:      messageName,
+						protoMsg:  message,
 					},
 				}
 				for _, each := range message.Elements {
@@ -174,6 +249,9 @@ func LoadApi(protoFiles []string) (Api, error) {
 	for _, f := range protoFiles {
 		api.addFile(f)
 	}
+
+	// Resolve field types now that all messages and enums are known.
+	api.resolveAllFieldTypes()
 
 	return api, nil
 }
