@@ -1,4 +1,4 @@
-module heroic-labs.com/nakama/sdk/protoverify
+module github.com/heroiclabs/nakama-unreal/cmd/protoverify
 
 go 1.25.5
 
