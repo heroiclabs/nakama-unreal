@@ -55,7 +55,7 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
 
 FNakamaApiRequestModel NakamaInternal::Build{{ $rpc.Name }}Request (
   {{- if ne nil $rpc.RequestType }}
-  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params;
+  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
   {{- end }}
 )
 {

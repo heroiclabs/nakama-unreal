@@ -21,6 +21,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NakamaOptionals.h"
+#include "NakamaError.h"
+#include "NakamaApiRequestModel.h"
 #include "Nakama.gen.generated.h"
 
 {{/*--------------- ENUMS ---------------------*/}}
@@ -85,16 +88,14 @@ struct NAKAMA_API FNakamaVoidResult
 	bool bIsError = true;
 };
 
-{{ range $rpc := .Rpcs }}
-{{- if ne nil $rpc.ReturnType }}
-struct NAKAMA_API F{{ $prefix }}{{ $rpc.ReturnType.Name }}Result
+{{ range $msg := .UniqueReturnTypes }}
+struct NAKAMA_API F{{ $prefix }}{{ $msg.Name }}Result
 {
-  using ValueType = F{{ $prefix }}{{ $rpc.ReturnType.Name }};
-  F{{ $prefix }}{{ $rpc.ReturnType.Name }} Value {};
+  using ValueType = F{{ $prefix }}{{ $msg.Name }};
+  F{{ $prefix }}{{ $msg.Name }} Value {};
   FNakamaError Error;
   bool bIsError = true;
 };
-{{- end }}
 {{- end }}
 
 {{/*--------------- REQUESTS ---------------------*/}}
@@ -104,7 +105,7 @@ namespace NakamaInternal
 
 FNakamaApiRequestModel NAKAMA_API Build{{ $rpc.Name }}Request (
   {{- if ne nil $rpc.RequestType }}
-  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params;
+  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
   {{- end }}
 );
 {{- end }}
