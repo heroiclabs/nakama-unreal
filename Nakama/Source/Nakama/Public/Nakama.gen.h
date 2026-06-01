@@ -170,11 +170,11 @@ struct NAKAMA_API FNakamaUser
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was last updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  The Facebook Instant Game ID in the user's account.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "facebook_instant_game_id"))
@@ -475,11 +475,11 @@ struct NAKAMA_API FNakamaAccount
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
-  FDateTime VerifyTime;
+  FDateTime VerifyTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
-  FDateTime DisableTime;
+  FDateTime DisableTime = FDateTime(0);
 
   // Creates a Account from the given FJsonObject.
   static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -598,7 +598,7 @@ struct NAKAMA_API FNakamaAuthenticateAppleRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -625,7 +625,7 @@ struct NAKAMA_API FNakamaAuthenticateCustomRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -652,7 +652,7 @@ struct NAKAMA_API FNakamaAuthenticateDeviceRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -679,7 +679,7 @@ struct NAKAMA_API FNakamaAuthenticateEmailRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -706,7 +706,7 @@ struct NAKAMA_API FNakamaAuthenticateFacebookRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -714,7 +714,7 @@ struct NAKAMA_API FNakamaAuthenticateFacebookRequest
 
   //  Import Facebook friends for the user.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
+  FNakamaOptionalBool Sync = {};
 
   // Creates a AuthenticateFacebookRequest from the given FJsonObject.
   static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -737,7 +737,7 @@ struct NAKAMA_API FNakamaAuthenticateFacebookInstantGameRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -764,7 +764,7 @@ struct NAKAMA_API FNakamaAuthenticateGameCenterRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -791,7 +791,7 @@ struct NAKAMA_API FNakamaAuthenticateGoogleRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -818,7 +818,7 @@ struct NAKAMA_API FNakamaAuthenticateSteamRequest
 
   //  Register the account if the user does not already exist.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
+  FNakamaOptionalBool Create = {};
 
   //  Set the username on the account at register. Must be unique.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
@@ -826,7 +826,7 @@ struct NAKAMA_API FNakamaAuthenticateSteamRequest
 
   //  Import Steam friends for the user.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
+  FNakamaOptionalBool Sync = {};
 
   // Creates a AuthenticateSteamRequest from the given FJsonObject.
   static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -899,7 +899,7 @@ struct NAKAMA_API FNakamaChannelMessage
 
   //  The code representing a message type or category.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "code"))
-  FNakamaOptionalInt32 Code;
+  FNakamaOptionalInt32 Code = {};
 
   //  Message sender, usually a user ID.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sender_id"))
@@ -915,15 +915,15 @@ struct NAKAMA_API FNakamaChannelMessage
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the message was last updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  True if the message was persisted to the channel's history, false otherwise.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persistent"))
-  FNakamaOptionalBool Persistent;
+  FNakamaOptionalBool Persistent = {};
 
   //  The name of the chat room, or an empty string if this message was not sent through a chat room.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "room_name"))
@@ -1177,7 +1177,7 @@ struct NAKAMA_API FNakamaEvent
 
   //  The time when the event was triggered.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "timestamp"))
-  FDateTime Timestamp;
+  FDateTime Timestamp = FDateTime(0);
 
   //  True if the event came directly from a client call, false otherwise.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "external"))
@@ -1208,11 +1208,11 @@ struct NAKAMA_API FNakamaFriend
 
   //  The friend status.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = {};
 
   //  Time of the latest relationship update.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  Metadata.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
@@ -1378,7 +1378,7 @@ struct NAKAMA_API FNakamaGroup
 
   //  Anyone can join open groups, otherwise only admins can accept members.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  FNakamaOptionalBool Open;
+  FNakamaOptionalBool Open = {};
 
   //  The current count of all members in the group.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "edge_count"))
@@ -1390,11 +1390,11 @@ struct NAKAMA_API FNakamaGroup
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the group was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the group was last updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   // Creates a Group from the given FJsonObject.
   static FNakamaGroup FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1440,7 +1440,7 @@ struct NAKAMA_API FNakamaGroupUserList_GroupUser
 
   //  Their relationship to the group.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = 0;
 
   // Creates a GroupUserList_GroupUser from the given FJsonObject.
   static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1486,7 +1486,7 @@ struct NAKAMA_API FNakamaImportFacebookFriendsRequest
 
   //  Reset the current user's friends list.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  FNakamaOptionalBool Reset;
+  FNakamaOptionalBool Reset = {};
 
   // Creates a ImportFacebookFriendsRequest from the given FJsonObject.
   static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1509,7 +1509,7 @@ struct NAKAMA_API FNakamaImportSteamFriendsRequest
 
   //  Reset the current user's friends list.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  FNakamaOptionalBool Reset;
+  FNakamaOptionalBool Reset = {};
 
   // Creates a ImportSteamFriendsRequest from the given FJsonObject.
   static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1597,7 +1597,7 @@ struct NAKAMA_API FNakamaLeaderboard
 
   //  BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  ENakamaOperator Operator;
+  ENakamaOperator Operator = ENakamaOperator::NO_OVERRIDE;
 
   //  The UNIX time when the leaderboard was previously reset. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_reset"))
@@ -1613,7 +1613,7 @@ struct NAKAMA_API FNakamaLeaderboard
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  Whether the leaderboard was created authoritatively or not.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
@@ -1687,15 +1687,15 @@ struct NAKAMA_API FNakamaLeaderboardRecord
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record was updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the leaderboard record expires.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry_time"))
-  FDateTime ExpiryTime;
+  FDateTime ExpiryTime = FDateTime(0);
 
   //  The rank of this record.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank"))
@@ -1780,7 +1780,7 @@ struct NAKAMA_API FNakamaLinkFacebookRequest
 
   //  Import Facebook friends for the user.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
+  FNakamaOptionalBool Sync = {};
 
   // Creates a LinkFacebookRequest from the given FJsonObject.
   static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1803,7 +1803,7 @@ struct NAKAMA_API FNakamaLinkSteamRequest
 
   //  Import Steam friends for the user.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
+  FNakamaOptionalBool Sync = {};
 
   // Creates a LinkSteamRequest from the given FJsonObject.
   static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1826,11 +1826,11 @@ struct NAKAMA_API FNakamaListChannelMessagesRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  True if listing should be older messages to newer, false if reverse.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "forward"))
-  FNakamaOptionalBool Forward;
+  FNakamaOptionalBool Forward = {};
 
   //  A pagination cursor, if any.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -1853,11 +1853,11 @@ struct NAKAMA_API FNakamaListFriendsRequest
 
   //  Max number of records to return. Between 1 and 1000.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The friend state to list.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = {};
 
   //  An optional next page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -1880,7 +1880,7 @@ struct NAKAMA_API FNakamaListFriendsOfFriendsRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  An optional next page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -1911,7 +1911,7 @@ struct NAKAMA_API FNakamaListGroupsRequest
 
   //  Max number of groups to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  Language tag filter
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "lang_tag"))
@@ -1919,11 +1919,11 @@ struct NAKAMA_API FNakamaListGroupsRequest
 
   //  Number of group members
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "members"))
-  FNakamaOptionalInt32 Members;
+  FNakamaOptionalInt32 Members = {};
 
   //  Optional Open/Closed filter.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  FNakamaOptionalBool Open;
+  FNakamaOptionalBool Open = {};
 
   // Creates a ListGroupsRequest from the given FJsonObject.
   static FNakamaListGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -1946,11 +1946,11 @@ struct NAKAMA_API FNakamaListGroupUsersRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The group user state to list.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = {};
 
   //  An optional next page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -1977,7 +1977,7 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsAroundOwnerRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The owner to retrieve records around.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_id"))
@@ -1985,7 +1985,7 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsAroundOwnerRequest
 
   //  Expiry in seconds (since epoch) to begin fetching records from.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  FNakamaOptionalInt64 Expiry;
+  FNakamaOptionalInt64 Expiry = {};
 
   //  A next or previous page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2016,7 +2016,7 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  A next or previous page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2024,7 +2024,7 @@ struct NAKAMA_API FNakamaListLeaderboardRecordsRequest
 
   //  Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  FNakamaOptionalInt64 Expiry;
+  FNakamaOptionalInt64 Expiry = {};
 
   // Creates a ListLeaderboardRecordsRequest from the given FJsonObject.
   static FNakamaListLeaderboardRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2043,11 +2043,11 @@ struct NAKAMA_API FNakamaListMatchesRequest
 
   //  Limit the number of returned matches.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  Authoritative or relayed matches.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
-  FNakamaOptionalBool Authoritative;
+  FNakamaOptionalBool Authoritative = {};
 
   //  Label filter.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "label"))
@@ -2055,11 +2055,11 @@ struct NAKAMA_API FNakamaListMatchesRequest
 
   //  Minimum user count.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "min_size"))
-  FNakamaOptionalInt32 MinSize;
+  FNakamaOptionalInt32 MinSize = {};
 
   //  Maximum user count.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_size"))
-  FNakamaOptionalInt32 MaxSize;
+  FNakamaOptionalInt32 MaxSize = {};
 
   //  Arbitrary label query.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "query"))
@@ -2082,7 +2082,7 @@ struct NAKAMA_API FNakamaListNotificationsRequest
 
   //  The number of notifications to get. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  A cursor to page through notifications. May be cached by clients to get from point in time forwards.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
@@ -2113,7 +2113,7 @@ struct NAKAMA_API FNakamaListStorageObjectsRequest
 
   //  The number of storage objects to list. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The cursor to page through results from.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2136,7 +2136,7 @@ struct NAKAMA_API FNakamaListSubscriptionsRequest
 
   //  Max number of results per page
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  Cursor to retrieve a page of records from
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2163,7 +2163,7 @@ struct NAKAMA_API FNakamaListTournamentRecordsAroundOwnerRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The owner to retrieve records around.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_id"))
@@ -2171,7 +2171,7 @@ struct NAKAMA_API FNakamaListTournamentRecordsAroundOwnerRequest
 
   //  Expiry in seconds (since epoch) to begin fetching records from.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  FNakamaOptionalInt64 Expiry;
+  FNakamaOptionalInt64 Expiry = {};
 
   //  A next or previous page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2202,7 +2202,7 @@ struct NAKAMA_API FNakamaListTournamentRecordsRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  A next or previous page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2210,7 +2210,7 @@ struct NAKAMA_API FNakamaListTournamentRecordsRequest
 
   //  Expiry in seconds (since epoch) to begin fetching records from.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry"))
-  FNakamaOptionalInt64 Expiry;
+  FNakamaOptionalInt64 Expiry = {};
 
   // Creates a ListTournamentRecordsRequest from the given FJsonObject.
   static FNakamaListTournamentRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2229,23 +2229,23 @@ struct NAKAMA_API FNakamaListTournamentsRequest
 
   //  The start of the categories to include. Defaults to 0.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category_start"))
-  FNakamaOptionalInt32 CategoryStart;
+  FNakamaOptionalInt32 CategoryStart = {};
 
   //  The end of the categories to include. Defaults to 128.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category_end"))
-  FNakamaOptionalInt32 CategoryEnd;
+  FNakamaOptionalInt32 CategoryEnd = {};
 
   //  The start time for tournaments. Defaults to epoch.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_time"))
-  FNakamaOptionalInt32 StartTime;
+  FNakamaOptionalInt32 StartTime = {};
 
   //  The end time for tournaments. Defaults to +1 year from current Unix time.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_time"))
-  FNakamaOptionalInt32 EndTime;
+  FNakamaOptionalInt32 EndTime = {};
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  A next page cursor for listings (optional).
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2272,11 +2272,11 @@ struct NAKAMA_API FNakamaListUserGroupsRequest
 
   //  Max number of records to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  The user group state to list.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = {};
 
   //  An optional next page cursor.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
@@ -2357,11 +2357,11 @@ struct NAKAMA_API FNakamaMatchmakerCompletionStats
 
   // 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   // 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "complete_time"))
-  FDateTime CompleteTime;
+  FDateTime CompleteTime = FDateTime(0);
 
   // Creates a MatchmakerCompletionStats from the given FJsonObject.
   static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2384,7 +2384,7 @@ struct NAKAMA_API FNakamaMatchmakerStats
 
   // 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "oldest_ticket_create_time"))
-  FDateTime OldestTicketCreateTime;
+  FDateTime OldestTicketCreateTime = FDateTime(0);
 
   // 
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "completions")) 
@@ -2427,7 +2427,7 @@ struct NAKAMA_API FNakamaNotification
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the notification was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  True if this notification was persisted to the database.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persistent"))
@@ -2647,11 +2647,11 @@ struct NAKAMA_API FNakamaStorageObject
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was last updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   // Creates a StorageObject from the given FJsonObject.
   static FNakamaStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2686,11 +2686,11 @@ struct NAKAMA_API FNakamaStorageObjectAck
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was last updated.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   // Creates a StorageObjectAck from the given FJsonObject.
   static FNakamaStorageObjectAck FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2818,15 +2818,15 @@ struct NAKAMA_API FNakamaTournament
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament was created.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament will start.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_time"))
-  FDateTime StartTime;
+  FDateTime StartTime = FDateTime(0);
 
   //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the tournament will be stopped.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_time"))
-  FDateTime EndTime;
+  FDateTime EndTime = FDateTime(0);
 
   //  Duration of the tournament in seconds.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "duration"))
@@ -2842,7 +2842,7 @@ struct NAKAMA_API FNakamaTournament
 
   //  Operator.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  ENakamaOperator Operator;
+  ENakamaOperator Operator = ENakamaOperator::NO_OVERRIDE;
 
   //  Whether the leaderboard was created authoritatively or not.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "authoritative"))
@@ -2986,7 +2986,7 @@ struct NAKAMA_API FNakamaUpdateGroupRequest
 
   //  Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  FNakamaOptionalBool Open;
+  FNakamaOptionalBool Open = {};
 
   // Creates a UpdateGroupRequest from the given FJsonObject.
   static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3009,7 +3009,7 @@ struct NAKAMA_API FNakamaUserGroupList_UserGroup
 
   //  The user's relationship to the group.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
+  FNakamaOptionalInt32 State = {};
 
   // Creates a UserGroupList_UserGroup from the given FJsonObject.
   static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3074,7 +3074,7 @@ struct NAKAMA_API FNakamaValidatePurchaseAppleRequest
 
   //  Persist the purchase
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidatePurchaseAppleRequest from the given FJsonObject.
   static FNakamaValidatePurchaseAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3097,7 +3097,7 @@ struct NAKAMA_API FNakamaValidateSubscriptionAppleRequest
 
   //  Persist the subscription.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidateSubscriptionAppleRequest from the given FJsonObject.
   static FNakamaValidateSubscriptionAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3120,7 +3120,7 @@ struct NAKAMA_API FNakamaValidatePurchaseGoogleRequest
 
   //  Persist the purchase
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidatePurchaseGoogleRequest from the given FJsonObject.
   static FNakamaValidatePurchaseGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3143,7 +3143,7 @@ struct NAKAMA_API FNakamaValidateSubscriptionGoogleRequest
 
   //  Persist the subscription.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidateSubscriptionGoogleRequest from the given FJsonObject.
   static FNakamaValidateSubscriptionGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3170,7 +3170,7 @@ struct NAKAMA_API FNakamaValidatePurchaseHuaweiRequest
 
   //  Persist the purchase
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidatePurchaseHuaweiRequest from the given FJsonObject.
   static FNakamaValidatePurchaseHuaweiRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3193,7 +3193,7 @@ struct NAKAMA_API FNakamaValidatePurchaseFacebookInstantRequest
 
   //  Persist the purchase
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
-  FNakamaOptionalBool Persist;
+  FNakamaOptionalBool Persist = {};
 
   // Creates a ValidatePurchaseFacebookInstantRequest from the given FJsonObject.
   static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3224,23 +3224,23 @@ struct NAKAMA_API FNakamaValidatedPurchase
 
   //  Store identifier
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "store"))
-  ENakamaStoreProvider Store;
+  ENakamaStoreProvider Store = ENakamaStoreProvider::APPLE_APP_STORE;
 
   //  Timestamp when the purchase was done.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase_time"))
-  FDateTime PurchaseTime;
+  FDateTime PurchaseTime = FDateTime(0);
 
   //  Timestamp when the receipt validation was stored in DB.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  Timestamp when the receipt validation was updated in DB.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  Timestamp when the purchase was refunded. Set to UNIX
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refund_time"))
-  FDateTime RefundTime;
+  FDateTime RefundTime = FDateTime(0);
 
   //  Raw provider validation response.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_response"))
@@ -3248,7 +3248,7 @@ struct NAKAMA_API FNakamaValidatedPurchase
 
   //  Whether the purchase was done in production or sandbox environment.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "environment"))
-  ENakamaStoreEnvironment Environment;
+  ENakamaStoreEnvironment Environment = ENakamaStoreEnvironment::UNKNOWN;
 
   //  Whether the purchase had already been validated by Nakama before.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "seen_before"))
@@ -3302,31 +3302,31 @@ struct NAKAMA_API FNakamaValidatedSubscription
 
   //  Store identifier
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "store"))
-  ENakamaStoreProvider Store;
+  ENakamaStoreProvider Store = ENakamaStoreProvider::APPLE_APP_STORE;
 
   //  UNIX Timestamp when the purchase was done.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase_time"))
-  FDateTime PurchaseTime;
+  FDateTime PurchaseTime = FDateTime(0);
 
   //  UNIX Timestamp when the receipt validation was stored in DB.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create_time"))
-  FDateTime CreateTime;
+  FDateTime CreateTime = FDateTime(0);
 
   //  UNIX Timestamp when the receipt validation was updated in DB.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
+  FDateTime UpdateTime = FDateTime(0);
 
   //  Whether the purchase was done in production or sandbox environment.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "environment"))
-  ENakamaStoreEnvironment Environment;
+  ENakamaStoreEnvironment Environment = ENakamaStoreEnvironment::UNKNOWN;
 
   //  Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "expiry_time"))
-  FDateTime ExpiryTime;
+  FDateTime ExpiryTime = FDateTime(0);
 
   //  Subscription refund time. If this time is set, the subscription was refunded.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refund_time"))
-  FDateTime RefundTime;
+  FDateTime RefundTime = FDateTime(0);
 
   //  Raw provider validation response body.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_response"))
@@ -3442,7 +3442,7 @@ struct NAKAMA_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
 
   //  Operator override.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  ENakamaOperator Operator;
+  ENakamaOperator Operator = ENakamaOperator::NO_OVERRIDE;
 
   // Creates a WriteLeaderboardRecordRequest_LeaderboardRecordWrite from the given FJsonObject.
   static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3500,11 +3500,11 @@ struct NAKAMA_API FNakamaWriteStorageObject
 
   //  The read access permissions for the object.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_read"))
-  FNakamaOptionalInt32 PermissionRead;
+  FNakamaOptionalInt32 PermissionRead = {};
 
   //  The write access permissions for the object.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "permission_write"))
-  FNakamaOptionalInt32 PermissionWrite;
+  FNakamaOptionalInt32 PermissionWrite = {};
 
   // Creates a WriteStorageObject from the given FJsonObject.
   static FNakamaWriteStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3554,7 +3554,7 @@ struct NAKAMA_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
 
   //  Operator override.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
-  ENakamaOperator Operator;
+  ENakamaOperator Operator = ENakamaOperator::NO_OVERRIDE;
 
   // Creates a WriteTournamentRecordRequest_TournamentRecordWrite from the given FJsonObject.
   static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -3596,11 +3596,11 @@ struct NAKAMA_API FNakamaListPartiesRequest
 
   //  Limit the number of returned parties.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "limit"))
-  FNakamaOptionalInt32 Limit;
+  FNakamaOptionalInt32 Limit = {};
 
   //  Optionally filter by open/closed parties.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "open"))
-  FNakamaOptionalBool Open;
+  FNakamaOptionalBool Open = {};
 
   //  Arbitrary label query.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "query"))

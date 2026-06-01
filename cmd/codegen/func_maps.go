@@ -107,7 +107,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return s
 		},
-		"toUnrealDefaultValue": func(s string) string {
+		"toUnrealDefaultValue": func(prefix, s string) string {
 			switch s {
 			case "bool":
 				return " = false"
@@ -119,6 +119,17 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				return " = 0.f"
 			case "double":
 				return " = 0.0"
+			case "BoolValue", "Int32Value", "UInt32Value", "Int64Value", "UInt64Value", "FloatValue", "DoubleValue":
+				return " = {}"
+			case "Timestamp":
+				return " = FDateTime(0)"
+			}
+			if enum, ok := api.EnumsByName[s]; ok {
+				for _, f := range enum.Fields {
+					if f.Integer == 0 {
+						return " = E" + prefix + s + "::" + f.Name
+					}
+				}
 			}
 			return ""
 		},

@@ -58,7 +58,7 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
   {{- if $member.Repeated }} 
   TArray<{{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- else }}
-  {{ toUnrealType $prefix $member.Type }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $member.Type }};
+  {{ toUnrealType $prefix $member.Type }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $prefix $member.Type }};
   {{- end }}
   {{- end }}
   {{- range $member := $message.MapFields }}

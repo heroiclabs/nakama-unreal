@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include "CoreMinimal.h"
 
 struct NAKAMA_API FNakamaApiRequestModel
