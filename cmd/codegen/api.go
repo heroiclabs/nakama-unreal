@@ -28,9 +28,10 @@ type Api struct {
 	Messages []*ProtoMessage
 	Rpcs     []*ProtoRpc
 
-	EnumsByName    map[string]*ProtoEnum
-	MessagesByName map[string]*ProtoMessage
-	RpcsByName     map[string]*ProtoRpc
+	EnumsByName       map[string]*ProtoEnum
+	MessagesByName    map[string]*ProtoMessage
+	RpcsByName        map[string]*ProtoRpc
+	UniqueReturnTypes []*ProtoMessage
 }
 
 // fullMessagePrefix builds the full flattened name for a proto.Message by walking
@@ -82,6 +83,36 @@ func (api *Api) resolveFieldType(rawType string, container *proto.Message) strin
 
 	// Try the local name without any prefix (top-level type or primitive).
 	return localName
+}
+
+func (api *Api) collectMessage(message *proto.Message) {
+	// Collect nested messages first so they precede their parent in the output.
+	for _, el := range message.Elements {
+		if nested, ok := el.(*proto.Message); ok {
+			api.collectMessage(nested)
+		}
+	}
+
+	comment := ""
+	if message.Comment != nil {
+		comment = message.Comment.Message()
+	}
+	messageName := fullMessagePrefix(message)
+
+	visitor := &messageVisitor{
+		Message: &ProtoMessage{
+			Comment:   comment,
+			Fields:    make([]*proto.NormalField, 0),
+			MapFields: make([]*proto.MapField, 0),
+			Name:      messageName,
+			protoMsg:  message,
+		},
+	}
+	for _, each := range message.Elements {
+		each.Accept(visitor)
+	}
+	api.Messages = append(api.Messages, visitor.Message)
+	api.MessagesByName[visitor.Message.Name] = visitor.Message
 }
 
 // resolveAllFieldTypes resolves field types for all collected messages using the
@@ -160,28 +191,11 @@ func (api *Api) addFile(protoFile string) error {
 				if strings.HasPrefix(message.Name, "google.") {
 					return
 				}
-
-				comment := ""
-				if message.Comment != nil {
-					comment = message.Comment.Message()
+				// Skip nested messages; collectMessage handles them in post-order.
+				if _, ok := message.Parent.(*proto.Message); ok {
+					return
 				}
-				// Build fully qualified message name by walking the full ancestor chain.
-				messageName := fullMessagePrefix(message)
-
-				visitor := &messageVisitor{
-					Message: &ProtoMessage{
-						Comment:   comment,
-						Fields:    make([]*proto.NormalField, 0),
-						MapFields: make([]*proto.MapField, 0),
-						Name:      messageName,
-						protoMsg:  message,
-					},
-				}
-				for _, each := range message.Elements {
-					each.Accept(visitor)
-				}
-				api.Messages = append(api.Messages, visitor.Message)
-				api.MessagesByName[visitor.Message.Name] = visitor.Message
+				api.collectMessage(message)
 			},
 		),
 		proto.WithRPC(
@@ -252,6 +266,15 @@ func LoadApi(protoFiles []string) (Api, error) {
 
 	// Resolve field types now that all messages and enums are known.
 	api.resolveAllFieldTypes()
+
+	// Collect one entry per distinct RPC return type for Result struct generation.
+	seen := make(map[string]bool)
+	for _, rpc := range api.Rpcs {
+		if rpc.ReturnType != nil && !seen[rpc.ReturnType.Name] {
+			seen[rpc.ReturnType.Name] = true
+			api.UniqueReturnTypes = append(api.UniqueReturnTypes, rpc.ReturnType)
+		}
+	}
 
 	return api, nil
 }

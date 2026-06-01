@@ -446,6 +446,49 @@ struct NAKAMA_API FNakamaAccountSteam
 };
 
 /*
+*  A user with additional account details. Always the current user.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAccount
+{
+  GENERATED_BODY()
+
+  //  The user object.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
+  FNakamaUser User;
+
+  //  The user's wallet data.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "wallet"))
+  FString Wallet;
+
+  //  The email address of the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
+  FString Email;
+
+  //  The devices which belong to the user's account.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "devices")) 
+  TArray<FNakamaAccountDevice> Devices;
+
+  //  The custom id in the user's account.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "custom_id"))
+  FString CustomId;
+
+  //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
+  FDateTime VerifyTime;
+
+  //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
+  FDateTime DisableTime;
+
+  // Creates a Account from the given FJsonObject.
+  static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this Account to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Add one or more friends to the current user.
 */
 USTRUCT(BlueprintType)
@@ -538,6 +581,257 @@ struct NAKAMA_API FNakamaSessionLogoutRequest
   static FNakamaSessionLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this SessionLogoutRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Apple Sign In.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateAppleRequest
+{
+  GENERATED_BODY()
+
+  //  The Apple account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountApple Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateAppleRequest from the given FJsonObject.
+  static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateAppleRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with a custom ID.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateCustomRequest
+{
+  GENERATED_BODY()
+
+  //  The custom account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountCustom Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateCustomRequest from the given FJsonObject.
+  static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateCustomRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with a device ID.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateDeviceRequest
+{
+  GENERATED_BODY()
+
+  //  The device account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountDevice Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateDeviceRequest from the given FJsonObject.
+  static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateDeviceRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with email+password.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateEmailRequest
+{
+  GENERATED_BODY()
+
+  //  The email account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountEmail Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateEmailRequest from the given FJsonObject.
+  static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateEmailRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Facebook.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateFacebookRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountFacebook Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  //  Import Facebook friends for the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
+  FNakamaOptionalBool Sync;
+
+  // Creates a AuthenticateFacebookRequest from the given FJsonObject.
+  static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateFacebookRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Facebook Instant Game token.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateFacebookInstantGameRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook Instant Game account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountFacebookInstantGame Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateFacebookInstantGameRequest from the given FJsonObject.
+  static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateFacebookInstantGameRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Apple's Game Center.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateGameCenterRequest
+{
+  GENERATED_BODY()
+
+  //  The Game Center account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountGameCenter Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateGameCenterRequest from the given FJsonObject.
+  static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateGameCenterRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Google.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateGoogleRequest
+{
+  GENERATED_BODY()
+
+  //  The Google account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountGoogle Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateGoogleRequest from the given FJsonObject.
+  static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateGoogleRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Authenticate against the server with Steam.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateSteamRequest
+{
+  GENERATED_BODY()
+
+  //  The Steam account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountSteam Account;
+
+  //  Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create;
+
+  //  Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  //  Import Steam friends for the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
+  FNakamaOptionalBool Sync;
+
+  // Creates a AuthenticateSteamRequest from the given FJsonObject.
+  static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this AuthenticateSteamRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -651,6 +945,37 @@ struct NAKAMA_API FNakamaChannelMessage
   static FNakamaChannelMessage FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this ChannelMessage to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A list of channel messages, usually a result of a list operation.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaChannelMessageList
+{
+  GENERATED_BODY()
+
+  //  A list of messages.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "messages")) 
+  TArray<FNakamaChannelMessage> Messages;
+
+  //  The cursor to send when retrieving the next page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
+  FString NextCursor;
+
+  //  The cursor to send when retrieving the previous page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
+  FString PrevCursor;
+
+  //  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
+  FString CacheableCursor;
+
+  // Creates a ChannelMessageList from the given FJsonObject.
+  static FNakamaChannelMessageList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ChannelMessageList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -820,6 +1145,25 @@ struct NAKAMA_API FNakamaDeleteStorageObjectId
 };
 
 /*
+*  Batch delete storage objects.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaDeleteStorageObjectsRequest
+{
+  GENERATED_BODY()
+
+  //  Batch of storage objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
+  TArray<FNakamaDeleteStorageObjectId> ObjectIds;
+
+  // Creates a DeleteStorageObjectsRequest from the given FJsonObject.
+  static FNakamaDeleteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this DeleteStorageObjectsRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Represents an event to be passed through the server to registered event handlers.
 */
 USTRUCT(BlueprintType)
@@ -847,6 +1191,106 @@ struct NAKAMA_API FNakamaEvent
   static FNakamaEvent FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this Event to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A friend of a user.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaFriend
+{
+  GENERATED_BODY()
+
+  //  The user object.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
+  FNakamaUser User;
+
+  //  The friend status.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
+  FNakamaOptionalInt32 State;
+
+  //  Time of the latest relationship update.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
+  FDateTime UpdateTime;
+
+  //  Metadata.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
+  FString Metadata;
+
+  // Creates a Friend from the given FJsonObject.
+  static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this Friend to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A collection of zero or more friends of the user.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaFriendList
+{
+  GENERATED_BODY()
+
+  //  The Friend objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends")) 
+  TArray<FNakamaFriend> Friends;
+
+  //  Cursor for the next page of results, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a FriendList from the given FJsonObject.
+  static FNakamaFriendList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this FriendList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A friend of a friend.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaFriendsOfFriendsList_FriendOfFriend
+{
+  GENERATED_BODY()
+
+  //  The user who referred its friend.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "referrer"))
+  FString Referrer;
+
+  //  User.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
+  FNakamaUser User;
+
+  // Creates a FriendsOfFriendsList_FriendOfFriend from the given FJsonObject.
+  static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this FriendsOfFriendsList_FriendOfFriend to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A List of friends of friends
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaFriendsOfFriendsList
+{
+  GENERATED_BODY()
+
+  //  User friends of friends.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends_of_friends")) 
+  TArray<FNakamaFriendsOfFriendsList_FriendOfFriend> FriendsOfFriends;
+
+  //  Cursor for the next page of results, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a FriendsOfFriendsList from the given FJsonObject.
+  static FNakamaFriendsOfFriendsList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this FriendsOfFriendsList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -960,6 +1404,121 @@ struct NAKAMA_API FNakamaGroup
 };
 
 /*
+*  One or more groups returned from a listing operation.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaGroupList
+{
+  GENERATED_BODY()
+
+  //  One or more groups.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "groups")) 
+  TArray<FNakamaGroup> Groups;
+
+  //  A cursor used to get the next page.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a GroupList from the given FJsonObject.
+  static FNakamaGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this GroupList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A single user-role pair.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaGroupUserList_GroupUser
+{
+  GENERATED_BODY()
+
+  //  User.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
+  FNakamaUser User;
+
+  //  Their relationship to the group.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
+  FNakamaOptionalInt32 State;
+
+  // Creates a GroupUserList_GroupUser from the given FJsonObject.
+  static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this GroupUserList_GroupUser to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A list of users belonging to a group, along with their role.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaGroupUserList
+{
+  GENERATED_BODY()
+
+  //  User-role pairs for a group.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_users")) 
+  TArray<FNakamaGroupUserList_GroupUser> GroupUsers;
+
+  //  Cursor for the next page of results, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a GroupUserList from the given FJsonObject.
+  static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this GroupUserList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Import Facebook friends into the current user's account.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaImportFacebookFriendsRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountFacebook Account;
+
+  //  Reset the current user's friends list.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
+  FNakamaOptionalBool Reset;
+
+  // Creates a ImportFacebookFriendsRequest from the given FJsonObject.
+  static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ImportFacebookFriendsRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Import Facebook friends into the current user's account.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaImportSteamFriendsRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountSteam Account;
+
+  //  Reset the current user's friends list.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
+  FNakamaOptionalBool Reset;
+
+  // Creates a ImportSteamFriendsRequest from the given FJsonObject.
+  static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ImportSteamFriendsRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Immediately join an open group, or request to join a closed one.
 */
 USTRUCT(BlueprintType)
@@ -1068,6 +1627,29 @@ struct NAKAMA_API FNakamaLeaderboard
 };
 
 /*
+*  A list of leaderboards
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaLeaderboardList
+{
+  GENERATED_BODY()
+
+  //  The list of leaderboards returned.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboards")) 
+  TArray<FNakamaLeaderboard> Leaderboards;
+
+  //  A pagination cursor (optional).
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a LeaderboardList from the given FJsonObject.
+  static FNakamaLeaderboardList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this LeaderboardList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Represents a complete leaderboard record with all scores and associated metadata.
 */
 USTRUCT(BlueprintType)
@@ -1131,6 +1713,41 @@ struct NAKAMA_API FNakamaLeaderboardRecord
 };
 
 /*
+*  A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaLeaderboardRecordList
+{
+  GENERATED_BODY()
+
+  //  A list of leaderboard records.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
+  TArray<FNakamaLeaderboardRecord> Records;
+
+  //  A batched set of leaderboard records belonging to specified owners.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
+  TArray<FNakamaLeaderboardRecord> OwnerRecords;
+
+  //  The cursor to send when retrieving the next page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
+  FString NextCursor;
+
+  //  The cursor to send when retrieving the previous page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
+  FString PrevCursor;
+
+  //  The total number of ranks available.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
+  int64 RankCount = 0;
+
+  // Creates a LeaderboardRecordList from the given FJsonObject.
+  static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this LeaderboardRecordList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Leave a group.
 */
 USTRUCT(BlueprintType)
@@ -1146,6 +1763,52 @@ struct NAKAMA_API FNakamaLeaveGroupRequest
   static FNakamaLeaveGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this LeaveGroupRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Link Facebook to the current user's account.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaLinkFacebookRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountFacebook Account;
+
+  //  Import Facebook friends for the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
+  FNakamaOptionalBool Sync;
+
+  // Creates a LinkFacebookRequest from the given FJsonObject.
+  static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this LinkFacebookRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Link Steam to the current user's account.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaLinkSteamRequest
+{
+  GENERATED_BODY()
+
+  //  The Facebook account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountSteam Account;
+
+  //  Import Steam friends for the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
+  FNakamaOptionalBool Sync;
+
+  // Creates a LinkSteamRequest from the given FJsonObject.
+  static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this LinkSteamRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1666,6 +2329,25 @@ struct NAKAMA_API FNakamaMatch
 };
 
 /*
+*  A list of realtime matches.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaMatchList
+{
+  GENERATED_BODY()
+
+  //  A number of matches corresponding to a list operation.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "matches")) 
+  TArray<FNakamaMatch> Matches;
+
+  // Creates a MatchList from the given FJsonObject.
+  static FNakamaMatchList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this MatchList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Matchmaker ticket completion stats
 */
 USTRUCT(BlueprintType)
@@ -1685,6 +2367,33 @@ struct NAKAMA_API FNakamaMatchmakerCompletionStats
   static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this MatchmakerCompletionStats to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Matchmaker stats
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaMatchmakerStats
+{
+  GENERATED_BODY()
+
+  // 
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ticket_count"))
+  int32 TicketCount = 0;
+
+  // 
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "oldest_ticket_create_time"))
+  FDateTime OldestTicketCreateTime;
+
+  // 
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "completions")) 
+  TArray<FNakamaMatchmakerCompletionStats> Completions;
+
+  // Creates a MatchmakerStats from the given FJsonObject.
+  static FNakamaMatchmakerStats FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this MatchmakerStats to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1728,6 +2437,29 @@ struct NAKAMA_API FNakamaNotification
   static FNakamaNotification FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this Notification to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A collection of zero or more notifications.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaNotificationList
+{
+  GENERATED_BODY()
+
+  //  Collection of notifications.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "notifications")) 
+  TArray<FNakamaNotification> Notifications;
+
+  //  Use this cursor to paginate notifications. Cache this to catch up to new notifications.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
+  FString CacheableCursor;
+
+  // Creates a NotificationList from the given FJsonObject.
+  static FNakamaNotificationList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this NotificationList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1801,6 +2533,25 @@ struct NAKAMA_API FNakamaReadStorageObjectId
   static FNakamaReadStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this ReadStorageObjectId to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Batch get storage objects.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaReadStorageObjectsRequest
+{
+  GENERATED_BODY()
+
+  //  Batch of storage objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
+  TArray<FNakamaReadStorageObjectId> ObjectIds;
+
+  // Creates a ReadStorageObjectsRequest from the given FJsonObject.
+  static FNakamaReadStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ReadStorageObjectsRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1949,6 +2700,67 @@ struct NAKAMA_API FNakamaStorageObjectAck
 };
 
 /*
+*  Batch of acknowledgements for the storage object write.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaStorageObjectAcks
+{
+  GENERATED_BODY()
+
+  //  Batch of storage write acknowledgements.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "acks")) 
+  TArray<FNakamaStorageObjectAck> Acks;
+
+  // Creates a StorageObjectAcks from the given FJsonObject.
+  static FNakamaStorageObjectAcks FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this StorageObjectAcks to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  Batch of storage objects.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaStorageObjects
+{
+  GENERATED_BODY()
+
+  //  The batch of storage objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
+  TArray<FNakamaStorageObject> Objects;
+
+  // Creates a StorageObjects from the given FJsonObject.
+  static FNakamaStorageObjects FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this StorageObjects to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  List of storage objects.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaStorageObjectList
+{
+  GENERATED_BODY()
+
+  //  The list of storage objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
+  TArray<FNakamaStorageObject> Objects;
+
+  //  The cursor for the next page of results, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a StorageObjectList from the given FJsonObject.
+  static FNakamaStorageObjectList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this StorageObjectList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  A tournament on the server.
 */
 USTRUCT(BlueprintType)
@@ -2048,6 +2860,64 @@ struct NAKAMA_API FNakamaTournament
 };
 
 /*
+*  A list of tournaments.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaTournamentList
+{
+  GENERATED_BODY()
+
+  //  The list of tournaments returned.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournaments")) 
+  TArray<FNakamaTournament> Tournaments;
+
+  //  A pagination cursor (optional).
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a TournamentList from the given FJsonObject.
+  static FNakamaTournamentList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this TournamentList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A set of tournament records which may be part of a tournament records page or a batch of individual records.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaTournamentRecordList
+{
+  GENERATED_BODY()
+
+  //  A list of tournament records.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
+  TArray<FNakamaLeaderboardRecord> Records;
+
+  //  A batched set of tournament records belonging to specified owners.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
+  TArray<FNakamaLeaderboardRecord> OwnerRecords;
+
+  //  The cursor to send when retireving the next page (optional).
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
+  FString NextCursor;
+
+  //  The cursor to send when retrieving the previous page (optional).
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
+  FString PrevCursor;
+
+  //  The total number of ranks available.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
+  int64 RankCount = 0;
+
+  // Creates a TournamentRecordList from the given FJsonObject.
+  static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this TournamentRecordList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Update a user's account details.
 */
 USTRUCT(BlueprintType)
@@ -2122,6 +2992,71 @@ struct NAKAMA_API FNakamaUpdateGroupRequest
   static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this UpdateGroupRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A single group-role pair.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaUserGroupList_UserGroup
+{
+  GENERATED_BODY()
+
+  //  Group.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group"))
+  FNakamaGroup Group;
+
+  //  The user's relationship to the group.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
+  FNakamaOptionalInt32 State;
+
+  // Creates a UserGroupList_UserGroup from the given FJsonObject.
+  static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this UserGroupList_UserGroup to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A list of groups belonging to a user, along with the user's role in each group.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaUserGroupList
+{
+  GENERATED_BODY()
+
+  //  Group-role pairs for a user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_groups")) 
+  TArray<FNakamaUserGroupList_UserGroup> UserGroups;
+
+  //  Cursor for the next page of results, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  // Creates a UserGroupList from the given FJsonObject.
+  static FNakamaUserGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this UserGroupList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A collection of zero or more users.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaUsers
+{
+  GENERATED_BODY()
+
+  //  The User objects.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "users")) 
+  TArray<FNakamaUser> Users;
+
+  // Creates a Users from the given FJsonObject.
+  static FNakamaUsers FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this Users to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -2327,6 +3262,25 @@ struct NAKAMA_API FNakamaValidatedPurchase
 };
 
 /*
+*  Validate IAP response.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaValidatePurchaseResponse
+{
+  GENERATED_BODY()
+
+  //  Newly seen validated purchases.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
+  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
+
+  // Creates a ValidatePurchaseResponse from the given FJsonObject.
+  static FNakamaValidatePurchaseResponse FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ValidatePurchaseResponse to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 * 
 */
 USTRUCT(BlueprintType)
@@ -2394,6 +3348,79 @@ struct NAKAMA_API FNakamaValidatedSubscription
 };
 
 /*
+*  Validate Subscription response.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaValidateSubscriptionResponse
+{
+  GENERATED_BODY()
+
+  // 
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscription"))
+  FNakamaValidatedSubscription ValidatedSubscription;
+
+  // Creates a ValidateSubscriptionResponse from the given FJsonObject.
+  static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this ValidateSubscriptionResponse to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A list of validated purchases stored by Nakama.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaPurchaseList
+{
+  GENERATED_BODY()
+
+  //  Stored validated purchases.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
+  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
+
+  //  The cursor to send when retrieving the next page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  //  The cursor to send when retrieving the previous page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
+  FString PrevCursor;
+
+  // Creates a PurchaseList from the given FJsonObject.
+  static FNakamaPurchaseList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this PurchaseList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A list of validated subscriptions stored by Nakama.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaSubscriptionList
+{
+  GENERATED_BODY()
+
+  //  Stored validated subscriptions.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscriptions")) 
+  TArray<FNakamaValidatedSubscription> ValidatedSubscriptions;
+
+  //  The cursor to send when retrieving the next page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
+  FString Cursor;
+
+  //  The cursor to send when retrieving the previous page, if any.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
+  FString PrevCursor;
+
+  // Creates a SubscriptionList from the given FJsonObject.
+  static FNakamaSubscriptionList FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this SubscriptionList to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Record values to write.
 */
 USTRUCT(BlueprintType)
@@ -2421,6 +3448,29 @@ struct NAKAMA_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
   static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this WriteLeaderboardRecordRequest_LeaderboardRecordWrite to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A request to submit a score to a leaderboard.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaWriteLeaderboardRecordRequest
+{
+  GENERATED_BODY()
+
+  //  The ID of the leaderboard to write to.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
+  FString LeaderboardId;
+
+  //  Record input.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
+  FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+
+  // Creates a WriteLeaderboardRecordRequest from the given FJsonObject.
+  static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this WriteLeaderboardRecordRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -2464,6 +3514,25 @@ struct NAKAMA_API FNakamaWriteStorageObject
 };
 
 /*
+*  Write objects to the storage engine.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaWriteStorageObjectsRequest
+{
+  GENERATED_BODY()
+
+  //  The objects to store on the server.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
+  TArray<FNakamaWriteStorageObject> Objects;
+
+  // Creates a WriteStorageObjectsRequest from the given FJsonObject.
+  static FNakamaWriteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this WriteStorageObjectsRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
 *  Record values to write.
 */
 USTRUCT(BlueprintType)
@@ -2491,6 +3560,29 @@ struct NAKAMA_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
   static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this WriteTournamentRecordRequest_TournamentRecordWrite to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/*
+*  A request to submit a score to a tournament.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaWriteTournamentRecordRequest
+{
+  GENERATED_BODY()
+
+  //  The tournament ID to write the record for.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
+  FString TournamentId;
+
+  //  Record input.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
+  FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+
+  // Creates a WriteTournamentRecordRequest from the given FJsonObject.
+  static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this WriteTournamentRecordRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -2561,1006 +3653,6 @@ struct NAKAMA_API FNakamaParty
 };
 
 /*
-*  A friend of a user.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaFriend
-{
-  GENERATED_BODY()
-
-  //  The user object.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  FNakamaUser User;
-
-  //  The friend status.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
-
-  //  Time of the latest relationship update.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "update_time"))
-  FDateTime UpdateTime;
-
-  //  Metadata.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
-  FString Metadata;
-
-  // Creates a Friend from the given FJsonObject.
-  static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this Friend to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A friend of a friend.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaFriendsOfFriendsList_FriendOfFriend
-{
-  GENERATED_BODY()
-
-  //  The user who referred its friend.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "referrer"))
-  FString Referrer;
-
-  //  User.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  FNakamaUser User;
-
-  // Creates a FriendsOfFriendsList_FriendOfFriend from the given FJsonObject.
-  static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this FriendsOfFriendsList_FriendOfFriend to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A single user-role pair.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaGroupUserList_GroupUser
-{
-  GENERATED_BODY()
-
-  //  User.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  FNakamaUser User;
-
-  //  Their relationship to the group.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
-
-  // Creates a GroupUserList_GroupUser from the given FJsonObject.
-  static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this GroupUserList_GroupUser to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A collection of zero or more users.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaUsers
-{
-  GENERATED_BODY()
-
-  //  The User objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "users")) 
-  TArray<FNakamaUser> Users;
-
-  // Creates a Users from the given FJsonObject.
-  static FNakamaUsers FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this Users to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Apple Sign In.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateAppleRequest
-{
-  GENERATED_BODY()
-
-  //  The Apple account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountApple Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateAppleRequest from the given FJsonObject.
-  static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateAppleRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with a custom ID.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateCustomRequest
-{
-  GENERATED_BODY()
-
-  //  The custom account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountCustom Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateCustomRequest from the given FJsonObject.
-  static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateCustomRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A user with additional account details. Always the current user.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAccount
-{
-  GENERATED_BODY()
-
-  //  The user object.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  FNakamaUser User;
-
-  //  The user's wallet data.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "wallet"))
-  FString Wallet;
-
-  //  The email address of the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
-  FString Email;
-
-  //  The devices which belong to the user's account.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "devices")) 
-  TArray<FNakamaAccountDevice> Devices;
-
-  //  The custom id in the user's account.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "custom_id"))
-  FString CustomId;
-
-  //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
-  FDateTime VerifyTime;
-
-  //  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
-  FDateTime DisableTime;
-
-  // Creates a Account from the given FJsonObject.
-  static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this Account to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with a device ID.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateDeviceRequest
-{
-  GENERATED_BODY()
-
-  //  The device account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountDevice Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateDeviceRequest from the given FJsonObject.
-  static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateDeviceRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with email+password.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateEmailRequest
-{
-  GENERATED_BODY()
-
-  //  The email account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountEmail Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateEmailRequest from the given FJsonObject.
-  static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateEmailRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Facebook.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateFacebookRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountFacebook Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  //  Import Facebook friends for the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
-
-  // Creates a AuthenticateFacebookRequest from the given FJsonObject.
-  static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateFacebookRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Import Facebook friends into the current user's account.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaImportFacebookFriendsRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountFacebook Account;
-
-  //  Reset the current user's friends list.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  FNakamaOptionalBool Reset;
-
-  // Creates a ImportFacebookFriendsRequest from the given FJsonObject.
-  static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ImportFacebookFriendsRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Link Facebook to the current user's account.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaLinkFacebookRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountFacebook Account;
-
-  //  Import Facebook friends for the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
-
-  // Creates a LinkFacebookRequest from the given FJsonObject.
-  static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this LinkFacebookRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Facebook Instant Game token.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateFacebookInstantGameRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook Instant Game account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountFacebookInstantGame Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateFacebookInstantGameRequest from the given FJsonObject.
-  static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateFacebookInstantGameRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Apple's Game Center.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateGameCenterRequest
-{
-  GENERATED_BODY()
-
-  //  The Game Center account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountGameCenter Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateGameCenterRequest from the given FJsonObject.
-  static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateGameCenterRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Google.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateGoogleRequest
-{
-  GENERATED_BODY()
-
-  //  The Google account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountGoogle Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  // Creates a AuthenticateGoogleRequest from the given FJsonObject.
-  static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateGoogleRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Authenticate against the server with Steam.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAuthenticateSteamRequest
-{
-  GENERATED_BODY()
-
-  //  The Steam account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountSteam Account;
-
-  //  Register the account if the user does not already exist.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
-  FNakamaOptionalBool Create;
-
-  //  Set the username on the account at register. Must be unique.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
-  FString Username;
-
-  //  Import Steam friends for the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
-
-  // Creates a AuthenticateSteamRequest from the given FJsonObject.
-  static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this AuthenticateSteamRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Import Facebook friends into the current user's account.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaImportSteamFriendsRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountSteam Account;
-
-  //  Reset the current user's friends list.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "reset"))
-  FNakamaOptionalBool Reset;
-
-  // Creates a ImportSteamFriendsRequest from the given FJsonObject.
-  static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ImportSteamFriendsRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Link Steam to the current user's account.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaLinkSteamRequest
-{
-  GENERATED_BODY()
-
-  //  The Facebook account details.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
-  FNakamaAccountSteam Account;
-
-  //  Import Steam friends for the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sync"))
-  FNakamaOptionalBool Sync;
-
-  // Creates a LinkSteamRequest from the given FJsonObject.
-  static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this LinkSteamRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of channel messages, usually a result of a list operation.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaChannelMessageList
-{
-  GENERATED_BODY()
-
-  //  A list of messages.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "messages")) 
-  TArray<FNakamaChannelMessage> Messages;
-
-  //  The cursor to send when retrieving the next page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  FString NextCursor;
-
-  //  The cursor to send when retrieving the previous page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  FString PrevCursor;
-
-  //  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
-  FString CacheableCursor;
-
-  // Creates a ChannelMessageList from the given FJsonObject.
-  static FNakamaChannelMessageList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ChannelMessageList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Batch delete storage objects.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaDeleteStorageObjectsRequest
-{
-  GENERATED_BODY()
-
-  //  Batch of storage objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
-  TArray<FNakamaDeleteStorageObjectId> ObjectIds;
-
-  // Creates a DeleteStorageObjectsRequest from the given FJsonObject.
-  static FNakamaDeleteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this DeleteStorageObjectsRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  One or more groups returned from a listing operation.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaGroupList
-{
-  GENERATED_BODY()
-
-  //  One or more groups.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "groups")) 
-  TArray<FNakamaGroup> Groups;
-
-  //  A cursor used to get the next page.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a GroupList from the given FJsonObject.
-  static FNakamaGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this GroupList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A single group-role pair.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaUserGroupList_UserGroup
-{
-  GENERATED_BODY()
-
-  //  Group.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group"))
-  FNakamaGroup Group;
-
-  //  The user's relationship to the group.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State;
-
-  // Creates a UserGroupList_UserGroup from the given FJsonObject.
-  static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this UserGroupList_UserGroup to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of leaderboards
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaLeaderboardList
-{
-  GENERATED_BODY()
-
-  //  The list of leaderboards returned.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboards")) 
-  TArray<FNakamaLeaderboard> Leaderboards;
-
-  //  A pagination cursor (optional).
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a LeaderboardList from the given FJsonObject.
-  static FNakamaLeaderboardList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this LeaderboardList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaLeaderboardRecordList
-{
-  GENERATED_BODY()
-
-  //  A list of leaderboard records.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
-  TArray<FNakamaLeaderboardRecord> Records;
-
-  //  A batched set of leaderboard records belonging to specified owners.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
-  TArray<FNakamaLeaderboardRecord> OwnerRecords;
-
-  //  The cursor to send when retrieving the next page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  FString NextCursor;
-
-  //  The cursor to send when retrieving the previous page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  FString PrevCursor;
-
-  //  The total number of ranks available.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
-  int64 RankCount = 0;
-
-  // Creates a LeaderboardRecordList from the given FJsonObject.
-  static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this LeaderboardRecordList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A set of tournament records which may be part of a tournament records page or a batch of individual records.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaTournamentRecordList
-{
-  GENERATED_BODY()
-
-  //  A list of tournament records.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "records")) 
-  TArray<FNakamaLeaderboardRecord> Records;
-
-  //  A batched set of tournament records belonging to specified owners.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "owner_records")) 
-  TArray<FNakamaLeaderboardRecord> OwnerRecords;
-
-  //  The cursor to send when retireving the next page (optional).
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_cursor"))
-  FString NextCursor;
-
-  //  The cursor to send when retrieving the previous page (optional).
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  FString PrevCursor;
-
-  //  The total number of ranks available.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "rank_count"))
-  int64 RankCount = 0;
-
-  // Creates a TournamentRecordList from the given FJsonObject.
-  static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this TournamentRecordList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of realtime matches.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaMatchList
-{
-  GENERATED_BODY()
-
-  //  A number of matches corresponding to a list operation.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "matches")) 
-  TArray<FNakamaMatch> Matches;
-
-  // Creates a MatchList from the given FJsonObject.
-  static FNakamaMatchList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this MatchList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Matchmaker stats
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaMatchmakerStats
-{
-  GENERATED_BODY()
-
-  // 
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "ticket_count"))
-  int32 TicketCount = 0;
-
-  // 
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "oldest_ticket_create_time"))
-  FDateTime OldestTicketCreateTime;
-
-  // 
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "completions")) 
-  TArray<FNakamaMatchmakerCompletionStats> Completions;
-
-  // Creates a MatchmakerStats from the given FJsonObject.
-  static FNakamaMatchmakerStats FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this MatchmakerStats to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A collection of zero or more notifications.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaNotificationList
-{
-  GENERATED_BODY()
-
-  //  Collection of notifications.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "notifications")) 
-  TArray<FNakamaNotification> Notifications;
-
-  //  Use this cursor to paginate notifications. Cache this to catch up to new notifications.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cacheable_cursor"))
-  FString CacheableCursor;
-
-  // Creates a NotificationList from the given FJsonObject.
-  static FNakamaNotificationList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this NotificationList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Batch get storage objects.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaReadStorageObjectsRequest
-{
-  GENERATED_BODY()
-
-  //  Batch of storage objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "object_ids")) 
-  TArray<FNakamaReadStorageObjectId> ObjectIds;
-
-  // Creates a ReadStorageObjectsRequest from the given FJsonObject.
-  static FNakamaReadStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ReadStorageObjectsRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Batch of storage objects.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaStorageObjects
-{
-  GENERATED_BODY()
-
-  //  The batch of storage objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<FNakamaStorageObject> Objects;
-
-  // Creates a StorageObjects from the given FJsonObject.
-  static FNakamaStorageObjects FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this StorageObjects to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  List of storage objects.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaStorageObjectList
-{
-  GENERATED_BODY()
-
-  //  The list of storage objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<FNakamaStorageObject> Objects;
-
-  //  The cursor for the next page of results, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a StorageObjectList from the given FJsonObject.
-  static FNakamaStorageObjectList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this StorageObjectList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Batch of acknowledgements for the storage object write.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaStorageObjectAcks
-{
-  GENERATED_BODY()
-
-  //  Batch of storage write acknowledgements.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "acks")) 
-  TArray<FNakamaStorageObjectAck> Acks;
-
-  // Creates a StorageObjectAcks from the given FJsonObject.
-  static FNakamaStorageObjectAcks FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this StorageObjectAcks to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of tournaments.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaTournamentList
-{
-  GENERATED_BODY()
-
-  //  The list of tournaments returned.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournaments")) 
-  TArray<FNakamaTournament> Tournaments;
-
-  //  A pagination cursor (optional).
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a TournamentList from the given FJsonObject.
-  static FNakamaTournamentList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this TournamentList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Validate IAP response.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaValidatePurchaseResponse
-{
-  GENERATED_BODY()
-
-  //  Newly seen validated purchases.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
-  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
-
-  // Creates a ValidatePurchaseResponse from the given FJsonObject.
-  static FNakamaValidatePurchaseResponse FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ValidatePurchaseResponse to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of validated purchases stored by Nakama.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaPurchaseList
-{
-  GENERATED_BODY()
-
-  //  Stored validated purchases.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_purchases")) 
-  TArray<FNakamaValidatedPurchase> ValidatedPurchases;
-
-  //  The cursor to send when retrieving the next page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  //  The cursor to send when retrieving the previous page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  FString PrevCursor;
-
-  // Creates a PurchaseList from the given FJsonObject.
-  static FNakamaPurchaseList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this PurchaseList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Validate Subscription response.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaValidateSubscriptionResponse
-{
-  GENERATED_BODY()
-
-  // 
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscription"))
-  FNakamaValidatedSubscription ValidatedSubscription;
-
-  // Creates a ValidateSubscriptionResponse from the given FJsonObject.
-  static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this ValidateSubscriptionResponse to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of validated subscriptions stored by Nakama.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaSubscriptionList
-{
-  GENERATED_BODY()
-
-  //  Stored validated subscriptions.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "validated_subscriptions")) 
-  TArray<FNakamaValidatedSubscription> ValidatedSubscriptions;
-
-  //  The cursor to send when retrieving the next page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  //  The cursor to send when retrieving the previous page, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_cursor"))
-  FString PrevCursor;
-
-  // Creates a SubscriptionList from the given FJsonObject.
-  static FNakamaSubscriptionList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this SubscriptionList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A request to submit a score to a leaderboard.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaWriteLeaderboardRecordRequest
-{
-  GENERATED_BODY()
-
-  //  The ID of the leaderboard to write to.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "leaderboard_id"))
-  FString LeaderboardId;
-
-  //  Record input.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
-  FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
-
-  // Creates a WriteLeaderboardRecordRequest from the given FJsonObject.
-  static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this WriteLeaderboardRecordRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  Write objects to the storage engine.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaWriteStorageObjectsRequest
-{
-  GENERATED_BODY()
-
-  //  The objects to store on the server.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "objects")) 
-  TArray<FNakamaWriteStorageObject> Objects;
-
-  // Creates a WriteStorageObjectsRequest from the given FJsonObject.
-  static FNakamaWriteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this WriteStorageObjectsRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A request to submit a score to a tournament.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaWriteTournamentRecordRequest
-{
-  GENERATED_BODY()
-
-  //  The tournament ID to write the record for.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "tournament_id"))
-  FString TournamentId;
-
-  //  Record input.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "record"))
-  FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
-
-  // Creates a WriteTournamentRecordRequest from the given FJsonObject.
-  static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this WriteTournamentRecordRequest to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
 *  A list of realtime matches.
 */
 USTRUCT(BlueprintType)
@@ -3580,98 +3672,6 @@ struct NAKAMA_API FNakamaPartyList
   static FNakamaPartyList FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this PartyList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A collection of zero or more friends of the user.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaFriendList
-{
-  GENERATED_BODY()
-
-  //  The Friend objects.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends")) 
-  TArray<FNakamaFriend> Friends;
-
-  //  Cursor for the next page of results, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a FriendList from the given FJsonObject.
-  static FNakamaFriendList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this FriendList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A List of friends of friends
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaFriendsOfFriendsList
-{
-  GENERATED_BODY()
-
-  //  User friends of friends.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "friends_of_friends")) 
-  TArray<FNakamaFriendsOfFriendsList_FriendOfFriend> FriendsOfFriends;
-
-  //  Cursor for the next page of results, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a FriendsOfFriendsList from the given FJsonObject.
-  static FNakamaFriendsOfFriendsList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this FriendsOfFriendsList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of users belonging to a group, along with their role.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaGroupUserList
-{
-  GENERATED_BODY()
-
-  //  User-role pairs for a group.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "group_users")) 
-  TArray<FNakamaGroupUserList_GroupUser> GroupUsers;
-
-  //  Cursor for the next page of results, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a GroupUserList from the given FJsonObject.
-  static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this GroupUserList to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A list of groups belonging to a user, along with the user's role in each group.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaUserGroupList
-{
-  GENERATED_BODY()
-
-  //  Group-role pairs for a user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user_groups")) 
-  TArray<FNakamaUserGroupList_UserGroup> UserGroups;
-
-  //  Cursor for the next page of results, if any.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "cursor"))
-  FString Cursor;
-
-  // Creates a UserGroupList from the given FJsonObject.
-  static FNakamaUserGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this UserGroupList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 
