@@ -24,6 +24,7 @@
 #include "NakamaOptionals.h"
 #include "NakamaError.h"
 #include "NakamaApiRequestModel.h"
+#include "NakamaSession.h"
 #include "Nakama.gen.generated.h"
 
 {{/*--------------- ENUMS ---------------------*/}}
@@ -42,6 +43,7 @@ enum class E{{ $prefix }}{{ $enum.Name }} : uint8
 
 {{/*--------------- TYPES ---------------------*/}}
 {{ range $message := .Messages }}
+{{- if ne $message.Name "Session" }}
 
 /*
 * {{ $message.Comment }}
@@ -74,6 +76,7 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
   // Converts this {{ $message.Name }} to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
+{{- end }}
 {{- end }}
 
 {{/*--------------- RESPONSES (For Futures) ---------------------*/}}

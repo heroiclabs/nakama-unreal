@@ -19,6 +19,7 @@
 #include "CoreMinimal.h"
 #include "Nakama.gen.h"
 #include "NakamaClientConfig.h"
+#include "NakamaSession.h"
 #include "NakamaFuture.h"
 
 /** Retry configuration for transient error handling + session auto-refresh. */

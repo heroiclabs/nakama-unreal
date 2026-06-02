@@ -24,6 +24,7 @@
 #include "NakamaOptionals.h"
 #include "NakamaError.h"
 #include "NakamaApiRequestModel.h"
+#include "NakamaSession.h"
 #include "Nakama.gen.generated.h"
 
 
@@ -2579,33 +2580,6 @@ struct NAKAMA_API FNakamaRpc
   static FNakamaRpc FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this Rpc to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/*
-*  A user's session used to authenticate messages.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaSession
-{
-  GENERATED_BODY()
-
-  //  True if the corresponding account was just created, false otherwise.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "created"))
-  bool Created = false;
-
-  //  Authentication credentials.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "token"))
-  FString Token;
-
-  //  Refresh token that can be used for session token renewal.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "refresh_token"))
-  FString RefreshToken;
-
-  // Creates a Session from the given FJsonObject.
-  static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json);
-  
-  // Converts this Session to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 

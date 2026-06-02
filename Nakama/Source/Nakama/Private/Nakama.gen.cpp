@@ -19,7 +19,6 @@
 
 
 #include "Nakama.gen.h"
-#include "JsonObjectConverter.h"
 #include "NakamaHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
@@ -33,9 +32,77 @@ FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUser>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUser from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("display_name")))
+  {
+    Result.DisplayName = Json->GetStringField(TEXT("display_name"));
+  }
+  if (Json->HasField(TEXT("avatar_url")))
+  {
+    Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("location")))
+  {
+    Result.Location = Json->GetStringField(TEXT("location"));
+  }
+  if (Json->HasField(TEXT("timezone")))
+  {
+    Result.Timezone = Json->GetStringField(TEXT("timezone"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("facebook_id")))
+  {
+    Result.FacebookId = Json->GetStringField(TEXT("facebook_id"));
+  }
+  if (Json->HasField(TEXT("google_id")))
+  {
+    Result.GoogleId = Json->GetStringField(TEXT("google_id"));
+  }
+  if (Json->HasField(TEXT("gamecenter_id")))
+  {
+    Result.GamecenterId = Json->GetStringField(TEXT("gamecenter_id"));
+  }
+  if (Json->HasField(TEXT("steam_id")))
+  {
+    Result.SteamId = Json->GetStringField(TEXT("steam_id"));
+  }
+  if (Json->HasField(TEXT("online")))
+  {
+    Result.Online = Json->GetBoolField(TEXT("online"));
+  }
+  if (Json->HasField(TEXT("edge_count")))
+  {
+    Result.EdgeCount = Json->GetNumberField(TEXT("edge_count"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("facebook_instant_game_id")))
+  {
+    Result.FacebookInstantGameId = Json->GetStringField(TEXT("facebook_instant_game_id"));
+  }
+  if (Json->HasField(TEXT("apple_id")))
+  {
+    Result.AppleId = Json->GetStringField(TEXT("apple_id"));
   }
   return Result;
 }
@@ -113,9 +180,20 @@ FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountRefresh>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountRefresh from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -146,9 +224,20 @@ FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountApple>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountApple from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -179,9 +268,20 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountCustom>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountCustom from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -212,9 +312,20 @@ FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountDevice>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountDevice from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -245,9 +356,24 @@ FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountEmail>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("email")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountEmail from JSON"));
+    Result.Email = Json->GetStringField(TEXT("email"));
+  }
+  if (Json->HasField(TEXT("password")))
+  {
+    Result.Password = Json->GetStringField(TEXT("password"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -282,9 +408,20 @@ FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountFacebook>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountFacebook from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -315,9 +452,20 @@ FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(co
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountFacebookInstantGame>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("signed_player_info")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountFacebookInstantGame from JSON"));
+    Result.SignedPlayerInfo = Json->GetStringField(TEXT("signed_player_info"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -348,9 +496,40 @@ FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountGameCenter>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("player_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountGameCenter from JSON"));
+    Result.PlayerId = Json->GetStringField(TEXT("player_id"));
+  }
+  if (Json->HasField(TEXT("bundle_id")))
+  {
+    Result.BundleId = Json->GetStringField(TEXT("bundle_id"));
+  }
+  if (Json->HasField(TEXT("timestamp_seconds")))
+  {
+    Result.TimestampSeconds = Json->GetNumberField(TEXT("timestamp_seconds"));
+  }
+  if (Json->HasField(TEXT("salt")))
+  {
+    Result.Salt = Json->GetStringField(TEXT("salt"));
+  }
+  if (Json->HasField(TEXT("signature")))
+  {
+    Result.Signature = Json->GetStringField(TEXT("signature"));
+  }
+  if (Json->HasField(TEXT("public_key_url")))
+  {
+    Result.PublicKeyUrl = Json->GetStringField(TEXT("public_key_url"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -398,9 +577,20 @@ FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountGoogle>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountGoogle from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -431,9 +621,20 @@ FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccountSteam>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccountSteam from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -464,9 +665,48 @@ FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAccount>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAccount from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+    {
+      Result.User = FNakamaUser::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("wallet")))
+  {
+    Result.Wallet = Json->GetStringField(TEXT("wallet"));
+  }
+  if (Json->HasField(TEXT("email")))
+  {
+    Result.Email = Json->GetStringField(TEXT("email"));
+  }
+  if (Json->HasField(TEXT("devices")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("devices"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Devices.Add(FNakamaAccountDevice::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("custom_id")))
+  {
+    Result.CustomId = Json->GetStringField(TEXT("custom_id"));
+  }
+  if (Json->HasField(TEXT("verify_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("verify_time")), Result.VerifyTime);
+  }
+  if (Json->HasField(TEXT("disable_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("disable_time")), Result.DisableTime);
   }
   return Result;
 }
@@ -508,9 +748,31 @@ FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAddFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAddFriendsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Ids.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("usernames")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("usernames"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Usernames.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
   }
   return Result;
 }
@@ -550,9 +812,20 @@ FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAddGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAddGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.UserIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -583,9 +856,20 @@ FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaSessionRefreshRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaSessionRefreshRequest from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -616,9 +900,13 @@ FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaSessionLogoutRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("token")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaSessionLogoutRequest from JSON"));
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
+  if (Json->HasField(TEXT("refresh_token")))
+  {
+    Result.RefreshToken = Json->GetStringField(TEXT("refresh_token"));
   }
   return Result;
 }
@@ -644,9 +932,21 @@ FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateAppleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateAppleRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountApple::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -673,9 +973,21 @@ FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateCustomRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateCustomRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountCustom::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -702,9 +1014,21 @@ FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateDeviceRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateDeviceRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountDevice::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -731,9 +1055,21 @@ FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateEmailRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateEmailRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountEmail::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -760,9 +1096,25 @@ FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateFacebookRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateFacebookRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("sync")))
+  {
+    Result.Sync = Json->GetBoolField(TEXT("sync"));
   }
   return Result;
 }
@@ -793,9 +1145,21 @@ FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstant
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateFacebookInstantGameRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateFacebookInstantGameRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountFacebookInstantGame::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -822,9 +1186,21 @@ FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateGameCenterRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateGameCenterRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountGameCenter::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -851,9 +1227,21 @@ FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateGoogleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateGoogleRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountGoogle::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
   }
   return Result;
 }
@@ -880,9 +1268,25 @@ FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaAuthenticateSteamRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaAuthenticateSteamRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("sync")))
+  {
+    Result.Sync = Json->GetBoolField(TEXT("sync"));
   }
   return Result;
 }
@@ -913,9 +1317,20 @@ FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaBanGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaBanGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.UserIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -946,9 +1361,27 @@ FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaBlockFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaBlockFriendsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Ids.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("usernames")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("usernames"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Usernames.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -984,9 +1417,57 @@ FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaChannelMessage>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("channel_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaChannelMessage from JSON"));
+    Result.ChannelId = Json->GetStringField(TEXT("channel_id"));
+  }
+  if (Json->HasField(TEXT("message_id")))
+  {
+    Result.MessageId = Json->GetStringField(TEXT("message_id"));
+  }
+  if (Json->HasField(TEXT("code")))
+  {
+    Result.Code = Json->GetNumberField(TEXT("code"));
+  }
+  if (Json->HasField(TEXT("sender_id")))
+  {
+    Result.SenderId = Json->GetStringField(TEXT("sender_id"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("content")))
+  {
+    Result.Content = Json->GetStringField(TEXT("content"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("persistent")))
+  {
+    Result.Persistent = Json->GetBoolField(TEXT("persistent"));
+  }
+  if (Json->HasField(TEXT("room_name")))
+  {
+    Result.RoomName = Json->GetStringField(TEXT("room_name"));
+  }
+  if (Json->HasField(TEXT("group_id")))
+  {
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_id_one")))
+  {
+    Result.UserIdOne = Json->GetStringField(TEXT("user_id_one"));
+  }
+  if (Json->HasField(TEXT("user_id_two")))
+  {
+    Result.UserIdTwo = Json->GetStringField(TEXT("user_id_two"));
   }
   return Result;
 }
@@ -1050,9 +1531,32 @@ FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaChannelMessageList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("messages")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaChannelMessageList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("messages"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Messages.Add(FNakamaChannelMessage::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("next_cursor")))
+  {
+    Result.NextCursor = Json->GetStringField(TEXT("next_cursor"));
+  }
+  if (Json->HasField(TEXT("prev_cursor")))
+  {
+    Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
+  }
+  if (Json->HasField(TEXT("cacheable_cursor")))
+  {
+    Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"));
   }
   return Result;
 }
@@ -1091,9 +1595,29 @@ FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaCreateGroupRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("name")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaCreateGroupRequest from JSON"));
+    Result.Name = Json->GetStringField(TEXT("name"));
+  }
+  if (Json->HasField(TEXT("description")))
+  {
+    Result.Description = Json->GetStringField(TEXT("description"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("avatar_url")))
+  {
+    Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
+  }
+  if (Json->HasField(TEXT("max_count")))
+  {
+    Result.MaxCount = Json->GetNumberField(TEXT("max_count"));
   }
   return Result;
 }
@@ -1129,9 +1653,27 @@ FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteFriendsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Ids.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("usernames")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("usernames"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Usernames.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -1167,9 +1709,9 @@ FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteGroupRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteGroupRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
   }
   return Result;
 }
@@ -1191,9 +1733,9 @@ FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::Fro
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteLeaderboardRecordRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboard_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteLeaderboardRecordRequest from JSON"));
+    Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
   }
   return Result;
 }
@@ -1215,9 +1757,16 @@ FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(co
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteNotificationsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteNotificationsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Ids.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -1244,9 +1793,9 @@ FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteTournamentRecordRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournament_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteTournamentRecordRequest from JSON"));
+    Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
   }
   return Result;
 }
@@ -1268,9 +1817,17 @@ FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteStorageObjectId>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("collection")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteStorageObjectId from JSON"));
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("key")))
+  {
+    Result.Key = Json->GetStringField(TEXT("key"));
+  }
+  if (Json->HasField(TEXT("version")))
+  {
+    Result.Version = Json->GetStringField(TEXT("version"));
   }
   return Result;
 }
@@ -1300,9 +1857,20 @@ FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDeleteStorageObjectsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("object_ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDeleteStorageObjectsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("object_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.ObjectIds.Add(FNakamaDeleteStorageObjectId::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -1329,9 +1897,28 @@ FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaEvent>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("name")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaEvent from JSON"));
+    Result.Name = Json->GetStringField(TEXT("name"));
+  }
+  if (Json->HasField(TEXT("timestamp")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("timestamp")), Result.Timestamp);
+  }
+  if (Json->HasField(TEXT("external")))
+  {
+    Result.External = Json->GetBoolField(TEXT("external"));
+  }
+  if (Json->HasField(TEXT("properties")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("properties"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Properties.Add(Pair.Key, Pair.Value->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -1364,9 +1951,25 @@ FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriend>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriend from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+    {
+      Result.User = FNakamaUser::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
   }
   return Result;
 }
@@ -1394,9 +1997,24 @@ FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Jso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriendList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("friends")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriendList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("friends"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Friends.Add(FNakamaFriend::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -1427,9 +2045,17 @@ FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfF
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriendsOfFriendsList_FriendOfFriend>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("referrer")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriendsOfFriendsList_FriendOfFriend from JSON"));
+    Result.Referrer = Json->GetStringField(TEXT("referrer"));
+  }
+  if (Json->HasField(TEXT("user")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+    {
+      Result.User = FNakamaUser::FromJson(*NestedObj);
+    }
   }
   return Result;
 }
@@ -1452,9 +2078,24 @@ FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaFriendsOfFriendsList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("friends_of_friends")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaFriendsOfFriendsList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("friends_of_friends"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.FriendsOfFriends.Add(FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -1485,9 +2126,38 @@ FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGetUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGetUsersRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Ids.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("usernames")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("usernames"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.Usernames.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("facebook_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("facebook_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.FacebookIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -1532,9 +2202,9 @@ FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSha
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGetSubscriptionRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("product_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGetSubscriptionRequest from JSON"));
+    Result.ProductId = Json->GetStringField(TEXT("product_id"));
   }
   return Result;
 }
@@ -1556,9 +2226,53 @@ FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroup>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroup from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("creator_id")))
+  {
+    Result.CreatorId = Json->GetStringField(TEXT("creator_id"));
+  }
+  if (Json->HasField(TEXT("name")))
+  {
+    Result.Name = Json->GetStringField(TEXT("name"));
+  }
+  if (Json->HasField(TEXT("description")))
+  {
+    Result.Description = Json->GetStringField(TEXT("description"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("avatar_url")))
+  {
+    Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
+  }
+  if (Json->HasField(TEXT("edge_count")))
+  {
+    Result.EdgeCount = Json->GetNumberField(TEXT("edge_count"));
+  }
+  if (Json->HasField(TEXT("max_count")))
+  {
+    Result.MaxCount = Json->GetNumberField(TEXT("max_count"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -1612,9 +2326,24 @@ FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroupList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("groups")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroupList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("groups"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Groups.Add(FNakamaGroup::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -1645,9 +2374,17 @@ FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TS
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroupUserList_GroupUser>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroupUserList_GroupUser from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+    {
+      Result.User = FNakamaUser::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
   }
   return Result;
 }
@@ -1670,9 +2407,24 @@ FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaGroupUserList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_users")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaGroupUserList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("group_users"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.GroupUsers.Add(FNakamaGroupUserList_GroupUser::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -1703,9 +2455,17 @@ FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaImportFacebookFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaImportFacebookFriendsRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("reset")))
+  {
+    Result.Reset = Json->GetBoolField(TEXT("reset"));
   }
   return Result;
 }
@@ -1728,9 +2488,17 @@ FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaImportSteamFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaImportSteamFriendsRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("reset")))
+  {
+    Result.Reset = Json->GetBoolField(TEXT("reset"));
   }
   return Result;
 }
@@ -1753,9 +2521,9 @@ FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaJoinGroupRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaJoinGroupRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
   }
   return Result;
 }
@@ -1777,9 +2545,9 @@ FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaJoinTournamentRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournament_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaJoinTournamentRequest from JSON"));
+    Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
   }
   return Result;
 }
@@ -1801,9 +2569,20 @@ FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaKickGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaKickGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.UserIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -1834,9 +2613,37 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaderboard>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaderboard from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("sort_order")))
+  {
+    Result.SortOrder = Json->GetNumberField(TEXT("sort_order"));
+  }
+  if (Json->HasField(TEXT("operator")))
+  {
+    Result.Operator = static_cast<ENakamaOperator>(Json->GetNumberField(TEXT("operator")));
+  }
+  if (Json->HasField(TEXT("prev_reset")))
+  {
+    Result.PrevReset = Json->GetNumberField(TEXT("prev_reset"));
+  }
+  if (Json->HasField(TEXT("next_reset")))
+  {
+    Result.NextReset = Json->GetNumberField(TEXT("next_reset"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("authoritative")))
+  {
+    Result.Authoritative = Json->GetBoolField(TEXT("authoritative"));
   }
   return Result;
 }
@@ -1868,9 +2675,24 @@ FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaderboardList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboards")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaderboardList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("leaderboards"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Leaderboards.Add(FNakamaLeaderboard::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -1901,9 +2723,53 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaderboardRecord>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboard_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaderboardRecord from JSON"));
+    Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
+  }
+  if (Json->HasField(TEXT("owner_id")))
+  {
+    Result.OwnerId = Json->GetStringField(TEXT("owner_id"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("score")))
+  {
+    Result.Score = Json->GetNumberField(TEXT("score"));
+  }
+  if (Json->HasField(TEXT("subscore")))
+  {
+    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+  }
+  if (Json->HasField(TEXT("num_score")))
+  {
+    Result.NumScore = Json->GetNumberField(TEXT("num_score"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("expiry_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("expiry_time")), Result.ExpiryTime);
+  }
+  if (Json->HasField(TEXT("rank")))
+  {
+    Result.Rank = Json->GetNumberField(TEXT("rank"));
+  }
+  if (Json->HasField(TEXT("max_num_score")))
+  {
+    Result.MaxNumScore = Json->GetNumberField(TEXT("max_num_score"));
   }
   return Result;
 }
@@ -1945,9 +2811,47 @@ FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaderboardRecordList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("records")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaderboardRecordList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("records"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Records.Add(FNakamaLeaderboardRecord::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("owner_records")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("owner_records"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.OwnerRecords.Add(FNakamaLeaderboardRecord::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("next_cursor")))
+  {
+    Result.NextCursor = Json->GetStringField(TEXT("next_cursor"));
+  }
+  if (Json->HasField(TEXT("prev_cursor")))
+  {
+    Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
+  }
+  if (Json->HasField(TEXT("rank_count")))
+  {
+    Result.RankCount = Json->GetNumberField(TEXT("rank_count"));
   }
   return Result;
 }
@@ -1992,9 +2896,9 @@ FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLeaveGroupRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLeaveGroupRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
   }
   return Result;
 }
@@ -2016,9 +2920,17 @@ FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLinkFacebookRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLinkFacebookRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("sync")))
+  {
+    Result.Sync = Json->GetBoolField(TEXT("sync"));
   }
   return Result;
 }
@@ -2041,9 +2953,17 @@ FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaLinkSteamRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("account")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaLinkSteamRequest from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("sync")))
+  {
+    Result.Sync = Json->GetBoolField(TEXT("sync"));
   }
   return Result;
 }
@@ -2066,9 +2986,21 @@ FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(co
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListChannelMessagesRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("channel_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListChannelMessagesRequest from JSON"));
+    Result.ChannelId = Json->GetStringField(TEXT("channel_id"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("forward")))
+  {
+    Result.Forward = Json->GetBoolField(TEXT("forward"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2102,9 +3034,17 @@ FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListFriendsRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2134,9 +3074,13 @@ FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListFriendsOfFriendsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListFriendsOfFriendsRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2162,9 +3106,29 @@ FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListGroupsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("name")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListGroupsRequest from JSON"));
+    Result.Name = Json->GetStringField(TEXT("name"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("members")))
+  {
+    Result.Members = Json->GetNumberField(TEXT("members"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
   }
   return Result;
 }
@@ -2206,9 +3170,21 @@ FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2242,9 +3218,25 @@ FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAro
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListLeaderboardRecordsAroundOwnerRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboard_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListLeaderboardRecordsAroundOwnerRequest from JSON"));
+    Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("owner_id")))
+  {
+    Result.OwnerId = Json->GetStringField(TEXT("owner_id"));
+  }
+  if (Json->HasField(TEXT("expiry")))
+  {
+    Result.Expiry = Json->GetNumberField(TEXT("expiry"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2282,9 +3274,32 @@ FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListLeaderboardRecordsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboard_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListLeaderboardRecordsRequest from JSON"));
+    Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
+  }
+  if (Json->HasField(TEXT("owner_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("owner_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.OwnerIds.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
+  }
+  if (Json->HasField(TEXT("expiry")))
+  {
+    Result.Expiry = Json->GetNumberField(TEXT("expiry"));
   }
   return Result;
 }
@@ -2327,9 +3342,29 @@ FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListMatchesRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListMatchesRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("authoritative")))
+  {
+    Result.Authoritative = Json->GetBoolField(TEXT("authoritative"));
+  }
+  if (Json->HasField(TEXT("label")))
+  {
+    Result.Label = Json->GetStringField(TEXT("label"));
+  }
+  if (Json->HasField(TEXT("min_size")))
+  {
+    Result.MinSize = Json->GetNumberField(TEXT("min_size"));
+  }
+  if (Json->HasField(TEXT("max_size")))
+  {
+    Result.MaxSize = Json->GetNumberField(TEXT("max_size"));
+  }
+  if (Json->HasField(TEXT("query")))
+  {
+    Result.Query = Json->GetStringField(TEXT("query"));
   }
   return Result;
 }
@@ -2371,9 +3406,13 @@ FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListNotificationsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListNotificationsRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cacheable_cursor")))
+  {
+    Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"));
   }
   return Result;
 }
@@ -2399,9 +3438,21 @@ FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListStorageObjectsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListStorageObjectsRequest from JSON"));
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("collection")))
+  {
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2435,9 +3486,13 @@ FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListSubscriptionsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListSubscriptionsRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2463,9 +3518,25 @@ FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroun
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListTournamentRecordsAroundOwnerRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournament_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListTournamentRecordsAroundOwnerRequest from JSON"));
+    Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("owner_id")))
+  {
+    Result.OwnerId = Json->GetStringField(TEXT("owner_id"));
+  }
+  if (Json->HasField(TEXT("expiry")))
+  {
+    Result.Expiry = Json->GetNumberField(TEXT("expiry"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2503,9 +3574,32 @@ FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListTournamentRecordsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournament_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListTournamentRecordsRequest from JSON"));
+    Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
+  }
+  if (Json->HasField(TEXT("owner_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("owner_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.OwnerIds.Add(Item->AsString());
+      }
+    }
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
+  }
+  if (Json->HasField(TEXT("expiry")))
+  {
+    Result.Expiry = Json->GetNumberField(TEXT("expiry"));
   }
   return Result;
 }
@@ -2548,9 +3642,29 @@ FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSha
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListTournamentsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("category_start")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListTournamentsRequest from JSON"));
+    Result.CategoryStart = Json->GetNumberField(TEXT("category_start"));
+  }
+  if (Json->HasField(TEXT("category_end")))
+  {
+    Result.CategoryEnd = Json->GetNumberField(TEXT("category_end"));
+  }
+  if (Json->HasField(TEXT("start_time")))
+  {
+    Result.StartTime = Json->GetNumberField(TEXT("start_time"));
+  }
+  if (Json->HasField(TEXT("end_time")))
+  {
+    Result.EndTime = Json->GetNumberField(TEXT("end_time"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2592,9 +3706,21 @@ FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListUserGroupsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListUserGroupsRequest from JSON"));
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("limit")))
+  {
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -2628,9 +3754,29 @@ FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaMatch>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("match_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaMatch from JSON"));
+    Result.MatchId = Json->GetStringField(TEXT("match_id"));
+  }
+  if (Json->HasField(TEXT("authoritative")))
+  {
+    Result.Authoritative = Json->GetBoolField(TEXT("authoritative"));
+  }
+  if (Json->HasField(TEXT("label")))
+  {
+    Result.Label = Json->GetStringField(TEXT("label"));
+  }
+  if (Json->HasField(TEXT("size")))
+  {
+    Result.Size = Json->GetNumberField(TEXT("size"));
+  }
+  if (Json->HasField(TEXT("tick_rate")))
+  {
+    Result.TickRate = Json->GetNumberField(TEXT("tick_rate"));
+  }
+  if (Json->HasField(TEXT("handler_name")))
+  {
+    Result.HandlerName = Json->GetStringField(TEXT("handler_name"));
   }
   return Result;
 }
@@ -2663,9 +3809,20 @@ FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaMatchList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("matches")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaMatchList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("matches"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Matches.Add(FNakamaMatch::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -2692,9 +3849,13 @@ FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaMatchmakerCompletionStats>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("create_time")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaMatchmakerCompletionStats from JSON"));
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("complete_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("complete_time")), Result.CompleteTime);
   }
   return Result;
 }
@@ -2714,9 +3875,28 @@ FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaMatchmakerStats>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("ticket_count")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaMatchmakerStats from JSON"));
+    Result.TicketCount = Json->GetNumberField(TEXT("ticket_count"));
+  }
+  if (Json->HasField(TEXT("oldest_ticket_create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("oldest_ticket_create_time")), Result.OldestTicketCreateTime);
+  }
+  if (Json->HasField(TEXT("completions")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("completions"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Completions.Add(FNakamaMatchmakerCompletionStats::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -2745,9 +3925,33 @@ FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaNotification>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaNotification from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("subject")))
+  {
+    Result.Subject = Json->GetStringField(TEXT("subject"));
+  }
+  if (Json->HasField(TEXT("content")))
+  {
+    Result.Content = Json->GetStringField(TEXT("content"));
+  }
+  if (Json->HasField(TEXT("code")))
+  {
+    Result.Code = Json->GetNumberField(TEXT("code"));
+  }
+  if (Json->HasField(TEXT("sender_id")))
+  {
+    Result.SenderId = Json->GetStringField(TEXT("sender_id"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("persistent")))
+  {
+    Result.Persistent = Json->GetBoolField(TEXT("persistent"));
   }
   return Result;
 }
@@ -2784,9 +3988,24 @@ FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaNotificationList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("notifications")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaNotificationList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("notifications"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Notifications.Add(FNakamaNotification::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cacheable_cursor")))
+  {
+    Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"));
   }
   return Result;
 }
@@ -2817,9 +4036,20 @@ FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaPromoteGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaPromoteGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.UserIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -2850,9 +4080,20 @@ FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TS
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaDemoteGroupUsersRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaDemoteGroupUsersRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("user_ids")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        Result.UserIds.Add(Item->AsString());
+      }
+    }
   }
   return Result;
 }
@@ -2883,9 +4124,17 @@ FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaReadStorageObjectId>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("collection")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaReadStorageObjectId from JSON"));
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("key")))
+  {
+    Result.Key = Json->GetStringField(TEXT("key"));
+  }
+  if (Json->HasField(TEXT("user_id")))
+  {
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
   }
   return Result;
 }
@@ -2915,9 +4164,20 @@ FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(cons
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaReadStorageObjectsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("object_ids")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaReadStorageObjectsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("object_ids"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.ObjectIds.Add(FNakamaReadStorageObjectId::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -2944,9 +4204,17 @@ FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaRpc>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaRpc from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("payload")))
+  {
+    Result.Payload = Json->GetStringField(TEXT("payload"));
+  }
+  if (Json->HasField(TEXT("http_key")))
+  {
+    Result.HttpKey = Json->GetStringField(TEXT("http_key"));
   }
   return Result;
 }
@@ -2969,35 +4237,6 @@ TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const
   return Json;
 }
 
-FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-  FNakamaSession Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaSession>(Json.ToSharedRef(), &Result, 0, 0))
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaSession from JSON"));
-  }
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
-{
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  Json->SetBoolField(TEXT("created"), Created);
-  if (Token.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), Token);
-  }
-  if (RefreshToken.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("refresh_token"), RefreshToken);
-  }
-  return Json;
-}
-
 FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObject Result;
@@ -3005,9 +4244,41 @@ FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaStorageObject>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("collection")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaStorageObject from JSON"));
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("key")))
+  {
+    Result.Key = Json->GetStringField(TEXT("key"));
+  }
+  if (Json->HasField(TEXT("user_id")))
+  {
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("value")))
+  {
+    Result.Value = Json->GetStringField(TEXT("value"));
+  }
+  if (Json->HasField(TEXT("version")))
+  {
+    Result.Version = Json->GetStringField(TEXT("version"));
+  }
+  if (Json->HasField(TEXT("permission_read")))
+  {
+    Result.PermissionRead = Json->GetNumberField(TEXT("permission_read"));
+  }
+  if (Json->HasField(TEXT("permission_write")))
+  {
+    Result.PermissionWrite = Json->GetNumberField(TEXT("permission_write"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -3049,9 +4320,29 @@ FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaStorageObjectAck>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("collection")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaStorageObjectAck from JSON"));
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("key")))
+  {
+    Result.Key = Json->GetStringField(TEXT("key"));
+  }
+  if (Json->HasField(TEXT("version")))
+  {
+    Result.Version = Json->GetStringField(TEXT("version"));
+  }
+  if (Json->HasField(TEXT("user_id")))
+  {
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
   }
   return Result;
 }
@@ -3087,9 +4378,20 @@ FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaStorageObjectAcks>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("acks")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaStorageObjectAcks from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("acks"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Acks.Add(FNakamaStorageObjectAck::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -3116,9 +4418,20 @@ FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaStorageObjects>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("objects")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaStorageObjects from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("objects"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Objects.Add(FNakamaStorageObject::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -3145,9 +4458,24 @@ FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaStorageObjectList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("objects")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaStorageObjectList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("objects"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Objects.Add(FNakamaStorageObject::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -3178,9 +4506,89 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaTournament>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaTournament from JSON"));
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("title")))
+  {
+    Result.Title = Json->GetStringField(TEXT("title"));
+  }
+  if (Json->HasField(TEXT("description")))
+  {
+    Result.Description = Json->GetStringField(TEXT("description"));
+  }
+  if (Json->HasField(TEXT("category")))
+  {
+    Result.Category = Json->GetNumberField(TEXT("category"));
+  }
+  if (Json->HasField(TEXT("sort_order")))
+  {
+    Result.SortOrder = Json->GetNumberField(TEXT("sort_order"));
+  }
+  if (Json->HasField(TEXT("size")))
+  {
+    Result.Size = Json->GetNumberField(TEXT("size"));
+  }
+  if (Json->HasField(TEXT("max_size")))
+  {
+    Result.MaxSize = Json->GetNumberField(TEXT("max_size"));
+  }
+  if (Json->HasField(TEXT("max_num_score")))
+  {
+    Result.MaxNumScore = Json->GetNumberField(TEXT("max_num_score"));
+  }
+  if (Json->HasField(TEXT("can_enter")))
+  {
+    Result.CanEnter = Json->GetBoolField(TEXT("can_enter"));
+  }
+  if (Json->HasField(TEXT("end_active")))
+  {
+    Result.EndActive = Json->GetNumberField(TEXT("end_active"));
+  }
+  if (Json->HasField(TEXT("next_reset")))
+  {
+    Result.NextReset = Json->GetNumberField(TEXT("next_reset"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("start_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("start_time")), Result.StartTime);
+  }
+  if (Json->HasField(TEXT("end_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("end_time")), Result.EndTime);
+  }
+  if (Json->HasField(TEXT("duration")))
+  {
+    Result.Duration = Json->GetNumberField(TEXT("duration"));
+  }
+  if (Json->HasField(TEXT("start_active")))
+  {
+    Result.StartActive = Json->GetNumberField(TEXT("start_active"));
+  }
+  if (Json->HasField(TEXT("prev_reset")))
+  {
+    Result.PrevReset = Json->GetNumberField(TEXT("prev_reset"));
+  }
+  if (Json->HasField(TEXT("operator")))
+  {
+    Result.Operator = static_cast<ENakamaOperator>(Json->GetNumberField(TEXT("operator")));
+  }
+  if (Json->HasField(TEXT("authoritative")))
+  {
+    Result.Authoritative = Json->GetBoolField(TEXT("authoritative"));
+  }
+  if (Json->HasField(TEXT("join_required")))
+  {
+    Result.JoinRequired = Json->GetBoolField(TEXT("join_required"));
   }
   return Result;
 }
@@ -3231,9 +4639,24 @@ FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaTournamentList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournaments")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaTournamentList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("tournaments"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Tournaments.Add(FNakamaTournament::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -3264,9 +4687,47 @@ FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaTournamentRecordList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("records")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaTournamentRecordList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("records"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Records.Add(FNakamaLeaderboardRecord::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("owner_records")))
+  {
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("owner_records"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.OwnerRecords.Add(FNakamaLeaderboardRecord::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("next_cursor")))
+  {
+    Result.NextCursor = Json->GetStringField(TEXT("next_cursor"));
+  }
+  if (Json->HasField(TEXT("prev_cursor")))
+  {
+    Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
+  }
+  if (Json->HasField(TEXT("rank_count")))
+  {
+    Result.RankCount = Json->GetNumberField(TEXT("rank_count"));
   }
   return Result;
 }
@@ -3311,9 +4772,29 @@ FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUpdateAccountRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("username")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUpdateAccountRequest from JSON"));
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  if (Json->HasField(TEXT("display_name")))
+  {
+    Result.DisplayName = Json->GetStringField(TEXT("display_name"));
+  }
+  if (Json->HasField(TEXT("avatar_url")))
+  {
+    Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("location")))
+  {
+    Result.Location = Json->GetStringField(TEXT("location"));
+  }
+  if (Json->HasField(TEXT("timezone")))
+  {
+    Result.Timezone = Json->GetStringField(TEXT("timezone"));
   }
   return Result;
 }
@@ -3355,9 +4836,29 @@ FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUpdateGroupRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUpdateGroupRequest from JSON"));
+    Result.GroupId = Json->GetStringField(TEXT("group_id"));
+  }
+  if (Json->HasField(TEXT("name")))
+  {
+    Result.Name = Json->GetStringField(TEXT("name"));
+  }
+  if (Json->HasField(TEXT("description")))
+  {
+    Result.Description = Json->GetStringField(TEXT("description"));
+  }
+  if (Json->HasField(TEXT("lang_tag")))
+  {
+    Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+  }
+  if (Json->HasField(TEXT("avatar_url")))
+  {
+    Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
   }
   return Result;
 }
@@ -3399,9 +4900,17 @@ FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TS
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUserGroupList_UserGroup>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("group")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUserGroupList_UserGroup from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("group"), NestedObj))
+    {
+      Result.Group = FNakamaGroup::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("state")))
+  {
+    Result.State = Json->GetNumberField(TEXT("state"));
   }
   return Result;
 }
@@ -3424,9 +4933,24 @@ FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUserGroupList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user_groups")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUserGroupList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("user_groups"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.UserGroups.Add(FNakamaUserGroupList_UserGroup::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -3457,9 +4981,20 @@ FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaUsers>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("users")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaUsers from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("users"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Users.Add(FNakamaUser::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -3486,9 +5021,13 @@ FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatePurchaseAppleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("receipt")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatePurchaseAppleRequest from JSON"));
+    Result.Receipt = Json->GetStringField(TEXT("receipt"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3514,9 +5053,13 @@ FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest:
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidateSubscriptionAppleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("receipt")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidateSubscriptionAppleRequest from JSON"));
+    Result.Receipt = Json->GetStringField(TEXT("receipt"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3542,9 +5085,13 @@ FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatePurchaseGoogleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("purchase")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatePurchaseGoogleRequest from JSON"));
+    Result.Purchase = Json->GetStringField(TEXT("purchase"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3570,9 +5117,13 @@ FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleReques
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidateSubscriptionGoogleRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("receipt")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidateSubscriptionGoogleRequest from JSON"));
+    Result.Receipt = Json->GetStringField(TEXT("receipt"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3598,9 +5149,17 @@ FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatePurchaseHuaweiRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("purchase")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatePurchaseHuaweiRequest from JSON"));
+    Result.Purchase = Json->GetStringField(TEXT("purchase"));
+  }
+  if (Json->HasField(TEXT("signature")))
+  {
+    Result.Signature = Json->GetStringField(TEXT("signature"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3630,9 +5189,13 @@ FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookIns
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatePurchaseFacebookInstantRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("signed_request")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatePurchaseFacebookInstantRequest from JSON"));
+    Result.SignedRequest = Json->GetStringField(TEXT("signed_request"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
   }
   return Result;
 }
@@ -3658,9 +5221,49 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatedPurchase>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatedPurchase from JSON"));
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("product_id")))
+  {
+    Result.ProductId = Json->GetStringField(TEXT("product_id"));
+  }
+  if (Json->HasField(TEXT("transaction_id")))
+  {
+    Result.TransactionId = Json->GetStringField(TEXT("transaction_id"));
+  }
+  if (Json->HasField(TEXT("store")))
+  {
+    Result.Store = static_cast<ENakamaStoreProvider>(Json->GetNumberField(TEXT("store")));
+  }
+  if (Json->HasField(TEXT("purchase_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("purchase_time")), Result.PurchaseTime);
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("refund_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("refund_time")), Result.RefundTime);
+  }
+  if (Json->HasField(TEXT("provider_response")))
+  {
+    Result.ProviderResponse = Json->GetStringField(TEXT("provider_response"));
+  }
+  if (Json->HasField(TEXT("environment")))
+  {
+    Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetNumberField(TEXT("environment")));
+  }
+  if (Json->HasField(TEXT("seen_before")))
+  {
+    Result.SeenBefore = Json->GetBoolField(TEXT("seen_before"));
   }
   return Result;
 }
@@ -3701,9 +5304,20 @@ FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const 
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatePurchaseResponse>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("validated_purchases")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatePurchaseResponse from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("validated_purchases"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.ValidatedPurchases.Add(FNakamaValidatedPurchase::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -3730,9 +5344,57 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidatedSubscription>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("user_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidatedSubscription from JSON"));
+    Result.UserId = Json->GetStringField(TEXT("user_id"));
+  }
+  if (Json->HasField(TEXT("product_id")))
+  {
+    Result.ProductId = Json->GetStringField(TEXT("product_id"));
+  }
+  if (Json->HasField(TEXT("original_transaction_id")))
+  {
+    Result.OriginalTransactionId = Json->GetStringField(TEXT("original_transaction_id"));
+  }
+  if (Json->HasField(TEXT("store")))
+  {
+    Result.Store = static_cast<ENakamaStoreProvider>(Json->GetNumberField(TEXT("store")));
+  }
+  if (Json->HasField(TEXT("purchase_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("purchase_time")), Result.PurchaseTime);
+  }
+  if (Json->HasField(TEXT("create_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("create_time")), Result.CreateTime);
+  }
+  if (Json->HasField(TEXT("update_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("update_time")), Result.UpdateTime);
+  }
+  if (Json->HasField(TEXT("environment")))
+  {
+    Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetNumberField(TEXT("environment")));
+  }
+  if (Json->HasField(TEXT("expiry_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("expiry_time")), Result.ExpiryTime);
+  }
+  if (Json->HasField(TEXT("refund_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("refund_time")), Result.RefundTime);
+  }
+  if (Json->HasField(TEXT("provider_response")))
+  {
+    Result.ProviderResponse = Json->GetStringField(TEXT("provider_response"));
+  }
+  if (Json->HasField(TEXT("provider_notification")))
+  {
+    Result.ProviderNotification = Json->GetStringField(TEXT("provider_notification"));
+  }
+  if (Json->HasField(TEXT("active")))
+  {
+    Result.Active = Json->GetBoolField(TEXT("active"));
   }
   return Result;
 }
@@ -3778,9 +5440,13 @@ FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaValidateSubscriptionResponse>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("validated_subscription")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaValidateSubscriptionResponse from JSON"));
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("validated_subscription"), NestedObj))
+    {
+      Result.ValidatedSubscription = FNakamaValidatedSubscription::FromJson(*NestedObj);
+    }
   }
   return Result;
 }
@@ -3799,9 +5465,28 @@ FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaPurchaseList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("validated_purchases")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaPurchaseList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("validated_purchases"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.ValidatedPurchases.Add(FNakamaValidatedPurchase::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
+  }
+  if (Json->HasField(TEXT("prev_cursor")))
+  {
+    Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
   }
   return Result;
 }
@@ -3836,9 +5521,28 @@ FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaSubscriptionList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("validated_subscriptions")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaSubscriptionList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("validated_subscriptions"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.ValidatedSubscriptions.Add(FNakamaValidatedSubscription::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
+  }
+  if (Json->HasField(TEXT("prev_cursor")))
+  {
+    Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
   }
   return Result;
 }
@@ -3873,9 +5577,21 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("score")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite from JSON"));
+    Result.Score = Json->GetNumberField(TEXT("score"));
+  }
+  if (Json->HasField(TEXT("subscore")))
+  {
+    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("operator")))
+  {
+    Result.Operator = static_cast<ENakamaOperator>(Json->GetNumberField(TEXT("operator")));
   }
   return Result;
 }
@@ -3900,9 +5616,17 @@ FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJ
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteLeaderboardRecordRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("leaderboard_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteLeaderboardRecordRequest from JSON"));
+    Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
+  }
+  if (Json->HasField(TEXT("record")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("record"), NestedObj))
+    {
+      Result.Record = FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(*NestedObj);
+    }
   }
   return Result;
 }
@@ -3925,9 +5649,29 @@ FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteStorageObject>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("collection")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteStorageObject from JSON"));
+    Result.Collection = Json->GetStringField(TEXT("collection"));
+  }
+  if (Json->HasField(TEXT("key")))
+  {
+    Result.Key = Json->GetStringField(TEXT("key"));
+  }
+  if (Json->HasField(TEXT("value")))
+  {
+    Result.Value = Json->GetStringField(TEXT("value"));
+  }
+  if (Json->HasField(TEXT("version")))
+  {
+    Result.Version = Json->GetStringField(TEXT("version"));
+  }
+  if (Json->HasField(TEXT("permission_read")))
+  {
+    Result.PermissionRead = Json->GetNumberField(TEXT("permission_read"));
+  }
+  if (Json->HasField(TEXT("permission_write")))
+  {
+    Result.PermissionWrite = Json->GetNumberField(TEXT("permission_write"));
   }
   return Result;
 }
@@ -3969,9 +5713,20 @@ FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(co
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteStorageObjectsRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("objects")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteStorageObjectsRequest from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("objects"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Objects.Add(FNakamaWriteStorageObject::FromJson(*ItemObj));
+        }
+      }
+    }
   }
   return Result;
 }
@@ -3998,9 +5753,21 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteTournamentRecordRequest_TournamentRecordWrite>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("score")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteTournamentRecordRequest_TournamentRecordWrite from JSON"));
+    Result.Score = Json->GetNumberField(TEXT("score"));
+  }
+  if (Json->HasField(TEXT("subscore")))
+  {
+    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+  }
+  if (Json->HasField(TEXT("metadata")))
+  {
+    Result.Metadata = Json->GetStringField(TEXT("metadata"));
+  }
+  if (Json->HasField(TEXT("operator")))
+  {
+    Result.Operator = static_cast<ENakamaOperator>(Json->GetNumberField(TEXT("operator")));
   }
   return Result;
 }
@@ -4025,9 +5792,17 @@ FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJso
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaWriteTournamentRecordRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("tournament_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaWriteTournamentRecordRequest from JSON"));
+    Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
+  }
+  if (Json->HasField(TEXT("record")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("record"), NestedObj))
+    {
+      Result.Record = FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(*NestedObj);
+    }
   }
   return Result;
 }
@@ -4050,9 +5825,21 @@ FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<F
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaListPartiesRequest>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("limit")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaListPartiesRequest from JSON"));
+    Result.Limit = Json->GetNumberField(TEXT("limit"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
+  }
+  if (Json->HasField(TEXT("query")))
+  {
+    Result.Query = Json->GetStringField(TEXT("query"));
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }
@@ -4086,9 +5873,25 @@ FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaParty>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("party_id")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaParty from JSON"));
+    Result.PartyId = Json->GetStringField(TEXT("party_id"));
+  }
+  if (Json->HasField(TEXT("open")))
+  {
+    Result.Open = Json->GetBoolField(TEXT("open"));
+  }
+  if (Json->HasField(TEXT("hidden")))
+  {
+    Result.Hidden = Json->GetBoolField(TEXT("hidden"));
+  }
+  if (Json->HasField(TEXT("max_size")))
+  {
+    Result.MaxSize = Json->GetNumberField(TEXT("max_size"));
+  }
+  if (Json->HasField(TEXT("label")))
+  {
+    Result.Label = Json->GetStringField(TEXT("label"));
   }
   return Result;
 }
@@ -4117,9 +5920,24 @@ FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (!FJsonObjectConverter::JsonObjectToUStruct<FNakamaPartyList>(Json.ToSharedRef(), &Result, 0, 0))
+  if (Json->HasField(TEXT("parties")))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to create FNakamaPartyList from JSON"));
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("parties"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.Parties.Add(FNakamaParty::FromJson(*ItemObj));
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("cursor")))
+  {
+    Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   return Result;
 }

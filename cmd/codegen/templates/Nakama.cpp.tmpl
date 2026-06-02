@@ -24,6 +24,7 @@
 
 {{/*---------------- MESSAGES ------------------*/}}
 {{ range $message := .Messages }}
+{{- if ne $message.Name "Session" }}
 
 F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
@@ -181,7 +182,7 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
   {{- end }}
   return Json;
 }
-
+{{- end }}
 {{- end }}
 
 {{/*---------------- RPCs ------------------*/}}
