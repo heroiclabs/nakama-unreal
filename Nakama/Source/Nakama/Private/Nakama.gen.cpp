@@ -42,12 +42,68 @@ FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUser to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  if (DisplayName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("display_name"), DisplayName);
+  }
+  if (AvatarUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (Location.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("location"), Location);
+  }
+  if (Timezone.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("timezone"), Timezone);
+  }
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  if (FacebookId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("facebook_id"), FacebookId);
+  }
+  if (GoogleId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("google_id"), GoogleId);
+  }
+  if (GamecenterId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("gamecenter_id"), GamecenterId);
+  }
+  if (SteamId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("steam_id"), SteamId);
+  }
+  Json->SetBoolField(TEXT("online"), Online);
+  Json->SetNumberField(TEXT("edge_count"), EdgeCount);
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  if (FacebookInstantGameId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("facebook_instant_game_id"), FacebookInstantGameId);
+  }
+  if (AppleId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("apple_id"), AppleId);
+  }
+  return Json;
 }
 
 FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -66,12 +122,21 @@ FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObje
 
 TSharedPtr<FJsonObject> FNakamaAccountRefresh::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountRefresh to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -90,12 +155,21 @@ FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>&
 
 TSharedPtr<FJsonObject> FNakamaAccountApple::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountApple to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -114,12 +188,21 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountCustom to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -138,12 +221,21 @@ FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountDevice to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -162,12 +254,25 @@ FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>&
 
 TSharedPtr<FJsonObject> FNakamaAccountEmail::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Email.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountEmail to JSON"));
+    Json->SetStringField(TEXT("email"), Email);
   }
-  return Result;
+  if (Password.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("password"), Password);
+  }
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -186,12 +291,21 @@ FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonOb
 
 TSharedPtr<FJsonObject> FNakamaAccountFacebook::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountFacebook to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -210,12 +324,21 @@ FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(co
 
 TSharedPtr<FJsonObject> FNakamaAccountFacebookInstantGame::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (SignedPlayerInfo.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountFacebookInstantGame to JSON"));
+    Json->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -234,12 +357,38 @@ FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PlayerId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountGameCenter to JSON"));
+    Json->SetStringField(TEXT("player_id"), PlayerId);
   }
-  return Result;
+  if (BundleId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("bundle_id"), BundleId);
+  }
+  Json->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+  if (Salt.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("salt"), Salt);
+  }
+  if (Signature.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("signature"), Signature);
+  }
+  if (PublicKeyUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+  }
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -258,12 +407,21 @@ FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountGoogle to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -282,12 +440,21 @@ FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>&
 
 TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccountSteam to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -306,12 +473,32 @@ FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("user"), User.ToJson());
+  if (Wallet.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAccount to JSON"));
+    Json->SetStringField(TEXT("wallet"), Wallet);
   }
-  return Result;
+  if (Email.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("email"), Email);
+  }
+  if (Devices.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Devices)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("devices"), Array);
+  }
+  if (CustomId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("custom_id"), CustomId);
+  }
+  Json->SetStringField(TEXT("verify_time"), VerifyTime.ToIso8601());
+  Json->SetStringField(TEXT("disable_time"), DisableTime.ToIso8601());
+  return Json;
 }
 
 FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -330,12 +517,30 @@ FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaAddFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ids.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAddFriendsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Ids)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("ids"), Array);
   }
-  return Result;
+  if (Usernames.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Usernames)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("usernames"), Array);
+  }
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  return Json;
 }
 
 FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -354,12 +559,21 @@ FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaAddGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAddGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -378,12 +592,21 @@ FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaSessionRefreshRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaSessionRefreshRequest to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -402,12 +625,16 @@ FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaSessionLogoutRequest to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (RefreshToken.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("refresh_token"), RefreshToken);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -426,12 +653,17 @@ FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateAppleRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -450,12 +682,17 @@ FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateCustomRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -474,12 +711,17 @@ FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateDeviceRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -498,12 +740,17 @@ FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateEmailRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -522,12 +769,21 @@ FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateFacebookRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  if (Sync.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
+  }
+  return Json;
 }
 
 FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -546,12 +802,17 @@ FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstant
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateFacebookInstantGameRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -570,12 +831,17 @@ FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateGameCenterRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -594,12 +860,17 @@ FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateGoogleRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
 }
 
 FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -618,12 +889,21 @@ FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaAuthenticateSteamRequest to JSON"));
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
   }
-  return Result;
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  if (Sync.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
+  }
+  return Json;
 }
 
 FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -642,12 +922,21 @@ FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaBanGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaBanGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -666,12 +955,26 @@ FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr
 
 TSharedPtr<FJsonObject> FNakamaBlockFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ids.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaBlockFriendsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Ids)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("ids"), Array);
   }
-  return Result;
+  if (Usernames.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Usernames)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("usernames"), Array);
+  }
+  return Json;
 }
 
 FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -690,12 +993,54 @@ FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObje
 
 TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaChannelMessage to JSON"));
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
   }
-  return Result;
+  if (MessageId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("message_id"), MessageId);
+  }
+  if (Code.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("code"), Code.GetValue());
+  }
+  if (SenderId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("sender_id"), SenderId);
+  }
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  if (Content.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("content"), Content);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  if (Persistent.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
+  }
+  if (RoomName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("room_name"), RoomName);
+  }
+  if (GroupId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("group_id"), GroupId);
+  }
+  if (UserIdOne.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id_one"), UserIdOne);
+  }
+  if (UserIdTwo.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
+  }
+  return Json;
 }
 
 FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -714,12 +1059,29 @@ FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaChannelMessageList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Messages.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaChannelMessageList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Messages)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("messages"), Array);
   }
-  return Result;
+  if (NextCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("next_cursor"), NextCursor);
+  }
+  if (PrevCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
+  }
+  if (CacheableCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
+  }
+  return Json;
 }
 
 FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -738,12 +1100,26 @@ FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Name.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaCreateGroupRequest to JSON"));
+    Json->SetStringField(TEXT("name"), Name);
   }
-  return Result;
+  if (Description.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("description"), Description);
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (AvatarUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+  }
+  Json->SetBoolField(TEXT("open"), Open);
+  Json->SetNumberField(TEXT("max_count"), MaxCount);
+  return Json;
 }
 
 FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -762,12 +1138,26 @@ FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaDeleteFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ids.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteFriendsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Ids)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("ids"), Array);
   }
-  return Result;
+  if (Usernames.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Usernames)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("usernames"), Array);
+  }
+  return Json;
 }
 
 FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -786,12 +1176,12 @@ FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaDeleteGroupRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteGroupRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -810,12 +1200,12 @@ FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::Fro
 
 TSharedPtr<FJsonObject> FNakamaDeleteLeaderboardRecordRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (LeaderboardId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteLeaderboardRecordRequest to JSON"));
+    Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -834,12 +1224,17 @@ FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(co
 
 TSharedPtr<FJsonObject> FNakamaDeleteNotificationsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ids.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteNotificationsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Ids)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("ids"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -858,12 +1253,12 @@ FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaDeleteTournamentRecordRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (TournamentId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteTournamentRecordRequest to JSON"));
+    Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -882,12 +1277,20 @@ FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectId::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Collection.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteStorageObjectId to JSON"));
+    Json->SetStringField(TEXT("collection"), Collection);
   }
-  return Result;
+  if (Key.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("key"), Key);
+  }
+  if (Version.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("version"), Version);
+  }
+  return Json;
 }
 
 FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -906,12 +1309,17 @@ FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(
 
 TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ObjectIds.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDeleteStorageObjectsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : ObjectIds)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("object_ids"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -930,12 +1338,23 @@ FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Name.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaEvent to JSON"));
+    Json->SetStringField(TEXT("name"), Name);
   }
-  return Result;
+  Json->SetStringField(TEXT("timestamp"), Timestamp.ToIso8601());
+  Json->SetBoolField(TEXT("external"), External);
+  if (Properties.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Properties)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("properties"), MapObj);
+  }
+  return Json;
 }
 
 FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -954,12 +1373,18 @@ FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("user"), User.ToJson());
+  if (State.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriend to JSON"));
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
-  return Result;
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  return Json;
 }
 
 FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -978,12 +1403,21 @@ FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Jso
 
 TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Friends.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriendList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Friends)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("friends"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1002,12 +1436,13 @@ FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfF
 
 TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Referrer.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriendsOfFriendsList_FriendOfFriend to JSON"));
+    Json->SetStringField(TEXT("referrer"), Referrer);
   }
-  return Result;
+  Json->SetObjectField(TEXT("user"), User.ToJson());
+  return Json;
 }
 
 FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1026,12 +1461,21 @@ FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (FriendsOfFriends.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaFriendsOfFriendsList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : FriendsOfFriends)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("friends_of_friends"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1050,12 +1494,35 @@ FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonOb
 
 TSharedPtr<FJsonObject> FNakamaGetUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ids.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGetUsersRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Ids)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("ids"), Array);
   }
-  return Result;
+  if (Usernames.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Usernames)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("usernames"), Array);
+  }
+  if (FacebookIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : FacebookIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("facebook_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1074,12 +1541,12 @@ FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSha
 
 TSharedPtr<FJsonObject> FNakamaGetSubscriptionRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ProductId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGetSubscriptionRequest to JSON"));
+    Json->SetStringField(TEXT("product_id"), ProductId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1098,12 +1565,44 @@ FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroup to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (CreatorId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("creator_id"), CreatorId);
+  }
+  if (Name.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("name"), Name);
+  }
+  if (Description.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("description"), Description);
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  if (AvatarUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+  }
+  if (Open.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
+  }
+  Json->SetNumberField(TEXT("edge_count"), EdgeCount);
+  Json->SetNumberField(TEXT("max_count"), MaxCount);
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  return Json;
 }
 
 FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1122,12 +1621,21 @@ FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Groups.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroupList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Groups)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("groups"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1146,12 +1654,13 @@ FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TS
 
 TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("user"), User.ToJson());
+  if (State.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroupUserList_GroupUser to JSON"));
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1170,12 +1679,21 @@ FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupUsers.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaGroupUserList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : GroupUsers)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("group_users"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1194,12 +1712,13 @@ FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJso
 
 TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Reset.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaImportFacebookFriendsRequest to JSON"));
+    Json->SetBoolField(TEXT("reset"), Reset.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1218,12 +1737,13 @@ FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Reset.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaImportSteamFriendsRequest to JSON"));
+    Json->SetBoolField(TEXT("reset"), Reset.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1242,12 +1762,12 @@ FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJson
 
 TSharedPtr<FJsonObject> FNakamaJoinGroupRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaJoinGroupRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1266,12 +1786,12 @@ FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaJoinTournamentRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (TournamentId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaJoinTournamentRequest to JSON"));
+    Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1290,12 +1810,21 @@ FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaKickGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaKickGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1314,12 +1843,22 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
 
 TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaderboard to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  Json->SetNumberField(TEXT("sort_order"), SortOrder);
+  Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
+  Json->SetNumberField(TEXT("prev_reset"), PrevReset);
+  Json->SetNumberField(TEXT("next_reset"), NextReset);
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetBoolField(TEXT("authoritative"), Authoritative);
+  return Json;
 }
 
 FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1338,12 +1877,21 @@ FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonOb
 
 TSharedPtr<FJsonObject> FNakamaLeaderboardList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Leaderboards.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaderboardList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Leaderboards)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("leaderboards"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1362,12 +1910,32 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (LeaderboardId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaderboardRecord to JSON"));
+    Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  return Result;
+  if (OwnerId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("owner_id"), OwnerId);
+  }
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  Json->SetNumberField(TEXT("score"), Score);
+  Json->SetNumberField(TEXT("subscore"), Subscore);
+  Json->SetNumberField(TEXT("num_score"), NumScore);
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
+  Json->SetNumberField(TEXT("rank"), Rank);
+  Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
+  return Json;
 }
 
 FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1386,12 +1954,35 @@ FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Records.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaderboardRecordList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Records)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("records"), Array);
   }
-  return Result;
+  if (OwnerRecords.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : OwnerRecords)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("owner_records"), Array);
+  }
+  if (NextCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("next_cursor"), NextCursor);
+  }
+  if (PrevCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
+  }
+  Json->SetNumberField(TEXT("rank_count"), RankCount);
+  return Json;
 }
 
 FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1410,12 +2001,12 @@ FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLeaveGroupRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1434,12 +2025,13 @@ FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr
 
 TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Sync.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLinkFacebookRequest to JSON"));
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1458,12 +2050,13 @@ FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJson
 
 TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Sync.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaLinkSteamRequest to JSON"));
+    Json->SetBoolField(TEXT("sync"), Sync.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1482,12 +2075,24 @@ FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(co
 
 TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListChannelMessagesRequest to JSON"));
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
   }
-  return Result;
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (Forward.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("forward"), Forward.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1506,12 +2111,20 @@ FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListFriendsRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (State.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("state"), State.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1530,12 +2143,16 @@ FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(
 
 TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListFriendsOfFriendsRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1554,12 +2171,32 @@ FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Name.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListGroupsRequest to JSON"));
+    Json->SetStringField(TEXT("name"), Name);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (Members.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("members"), Members.GetValue());
+  }
+  if (Open.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
+  }
+  return Json;
 }
 
 FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1578,12 +2215,24 @@ FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (State.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("state"), State.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1602,12 +2251,28 @@ FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAro
 
 TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (LeaderboardId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListLeaderboardRecordsAroundOwnerRequest to JSON"));
+    Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  return Result;
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (OwnerId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("owner_id"), OwnerId);
+  }
+  if (Expiry.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1626,12 +2291,33 @@ FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (LeaderboardId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListLeaderboardRecordsRequest to JSON"));
+    Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  return Result;
+  if (OwnerIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : OwnerIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("owner_ids"), Array);
+  }
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  if (Expiry.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
+  }
+  return Json;
 }
 
 FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1650,12 +2336,32 @@ FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListMatchesRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (Authoritative.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("authoritative"), Authoritative.GetValue());
+  }
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
+  if (MinSize.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("min_size"), MinSize.GetValue());
+  }
+  if (MaxSize.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("max_size"), MaxSize.GetValue());
+  }
+  if (Query.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("query"), Query);
+  }
+  return Json;
 }
 
 FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1674,12 +2380,16 @@ FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListNotificationsRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (CacheableCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
+  }
+  return Json;
 }
 
 FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1698,12 +2408,24 @@ FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListStorageObjectsRequest to JSON"));
+    Json->SetStringField(TEXT("user_id"), UserId);
   }
-  return Result;
+  if (Collection.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("collection"), Collection);
+  }
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1722,12 +2444,16 @@ FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListSubscriptionsRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1746,12 +2472,28 @@ FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroun
 
 TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (TournamentId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListTournamentRecordsAroundOwnerRequest to JSON"));
+    Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  return Result;
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (OwnerId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("owner_id"), OwnerId);
+  }
+  if (Expiry.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1770,12 +2512,33 @@ FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJso
 
 TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (TournamentId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListTournamentRecordsRequest to JSON"));
+    Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  return Result;
+  if (OwnerIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : OwnerIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("owner_ids"), Array);
+  }
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  if (Expiry.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("expiry"), Expiry.GetValue());
+  }
+  return Json;
 }
 
 FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1794,12 +2557,32 @@ FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSha
 
 TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (CategoryStart.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListTournamentsRequest to JSON"));
+    Json->SetNumberField(TEXT("category_start"), CategoryStart.GetValue());
   }
-  return Result;
+  if (CategoryEnd.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("category_end"), CategoryEnd.GetValue());
+  }
+  if (StartTime.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("start_time"), StartTime.GetValue());
+  }
+  if (EndTime.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("end_time"), EndTime.GetValue());
+  }
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1818,12 +2601,24 @@ FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListUserGroupsRequest to JSON"));
+    Json->SetStringField(TEXT("user_id"), UserId);
   }
-  return Result;
+  if (Limit.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
+  }
+  if (State.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("state"), State.GetValue());
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1842,12 +2637,23 @@ FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (MatchId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaMatch to JSON"));
+    Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  return Result;
+  Json->SetBoolField(TEXT("authoritative"), Authoritative);
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
+  Json->SetNumberField(TEXT("size"), Size);
+  Json->SetNumberField(TEXT("tick_rate"), TickRate);
+  if (HandlerName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("handler_name"), HandlerName);
+  }
+  return Json;
 }
 
 FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1866,12 +2672,17 @@ FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaMatchList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Matches.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaMatchList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Matches)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("matches"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1890,12 +2701,10 @@ FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaMatchmakerCompletionStats to JSON"));
-  }
-  return Result;
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("complete_time"), CompleteTime.ToIso8601());
+  return Json;
 }
 
 FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1914,12 +2723,19 @@ FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonOb
 
 TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetNumberField(TEXT("ticket_count"), TicketCount);
+  Json->SetStringField(TEXT("oldest_ticket_create_time"), OldestTicketCreateTime.ToIso8601());
+  if (Completions.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaMatchmakerStats to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Completions)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("completions"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1938,12 +2754,27 @@ FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>&
 
 TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaNotification to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Subject.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("subject"), Subject);
+  }
+  if (Content.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("content"), Content);
+  }
+  Json->SetNumberField(TEXT("code"), Code);
+  if (SenderId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("sender_id"), SenderId);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetBoolField(TEXT("persistent"), Persistent);
+  return Json;
 }
 
 FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1962,12 +2793,21 @@ FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJson
 
 TSharedPtr<FJsonObject> FNakamaNotificationList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Notifications.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaNotificationList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Notifications)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("notifications"), Array);
   }
-  return Result;
+  if (CacheableCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
+  }
+  return Json;
 }
 
 FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1986,12 +2826,21 @@ FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaPromoteGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaPromoteGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2010,12 +2859,21 @@ FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TS
 
 TSharedPtr<FJsonObject> FNakamaDemoteGroupUsersRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaDemoteGroupUsersRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<FJsonValueString>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  return Json;
 }
 
 FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2034,12 +2892,20 @@ FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr
 
 TSharedPtr<FJsonObject> FNakamaReadStorageObjectId::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Collection.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaReadStorageObjectId to JSON"));
+    Json->SetStringField(TEXT("collection"), Collection);
   }
-  return Result;
+  if (Key.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("key"), Key);
+  }
+  if (UserId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id"), UserId);
+  }
+  return Json;
 }
 
 FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2058,12 +2924,17 @@ FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(cons
 
 TSharedPtr<FJsonObject> FNakamaReadStorageObjectsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ObjectIds.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaReadStorageObjectsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : ObjectIds)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("object_ids"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2082,12 +2953,20 @@ FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaRpc to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Payload.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("payload"), Payload);
+  }
+  if (HttpKey.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("http_key"), HttpKey);
+  }
+  return Json;
 }
 
 FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2106,12 +2985,17 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetBoolField(TEXT("created"), Created);
+  if (Token.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaSession to JSON"));
+    Json->SetStringField(TEXT("token"), Token);
   }
-  return Result;
+  if (RefreshToken.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("refresh_token"), RefreshToken);
+  }
+  return Json;
 }
 
 FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2130,12 +3014,32 @@ FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Collection.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaStorageObject to JSON"));
+    Json->SetStringField(TEXT("collection"), Collection);
   }
-  return Result;
+  if (Key.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("key"), Key);
+  }
+  if (UserId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id"), UserId);
+  }
+  if (Value.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("value"), Value);
+  }
+  if (Version.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("version"), Version);
+  }
+  Json->SetNumberField(TEXT("permission_read"), PermissionRead);
+  Json->SetNumberField(TEXT("permission_write"), PermissionWrite);
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  return Json;
 }
 
 FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2154,12 +3058,26 @@ FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJson
 
 TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Collection.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaStorageObjectAck to JSON"));
+    Json->SetStringField(TEXT("collection"), Collection);
   }
-  return Result;
+  if (Key.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("key"), Key);
+  }
+  if (Version.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("version"), Version);
+  }
+  if (UserId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id"), UserId);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  return Json;
 }
 
 FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2178,12 +3096,17 @@ FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaStorageObjectAcks::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Acks.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaStorageObjectAcks to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Acks)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("acks"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2202,12 +3125,17 @@ FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObje
 
 TSharedPtr<FJsonObject> FNakamaStorageObjects::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Objects.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaStorageObjects to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Objects)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("objects"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2226,12 +3154,21 @@ FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaStorageObjectList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Objects.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaStorageObjectList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Objects)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("objects"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2250,12 +3187,41 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
 
 TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaTournament to JSON"));
+    Json->SetStringField(TEXT("id"), Id);
   }
-  return Result;
+  if (Title.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("title"), Title);
+  }
+  if (Description.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("description"), Description);
+  }
+  Json->SetNumberField(TEXT("category"), Category);
+  Json->SetNumberField(TEXT("sort_order"), SortOrder);
+  Json->SetNumberField(TEXT("size"), Size);
+  Json->SetNumberField(TEXT("max_size"), MaxSize);
+  Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
+  Json->SetBoolField(TEXT("can_enter"), CanEnter);
+  Json->SetNumberField(TEXT("end_active"), EndActive);
+  Json->SetNumberField(TEXT("next_reset"), NextReset);
+  if (Metadata.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("metadata"), Metadata);
+  }
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("start_time"), StartTime.ToIso8601());
+  Json->SetStringField(TEXT("end_time"), EndTime.ToIso8601());
+  Json->SetNumberField(TEXT("duration"), Duration);
+  Json->SetNumberField(TEXT("start_active"), StartActive);
+  Json->SetNumberField(TEXT("prev_reset"), PrevReset);
+  Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
+  Json->SetBoolField(TEXT("authoritative"), Authoritative);
+  Json->SetBoolField(TEXT("join_required"), JoinRequired);
+  return Json;
 }
 
 FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2274,12 +3240,21 @@ FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObje
 
 TSharedPtr<FJsonObject> FNakamaTournamentList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Tournaments.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaTournamentList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Tournaments)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("tournaments"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2298,12 +3273,35 @@ FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Records.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaTournamentRecordList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Records)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("records"), Array);
   }
-  return Result;
+  if (OwnerRecords.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : OwnerRecords)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("owner_records"), Array);
+  }
+  if (NextCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("next_cursor"), NextCursor);
+  }
+  if (PrevCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
+  }
+  Json->SetNumberField(TEXT("rank_count"), RankCount);
+  return Json;
 }
 
 FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2322,12 +3320,32 @@ FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedP
 
 TSharedPtr<FJsonObject> FNakamaUpdateAccountRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Username.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUpdateAccountRequest to JSON"));
+    Json->SetStringField(TEXT("username"), Username);
   }
-  return Result;
+  if (DisplayName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("display_name"), DisplayName);
+  }
+  if (AvatarUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (Location.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("location"), Location);
+  }
+  if (Timezone.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("timezone"), Timezone);
+  }
+  return Json;
 }
 
 FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2346,12 +3364,32 @@ FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (GroupId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUpdateGroupRequest to JSON"));
+    Json->SetStringField(TEXT("group_id"), GroupId);
   }
-  return Result;
+  if (Name.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("name"), Name);
+  }
+  if (Description.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("description"), Description);
+  }
+  if (LangTag.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("lang_tag"), LangTag);
+  }
+  if (AvatarUrl.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+  }
+  if (Open.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
+  }
+  return Json;
 }
 
 FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2370,12 +3408,13 @@ FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TS
 
 TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("group"), Group.ToJson());
+  if (State.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUserGroupList_UserGroup to JSON"));
+    Json->SetNumberField(TEXT("state"), State.GetValue());
   }
-  return Result;
+  return Json;
 }
 
 FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2394,12 +3433,21 @@ FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject
 
 TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserGroups.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUserGroupList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserGroups)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("user_groups"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2418,12 +3466,17 @@ FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaUsers::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Users.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaUsers to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Users)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("users"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2442,12 +3495,16 @@ FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJso
 
 TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Receipt.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatePurchaseAppleRequest to JSON"));
+    Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  return Result;
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2466,12 +3523,16 @@ FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest:
 
 TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Receipt.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidateSubscriptionAppleRequest to JSON"));
+    Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  return Result;
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2490,12 +3551,16 @@ FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Purchase.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatePurchaseGoogleRequest to JSON"));
+    Json->SetStringField(TEXT("purchase"), Purchase);
   }
-  return Result;
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2514,12 +3579,16 @@ FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleReques
 
 TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Receipt.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidateSubscriptionGoogleRequest to JSON"));
+    Json->SetStringField(TEXT("receipt"), Receipt);
   }
-  return Result;
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2538,12 +3607,20 @@ FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Purchase.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatePurchaseHuaweiRequest to JSON"));
+    Json->SetStringField(TEXT("purchase"), Purchase);
   }
-  return Result;
+  if (Signature.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("signature"), Signature);
+  }
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookInstantRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2562,12 +3639,16 @@ FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookIns
 
 TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (SignedRequest.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatePurchaseFacebookInstantRequest to JSON"));
+    Json->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  return Result;
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
 }
 
 FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2586,12 +3667,31 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
 
 TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatedPurchase to JSON"));
+    Json->SetStringField(TEXT("user_id"), UserId);
   }
-  return Result;
+  if (ProductId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("product_id"), ProductId);
+  }
+  if (TransactionId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("transaction_id"), TransactionId);
+  }
+  Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
+  Json->SetStringField(TEXT("purchase_time"), PurchaseTime.ToIso8601());
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  Json->SetStringField(TEXT("refund_time"), RefundTime.ToIso8601());
+  if (ProviderResponse.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider_response"), ProviderResponse);
+  }
+  Json->SetNumberField(TEXT("environment"), static_cast<int32>(Environment));
+  Json->SetBoolField(TEXT("seen_before"), SeenBefore);
+  return Json;
 }
 
 FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2610,12 +3710,17 @@ FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const 
 
 TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ValidatedPurchases.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatePurchaseResponse to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : ValidatedPurchases)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("validated_purchases"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2634,12 +3739,36 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
 
 TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidatedSubscription to JSON"));
+    Json->SetStringField(TEXT("user_id"), UserId);
   }
-  return Result;
+  if (ProductId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("product_id"), ProductId);
+  }
+  if (OriginalTransactionId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("original_transaction_id"), OriginalTransactionId);
+  }
+  Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
+  Json->SetStringField(TEXT("purchase_time"), PurchaseTime.ToIso8601());
+  Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
+  Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
+  Json->SetNumberField(TEXT("environment"), static_cast<int32>(Environment));
+  Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
+  Json->SetStringField(TEXT("refund_time"), RefundTime.ToIso8601());
+  if (ProviderResponse.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider_response"), ProviderResponse);
+  }
+  if (ProviderNotification.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider_notification"), ProviderNotification);
+  }
+  Json->SetBoolField(TEXT("active"), Active);
+  return Json;
 }
 
 FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2658,12 +3787,9 @@ FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJso
 
 TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaValidateSubscriptionResponse to JSON"));
-  }
-  return Result;
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("validated_subscription"), ValidatedSubscription.ToJson());
+  return Json;
 }
 
 FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2682,12 +3808,25 @@ FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>&
 
 TSharedPtr<FJsonObject> FNakamaPurchaseList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ValidatedPurchases.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaPurchaseList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : ValidatedPurchases)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("validated_purchases"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  if (PrevCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
+  }
+  return Json;
 }
 
 FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2706,12 +3845,25 @@ FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJson
 
 TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ValidatedSubscriptions.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaSubscriptionList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : ValidatedSubscriptions)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("validated_subscriptions"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  if (PrevCursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
+  }
+  return Json;
 }
 
 FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2730,12 +3882,15 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
 
 TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetNumberField(TEXT("score"), Score);
+  Json->SetNumberField(TEXT("subscore"), Subscore);
+  if (Metadata.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite to JSON"));
+    Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  return Result;
+  Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
+  return Json;
 }
 
 FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2754,12 +3909,13 @@ FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJ
 
 TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (LeaderboardId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteLeaderboardRecordRequest to JSON"));
+    Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
   }
-  return Result;
+  Json->SetObjectField(TEXT("record"), Record.ToJson());
+  return Json;
 }
 
 FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2778,12 +3934,32 @@ FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Collection.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteStorageObject to JSON"));
+    Json->SetStringField(TEXT("collection"), Collection);
   }
-  return Result;
+  if (Key.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("key"), Key);
+  }
+  if (Value.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("value"), Value);
+  }
+  if (Version.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("version"), Version);
+  }
+  if (PermissionRead.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("permission_read"), PermissionRead.GetValue());
+  }
+  if (PermissionWrite.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("permission_write"), PermissionWrite.GetValue());
+  }
+  return Json;
 }
 
 FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2802,12 +3978,17 @@ FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(co
 
 TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Objects.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteStorageObjectsRequest to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Objects)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("objects"), Array);
   }
-  return Result;
+  return Json;
 }
 
 FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2826,12 +4007,15 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
 
 TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetNumberField(TEXT("score"), Score);
+  Json->SetNumberField(TEXT("subscore"), Subscore);
+  if (Metadata.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteTournamentRecordRequest_TournamentRecordWrite to JSON"));
+    Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  return Result;
+  Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
+  return Json;
 }
 
 FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2850,12 +4034,13 @@ FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJso
 
 TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (TournamentId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaWriteTournamentRecordRequest to JSON"));
+    Json->SetStringField(TEXT("tournament_id"), TournamentId);
   }
-  return Result;
+  Json->SetObjectField(TEXT("record"), Record.ToJson());
+  return Json;
 }
 
 FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2874,12 +4059,24 @@ FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<F
 
 TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Limit.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaListPartiesRequest to JSON"));
+    Json->SetNumberField(TEXT("limit"), Limit.GetValue());
   }
-  return Result;
+  if (Open.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("open"), Open.GetValue());
+  }
+  if (Query.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("query"), Query);
+  }
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2898,12 +4095,19 @@ FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaParty::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaParty to JSON"));
+    Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  return Result;
+  Json->SetBoolField(TEXT("open"), Open);
+  Json->SetBoolField(TEXT("hidden"), Hidden);
+  Json->SetNumberField(TEXT("max_size"), MaxSize);
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
+  return Json;
 }
 
 FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -2922,12 +4126,21 @@ FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
 
 TSharedPtr<FJsonObject> FNakamaPartyList::ToJson() const
 {
-  TSharedPtr<FJsonObject> Result = FJsonObjectConverter::UStructToJsonObject(*this);
-  if (!Result.IsValid())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Parties.Num() > 0)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Failed to convert FNakamaPartyList to JSON"));
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Parties)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("parties"), Array);
   }
-  return Result;
+  if (Cursor.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("cursor"), Cursor);
+  }
+  return Json;
 }
 
 

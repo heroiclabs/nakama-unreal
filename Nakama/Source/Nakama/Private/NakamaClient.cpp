@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "Nakama.h"
+#include "NakamaClient.h"
 #include "Containers/Ticker.h"
 
 bool Nakama::IsTransientError(const FNakamaError& Error)

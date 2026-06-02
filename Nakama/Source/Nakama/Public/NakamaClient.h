@@ -14,205 +14,12 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaApi.h"
+#include "Nakama.gen.h"
+#include "NakamaClientConfig.h"
 #include "NakamaFuture.h"
-
-/** Tag type used as the value type for RPCs that return no data. */
-struct NAKAMA_API FNakamaVoid {};
-struct NAKAMA_API FNakamaVoidResult
-{
-	using ValueType = FNakamaVoid;
-	FNakamaVoid Value{};
-	FNakamaError Error;
-	bool bIsError = true;
-};
-struct NAKAMA_API FNakamaSessionResult
-{
-  using ValueType = FNakamaSession;
-  FNakamaSession Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupResult
-{
-  using ValueType = FNakamaGroup;
-  FNakamaGroup Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaAccountResult
-{
-  using ValueType = FNakamaAccount;
-  FNakamaAccount Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaUsersResult
-{
-  using ValueType = FNakamaUsers;
-  FNakamaUsers Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidatedSubscriptionResult
-{
-  using ValueType = FNakamaValidatedSubscription;
-  FNakamaValidatedSubscription Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaMatchmakerStatsResult
-{
-  using ValueType = FNakamaMatchmakerStats;
-  FNakamaMatchmakerStats Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaChannelMessageListResult
-{
-  using ValueType = FNakamaChannelMessageList;
-  FNakamaChannelMessageList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaFriendListResult
-{
-  using ValueType = FNakamaFriendList;
-  FNakamaFriendList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaFriendsOfFriendsListResult
-{
-  using ValueType = FNakamaFriendsOfFriendsList;
-  FNakamaFriendsOfFriendsList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupListResult
-{
-  using ValueType = FNakamaGroupList;
-  FNakamaGroupList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupUserListResult
-{
-  using ValueType = FNakamaGroupUserList;
-  FNakamaGroupUserList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaLeaderboardRecordListResult
-{
-  using ValueType = FNakamaLeaderboardRecordList;
-  FNakamaLeaderboardRecordList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaMatchListResult
-{
-  using ValueType = FNakamaMatchList;
-  FNakamaMatchList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaPartyListResult
-{
-  using ValueType = FNakamaPartyList;
-  FNakamaPartyList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaNotificationListResult
-{
-  using ValueType = FNakamaNotificationList;
-  FNakamaNotificationList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectListResult
-{
-  using ValueType = FNakamaStorageObjectList;
-  FNakamaStorageObjectList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaSubscriptionListResult
-{
-  using ValueType = FNakamaSubscriptionList;
-  FNakamaSubscriptionList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaTournamentListResult
-{
-  using ValueType = FNakamaTournamentList;
-  FNakamaTournamentList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaTournamentRecordListResult
-{
-  using ValueType = FNakamaTournamentRecordList;
-  FNakamaTournamentRecordList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaUserGroupListResult
-{
-  using ValueType = FNakamaUserGroupList;
-  FNakamaUserGroupList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectsResult
-{
-  using ValueType = FNakamaStorageObjects;
-  FNakamaStorageObjects Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaRpcResult
-{
-  using ValueType = FNakamaRpc;
-  FNakamaRpc Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidatePurchaseResponseResult
-{
-  using ValueType = FNakamaValidatePurchaseResponse;
-  FNakamaValidatePurchaseResponse Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidateSubscriptionResponseResult
-{
-  using ValueType = FNakamaValidateSubscriptionResponse;
-  FNakamaValidateSubscriptionResponse Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaLeaderboardRecordResult
-{
-  using ValueType = FNakamaLeaderboardRecord;
-  FNakamaLeaderboardRecord Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectAcksResult
-{
-  using ValueType = FNakamaStorageObjectAcks;
-  FNakamaStorageObjectAcks Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
 
 /** Retry configuration for transient error handling + session auto-refresh. */
 struct NAKAMA_API FNakamaRetryConfig
@@ -262,7 +69,7 @@ namespace Nakama
   /**
   * Add friends by ID or username to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -283,7 +90,7 @@ namespace Nakama
   /**
   * Add friends by ID or username to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -304,7 +111,7 @@ namespace Nakama
   /**
   * Add users to a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group to add users to.
   * @param UserIds	 The users to add.
@@ -323,7 +130,7 @@ namespace Nakama
   /**
   * Add users to a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group to add users to.
   * @param UserIds	 The users to add.
@@ -342,7 +149,7 @@ namespace Nakama
   /**
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Token	 Refresh token.
   * @param Vars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
@@ -359,7 +166,7 @@ namespace Nakama
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 Session token to log out.
   * @param RefreshToken	 Refresh token to invalidate.
@@ -378,7 +185,7 @@ namespace Nakama
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 Session token to log out.
   * @param RefreshToken	 Refresh token to invalidate.
@@ -397,7 +204,7 @@ namespace Nakama
   /**
   * Authenticate a user with an Apple ID against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountToken	 The ID token received from Apple to validate.
@@ -418,7 +225,7 @@ namespace Nakama
   /**
   * Authenticate a user with a custom id against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountId	 A custom identifier.
@@ -439,7 +246,7 @@ namespace Nakama
   /**
   * Authenticate a user with a device id against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountId	 A device identifier. Should be obtained by a platform-specific device API.
@@ -460,7 +267,7 @@ namespace Nakama
   /**
   * Authenticate a user with an email+password against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountEmail	 A valid RFC-5322 email address.
@@ -483,7 +290,7 @@ namespace Nakama
   /**
   * Authenticate a user with a Facebook OAuth token against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param Sync	 Import Facebook friends for the user.
@@ -506,7 +313,7 @@ namespace Nakama
   /**
   * Authenticate a user with a Facebook Instant Game token against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountSignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
@@ -527,7 +334,7 @@ namespace Nakama
   /**
   * Authenticate a user with Apple's GameCenter against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountPlayerId	 Player ID (generated by GameCenter).
@@ -558,7 +365,7 @@ namespace Nakama
   /**
   * Authenticate a user with Google against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountToken	 The OAuth token received from Google to access their profile API.
@@ -579,7 +386,7 @@ namespace Nakama
   /**
   * Authenticate a user with Steam against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param Sync	 Import Steam friends for the user.
@@ -602,7 +409,7 @@ namespace Nakama
   /**
   * Ban a set of users from a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group to ban users from.
   * @param UserIds	 The users to ban.
@@ -621,7 +428,7 @@ namespace Nakama
   /**
   * Ban a set of users from a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group to ban users from.
   * @param UserIds	 The users to ban.
@@ -640,7 +447,7 @@ namespace Nakama
   /**
   * Block one or more users by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -659,7 +466,7 @@ namespace Nakama
   /**
   * Block one or more users by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -678,7 +485,7 @@ namespace Nakama
   /**
   * Create a new group with the current user as the owner.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Name	 A unique name for the group.
   * @param Description	 A description for the group.
@@ -705,7 +512,7 @@ namespace Nakama
   /**
   * Create a new group with the current user as the owner.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Name	 A unique name for the group.
   * @param Description	 A description for the group.
@@ -732,7 +539,7 @@ namespace Nakama
   /**
   * Delete the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -747,7 +554,7 @@ namespace Nakama
   /**
   * Delete the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -762,7 +569,7 @@ namespace Nakama
   /**
   * Delete one or more users by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -781,7 +588,7 @@ namespace Nakama
   /**
   * Delete one or more users by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -800,7 +607,7 @@ namespace Nakama
   /**
   * Delete a group by ID.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The id of a group.
   * @param RetryConfig Retry configuration.
@@ -817,7 +624,7 @@ namespace Nakama
   /**
   * Delete a group by ID.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The id of a group.
   * @param RetryConfig Retry configuration.
@@ -834,7 +641,7 @@ namespace Nakama
   /**
   * Delete a leaderboard record.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param LeaderboardId	 The leaderboard ID to delete from.
   * @param RetryConfig Retry configuration.
@@ -851,7 +658,7 @@ namespace Nakama
   /**
   * Delete a leaderboard record.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param LeaderboardId	 The leaderboard ID to delete from.
   * @param RetryConfig Retry configuration.
@@ -868,7 +675,7 @@ namespace Nakama
   /**
   * Delete one or more notifications for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Ids	 The id of notifications.
   * @param RetryConfig Retry configuration.
@@ -885,7 +692,7 @@ namespace Nakama
   /**
   * Delete one or more notifications for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Ids	 The id of notifications.
   * @param RetryConfig Retry configuration.
@@ -902,7 +709,7 @@ namespace Nakama
   /**
   * Delete a tournament record.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param TournamentId	 The tournament ID to delete from.
   * @param RetryConfig Retry configuration.
@@ -919,7 +726,7 @@ namespace Nakama
   /**
   * Delete a tournament record.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param TournamentId	 The tournament ID to delete from.
   * @param RetryConfig Retry configuration.
@@ -936,7 +743,7 @@ namespace Nakama
   /**
   * Delete one or more objects by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
@@ -953,7 +760,7 @@ namespace Nakama
   /**
   * Delete one or more objects by ID or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
@@ -970,7 +777,7 @@ namespace Nakama
   /**
   * Submit an event for processing in the server's registered runtime custom events handler.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Name	 An event name, type, category, or identifier.
   * @param Timestamp	 The time when the event was triggered.
@@ -993,7 +800,7 @@ namespace Nakama
   /**
   * Submit an event for processing in the server's registered runtime custom events handler.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Name	 An event name, type, category, or identifier.
   * @param Timestamp	 The time when the event was triggered.
@@ -1016,7 +823,7 @@ namespace Nakama
   /**
   * Fetch the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1031,7 +838,7 @@ namespace Nakama
   /**
   * Fetch the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1046,7 +853,7 @@ namespace Nakama
   /**
   * Fetch zero or more users by ID and/or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -1067,7 +874,7 @@ namespace Nakama
   /**
   * Fetch zero or more users by ID and/or username.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Ids	 The account id of a user.
   * @param Usernames	 The account username of a user.
@@ -1088,7 +895,7 @@ namespace Nakama
   /**
   * Get subscription by product id.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param ProductId	 Product id of the subscription
   * @param RetryConfig Retry configuration.
@@ -1105,7 +912,7 @@ namespace Nakama
   /**
   * Get subscription by product id.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param ProductId	 Product id of the subscription
   * @param RetryConfig Retry configuration.
@@ -1122,7 +929,7 @@ namespace Nakama
   /**
   * Get matchmaker stats.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1137,7 +944,7 @@ namespace Nakama
   /**
   * Get matchmaker stats.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1152,7 +959,7 @@ namespace Nakama
   /**
   * A healthcheck which load balancers can use to check the service.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1167,7 +974,7 @@ namespace Nakama
   /**
   * A healthcheck which load balancers can use to check the service.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -1182,7 +989,7 @@ namespace Nakama
   /**
   * Import Facebook friends and add them to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
@@ -1203,7 +1010,7 @@ namespace Nakama
   /**
   * Import Facebook friends and add them to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
@@ -1224,7 +1031,7 @@ namespace Nakama
   /**
   * Import Steam friends and add them to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The account token received from Steam to access their profile API.
@@ -1245,7 +1052,7 @@ namespace Nakama
   /**
   * Import Steam friends and add them to a user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The account token received from Steam to access their profile API.
@@ -1266,7 +1073,7 @@ namespace Nakama
   /**
   * Immediately join an open group, or request to join a closed one.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to join. The group must already exist.
   * @param RetryConfig Retry configuration.
@@ -1283,7 +1090,7 @@ namespace Nakama
   /**
   * Immediately join an open group, or request to join a closed one.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to join. The group must already exist.
   * @param RetryConfig Retry configuration.
@@ -1300,7 +1107,7 @@ namespace Nakama
   /**
   * Attempt to join an open and running tournament.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param TournamentId	 The ID of the tournament to join. The tournament must already exist.
   * @param RetryConfig Retry configuration.
@@ -1317,7 +1124,7 @@ namespace Nakama
   /**
   * Attempt to join an open and running tournament.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param TournamentId	 The ID of the tournament to join. The tournament must already exist.
   * @param RetryConfig Retry configuration.
@@ -1334,7 +1141,7 @@ namespace Nakama
   /**
   * Kick a set of users from a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to kick from.
   * @param UserIds	 The users to kick.
@@ -1353,7 +1160,7 @@ namespace Nakama
   /**
   * Kick a set of users from a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to kick from.
   * @param UserIds	 The users to kick.
@@ -1372,7 +1179,7 @@ namespace Nakama
   /**
   * Leave a group the user is a member of.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to leave.
   * @param RetryConfig Retry configuration.
@@ -1389,7 +1196,7 @@ namespace Nakama
   /**
   * Leave a group the user is a member of.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to leave.
   * @param RetryConfig Retry configuration.
@@ -1406,7 +1213,7 @@ namespace Nakama
   /**
   * Add an Apple ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The ID token received from Apple to validate.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1425,7 +1232,7 @@ namespace Nakama
   /**
   * Add an Apple ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The ID token received from Apple to validate.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1444,7 +1251,7 @@ namespace Nakama
   /**
   * Add a custom ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 A custom identifier.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1463,7 +1270,7 @@ namespace Nakama
   /**
   * Add a custom ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 A custom identifier.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1482,7 +1289,7 @@ namespace Nakama
   /**
   * Add a device ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 A device identifier. Should be obtained by a platform-specific device API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1501,7 +1308,7 @@ namespace Nakama
   /**
   * Add a device ID to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 A device identifier. Should be obtained by a platform-specific device API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1520,7 +1327,7 @@ namespace Nakama
   /**
   * Add an email+password to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Email	 A valid RFC-5322 email address.
   * @param Password	 A password for the user account.
@@ -1541,7 +1348,7 @@ namespace Nakama
   /**
   * Add an email+password to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Email	 A valid RFC-5322 email address.
   * @param Password	 A password for the user account.
@@ -1562,7 +1369,7 @@ namespace Nakama
   /**
   * Add Facebook to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Sync	 Import Facebook friends for the user.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
@@ -1583,7 +1390,7 @@ namespace Nakama
   /**
   * Add Facebook to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Sync	 Import Facebook friends for the user.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
@@ -1604,7 +1411,7 @@ namespace Nakama
   /**
   * Add Facebook Instant Game to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param SignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1623,7 +1430,7 @@ namespace Nakama
   /**
   * Add Facebook Instant Game to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param SignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1642,7 +1449,7 @@ namespace Nakama
   /**
   * Add Apple's GameCenter to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param PlayerId	 Player ID (generated by GameCenter).
   * @param BundleId	 Bundle ID (generated by GameCenter).
@@ -1671,7 +1478,7 @@ namespace Nakama
   /**
   * Add Apple's GameCenter to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param PlayerId	 Player ID (generated by GameCenter).
   * @param BundleId	 Bundle ID (generated by GameCenter).
@@ -1700,7 +1507,7 @@ namespace Nakama
   /**
   * Add Google to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The OAuth token received from Google to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1719,7 +1526,7 @@ namespace Nakama
   /**
   * Add Google to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The OAuth token received from Google to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -1738,7 +1545,7 @@ namespace Nakama
   /**
   * Add Steam to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Sync	 Import Steam friends for the user.
   * @param AccountToken	 The account token received from Steam to access their profile API.
@@ -1759,7 +1566,7 @@ namespace Nakama
   /**
   * Add Steam to the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Sync	 Import Steam friends for the user.
   * @param AccountToken	 The account token received from Steam to access their profile API.
@@ -1780,7 +1587,7 @@ namespace Nakama
   /**
   * List a channel's message history.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param ChannelId	 The channel ID to list from.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -1803,7 +1610,7 @@ namespace Nakama
   /**
   * List a channel's message history.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param ChannelId	 The channel ID to list from.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -1826,7 +1633,7 @@ namespace Nakama
   /**
   * List all friends for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 Max number of records to return. Between 1 and 1000.
   * @param State	 The friend state to list.
@@ -1847,7 +1654,7 @@ namespace Nakama
   /**
   * List all friends for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Max number of records to return. Between 1 and 1000.
   * @param State	 The friend state to list.
@@ -1868,7 +1675,7 @@ namespace Nakama
   /**
   * List friends of friends for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 Max number of records to return. Between 1 and 100.
   * @param Cursor	 An optional next page cursor.
@@ -1887,7 +1694,7 @@ namespace Nakama
   /**
   * List friends of friends for the current user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Max number of records to return. Between 1 and 100.
   * @param Cursor	 An optional next page cursor.
@@ -1906,7 +1713,7 @@ namespace Nakama
   /**
   * List groups based on given filters.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Name	 List groups that contain this value in their names.
   * @param Cursor	 Optional pagination cursor.
@@ -1933,7 +1740,7 @@ namespace Nakama
   /**
   * List groups based on given filters.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Name	 List groups that contain this value in their names.
   * @param Cursor	 Optional pagination cursor.
@@ -1960,7 +1767,7 @@ namespace Nakama
   /**
   * List all users that are part of a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to list from.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -1983,7 +1790,7 @@ namespace Nakama
   /**
   * List all users that are part of a group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to list from.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2006,7 +1813,7 @@ namespace Nakama
   /**
   * List leaderboard records.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param LeaderboardId	 The ID of the leaderboard to list for.
   * @param OwnerIds	 One or more owners to retrieve records for.
@@ -2031,7 +1838,7 @@ namespace Nakama
   /**
   * List leaderboard records.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param LeaderboardId	 The ID of the leaderboard to list for.
   * @param OwnerIds	 One or more owners to retrieve records for.
@@ -2056,7 +1863,7 @@ namespace Nakama
   /**
   * List leaderboard records around the target ownerId.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param LeaderboardId	 The ID of the tournament to list for.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2081,7 +1888,7 @@ namespace Nakama
   /**
   * List leaderboard records around the target ownerId.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param LeaderboardId	 The ID of the tournament to list for.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2106,7 +1913,7 @@ namespace Nakama
   /**
   * List running matches and optionally filter by matching criteria.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 Limit the number of returned matches.
   * @param Authoritative	 Authoritative or relayed matches.
@@ -2133,7 +1940,7 @@ namespace Nakama
   /**
   * List running matches and optionally filter by matching criteria.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Limit the number of returned matches.
   * @param Authoritative	 Authoritative or relayed matches.
@@ -2160,7 +1967,7 @@ namespace Nakama
   /**
   * List parties and optionally filter by matching criteria.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 Limit the number of returned parties.
   * @param Open	 Optionally filter by open/closed parties.
@@ -2183,7 +1990,7 @@ namespace Nakama
   /**
   * List parties and optionally filter by matching criteria.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Limit the number of returned parties.
   * @param Open	 Optionally filter by open/closed parties.
@@ -2206,7 +2013,7 @@ namespace Nakama
   /**
   * Fetch list of notifications.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 The number of notifications to get. Between 1 and 100.
   * @param CacheableCursor	 A cursor to page through notifications. May be cached by clients to get from point in time forwards.
@@ -2225,7 +2032,7 @@ namespace Nakama
   /**
   * Fetch list of notifications.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 The number of notifications to get. Between 1 and 100.
   * @param CacheableCursor	 A cursor to page through notifications. May be cached by clients to get from point in time forwards.
@@ -2244,7 +2051,7 @@ namespace Nakama
   /**
   * List publicly readable storage objects in a given collection.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param UserId	 ID of the user.
   * @param Collection	 The collection which stores the object.
@@ -2267,7 +2074,7 @@ namespace Nakama
   /**
   * List publicly readable storage objects in a given collection.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param UserId	 ID of the user.
   * @param Collection	 The collection which stores the object.
@@ -2290,7 +2097,7 @@ namespace Nakama
   /**
   * List user's subscriptions.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Limit	 Max number of results per page
   * @param Cursor	 Cursor to retrieve a page of records from
@@ -2309,7 +2116,7 @@ namespace Nakama
   /**
   * List user's subscriptions.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Max number of results per page
   * @param Cursor	 Cursor to retrieve a page of records from
@@ -2328,7 +2135,7 @@ namespace Nakama
   /**
   * List current or upcoming tournaments.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param CategoryStart	 The start of the categories to include. Defaults to 0.
   * @param CategoryEnd	 The end of the categories to include. Defaults to 128.
@@ -2355,7 +2162,7 @@ namespace Nakama
   /**
   * List current or upcoming tournaments.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param CategoryStart	 The start of the categories to include. Defaults to 0.
   * @param CategoryEnd	 The end of the categories to include. Defaults to 128.
@@ -2382,7 +2189,7 @@ namespace Nakama
   /**
   * List tournament records.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param TournamentId	 The ID of the tournament to list for.
   * @param OwnerIds	 One or more owners to retrieve records for.
@@ -2407,7 +2214,7 @@ namespace Nakama
   /**
   * List tournament records.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param TournamentId	 The ID of the tournament to list for.
   * @param OwnerIds	 One or more owners to retrieve records for.
@@ -2432,7 +2239,7 @@ namespace Nakama
   /**
   * List tournament records for a given owner.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param TournamentId	 The ID of the tournament to list for.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2457,7 +2264,7 @@ namespace Nakama
   /**
   * List tournament records for a given owner.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param TournamentId	 The ID of the tournament to list for.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2482,7 +2289,7 @@ namespace Nakama
   /**
   * List groups the current user belongs to.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param UserId	 ID of the user.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2505,7 +2312,7 @@ namespace Nakama
   /**
   * List groups the current user belongs to.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param UserId	 ID of the user.
   * @param Limit	 Max number of records to return. Between 1 and 100.
@@ -2528,7 +2335,7 @@ namespace Nakama
   /**
   * Promote a set of users in a group to the next role up.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to promote in.
   * @param UserIds	 The users to promote.
@@ -2547,7 +2354,7 @@ namespace Nakama
   /**
   * Promote a set of users in a group to the next role up.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to promote in.
   * @param UserIds	 The users to promote.
@@ -2566,7 +2373,7 @@ namespace Nakama
   /**
   * Demote a set of users in a group to the next role down.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The group ID to demote in.
   * @param UserIds	 The users to demote.
@@ -2585,7 +2392,7 @@ namespace Nakama
   /**
   * Demote a set of users in a group to the next role down.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The group ID to demote in.
   * @param UserIds	 The users to demote.
@@ -2604,7 +2411,7 @@ namespace Nakama
   /**
   * Get storage objects.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
@@ -2621,7 +2428,7 @@ namespace Nakama
   /**
   * Get storage objects.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
@@ -2638,7 +2445,7 @@ namespace Nakama
   /**
   * Execute a Lua function on the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
   * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
@@ -2657,7 +2464,7 @@ namespace Nakama
   /**
   * Execute a Lua function on the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
@@ -2676,7 +2483,7 @@ namespace Nakama
   /**
   * Remove the Apple ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The ID token received from Apple to validate.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2695,7 +2502,7 @@ namespace Nakama
   /**
   * Remove the Apple ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The ID token received from Apple to validate.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2714,7 +2521,7 @@ namespace Nakama
   /**
   * Remove the custom ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 A custom identifier.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2733,7 +2540,7 @@ namespace Nakama
   /**
   * Remove the custom ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 A custom identifier.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2752,7 +2559,7 @@ namespace Nakama
   /**
   * Remove the device ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 A device identifier. Should be obtained by a platform-specific device API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2771,7 +2578,7 @@ namespace Nakama
   /**
   * Remove the device ID from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 A device identifier. Should be obtained by a platform-specific device API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2790,7 +2597,7 @@ namespace Nakama
   /**
   * Remove the email+password from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Email	 A valid RFC-5322 email address.
   * @param Password	 A password for the user account.
@@ -2811,7 +2618,7 @@ namespace Nakama
   /**
   * Remove the email+password from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Email	 A valid RFC-5322 email address.
   * @param Password	 A password for the user account.
@@ -2832,7 +2639,7 @@ namespace Nakama
   /**
   * Remove Facebook from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The OAuth token received from Facebook to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2851,7 +2658,7 @@ namespace Nakama
   /**
   * Remove Facebook from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The OAuth token received from Facebook to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2870,7 +2677,7 @@ namespace Nakama
   /**
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param SignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2889,7 +2696,7 @@ namespace Nakama
   /**
   * Remove Facebook Instant Game profile from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param SignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2908,7 +2715,7 @@ namespace Nakama
   /**
   * Remove Apple's GameCenter from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param PlayerId	 Player ID (generated by GameCenter).
   * @param BundleId	 Bundle ID (generated by GameCenter).
@@ -2937,7 +2744,7 @@ namespace Nakama
   /**
   * Remove Apple's GameCenter from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param PlayerId	 Player ID (generated by GameCenter).
   * @param BundleId	 Bundle ID (generated by GameCenter).
@@ -2966,7 +2773,7 @@ namespace Nakama
   /**
   * Remove Google from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The OAuth token received from Google to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -2985,7 +2792,7 @@ namespace Nakama
   /**
   * Remove Google from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The OAuth token received from Google to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -3004,7 +2811,7 @@ namespace Nakama
   /**
   * Remove Steam from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Token	 The account token received from Steam to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -3023,7 +2830,7 @@ namespace Nakama
   /**
   * Remove Steam from the social profiles on the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Token	 The account token received from Steam to access their profile API.
   * @param Vars	 Extra information that will be bundled in the session token.
@@ -3042,7 +2849,7 @@ namespace Nakama
   /**
   * Update fields in the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Username	 The username of the user's account.
   * @param DisplayName	 The display name of the user.
@@ -3069,7 +2876,7 @@ namespace Nakama
   /**
   * Update fields in the current user's account.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Username	 The username of the user's account.
   * @param DisplayName	 The display name of the user.
@@ -3096,7 +2903,7 @@ namespace Nakama
   /**
   * Update fields in a given group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param GroupId	 The ID of the group to update.
   * @param Name	 Name.
@@ -3123,7 +2930,7 @@ namespace Nakama
   /**
   * Update fields in a given group.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param GroupId	 The ID of the group to update.
   * @param Name	 Name.
@@ -3150,7 +2957,7 @@ namespace Nakama
   /**
   * Validate Apple IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Receipt	 Base64 encoded Apple receipt data payload.
   * @param Persist	 Persist the purchase
@@ -3169,7 +2976,7 @@ namespace Nakama
   /**
   * Validate Apple IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Receipt	 Base64 encoded Apple receipt data payload.
   * @param Persist	 Persist the purchase
@@ -3188,7 +2995,7 @@ namespace Nakama
   /**
   * Validate Apple Subscription Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Receipt	 Base64 encoded Apple receipt data payload.
   * @param Persist	 Persist the subscription.
@@ -3207,7 +3014,7 @@ namespace Nakama
   /**
   * Validate Apple Subscription Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Receipt	 Base64 encoded Apple receipt data payload.
   * @param Persist	 Persist the subscription.
@@ -3226,7 +3033,7 @@ namespace Nakama
   /**
   * Validate Google IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Purchase	 JSON encoded Google purchase payload.
   * @param Persist	 Persist the purchase
@@ -3245,7 +3052,7 @@ namespace Nakama
   /**
   * Validate Google IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Purchase	 JSON encoded Google purchase payload.
   * @param Persist	 Persist the purchase
@@ -3264,7 +3071,7 @@ namespace Nakama
   /**
   * Validate Google Subscription Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Receipt	 JSON encoded Google purchase payload.
   * @param Persist	 Persist the subscription.
@@ -3283,7 +3090,7 @@ namespace Nakama
   /**
   * Validate Google Subscription Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Receipt	 JSON encoded Google purchase payload.
   * @param Persist	 Persist the subscription.
@@ -3302,7 +3109,7 @@ namespace Nakama
   /**
   * Validate Huawei IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Purchase	 JSON encoded Huawei InAppPurchaseData.
   * @param Signature	 InAppPurchaseData signature.
@@ -3323,7 +3130,7 @@ namespace Nakama
   /**
   * Validate Huawei IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Purchase	 JSON encoded Huawei InAppPurchaseData.
   * @param Signature	 InAppPurchaseData signature.
@@ -3344,7 +3151,7 @@ namespace Nakama
   /**
   * Validate FB Instant IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param SignedRequest	 Base64 encoded Facebook Instant signedRequest receipt data payload.
   * @param Persist	 Persist the purchase
@@ -3363,7 +3170,7 @@ namespace Nakama
   /**
   * Validate FB Instant IAP Receipt
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param SignedRequest	 Base64 encoded Facebook Instant signedRequest receipt data payload.
   * @param Persist	 Persist the purchase
@@ -3382,7 +3189,7 @@ namespace Nakama
   /**
   * Write a record to a leaderboard.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param LeaderboardId	 The ID of the leaderboard to write to.
   * @param RecordScore	 The score value to submit.
@@ -3407,7 +3214,7 @@ namespace Nakama
   /**
   * Write a record to a leaderboard.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param LeaderboardId	 The ID of the leaderboard to write to.
   * @param RecordScore	 The score value to submit.
@@ -3432,7 +3239,7 @@ namespace Nakama
   /**
   * Write objects into the storage engine.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Objects	 The objects to store on the server.
   * @param RetryConfig Retry configuration.
@@ -3449,7 +3256,7 @@ namespace Nakama
   /**
   * Write objects into the storage engine.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Objects	 The objects to store on the server.
   * @param RetryConfig Retry configuration.
@@ -3466,7 +3273,7 @@ namespace Nakama
   /**
   * Write a record to a tournament.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param TournamentId	 The tournament ID to write the record for.
   * @param RecordScore	 The score value to submit.
@@ -3491,7 +3298,7 @@ namespace Nakama
   /**
   * Write a record to a tournament.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param TournamentId	 The tournament ID to write the record for.
   * @param RecordScore	 The score value to submit.
