@@ -2964,8 +2964,6 @@ FNakamaApiRequestModel NakamaInternal::BuildAddFriendsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -2994,8 +2992,6 @@ FNakamaApiRequestModel NakamaInternal::BuildAddGroupUsersRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3014,7 +3010,10 @@ FNakamaApiRequestModel NakamaInternal::BuildSessionRefreshRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3034,7 +3033,10 @@ FNakamaApiRequestModel NakamaInternal::BuildSessionLogoutRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3067,7 +3069,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateAppleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3100,7 +3104,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateCustomRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3133,7 +3139,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateDeviceRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3166,7 +3174,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateEmailRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3203,7 +3213,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateFacebookRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3236,7 +3248,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateFacebookInstantGameReque
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3269,7 +3283,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateGameCenterRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3302,7 +3318,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateGoogleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3339,7 +3357,9 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateSteamRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3368,8 +3388,6 @@ FNakamaApiRequestModel NakamaInternal::BuildBanGroupUsersRequest (
   //
   // Verb
   Request.Verb = TEXT("POST");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3402,8 +3420,6 @@ FNakamaApiRequestModel NakamaInternal::BuildBlockFriendsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3422,7 +3438,10 @@ FNakamaApiRequestModel NakamaInternal::BuildCreateGroupRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3440,8 +3459,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteAccountRequest (
   //
   // Verb
   Request.Verb = TEXT("DELETE");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3474,8 +3491,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteFriendsRequest (
   // Verb
   Request.Verb = TEXT("DELETE");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3495,8 +3510,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteGroupRequest (
   // Verb
   Request.Verb = TEXT("DELETE");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3515,8 +3528,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteLeaderboardRecordRequest (
   //
   // Verb
   Request.Verb = TEXT("DELETE");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3545,8 +3556,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteNotificationsRequest (
   // Verb
   Request.Verb = TEXT("DELETE");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3566,8 +3575,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteTournamentRecordRequest (
   // Verb
   Request.Verb = TEXT("DELETE");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3586,7 +3593,10 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteStorageObjectsRequest (
   // Verb
   Request.Verb = TEXT("PUT");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3606,7 +3616,10 @@ FNakamaApiRequestModel NakamaInternal::BuildEventRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3624,8 +3637,6 @@ FNakamaApiRequestModel NakamaInternal::BuildGetAccountRequest (
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3662,8 +3673,6 @@ FNakamaApiRequestModel NakamaInternal::BuildGetUsersRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3683,8 +3692,6 @@ FNakamaApiRequestModel NakamaInternal::BuildGetSubscriptionRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3702,8 +3709,6 @@ FNakamaApiRequestModel NakamaInternal::BuildGetMatchmakerStatsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3720,8 +3725,6 @@ FNakamaApiRequestModel NakamaInternal::BuildHealthcheckRequest (
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3750,7 +3753,9 @@ FNakamaApiRequestModel NakamaInternal::BuildImportFacebookFriendsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3779,7 +3784,9 @@ FNakamaApiRequestModel NakamaInternal::BuildImportSteamFriendsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -3800,8 +3807,6 @@ FNakamaApiRequestModel NakamaInternal::BuildJoinGroupRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3820,8 +3825,6 @@ FNakamaApiRequestModel NakamaInternal::BuildJoinTournamentRequest (
   //
   // Verb
   Request.Verb = TEXT("POST");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -3851,8 +3854,6 @@ FNakamaApiRequestModel NakamaInternal::BuildKickGroupUsersRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3872,8 +3873,6 @@ FNakamaApiRequestModel NakamaInternal::BuildLeaveGroupRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -3892,7 +3891,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkAppleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3912,7 +3914,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkCustomRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3932,7 +3937,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkDeviceRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3952,7 +3960,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkEmailRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -3981,7 +3992,9 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkFacebookRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "account" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Account.ToJson());
 
   return Request;
 }
@@ -4001,7 +4014,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkFacebookInstantGameRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4021,7 +4037,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkGameCenterRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4041,7 +4060,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkGoogleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4061,7 +4083,10 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkSteamRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4099,8 +4124,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListChannelMessagesRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4136,8 +4159,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListFriendsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4168,8 +4189,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListFriendsOfFriendsRequest (
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -4218,8 +4237,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListGroupsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4255,8 +4272,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListGroupUsersRequest (
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -4298,8 +4313,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListLeaderboardRecordsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4336,8 +4349,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListLeaderboardRecordsAroundOwnerReq
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -4386,8 +4397,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListMatchesRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4427,8 +4436,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListPartiesRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4459,8 +4466,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListNotificationsRequest (
   //
   // Verb
   Request.Verb = TEXT("GET");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -4498,8 +4503,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListStorageObjectsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4518,7 +4521,10 @@ FNakamaApiRequestModel NakamaInternal::BuildListSubscriptionsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4567,8 +4573,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4609,8 +4613,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentRecordsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4648,8 +4650,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentRecordsAroundOwnerRequ
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4686,8 +4686,6 @@ FNakamaApiRequestModel NakamaInternal::BuildListUserGroupsRequest (
   // Verb
   Request.Verb = TEXT("GET");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4715,8 +4713,6 @@ FNakamaApiRequestModel NakamaInternal::BuildPromoteGroupUsersRequest (
   //
   // Verb
   Request.Verb = TEXT("POST");
-
-  // TODO: Fill the request
 
   return Request;
 }
@@ -4746,8 +4742,6 @@ FNakamaApiRequestModel NakamaInternal::BuildDemoteGroupUsersRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
-
   return Request;
 }
 
@@ -4766,7 +4760,10 @@ FNakamaApiRequestModel NakamaInternal::BuildReadStorageObjectsRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4796,7 +4793,13 @@ FNakamaApiRequestModel NakamaInternal::BuildRpcFuncRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "payload" field)
+  if (Params.Payload.IsEmpty() == false)
+  {
+    const FString Escaped = Params.Payload.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    Request.Body = TEXT("\"") + Escaped + TEXT("\"");
+  }
 
   return Request;
 }
@@ -4816,7 +4819,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkAppleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4836,7 +4842,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkCustomRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4856,7 +4865,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkDeviceRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4876,7 +4888,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkEmailRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4896,7 +4911,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkFacebookRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4916,7 +4934,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkFacebookInstantGameRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4936,7 +4957,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkGameCenterRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4956,7 +4980,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkGoogleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4976,7 +5003,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkSteamRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -4996,7 +5026,10 @@ FNakamaApiRequestModel NakamaInternal::BuildUpdateAccountRequest (
   // Verb
   Request.Verb = TEXT("PUT");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5017,7 +5050,14 @@ FNakamaApiRequestModel NakamaInternal::BuildUpdateGroupRequest (
   // Verb
   Request.Verb = TEXT("PUT");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  if (BodyJson.IsValid())
+  {
+    BodyJson->RemoveField(TEXT("group_id"));
+  }
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5037,7 +5077,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseAppleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5057,7 +5100,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidateSubscriptionAppleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5077,7 +5123,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseGoogleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5097,7 +5146,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidateSubscriptionGoogleRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5117,7 +5169,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseHuaweiRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5137,7 +5192,10 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseFacebookInstantReque
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5158,7 +5216,9 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteLeaderboardRecordRequest (
   // Verb
   Request.Verb = TEXT("POST");
 
-  // TODO: Fill the request
+  //
+  // Body (the "record" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Record.ToJson());
 
   return Request;
 }
@@ -5178,7 +5238,10 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteStorageObjectsRequest (
   // Verb
   Request.Verb = TEXT("PUT");
 
-  // TODO: Fill the request
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
 
   return Request;
 }
@@ -5199,7 +5262,9 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteTournamentRecordRequest (
   // Verb
   Request.Verb = TEXT("PUT");
 
-  // TODO: Fill the request
+  //
+  // Body (the "record" field)
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(Params.Record.ToJson());
 
   return Request;
 }
