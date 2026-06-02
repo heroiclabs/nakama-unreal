@@ -21,8 +21,6 @@
 struct NAKAMA_API FNakamaApiRequestModel
 {
   FString Url;
-
-  // TODO: Request Method
-  
-  // TODO: Request Body
+  FString Verb;
+  FString Body;
 };

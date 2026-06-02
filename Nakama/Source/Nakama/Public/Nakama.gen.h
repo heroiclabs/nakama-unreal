@@ -1440,7 +1440,7 @@ struct NAKAMA_API FNakamaGroupUserList_GroupUser
 
   //  Their relationship to the group.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "state"))
-  FNakamaOptionalInt32 State = 0;
+  FNakamaOptionalInt32 State = {};
 
   // Creates a GroupUserList_GroupUser from the given FJsonObject.
   static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);

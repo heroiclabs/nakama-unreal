@@ -20,6 +20,8 @@
 
 #include "Nakama.gen.h"
 #include "JsonObjectConverter.h"
+#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 
 {{/*---------------- MESSAGES ------------------*/}}
 {{ range $message := .Messages }}
@@ -61,7 +63,86 @@ FNakamaApiRequestModel NakamaInternal::Build{{ $rpc.Name }}Request (
 {
   FNakamaApiRequestModel Request;
 
-  // TODO: Fill the request
+  //
+  // URL
+  FString Url = TEXT("{{ $rpc.Endpoint }}");
+  {{- range $param := $rpc.PathParams }}
+  Url = Url.Replace(TEXT("{{"{"}}{{ $param }}{{"}"}}"), *FGenericPlatformHttp::UrlEncode(Params.{{ $param | pascalCase | normalizeIdentifier }}));
+  {{- end }}
+  {{- if gt (len $rpc.QueryParams) 0 }}
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  {{- range $field := $rpc.RequestType.Fields }}
+  {{- if containsInSlice $rpc.QueryParams $field.Name }}
+  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
+  {{- if $field.Repeated }}
+  for (const FString& Item : {{ $accessor }})
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), Item});
+  }
+  {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), {{ $accessor }}});
+  }
+  {{- else if eq $field.Type "BoolValue" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), LexToString({{ $accessor }}.GetValue())});
+  }
+  {{- else if eq $field.Type "Int32Value" "UInt32Value" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%d"), {{ $accessor }}.GetValue())});
+  }
+  {{- else if eq $field.Type "Int64Value" "UInt64Value" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%lld"), {{ $accessor }}.GetValue())});
+  }
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  {{- end }}
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("{{ $rpc.Method }}");
+  {{- if eq $rpc.BodyField "*" }}
+
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  {{- range $param := $rpc.PathParams }}
+  if (BodyJson.IsValid())
+  {
+    BodyJson->RemoveField(TEXT("{{ $param }}"));
+  }
+  {{- end }}
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+  {{- else if ne $rpc.BodyField "" }}
+  {{- range $field := $rpc.RequestType.Fields }}
+  {{- if eq $field.Name $rpc.BodyField }}
+  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
+
+  //
+  // Body (the "{{ $field.Name }}" field)
+  {{- if containsMessage $field.Type }}
+  Request.Body = NakamaHttpInternal::SerializeJsonToString({{ $accessor }}.ToJson());
+  {{- else }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    const FString Escaped = {{ $accessor }}.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    Request.Body = TEXT("\"") + Escaped + TEXT("\"");
+  }
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
 
   return Request;
 }

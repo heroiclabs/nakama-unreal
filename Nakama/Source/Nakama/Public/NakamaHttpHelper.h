@@ -29,9 +29,18 @@
 #include "Serialization/MemoryWriter.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 #include "NakamaError.h"
 #include "NakamaClientConfig.h"
-#include "NakamaTypes.h"
+
+/** Authentication scheme applied to an outgoing HTTP request. */
+enum class ENakamaRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer,
+	HttpKey,
+};
 
 /**
  * Internal HTTP helpers for NakamaApi.

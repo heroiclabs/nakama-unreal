@@ -20,6 +20,8 @@
 
 #include "Nakama.gen.h"
 #include "JsonObjectConverter.h"
+#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 
 
 
@@ -2935,7 +2937,33 @@ FNakamaApiRequestModel NakamaInternal::BuildAddFriendsRequest (
 )
 {
   FNakamaApiRequestModel Request;
-  
+
+  //
+  // URL
+  FString Url = TEXT("/v2/friend");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.Ids)
+  {
+    QueryParams.Add({TEXT("ids"), Item});
+  }
+  for (const FString& Item : Params.Usernames)
+  {
+    QueryParams.Add({TEXT("usernames"), Item});
+  }
+  if (Params.Metadata.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("metadata"), Params.Metadata});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -2946,6 +2974,25 @@ FNakamaApiRequestModel NakamaInternal::BuildAddGroupUsersRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/add");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.UserIds)
+  {
+    QueryParams.Add({TEXT("user_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -2958,6 +3005,15 @@ FNakamaApiRequestModel NakamaInternal::BuildSessionRefreshRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/session/refresh");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -2968,6 +3024,15 @@ FNakamaApiRequestModel NakamaInternal::BuildSessionLogoutRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/session/logout");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -2980,6 +3045,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateAppleRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/apple");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -2990,6 +3077,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateCustomRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/custom");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3002,6 +3111,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateDeviceRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/device");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3012,6 +3143,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateEmailRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/email");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3024,6 +3177,32 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateFacebookRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/facebook");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  if (Params.Sync.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("sync"), LexToString(Params.Sync.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3034,6 +3213,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateFacebookInstantGameReque
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/facebookinstantgame");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3046,6 +3247,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateGameCenterRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/gamecenter");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3056,6 +3279,28 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateGoogleRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/google");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3068,6 +3313,32 @@ FNakamaApiRequestModel NakamaInternal::BuildAuthenticateSteamRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate/steam");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Create.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("create"), LexToString(Params.Create.GetValue())});
+  }
+  if (Params.Username.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("username"), Params.Username});
+  }
+  if (Params.Sync.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("sync"), LexToString(Params.Sync.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3078,6 +3349,25 @@ FNakamaApiRequestModel NakamaInternal::BuildBanGroupUsersRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/ban");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.UserIds)
+  {
+    QueryParams.Add({TEXT("user_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3090,6 +3380,28 @@ FNakamaApiRequestModel NakamaInternal::BuildBlockFriendsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/friend/block");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.Ids)
+  {
+    QueryParams.Add({TEXT("ids"), Item});
+  }
+  for (const FString& Item : Params.Usernames)
+  {
+    QueryParams.Add({TEXT("usernames"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3101,6 +3413,15 @@ FNakamaApiRequestModel NakamaInternal::BuildCreateGroupRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/group");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3110,6 +3431,15 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteAccountRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
 
   // TODO: Fill the request
 
@@ -3122,6 +3452,28 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteFriendsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/friend");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.Ids)
+  {
+    QueryParams.Add({TEXT("ids"), Item});
+  }
+  for (const FString& Item : Params.Usernames)
+  {
+    QueryParams.Add({TEXT("usernames"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
+
   // TODO: Fill the request
 
   return Request;
@@ -3132,6 +3484,16 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteGroupRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
 
   // TODO: Fill the request
 
@@ -3144,6 +3506,16 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteLeaderboardRecordRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/leaderboard/{leaderboard_id}");
+  Url = Url.Replace(TEXT("{leaderboard_id}"), *FGenericPlatformHttp::UrlEncode(Params.LeaderboardId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
+
   // TODO: Fill the request
 
   return Request;
@@ -3154,6 +3526,24 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteNotificationsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/notification");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.Ids)
+  {
+    QueryParams.Add({TEXT("ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
 
   // TODO: Fill the request
 
@@ -3166,6 +3556,16 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteTournamentRecordRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament/{tournament_id}");
+  Url = Url.Replace(TEXT("{tournament_id}"), *FGenericPlatformHttp::UrlEncode(Params.TournamentId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("DELETE");
+
   // TODO: Fill the request
 
   return Request;
@@ -3176,6 +3576,15 @@ FNakamaApiRequestModel NakamaInternal::BuildDeleteStorageObjectsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/storage/delete");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("PUT");
 
   // TODO: Fill the request
 
@@ -3188,6 +3597,15 @@ FNakamaApiRequestModel NakamaInternal::BuildEventRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/event");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3197,6 +3615,15 @@ FNakamaApiRequestModel NakamaInternal::BuildGetAccountRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3209,6 +3636,32 @@ FNakamaApiRequestModel NakamaInternal::BuildGetUsersRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/user");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.Ids)
+  {
+    QueryParams.Add({TEXT("ids"), Item});
+  }
+  for (const FString& Item : Params.Usernames)
+  {
+    QueryParams.Add({TEXT("usernames"), Item});
+  }
+  for (const FString& Item : Params.FacebookIds)
+  {
+    QueryParams.Add({TEXT("facebook_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3220,6 +3673,16 @@ FNakamaApiRequestModel NakamaInternal::BuildGetSubscriptionRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/subscription/{product_id}");
+  Url = Url.Replace(TEXT("{product_id}"), *FGenericPlatformHttp::UrlEncode(Params.ProductId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3230,6 +3693,15 @@ FNakamaApiRequestModel NakamaInternal::BuildGetMatchmakerStatsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/matchmaker/stats");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3239,6 +3711,15 @@ FNakamaApiRequestModel NakamaInternal::BuildHealthcheckRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/healthcheck");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3251,6 +3732,24 @@ FNakamaApiRequestModel NakamaInternal::BuildImportFacebookFriendsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/friend/facebook");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Reset.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("reset"), LexToString(Params.Reset.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3261,6 +3760,24 @@ FNakamaApiRequestModel NakamaInternal::BuildImportSteamFriendsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/friend/steam");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Reset.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("reset"), LexToString(Params.Reset.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3273,6 +3790,16 @@ FNakamaApiRequestModel NakamaInternal::BuildJoinGroupRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/join");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3283,6 +3810,16 @@ FNakamaApiRequestModel NakamaInternal::BuildJoinTournamentRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament/{tournament_id}/join");
+  Url = Url.Replace(TEXT("{tournament_id}"), *FGenericPlatformHttp::UrlEncode(Params.TournamentId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3295,6 +3832,25 @@ FNakamaApiRequestModel NakamaInternal::BuildKickGroupUsersRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/kick");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.UserIds)
+  {
+    QueryParams.Add({TEXT("user_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3305,6 +3861,16 @@ FNakamaApiRequestModel NakamaInternal::BuildLeaveGroupRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/leave");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3317,6 +3883,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkAppleRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/apple");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3327,6 +3902,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkCustomRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/custom");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3339,6 +3923,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkDeviceRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/device");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3349,6 +3942,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkEmailRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/email");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3361,6 +3963,24 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkFacebookRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/facebook");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Sync.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("sync"), LexToString(Params.Sync.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3371,6 +3991,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkFacebookInstantGameRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/facebookinstantgame");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3383,6 +4012,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkGameCenterRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/gamecenter");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3393,6 +4031,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkGoogleRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/google");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3405,6 +4052,15 @@ FNakamaApiRequestModel NakamaInternal::BuildLinkSteamRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/link/steam");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3415,6 +4071,33 @@ FNakamaApiRequestModel NakamaInternal::BuildListChannelMessagesRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/channel/{channel_id}");
+  Url = Url.Replace(TEXT("{channel_id}"), *FGenericPlatformHttp::UrlEncode(Params.ChannelId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Forward.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("forward"), LexToString(Params.Forward.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3427,6 +4110,32 @@ FNakamaApiRequestModel NakamaInternal::BuildListFriendsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/friend");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.State.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), Params.State.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3437,6 +4146,28 @@ FNakamaApiRequestModel NakamaInternal::BuildListFriendsOfFriendsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/friend/friends");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3449,6 +4180,44 @@ FNakamaApiRequestModel NakamaInternal::BuildListGroupsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/group");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Name.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("name"), Params.Name});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.LangTag.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("lang_tag"), Params.LangTag});
+  }
+  if (Params.Members.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("members"), FString::Printf(TEXT("%d"), Params.Members.GetValue())});
+  }
+  if (Params.Open.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("open"), LexToString(Params.Open.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3459,6 +4228,33 @@ FNakamaApiRequestModel NakamaInternal::BuildListGroupUsersRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/user");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.State.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), Params.State.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3471,6 +4267,37 @@ FNakamaApiRequestModel NakamaInternal::BuildListLeaderboardRecordsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/leaderboard/{leaderboard_id}");
+  Url = Url.Replace(TEXT("{leaderboard_id}"), *FGenericPlatformHttp::UrlEncode(Params.LeaderboardId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.OwnerIds)
+  {
+    QueryParams.Add({TEXT("owner_ids"), Item});
+  }
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  if (Params.Expiry.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), Params.Expiry.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3481,6 +4308,34 @@ FNakamaApiRequestModel NakamaInternal::BuildListLeaderboardRecordsAroundOwnerReq
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
+  Url = Url.Replace(TEXT("{leaderboard_id}"), *FGenericPlatformHttp::UrlEncode(Params.LeaderboardId));
+  Url = Url.Replace(TEXT("{owner_id}"), *FGenericPlatformHttp::UrlEncode(Params.OwnerId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Expiry.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), Params.Expiry.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3493,6 +4348,44 @@ FNakamaApiRequestModel NakamaInternal::BuildListMatchesRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/match");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Authoritative.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("authoritative"), LexToString(Params.Authoritative.GetValue())});
+  }
+  if (Params.Label.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("label"), Params.Label});
+  }
+  if (Params.MinSize.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("min_size"), FString::Printf(TEXT("%d"), Params.MinSize.GetValue())});
+  }
+  if (Params.MaxSize.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("max_size"), FString::Printf(TEXT("%d"), Params.MaxSize.GetValue())});
+  }
+  if (Params.Query.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("query"), Params.Query});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3503,6 +4396,36 @@ FNakamaApiRequestModel NakamaInternal::BuildListPartiesRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/party");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Open.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("open"), LexToString(Params.Open.GetValue())});
+  }
+  if (Params.Query.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("query"), Params.Query});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3515,6 +4438,28 @@ FNakamaApiRequestModel NakamaInternal::BuildListNotificationsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/notification");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.CacheableCursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cacheable_cursor"), Params.CacheableCursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3525,6 +4470,33 @@ FNakamaApiRequestModel NakamaInternal::BuildListStorageObjectsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/storage/{collection}");
+  Url = Url.Replace(TEXT("{collection}"), *FGenericPlatformHttp::UrlEncode(Params.Collection));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.UserId.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("user_id"), Params.UserId});
+  }
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3537,6 +4509,15 @@ FNakamaApiRequestModel NakamaInternal::BuildListSubscriptionsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/subscription");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3547,6 +4528,44 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament");
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.CategoryStart.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("category_start"), FString::Printf(TEXT("%d"), Params.CategoryStart.GetValue())});
+  }
+  if (Params.CategoryEnd.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("category_end"), FString::Printf(TEXT("%d"), Params.CategoryEnd.GetValue())});
+  }
+  if (Params.StartTime.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("start_time"), FString::Printf(TEXT("%d"), Params.StartTime.GetValue())});
+  }
+  if (Params.EndTime.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("end_time"), FString::Printf(TEXT("%d"), Params.EndTime.GetValue())});
+  }
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3559,6 +4578,37 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentRecordsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament/{tournament_id}");
+  Url = Url.Replace(TEXT("{tournament_id}"), *FGenericPlatformHttp::UrlEncode(Params.TournamentId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.OwnerIds)
+  {
+    QueryParams.Add({TEXT("owner_ids"), Item});
+  }
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  if (Params.Expiry.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), Params.Expiry.GetValue())});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3569,6 +4619,34 @@ FNakamaApiRequestModel NakamaInternal::BuildListTournamentRecordsAroundOwnerRequ
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
+  Url = Url.Replace(TEXT("{tournament_id}"), *FGenericPlatformHttp::UrlEncode(Params.TournamentId));
+  Url = Url.Replace(TEXT("{owner_id}"), *FGenericPlatformHttp::UrlEncode(Params.OwnerId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.Expiry.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("expiry"), FString::Printf(TEXT("%lld"), Params.Expiry.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
 
   // TODO: Fill the request
 
@@ -3581,6 +4659,33 @@ FNakamaApiRequestModel NakamaInternal::BuildListUserGroupsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/user/{user_id}/group");
+  Url = Url.Replace(TEXT("{user_id}"), *FGenericPlatformHttp::UrlEncode(Params.UserId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.Limit.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit.GetValue())});
+  }
+  if (Params.State.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("state"), FString::Printf(TEXT("%d"), Params.State.GetValue())});
+  }
+  if (Params.Cursor.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("cursor"), Params.Cursor});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("GET");
+
   // TODO: Fill the request
 
   return Request;
@@ -3591,6 +4696,25 @@ FNakamaApiRequestModel NakamaInternal::BuildPromoteGroupUsersRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/promote");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.UserIds)
+  {
+    QueryParams.Add({TEXT("user_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3603,6 +4727,25 @@ FNakamaApiRequestModel NakamaInternal::BuildDemoteGroupUsersRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}/demote");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  for (const FString& Item : Params.UserIds)
+  {
+    QueryParams.Add({TEXT("user_ids"), Item});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3613,6 +4756,15 @@ FNakamaApiRequestModel NakamaInternal::BuildReadStorageObjectsRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/storage");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3625,6 +4777,25 @@ FNakamaApiRequestModel NakamaInternal::BuildRpcFuncRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/rpc/{id}");
+  Url = Url.Replace(TEXT("{id}"), *FGenericPlatformHttp::UrlEncode(Params.Id));
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  if (Params.HttpKey.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("http_key"), Params.HttpKey});
+  }
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3635,6 +4806,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkAppleRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/apple");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3647,6 +4827,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkCustomRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/custom");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3657,6 +4846,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkDeviceRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/device");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3669,6 +4867,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkEmailRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/email");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3679,6 +4886,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkFacebookRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/facebook");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3691,6 +4907,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkFacebookInstantGameRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/facebookinstantgame");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3701,6 +4926,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkGameCenterRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/gamecenter");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3713,6 +4947,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkGoogleRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/google");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3723,6 +4966,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUnlinkSteamRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/unlink/steam");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3735,6 +4987,15 @@ FNakamaApiRequestModel NakamaInternal::BuildUpdateAccountRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/account");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("PUT");
+
   // TODO: Fill the request
 
   return Request;
@@ -3745,6 +5006,16 @@ FNakamaApiRequestModel NakamaInternal::BuildUpdateGroupRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/group/{group_id}");
+  Url = Url.Replace(TEXT("{group_id}"), *FGenericPlatformHttp::UrlEncode(Params.GroupId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("PUT");
 
   // TODO: Fill the request
 
@@ -3757,6 +5028,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseAppleRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/purchase/apple");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3767,6 +5047,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidateSubscriptionAppleRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/subscription/apple");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3779,6 +5068,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseGoogleRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/purchase/google");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3789,6 +5087,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidateSubscriptionGoogleRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/subscription/google");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3801,6 +5108,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseHuaweiRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/purchase/huawei");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3811,6 +5127,15 @@ FNakamaApiRequestModel NakamaInternal::BuildValidatePurchaseFacebookInstantReque
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/purchase/facebookinstant");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
 
   // TODO: Fill the request
 
@@ -3823,6 +5148,16 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteLeaderboardRecordRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/leaderboard/{leaderboard_id}");
+  Url = Url.Replace(TEXT("{leaderboard_id}"), *FGenericPlatformHttp::UrlEncode(Params.LeaderboardId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
   // TODO: Fill the request
 
   return Request;
@@ -3834,6 +5169,15 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteStorageObjectsRequest (
 {
   FNakamaApiRequestModel Request;
 
+  //
+  // URL
+  FString Url = TEXT("/v2/storage");
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("PUT");
+
   // TODO: Fill the request
 
   return Request;
@@ -3844,6 +5188,16 @@ FNakamaApiRequestModel NakamaInternal::BuildWriteTournamentRecordRequest (
 )
 {
   FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/tournament/{tournament_id}");
+  Url = Url.Replace(TEXT("{tournament_id}"), *FGenericPlatformHttp::UrlEncode(Params.TournamentId));
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("PUT");
 
   // TODO: Fill the request
 
