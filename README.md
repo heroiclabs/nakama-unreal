@@ -1,13 +1,16 @@
- Nakama Unreal
+Nakama Unreal
 =============
 
-[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com).
+[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com/nakama).
 
-This client implements the full API and socket options with the server. It's written in C++ with minimal dependencies to support Unreal 4 and 5.
+This client implements the full Nakama API and socket options with the server, as well as the [Satori](https://heroiclabs.com/docs/satori/concepts/introduction/index.html) API.  
+It's written in C++ with minimal dependencies to support Unreal 4 and 5.
 
-If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-cpp/issues).
+If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-unreal/issues).
 
-Full documentation is online - https://heroiclabs.com/docs
+The plugin documentation including Getting Started and Code Examples is online at [https://heroiclabs.com/docs/unreal-client-guide/](https://heroiclabs.com/docs/unreal-client-guide/).
+
+For all other docs, check out [https://heroiclabs.com/docs](https://heroiclabs.com/docs).
 
 # General Information
 
@@ -15,20 +18,18 @@ This plugin can also be used for programmers who like C++ or Blueprints. All var
 
 The plugin is divided into three modules which can be pulled in depending on your needs.
 
-- `NakamaUnreal` The recommended C++-based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
+- `Nakama` High-level Nakama API: The recommended C++-based module for using Nakama in UnrealEngine.
+- `NakamaApi` Low-level Nakama API: Required for the `Nakama` module, but not recommended for direct use.
 - `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
-
-
-Clients are referred in this documentation as **Realtime Client** and **Default Client** in which the realtime client is the socket and the default client is using REST API to communicate with Nakama.
 
 # Getting Started
 
-You'll need to setup the server and database before you can connect with the client. The simplest way is to use Docker but have a look at the [server documentation](https://github.com/heroiclabs/nakama#getting-started) for other options.
+You'll need to set up the server and database before you can connect with the client. The simplest way is to use Docker but have a look at the [server documentation](https://github.com/heroiclabs/nakama#getting-started) for other options.
 
 To get started using Nakama in Unreal you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/nakama/getting-started/install/docker/).
-2. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
+2. A copy of the [Nakama Client](https://github.com/heroiclabs/nakama-unreal/releases) plugin
 3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater or 5.
 4. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 
@@ -36,321 +37,129 @@ Also, please ensure your Unreal project is a C++ project.  If it is Blueprint on
 
 ## Installing the Plugin
 
-To use Nakama in your Unreal project, you'll need to download our plugin from the Unreal Marketplace or copy the nakama-unreal files you downloaded into the appropriate place. To do the latter:
+To use Nakama in your Unreal project, you'll need to copy the Nakama Client files you downloaded into the appropriate place:
 
 1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
 2. If one does not already exist, create a `Plugins` folder here.
-3. Copy the `Nakama` folder from [nakama-unreal](https://github.com/heroiclabs/nakama-unreal/releases) and put it in the `Plugins` folder
+3. Copy the `Nakama` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
 
-**Optionally:** you can put the plugins inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\Marketplace`) to use the plugin on multiple projects.
+**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
 
-At this point, you are done. Restart Unreal. After it compiles things, open Edit->Plugins and scroll to the bottom. If all went well, you should see HeroicLabs.Nakama listed as a plugin.
-
- **Clients**
-
-You have to decide where you want to create and keep record of these clients.
-
- **Sessions**
-
- Sessions are portable UObjects that contain a session pointer and a struct with the actual data in the session, like the tokens, user data, expiry information an so on. There are also some utility functions provided with the Session objects, like getting a specific variable or restoring the session.
-
-  **Tick System**
-
-Normally you would have to handle ticking on a C++ basis, luckily this is done automatically under the hood in this plugin after you have created the client. When you create the Client you can define a Tick Interval, by default this is set to 0, which means it will tick every frame, if you want it to tick every 50ms you have to set it as 0.05, to make it tick every second this number would be 1.
-
-# Getting Started with NakamaUnreal (C++ with Unreal Types)
-
-Below is a simple example of setting up a default client, authenticating, setting up a realtime client and joining a chat room. In the example we will put everything in a empty AActor class that is placed in the level.
-
-Remember to add NakamaUnreal to your Private Dependencies under your project Build.cs file. For example:
+Remember to add the modules to the dependencies under your project's Build.cs file. For example:
 
 ```cs
-
-PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal" });
-
+PublicDependencyModuleNames.AddRange(new string[] { "Nakama", "NakamaApi", "NakamaBlueprints" });
 ```
 
-Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example. Unreal Engine uses a reflection system that provides metadata about its classes and allows for advanced features like Blueprint/C++ communication, serialization, and more.
-When working with Nakama objects, or any UObject-derived class, it's crucial to mark them using the Unreal reflection system. This is done using macros such as UFUNCTION(), and UPROPERTY().
+At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Nakama". If all went well, you should see the Nakama plugin, make sure to enable it (this may prompt an editor restart).
+
+# Example Usage
+
+There's a variety of ways to authenticate with the server. Authentication can create a user if they don't already exist with those credentials. It's also easy to authenticate with a social profile from Google Play Games, Facebook, Game Center, etc.
+
+1. Create the Nakama Client Config using your desired connection credentials:
 
 ```cpp
-UPROPERTY()
-UNakamaClient* NakamaClient;
+const FString ServerKey = TEXT("defaultkey");
+const FString Host = TEXT("127.0.0.1");
+constexpr int32 Port = 7350;
+constexpr bool bUseSSL = false;
 
-UPROPERTY()
-UNakamaRealtimeClient* NakamaRealtimeClient;
-
-UPROPERTY()
-UNakamaSession* UserSession;
-
-UFUNCTION()
-void OnAuthenticationSuccess(UNakamaSession* LoginData);
-
-UFUNCTION()
-void OnAuthenticationError(const FNakamaError& Error);
-
-UFUNCTION()
-void OnRealtimeClientConnectSuccess();
-
-UFUNCTION()
-void OnRealtimeClientConnectError(const FNakamaRtError& ErrorData);
-
-// Initialize client and authenticate here
-virtual void BeginPlay() override;
+const FNakamaClientConfig ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, bUseSSL};
 ```
 
-For instance, if you want a Nakama object to be available for manipulation within the Blueprint Editor, you'd mark it with UPROPERTY().
+2. Authenticate using the previously created Nakama Client Config along with the device's Id, desired username, and whether to create a new account if this user doesn't exist:
 
 ```cpp
-UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Nakama")
-UNakamaClient* NakamaClientInstance;
+FNakamaSession Session;
+
+const FString DeviceId = TEXT("<DeviceId>");
+const FString Username = TEXT("NewUser");
+constexpr bool bCreate = true;
+
+Nakama::AuthenticateDevice(ClientConfig, bCreate, Username, DeviceId).Next(
+    [&Session](const FNakamaSessionResult& AuthenticateResult)
+    {
+       if (AuthenticateResult.bIsError)
+       {
+          UE_LOG(LogTemp, Error, TEXT("Failed to log in: %s"), *AuthenticateResult.Error.Message);
+          return;
+       }
+
+       Session = AuthenticateResult.Value;
+
+       UE_LOG(LogTemp, Log, TEXT("Log in successful: %s"), *AuthenticateResult.Value.Username);
+    });
 ```
 
-By using the BlueprintReadWrite specifier, the NakamaClientInstance variable becomes both readable and writable in Blueprints.
-
-Then inside the Begin Play we setup default client, authenticate and bind delegates.
+3. Once the user is authenticated, you can start making API requests by passing in both the Nakama Client Config, and the session that was received from authentication:
 
 ```cpp
-// Called when the game starts or when spawned
-void AMyActor::BeginPlay()
+Nakama::GetAccount(ClientConfig, Session).Next([](const FNakamaAccountResult& AccountResult)
 {
-	Super::BeginPlay();
-
-	// Default Client Parameters
-	FString ServerKey = TEXT("defaultkey");
-	FString Host = TEXT("127.0.0.1");
-	int32 Port = 7350;
-	bool bUseSSL = false;
-	bool bEnableDebug = true;
-
-	// Setup Default Client
-	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, Port, bUseSSL, bEnableDebug);
-
-	// Authentication Parameters
-	FString Email = TEXT("debug@mail.com");
-	FString Password = TEXT("verysecretpassword");
-	FString Username = TEXT("debug-user");
-	TMap<FString, FString> Variables;
-
-	// Setup Delegates of same type and bind them to local functions
-	FOnAuthUpdate AuthenticationSuccessDelegate;
-	AuthenticationSuccessDelegate.AddDynamic(this, &AMyActor::OnAuthenticationSuccess);
-
-	FOnError AuthenticationErrorDelegate;
-	AuthenticationErrorDelegate.AddDynamic(this, &AMyActor::OnAuthenticationError);
-
-	NakamaClient->AuthenticateEmail(Email, Password, Username, true, Variables, AuthenticationSuccessDelegate, AuthenticationErrorDelegate);
-}
-```
-
-Then the response of the authentication callbacks
-
-```cpp
-void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
-{
-	if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Authenticated As %s"), *LoginData->SessionData.Username));
-
-	UserSession = LoginData;
-
-	// Setup Delegates of same type and bind them to local functions
-	FOnRealtimeClientConnected ConnectionSuccessDelegate;
-	ConnectionSuccessDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectSuccess);
-
-	FOnRealtimeClientConnectionError ConnectionErrorDelegate;
-	ConnectionErrorDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectError);
-
-	// This is our realtime client (socket) ready to use
-	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient();
-
-	// Remember to Connect
-	bool bCreateStatus = true;
-	NakamaRealtimeClient->Connect(UserSession, bCreateStatus, ConnectionSuccessDelegate, ConnectionErrorDelegate);
-
-}
-
-void AMyActor::OnAuthenticationError(const FNakamaError& Error)
-{
-	if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Failed to Authenticate: %s"), *Error.Message));
-}
-```
-
-And finally the overridden realtime client setup callback, you can now use the realtime client.
-
-```cpp
-void AMyActor::OnRealtimeClientConnectSuccess()
-{
-	if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString(TEXT("Socket Setup Success!")));
-
-	// Example of Joining Chat without callbacks
-	NakamaRealtimeClient->JoinChat("Heroes", ENakamaChannelType::ROOM, true, false, {}, {});
-
-}
-
-void AMyActor::OnRealtimeClientConnectError(const FNakamaRtError& ErrorData)
-{
-	if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString(TEXT("Socket Setup Failed!")));
-}
-```
-
-If you setup everything correctly, create a blueprint version of this actor and place it in the level you will see on-screen messages saying you authenticated, your username and then socket connected message.
-
-# Delegates and Lambdas in Nakama Unreal
-
-The latest Nakama Unreal release offers the flexibility to use either `Dynamic Multicast Delegates` or `Lambdas (TFunctions)` for handling functions and events. Here's a brief comparison and guidelines on how to use them:
-
-## Dynamic Multicast Delegates:
-- **Binding**: Bound using `AddDynamic`.
-- **Usage**: Suited for scenarios where multiple bindings are needed.
-
-## Lambdas (TFunctions):
-- **Binding**: Defined in-line and don't require an external function.
-- **Usage**: Convenient for one-off or temporary handlers. Note that a lambda can only be bound to one place at a time.
-
-### How to Choose?
-Provide your preferred callback type (either a `delegate` or a `lambda`) into the `Success` and `Error` parameters of the relevant Nakama function.
-
----
-
-## Example: Using Lambdas
-
-Here's a demonstration of using `lambdas` as an alternative to `delegates`:
-
-```cpp
-// Define success callback with a lambda
-auto successCallback = [&](UNakamaSession* session)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
-	UE_LOG(LogTemp, Warning, TEXT("Username: %s"), *Session->GetUsername());
-};
-
-// Define error callback with a lambda
-auto errorCallback = [&](const FNakamaError& Error)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Error Code: %d"), Error.Code);
-};
-
-// Execute the AuthenticateEmail function with lambdas
-Client->AuthenticateEmail(TEXT("debug@mail.com"), TEXT("verysecretpassword"), TEXT("debug-user"), true, {}, successCallback, errorCallback);
-```
-
-
-
-# Working with Realtime Events
-
-Upon initializing your Realtime Client, it's essential to establish event listeners for critical in-game events, ranging from channel messages and notifications to party interactions. Nakama Unreal provides flexibility by allowing both lambdas and delegates for this purpose.
-
-```cpp
-// Start by creating a Realtime Client:
-UNakamaRealtimeClient* Socket = NakamaClient->SetupRealtimeClient();
-
-// When using delegates, you need to declare functions that match the delegate's signature:
-Socket->ChannelMessageReceived.AddDynamic(this, &ANakamaActor::OnChannelMessageReceived);
-Socket->NotificationReceived.AddDynamic(this, &ANakamaActor::OnNotificationReceived);
-
-// Lambdas offer a concise way to define event handlers directly in-line:
-// Note: A lambda can be bound only once.
-Socket->SetChannelMessageCallback( [](const FNakamaChannelMessage& ChannelMessage)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
+    if (AccountResult.bIsError)
+    {
+       UE_LOG(LogTemp, Error, TEXT("An error occurred: %d:%s"), AccountResult.Error.Code,
+              *AccountResult.Error.Message);
+    }
 });
-
-Socket->SetNotificationsCallback( [](const FNakamaNotificationList& NotificationList)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Notifications: %d"), NotificationList.Notifications.Num());
-	for (auto& Notification : NotificationList.Notifications)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *Notification.Content);
-	}
-});
-
-// Establish a connection to start receiving events.
-// Optional success and error callbacks (either lambdas or delegates) can be provided:
-Socket->Connect(Session, true);
-```
-Function implementations might look something like this:
-
-
-```cpp
-void ANakamaActor::OnChannelMessageReceived(const FNakamaChannelMessage& ChannelMessage)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
-}
-
-void ANakamaActor::OnNotificationReceived(const FNakamaNotificationList& Notifications)
-{
-	for (auto NotificationData : Notifications.Notifications)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *NotificationData.Content);
-	}
-}
 ```
 
 # Getting Started with `NakamaBlueprints`
 
 In this section you will learn how to manually create and manage Nakama clients that are provided by this plugin, entirely in blueprints.
 
-It is up to the you where to create and store references to the clients, this could be done in any actor, component, character, gamemode etc. A good place to put the clients is in the Player Controller or the Game Instance.
+It is up to the you where to create and store references to the clients, this could be done in any actor, component, character, gamemode etc. A good place to put the clients is in the Game Instance.
 
-
-Start by adding the **Create Default Client** node which is a part fo the Nakama Library.
+Start by adding the Make Nakama Client Config node which is a part fo the Nakama Library.
 
 ![image createclient-1](./images/Client-1.png)
 
-It is good practice to promote the clients to variables so you can access them other places in your blueprint graphs.
-
+It is good practice to promote the clients to variables so you can access them in other places in your blueprint graphs.
 
 ![image createclient-2](./images/Client-2.png)
 
-You are now ready to authenticate, using one of the many provided Nakama authentication types, in this example we will be authenticating with email and password, normally you would setup a Widget Blueprint and pass the input from the UI into the authentication node, and authenticate by pressing a login button.
+You are now ready to authenticate using one of the many provided Nakama authentication types, in this example we will be authenticating with email and password. Normally you would setup a Widget Blueprint and pass the input from the UI into the authentication node, and then authenticate by pressing a log-in button.
 
 ![image createclient-3](./images/Client-3.png)
 
-
-As you can see, this returns a session object that will be passed into other functions, make sure to promote the session object for later use. With this plugin you may have multiple sessions per unreal instance, it is up to you to keep record and decide how you want to use the sessions. The variables pin also needs to be connected, but you can leave the string map empty if you don't want to use custom variables.
+As you can see, this returns a session object that will be passed into other functions, make sure to promote the session object for later use. With this plugin you may have multiple sessions per unreal instance, it is up to you to keep record and decide how you want to use the sessions.
 
 ![image createclient-4](./images/Client-4.png)
 
+## Setting up the Real-time Listeners and Binding to Events
 
-After you have created a default client you'll be able to setup one or more realtime clients (sockets) that interact with the server.
+After you have authenticated and have received an auth token, you'll be able to set up a socket connection with the server if you wish to use real-time features.
 
-Drag out from the **NakamaClient** that you created earlier, and call the **Setup Realtime Client** function.
-
-
-![image createclient-4](./images/Client-5.png)
-
-Remember to provide the user session from the successful authentication earlier, then bind custom events to the success and error callbacks. The Realtime Client will be returned from this node, and is ready to be used to communicate with the Nakama server. You can now use features such as Chat and Matchmaker.
-
-![image createclient-5](./images/Client-6.png)
-
-
-# Setting up Listeners and Binding to Events
-
-After creating your Realtime Client you are ready to bind to its' events
+First, create the Nakama Rt Connection object and store the handle for use later.
 
 ![image binding-1](./images/Bindings-1.png)
 
-After setting up your specific listeners you are ready to bind to the callbacks.
+Using the Rt Handle, bind to the `ConnectCompleted` and `Closed` events to handle the connection lifecycle. Then you can call **Connect** to establish the connection by passing in the params, including the auth token from the session that you stored earlier. In this screenshot, we have split the Params struct pin to keep the nodes tidy.
 
 ![image binding-2](./images/Bindings-2.png)
 
-Create a custom event and give it a meaningful name.
+Using the Rt Handle, you are also able to bind more events to receive updates from various real-time systems. These can be bound right before connecting to make sure that the callbacks are ready immediately upon connecting the socket.
 
 ![image binding-3](./images/Bindings-3.png)
 
+For this example, we'll be using the `Notifications` callback. Create a custom event and give it a meaningful name.
+
+![image binding-4](./images/Bindings-4.png)
+
  In the example below, we setup a listener for notifications, then we bind to the event, loop over notifications and print them as debug strings on the screen.
 
- ![image binding-4](./images/Bindings-4.png)
+ ![image binding-5](./images/Bindings-5.png)
 
-In the next example we listen to matchmaker matched event then bind to it and handle the response by joining a match with the returned token which then returns a Match including the match id, presences, label and so on.
+In the next example we listen to matchmaker matched event then bind to it and handle the response by joining a match with the returned token or match id, which then returns a Match including the match id, presences, label and so on.
 
-![image binding-5](./images/Bindings-5.png)
+![image binding-6](./images/Bindings-6.png)
 
+## Session Management
 
-# Session Management
+As described earlier, when you authenticate with Nakama you'll receive a Session struct which you should store somewhere easily accessible in your Blueprints, since many of the nodes in this plugin require a session as an input to function.
 
-As described earlier, when you authenticate with Nakama you'll receive a Session Object which you should store somewhere easily accessible in your Blueprints, since many of the nodes in this plugin require a session object as input to function.
-
-The session object contains the actual session reference and also a structure with the data readable in blueprints. Drag out from the session and get the session data.
+The session struct contains data readable in blueprints. Drag out from the session and break the struct.
 
 ![image sessions-1](./images/Sessions-1.png)
 
@@ -358,184 +167,193 @@ There are also some additional session management methods like restoring the ses
 
 ![image sessions-2](./images/Sessions-2.png)
 
+![image sessions-3](./images/Sessions-3.png)
 
 It is recommended to store the auth token from the session and check at startup if it has expired. If the token has expired you must reauthenticate. The expiry time of the token can be changed as a setting in the server.
 
+## Requests
 
-# Requests
-
-The clients include lots of builtin APIs for various features of the game server. These can be accessed with the async methods, which returns Success and Error callbacks. They can also call custom logic as RPC functions on the server. All requests are sent with a session object which authorizes the clients.
+The client includes a lot of built-in APIs for various features of the game server. These can be accessed with the async methods, which returns Success and Error callbacks. They can also call custom logic as RPC functions on the server. All requests are sent with a session struct which authorizes the clients.
 
 ![image requests](./images/Requests.png)
 
-The RPC node can be used to run specific functionality on the server, the payload should be in JSON format.
+The RpcFunc node can be used to run specific functionality on the server, the payload should be in JSON format.
 
 ![image rpc](./images/RPC.png)
 
-Moving forward, you should be ready to use all functionality of Nakama to power your awesome Unreal Engine built game or app, done entirely in Blueprints. Please refer to the official documentation at https://heroiclabs.com/docs even though some of the documentation is described in C++ the same core functionality applies to the Blueprint implementation.
-
-
-# Cursors
+## Cursors
 
 Cursors are used to add paging functionality to certain nodes, like friends list and leaderboard records. When there is more data to be retrieved, a cursor string will be returned in the Success callback. You can store this cursor as a string and use it later, like when a person clicks a "more" button or use it immediately to fetch more data. Look at the example below.
 
 ![image cursors](./images/Cursors.png)
 
-# Logging
-By default, logging is disabled. However, when creating a Client, you have the option to `Enable Debug`, allowing logs to be written using the debug log category. You can also manually control logging.
+# Satori
 
-**Enabling Logging from Blueprints:**
-![image logging](./images/Logging.png)
+Satori is a liveops server for games that powers actionable analytics, A/B testing, and remote configuration. Use the Satori Unreal Client to communicate with Satori from within your Unreal game.
 
-**Enabling Logging from C++**
+Use the Satori Unreal Client with either Blueprints or C++.
 
-To enable logging through C++, include the following header file:
+Full documentation is online - https://heroiclabs.com/docs/satori/client-libraries/unreal
+
+## Installing the Plugin
+
+To use Satori in your Unreal project, you'll need to copy the Satori Client files you downloaded into the appropriate place:
+
+1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
+2. If one does not already exist, create a `Plugins` folder here.
+3. Copy the `Satori` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
+
+**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
+
+Remember to add the modules to the dependencies under your project's Build.cs file. For example:
+
+```cs
+PublicDependencyModuleNames.AddRange(new string[] { "Satori", "SatoriApi", "SatoriBlueprints" });
+```
+
+At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Satori". If all went well, you should see the Satori plugin, make sure to enable it (this may prompt an editor restart).
+
+# Example Usage
+
+1. Create the Satori Client Config using your desired connection credentials:
 
 ```cpp
-#include "NakamaLogger.h"
+const FString ServerKey = TEXT("apiKey");
+const FString Host = TEXT("127.0.0.1");
+constexpr int32 Port = 7450;
+constexpr bool bUseSSL = false
+
+const FSatoriClientConfig ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, bUseSSL};
+
 ```
-Subsequently, to toggle logging, use:
+
+2. Authenticate using the previously created Satori Client Config along with a unique ID for the user:
 
 ```cpp
-UNakamaLogger::EnableLogging(true);
-```
-To set the log level, use:
+FSatoriSession Session;
 
+const FString Id = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+constexpr bool bNoSession = false;
+const TMap<FString, FString> Default = {};
+const TMap<FString, FString> Custom = {};
+
+Satori::Authenticate(ClientConfig, Id, bNoSession, Default, Custom).Next(
+    [&Session](const FSatoriSessionResult& SessionResult)
+    {
+       if (SessionResult.bIsError)
+       {
+          UE_LOG(LogTemp, Error, TEXT("Error authenticating: {%d} %s"), SessionResult.Error.Code,
+                 *SessionResult.Error.Message);
+          return;
+       }
+
+       Session = SessionResult.Value;
+
+       UE_LOG(LogTemp, Log, TEXT("Session has token: %s"), *Session.Token);
+       UE_LOG(LogTemp, Log, TEXT("Session has refresh token: %s"), *Session.RefreshToken);
+    });
+
+```
+
+3. Once the user is authenticated, you can start making API requests by passing in both the Satori Client Config, and the session that was received from authentication:
 
 ```cpp
-UNakamaLogger::SetLogLevel(ENakamaLogLevel::Debug);
+Satori::ListProperties(ClientConfig, Session).Next(
+    [](const FSatoriPropertiesResult& ListPropertiesResult)
+    {
+       if (ListPropertiesResult.bIsError)
+       {
+          UE_LOG(LogTemp, Error, TEXT("Error listing properties: {%d} %s"),
+                 ListPropertiesResult.Error.Code,
+                 *ListPropertiesResult.Error.Message);
+          return;
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Default)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Default Property found: %s with value %s"),
+                 *Property.Key, *Property.Value);
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Custom)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Custom Property found: %s with value %s"), *Property.Key,
+                 *Property.Value);
+       }
+
+       for (TTuple Property : ListPropertiesResult.Value.Computed)
+       {
+          UE_LOG(LogTemp, Log, TEXT("Computed Property found: %s with value %s"),
+                 *Property.Key, *Property.Value);
+       }
+    });
+
 ```
 
-Log categories are as follows:
+# Development
 
-- `Debug` writes all logs.
+## Task Automation
 
-- `Info` writes logs with `Info`, `Warn`, `Error` and `Fatal` logging level.
+This project uses [Taskfile](https://taskfile.dev/) to automate common development tasks. Taskfile provides a consistent interface for building, testing, and deploying the project across different platforms and environments.
 
-- `Warn` writes logs with `Warn`, `Error` and `Fatal` logging level.
+### Why Taskfile?
 
-- `Error` writes logs with `Error` and `Fatal` logging level.
+- **Consistency**: GitHub Actions and local development use the same tasks, ensuring what works locally will work in CI/CD
+- **Easy Verification**: You can run the exact same commands locally that run in CI/CD pipelines
+- **Cross-Platform**: Works consistently on macOS, Linux, and Windows
+- **Simple Syntax**: YAML-based configuration that's easy to read and maintain
+- **Heroic Standard**: Consistent across Heroic products
 
-- `Fatal` writes only logs with `Fatal` logging level.
+### Installation
 
-# Running Tests
-This repository includes a test-suite to test the various features of Nakama for Unreal, tests can be run in the Editor, from Command-Line and there is eve a `BlueprintsTest` project with separate documentation if you would like to run the same tests in Blueprints.
-
-
-## Using the Editor
-- Create a blank C++ Project
-- Add `Nakama` plugin to `Plugins` directory within the project
-- Build and open the project in the Unreal Editor
-- Be sure to enable the `Functional Testing Editor` Plugin in Unreal under `Edit -> Plugins` then restart the editor
-- Navigate to `Tool -> TestAutomation`
-- Select your device on the left hand side, navigate to the Automation tab then choose which Nakama Tests you would like to run and click `Start Tests`
-- Logs will be provided with the result of the tests
-
-![image testing](./images/Testing-1.png)
-
-## Using Command-Line:
-
-The tests can be run in both packaged and using the command-line version of the Unreal Editor.
-
-For all Command-Line based tests start by doing these steps:
-- Create a blank C++ Unreal Engine Project with your desired editor version, this documentation focuses on Unreal Engine 5.0+
-- Place the `Nakama` plugin in the `Plugins` directory within the project
-- Enable the `Nakama` Plugin for the project
-- You can either build the project like normal, or use the build commands below
-
-**Windows - Editor:**
-
-To build the test, run:
-```bash
-"<Path_To_Unreal_Engine>\Engine\Build\BatchFiles\Build.bat" <YourProjectName>Editor Win64 Development -Project="<Path_To_Your_Project>\<YourProjectName>.uproject"
-```
-To run the test, run:
-```bash
-"<Path_To_Unreal_Engine>\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" "<Path_To_Your_Project>\<YourProjectName>.uproject" -ExecCmds="Automation RunTests <YourTestName>" -log -NullRHI -verbose -unattended -ReportOutputPath="<Path_To_Store_Report>"
+#### macOS
+```shell
+brew install go-task
 ```
 
-If you want to run all tests replace `<YourTestName>` with `Nakama.Base`, if you specify `ReportOutputPath` you will receive an overview json logfile, logs will be stored within the `Saved/Logs` directory.
-
-**Windows - Packaged:**
-
-To build the test, run:
-```bash
-"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -targetconfig=Debug -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -stdout -nohostplatform -useshellexecute
-```
-To run the test, run:
-```bash
-./<YourProjectName>/Saved/StagedBuilds/Windows/<YourProjectName>.exe -nullrhi -verbose -ExecCmds="Automation RunTests Nakama.Base" -log
+Or using the install script:
+```shell
+sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
 ```
 
-**Mac - Packaged:**
+#### Windows
+```powershell
+# Using Chocolatey
+choco install go-task
 
-To build the test, run:
-```bash
-"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -targetConfig=Debug -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose
+# Using Scoop
+scoop install task
+
+# Using Winget
+winget install Task.Task
 ```
 
-To run the test, run:
-```bash
-./<YourProjectName>/Binaries/Mac/<YourProjectName>.app/Contents/MacOS/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+#### Linux
+```shell
+# Using Snap
+snap install task --classic
+
+# Using install script
+sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
 ```
 
-**Linux - Packaged:**
+## Available Tasks
 
-To build the test, run:
-```bash
-"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -clientconfig=Test -noP4 -platform=Linux -targetconfig=Debug -installed  -utf8output -build -cook -stage -package -verbose
+Run `task --list` to see all available tasks. 
+
+### Testing
+
+The client provides a test suite that comes as an Unreal Project that can be found under `IntegrationTests/`. 
+To build and run the test project in headless mode, you can issue this command:
+
+```powershell
+task test
 ```
-To run the test, run:
-```bash
-./<YourProjectName>/Binaries/Linux/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
-```
-
-**Passing Parameters**
-
-Parameters such as hostname, port and server key can be passed as command-line arguments, here is an example:
-
-```bash
--hostname="127.0.0.1" -port=7350 -serverkey="defaultkey" -serverhttpkey="defaulthttpkey" -timeout=45 -useSSL
-```
-
-# Additional Information
-
-Some of the features of this plugin depend on JSON, such as sending chat messages and storing data using storage objects. It is therefore recommended that if you use purely blueprints that you find a plugin that can construct and parse Json strings such as [VaRest](https://github.com/ufna/VaRest).
-
-When you are developing within the editor, you can run multiple unreal instances using PIE (Play In Editor) and are able to authenticate using separate accounts, which is very useful when testing functionalities that require multiple players, such as chat, realtime multiplayer, matchmaking and so on.
-
-In the installation part of this documentation we add C++ to our project, this is only to be able to compile the plugin, you can still use only Blueprints.
-
-
-# Example Project
-
-Provided with this plugin is an [example project](https://github.com/heroiclabs/nakama-unreal/tree/master/NakamaBlueprintsDemo) which is developed in pure Blueprints that showcases almost all of the Nakama core features.
-
-
-![image example-1](./images/ExampleProject-1.png)
-
-![image example-2](./images/ExampleProject-2.png)
-
-![image example-3](./images/ExampleProject-3.png)
 
 ## Contribute
 
-The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
-
-## Source Builds
-
-The Nakama Unreal SDK is implemented as a native Unreal Engine source module.
-
-To use the SDK from source in your own project:
-1. Copy the `Nakama` folder into your project's `Plugins` directory.
-2. Add `NakamaUnreal` to your project's `PublicDependencyModuleNames` in `YourProject.Build.cs`.
-
-The SDK will be comiped along with your project source code.
-
-### Nakama Unreal Client guide
-
-You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unreal-client-guide/).
+The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested in enhancing the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
 
 ## License
 
-This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-dotnet/blob/master/LICENSE).
+This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-unreal/blob/master/LICENSE).
