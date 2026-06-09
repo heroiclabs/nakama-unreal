@@ -86,6 +86,22 @@ public:
 		return IsValid(Client) && Client->bIsActive == true;
 	}
 
+	// Unified active check so the templated helper can dispatch by client type.
+	static bool IsActive(const USatoriClient* Client) { return IsClientActive(Client); }
+
+	// Broadcast a dynamic multicast delegate only if the owning client is still alive.
+	// Async callbacks capture a TWeakObjectPtr to the client and route their broadcast
+	// through this helper, so a response that arrives after the client was released is
+	// dropped instead of dereferencing a dangling 'this'.
+	template <typename TClient, typename TDelegate, typename... TArgs>
+	static void BroadcastIfActive(const TWeakObjectPtr<TClient>& WeakClient, const TDelegate& Delegate, TArgs&&... Args)
+	{
+		if (IsActive(WeakClient.Get()))
+		{
+			Delegate.Broadcast(Forward<TArgs>(Args)...);
+		}
+	}
+
 	// Json helpers
 	static FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
 	{
@@ -230,8 +246,8 @@ public:
 	// Common functions used by multiple clients
 	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
 	
-	static void HandleJsonSerializationFailure(TFunction<void(const FSatoriError& Error)> ErrorCallback);
-	static bool IsSessionValid(const USatoriSession* Session, TFunction<void(const FSatoriError& Error)> ErrorCallback);
+	static void HandleJsonSerializationFailure(const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
+	static bool IsSessionValid(const USatoriSession* Session, const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
 	static bool IsResponseSuccessful(int32 ResponseCode);
 	static FSatoriError CreateRequestFailureError();
 

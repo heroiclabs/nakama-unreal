@@ -16,6 +16,8 @@
 
 #include "SatoriClient.h"
 #include "SatoriUtils.h"
+#include "SatoriRetryInvoker.h"
+#include "Containers/Ticker.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
 
@@ -119,23 +121,19 @@ void USatoriClient::Authenticate(
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bNoSession,
-	FOnSatoriAuthUpdate Success,
-	FOnSatoriError Error)
+	const FOnSatoriAuthUpdate& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](USatoriSession* session)
-		{
-			if (!IsClientActive(this))
-				return;
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](USatoriSession* session)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, session);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-				return;
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	// A custom identifier must contain alphanumeric
@@ -149,9 +147,11 @@ void USatoriClient::Authenticate(
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bNoSession,
-	TFunction<void(USatoriSession* UserSession)> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate");
 
@@ -194,105 +194,90 @@ void USatoriClient::Authenticate(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
-
-	// Set the basic authorization header
-	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "",
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
+			if (SuccessCallback)
+			{
+				SuccessCallback(USatoriSession::SetupSession(ResponseBody));
+			}
+		},
+		ErrorCallback,
+		[WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
 		{
-			if (bSuccess && Response.IsValid())
+			USatoriClient* Self = WeakThis.Get();
+			if (!Self)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				return;
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
+			FSatoriUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
 		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
 }
 
 void USatoriClient::AuthenticateRefresh(
-	USatoriSession* Session, 
-	FOnSatoriAuthUpdate Success, 
-	FOnSatoriError Error)
+	USatoriSession* Session,
+	const FOnSatoriAuthUpdate& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](USatoriSession* UserSession)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(UserSession);
+	auto successCallback = [WeakThis, Success](USatoriSession* UserSession)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, UserSession);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	AuthenticateRefresh(Session, successCallback, errorCallback);
 }
 
-void USatoriClient::AuthenticateRefresh(
-	USatoriSession* Session, 
-	TFunction<void(USatoriSession* UserSession)> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+void USatoriClient::EnsureValidSession(
+	USatoriSession* Session,
+	const TFunction<void()>& OnReady,
+	const TFunction<void(const FSatoriError& Error)>& OnError)
 {
+	const FDateTime Deadline =
+		FDateTime::UtcNow() + FTimespan::FromMinutes(SessionRefreshLeewayMinutes);
+
+	// No refresh needed: disabled, no refresh token, or token still fresh enough.
+	if (!bAutoRefreshSession
+		|| Session->GetRefreshToken().IsEmpty()
+		|| !Session->IsExpiredTime(Deadline))
+	{
+		OnReady();
+		return;
+	}
+
+	// Refresh first, then run the deferred request with the refreshed token.
+	AuthenticateRefresh(Session,
+		[Session, OnReady, OnError](USatoriSession* Refreshed)
+		{
+			if (!Refreshed)
+			{
+				// Refresh response could not be parsed into a session; do not
+				// proceed with the stale token.
+				OnError(FSatoriUtils::CreateRequestFailureError());
+				return;
+			}
+			Session->Update(Refreshed);
+			OnReady();
+		},
+		[OnError](const FSatoriError& Error)
+		{
+			OnError(Error);
+		});
+}
+
+void USatoriClient::AuthenticateRefresh(
+	USatoriSession* Session,
+	const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
+{
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate/refresh");
 
@@ -316,95 +301,41 @@ void USatoriClient::AuthenticateRefresh(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
-
-	// Set the basic authorization header
-	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "",
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
+			if (SuccessCallback)
+			{
+				SuccessCallback(USatoriSession::SetupSession(ResponseBody));
+			}
+		},
+		ErrorCallback,
+		[WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
 		{
-			if (bSuccess && Response.IsValid())
+			USatoriClient* Self = WeakThis.Get();
+			if (!Self)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				return;
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-	});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+			FSatoriUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+		});
 }
 
 void USatoriClient::AuthenticateLogout(
 	USatoriSession* Session,
-	FOnAuthLogoutSent Success, 
-	FOnSatoriError Error)
+	const FOnAuthLogoutSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	AuthenticateLogout(Session, successCallback, errorCallback);
@@ -412,8 +343,8 @@ void USatoriClient::AuthenticateLogout(
 
 void USatoriClient::AuthenticateLogout(
 	USatoriSession* Session,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate/logout");
@@ -439,95 +370,35 @@ void USatoriClient::AuthenticateLogout(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
 }
 
 void USatoriClient::Identify(
 	USatoriSession* Session, 
 	const FString& ID, 
 	const TMap<FString, FString>& defaultProperties,
-	const TMap<FString, FString>& customProperties, 
-	FOnSatoriAuthUpdate Success, 
-	FOnSatoriError Error)
+	const TMap<FString, FString>& customProperties,
+	const FOnSatoriAuthUpdate& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](USatoriSession* UserSession)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(UserSession);
+	auto successCallback = [WeakThis, Success](USatoriSession* UserSession)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, UserSession);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	Identify(Session, ID, defaultProperties, customProperties, successCallback, errorCallback);
@@ -537,10 +408,12 @@ void USatoriClient::Identify(
 	USatoriSession* Session, 
 	const FString& ID, 
 	const TMap<FString, FString>& DefaultProperties, 
-	const TMap<FString, FString>& CustomProperties, 
-	TFunction<void(USatoriSession* UserSession)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TMap<FString, FString>& CustomProperties,
+	const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/identify");
 
@@ -578,93 +451,46 @@ void USatoriClient::Identify(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback(USatoriSession::SetupSession(ResponseBody));
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::ListIdentityProperties(
 	USatoriSession* Session,
-	FOnGetProperties Success,
-	FOnSatoriError Error)
+	const FOnGetProperties& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriProperties& Properties)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(Properties);
+	auto successCallback = [WeakThis, Success](const FSatoriProperties& Properties)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, Properties);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	ListIdentityProperties(Session, successCallback, errorCallback);
@@ -672,9 +498,11 @@ void USatoriClient::ListIdentityProperties(
 
 void USatoriClient::ListIdentityProperties(
 	USatoriSession* Session,
-	TFunction<void(const FSatoriProperties& Properties)> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void(const FSatoriProperties& Properties)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/properties");
 
@@ -684,69 +512,30 @@ void USatoriClient::ListIdentityProperties(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriProperties Properties = FSatoriProperties(ResponseBody);
+				const FSatoriProperties Properties = FSatoriProperties(ResponseBody);
 						SuccessCallback(Properties);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::UpdateProperties(
@@ -754,27 +543,19 @@ void USatoriClient::UpdateProperties(
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bRecompute,
-	FOnUpdatePropertiesSent Success,
-	FOnSatoriError Error)
+	const FOnUpdatePropertiesSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	UpdateProperties(Session, DefaultProperties, CustomProperties, bRecompute, successCallback, errorCallback);
@@ -785,9 +566,11 @@ void USatoriClient::UpdateProperties(
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bRecompute,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/properties");
 
@@ -825,93 +608,46 @@ void USatoriClient::UpdateProperties(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::DeleteIdentity(
 	USatoriSession* Session,
-	FOnDeleteIdentitySent Success,
-	FOnSatoriError Error)
+	const FOnDeleteIdentitySent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	DeleteIdentity(Session, successCallback, errorCallback);
@@ -919,9 +655,11 @@ void USatoriClient::DeleteIdentity(
 
 void USatoriClient::DeleteIdentity(
 	USatoriSession* Session,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/identity");
 
@@ -931,93 +669,46 @@ void USatoriClient::DeleteIdentity(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::PostServerEvent(
-	const TArray<FSatoriEvent>& Events, 
-	FOnPostServerEventSent Success, 
-	FOnSatoriError Error)
+	const TArray<FSatoriEvent>& Events,
+	const FOnPostServerEventSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	PostServerEvent(Events, successCallback, errorCallback);
@@ -1025,9 +716,11 @@ void USatoriClient::PostServerEvent(
 
 void USatoriClient::PostServerEvent(
 	const TArray<FSatoriEvent>& Events,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/server-event");
 
@@ -1084,96 +777,42 @@ void USatoriClient::PostServerEvent(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(
-		Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
-	
-	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) 
-	{
-		if (!IsValidLowLevel())
+	SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "",
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
+			if (SuccessCallback)
+			{
+				SuccessCallback();
+			}
+		},
+		ErrorCallback,
+		[WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
 		{
-			if (bSuccess && Response.IsValid())
+			USatoriClient* Self = WeakThis.Get();
+			if (!Self)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				return;
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-	});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+			FSatoriUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+		});
 }
 
 void USatoriClient::PostEvent(
 	USatoriSession* Session,
-	const TArray<FSatoriEvent>& Events, 
-	FOnPostEventSent Success, 
-	FOnSatoriError Error)
+	const TArray<FSatoriEvent>& Events,
+	const FOnPostEventSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	PostEvent(Session, Events, successCallback, errorCallback);
@@ -1182,9 +821,11 @@ void USatoriClient::PostEvent(
 void USatoriClient::PostEvent(
 	USatoriSession* Session,
 	const TArray<FSatoriEvent>& Events,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/event");
 
@@ -1228,94 +869,47 @@ void USatoriClient::PostEvent(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::GetExperiments(
 	USatoriSession* Session,
-	const TArray<FString>& Names, 
-	FOnGetExperiments Success, 
-	FOnSatoriError Error)
+	const TArray<FString>& Names,
+	const FOnGetExperiments& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriExperimentList& Experiments)
-	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-		Success.Broadcast(Experiments);
+	auto successCallback = [WeakThis, Success](const FSatoriExperimentList& Experiments)
+	{
+		FSatoriUtils::BroadcastIfActive(WeakThis, Success, Experiments);
 	};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	GetExperiments(Session, Names, successCallback, errorCallback);
@@ -1323,10 +917,12 @@ void USatoriClient::GetExperiments(
 
 void USatoriClient::GetExperiments(
 	USatoriSession* Session, 
-	const TArray<FString>& Names, 
-	TFunction<void(const FSatoriExperimentList& Experiments)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TArray<FString>& Names,
+	const TFunction<void(const FSatoriExperimentList& Experiments)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/experiment");
 
@@ -1343,95 +939,48 @@ void USatoriClient::GetExperiments(
 		QueryParams.Add(TEXT("names"), Name);
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriExperimentList Experiments = FSatoriExperimentList(ResponseBody);
+				const FSatoriExperimentList Experiments = FSatoriExperimentList(ResponseBody);
 						SuccessCallback(Experiments);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-	});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::GetFlags(
 	USatoriSession* Session,
 	const TArray<FString>& Names,
-	FOnGetFlags Success,
-	FOnSatoriError Error)
+	const FOnGetFlags& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriFlagList& Flags)
-	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-		Success.Broadcast(Flags);
+	auto successCallback = [WeakThis, Success](const FSatoriFlagList& Flags)
+	{
+		FSatoriUtils::BroadcastIfActive(WeakThis, Success, Flags);
 	};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 	{
-		if (!IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	GetFlags(Session, Names, successCallback, errorCallback);
@@ -1439,10 +988,12 @@ void USatoriClient::GetFlags(
 
 void USatoriClient::GetFlags(
 	USatoriSession* Session, 
-	const TArray<FString>& Names, 
-	TFunction<void(const FSatoriFlagList& Flags)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TArray<FString>& Names,
+	const TFunction<void(const FSatoriFlagList& Flags)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/flag");
 
@@ -1459,94 +1010,48 @@ void USatoriClient::GetFlags(
 		QueryParams.Add(TEXT("names"), Name);
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriFlagList Flags = FSatoriFlagList(ResponseBody);
+				const FSatoriFlagList Flags = FSatoriFlagList(ResponseBody);
 						SuccessCallback(Flags);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-	});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::GetFlagOverrides(
 	USatoriSession* Session, 
-	const TArray<FString>& Names, 
-	FOnGetFlagOverrides Success,
-	FOnSatoriError Error)
+	const TArray<FString>& Names,
+	const FOnGetFlagOverrides& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriFlagOverrideList& Flags)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(Flags);
+	auto successCallback = [WeakThis, Success](const FSatoriFlagOverrideList& Flags)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, Flags);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	GetFlagOverrides(Session, Names, successCallback, errorCallback);
@@ -1554,10 +1059,12 @@ void USatoriClient::GetFlagOverrides(
 
 void USatoriClient::GetFlagOverrides(
 	USatoriSession* Session, 
-	const TArray<FString>& Names, 
-	TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TArray<FString>& Names,
+	const TFunction<void(const FSatoriFlagOverrideList& Flags)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/flag/override");
 
@@ -1574,94 +1081,48 @@ void USatoriClient::GetFlagOverrides(
 		QueryParams.Add(TEXT("names"), Name);
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriFlagOverrideList FlagOverrides = FSatoriFlagOverrideList(ResponseBody);
+				const FSatoriFlagOverrideList FlagOverrides = FSatoriFlagOverrideList(ResponseBody);
 						SuccessCallback(FlagOverrides);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::GetLiveEvents(
 	USatoriSession* Session, 
-	const TArray<FString>& LiveEventNames, 
-	FOnGetLiveEvents Success, 
-	FOnSatoriError Error)
+	const TArray<FString>& LiveEventNames,
+	const FOnGetLiveEvents& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriLiveEventList& LiveEvents)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(LiveEvents);
+	auto successCallback = [WeakThis, Success](const FSatoriLiveEventList& LiveEvents)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, LiveEvents);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	GetLiveEvents(Session, LiveEventNames, successCallback, errorCallback);
@@ -1669,10 +1130,12 @@ void USatoriClient::GetLiveEvents(
 
 void USatoriClient::GetLiveEvents(
 	USatoriSession* Session,
-	const TArray<FString>& LiveEventNames, 
-	TFunction<void(const FSatoriLiveEventList& LiveEvents)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TArray<FString>& LiveEventNames,
+	const TFunction<void(const FSatoriLiveEventList& LiveEvents)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/live-event");
 
@@ -1689,97 +1152,50 @@ void USatoriClient::GetLiveEvents(
 		QueryParams.Add(TEXT("names"), Name);
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriLiveEventList LiveEvents = FSatoriLiveEventList(ResponseBody);
+				const FSatoriLiveEventList LiveEvents = FSatoriLiveEventList(ResponseBody);
 						SuccessCallback(LiveEvents);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::GetMessages(
 	USatoriSession* Session, 
 	int32 Limit,
 	bool Forward, 
-	const FString& Cursor, 
-	FOnGetMessages Success, 
-	FOnSatoriError Error)
+	const FString& Cursor,
+	const FOnGetMessages& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success](const FSatoriMessageList& Messages)
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast(Messages);
+	auto successCallback = [WeakThis, Success](const FSatoriMessageList& Messages)
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success, Messages);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	GetMessages(Session, Limit, Forward, Cursor, successCallback, errorCallback);
@@ -1789,10 +1205,12 @@ void USatoriClient::GetMessages(
 	USatoriSession* Session, 
 	int32 Limit, 
 	bool Forward,
-	const FString& Cursor, 
-	TFunction<void(const FSatoriMessageList& Messages)> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const FString& Cursor,
+	const TFunction<void(const FSatoriMessageList& Messages)>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message");
 
@@ -1808,97 +1226,50 @@ void USatoriClient::GetMessages(
 	QueryParams.Add(TEXT("forward"), FSatoriUtils::BoolToString(Forward));
 	if (!Cursor.IsEmpty()) { QueryParams.Add(TEXT("cursor"), FGenericPlatformHttp::UrlEncode(Cursor)); }
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						const FSatoriMessageList Messages = FSatoriMessageList(ResponseBody);
+				const FSatoriMessageList Messages = FSatoriMessageList(ResponseBody);
 						SuccessCallback(Messages);
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::UpdateMessage(
 	USatoriSession* Session, 
 	const FString& MessageId, 
 	const FDateTime ReadTime, 
-	const FDateTime ConsumeTime, 
-	FOnUpdateMessageSent Success, 
-	FOnSatoriError Error)
+	const FDateTime ConsumeTime,
+	const FOnUpdateMessageSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	UpdateMessage(Session, MessageId, ReadTime, ConsumeTime, successCallback, errorCallback);
@@ -1909,9 +1280,11 @@ void USatoriClient::UpdateMessage(
 	const FString& MessageId, 
 	const FDateTime ReadTime, 
 	const FDateTime ConsumeTime,
-	TFunction<void()> SuccessCallback, 
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message/") + FGenericPlatformHttp::UrlEncode(MessageId);
 
@@ -1930,94 +1303,47 @@ void USatoriClient::UpdateMessage(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 void USatoriClient::DeleteMessage(
 	USatoriSession* Session, 
 	const FString& MessageId,
-	FOnDeleteMessageSent Success, 
-	FOnSatoriError Error)
+	const FOnDeleteMessageSent& Success,
+	const FOnSatoriError& Error)
 {
-	auto successCallback = [this, Success]()
-		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
 
-			Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+		{
+			FSatoriUtils::BroadcastIfActive(WeakThis, Success);
 		};
 
-	auto errorCallback = [this, Error](const FSatoriError& error)
+	auto errorCallback = [WeakThis, Error](const FSatoriError& error)
 		{
-			if (!IsClientActive(this))
-			{
-				return;
-			}
-
-			Error.Broadcast(error);
+			FSatoriUtils::BroadcastIfActive(WeakThis, Error, error);
 		};
 
 	DeleteMessage(Session, MessageId, successCallback, errorCallback);
@@ -2025,10 +1351,12 @@ void USatoriClient::DeleteMessage(
 
 void USatoriClient::DeleteMessage(
 	USatoriSession* Session,
-	const FString& MessageId, 
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FSatoriError& Error)> ErrorCallback)
+	const FString& MessageId,
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message/") + FGenericPlatformHttp::UrlEncode(MessageId);
 
@@ -2038,68 +1366,29 @@ void USatoriClient::DeleteMessage(
 		return;
 	}
 
+	// Refresh the session token first if it is about to expire, then send.
+	EnsureValidSession(Session,
+		[WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+	{
+	USatoriClient* Self = WeakThis.Get();
+	if (!Self)
+	{
+		if (ErrorCallback) { ErrorCallback(FSatoriUtils::CreateRequestFailureError()); }
+		return;
+	}
+
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-		if (!IsValidLowLevel())
+	Self->SendJsonRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+		[SuccessCallback](const FString& ResponseBody)
 		{
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
+			if (SuccessCallback)
 			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FSatoriError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
+				SuccessCallback();
 			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-		});
-
-	// Process the request
-	HttpRequest->ProcessRequest();
+		},
+		ErrorCallback);
+	},
+	ErrorCallback);
 }
 
 bool USatoriClient::IsClientActive(const USatoriClient* Client)
@@ -2134,4 +1423,98 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> USatoriClient::MakeRequest(
 	FString URL = ConstructURL(ModifiedEndpoint);
 
 	return FSatoriUtils::MakeRequest(URL, Content, RequestMethod, SessionToken, Timeout);
+}
+
+FSatoriRetryConfiguration USatoriClient::BuildRetryConfiguration() const
+{
+	FSatoriRetryConfiguration Config;
+	Config.BaseDelayMs = RetryBaseDelayMs;
+	// bEnableRetries == false means zero retries (single attempt).
+	Config.MaxRetries = bEnableRetries ? RetryMaxAttempts : 0;
+	// Jitter defaults to FullJitter; Listener stays null in production.
+	return Config;
+}
+
+void USatoriClient::SendJsonRequest(
+	const FString& Endpoint,
+	const FString& Content,
+	ESatoriRequestMethod Method,
+	const TMultiMap<FString, FString>& QueryParams,
+	const FString& SessionToken,
+	const TFunction<void(const FString& Body)>& OnSuccess,
+	const TFunction<void(const FSatoriError& Error)>& OnError,
+	const TFunction<void(TSharedRef<IHttpRequest, ESPMode::ThreadSafe>&)>& PrepareRequest)
+{
+	// One attempt: build a FRESH request (UE requests are single-use), bind, fire.
+	TWeakObjectPtr<USatoriClient> WeakThis(this);
+	FSatoriSendFn Send =
+		[WeakThis, Endpoint, Content, Method, QueryParams, SessionToken, PrepareRequest]
+		(TFunction<void(bool, int32, const FString&)> OnComplete)
+	{
+		USatoriClient* Self = WeakThis.Get();
+		if (!Self)
+		{
+			OnComplete(false, -1, FString());
+			return;
+		}
+
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+			Self->MakeRequest(Endpoint, Content, Method, QueryParams, SessionToken);
+		if (PrepareRequest)
+		{
+			PrepareRequest(HttpRequest);
+		}
+
+		{
+			FScopeLock Lock(&Self->ActiveRequestsMutex);
+			Self->ActiveRequests.Add(HttpRequest);
+		}
+
+		HttpRequest->OnProcessRequestComplete().BindLambda(
+			[WeakThis, OnComplete](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
+		{
+			USatoriClient* Self = WeakThis.Get();
+			if (!Self || !Self->IsValidLowLevel())
+			{
+				return;
+			}
+			FScopeLock Lock(&Self->ActiveRequestsMutex);
+			if (Self->ActiveRequests.Contains(Request))
+			{
+				Self->ActiveRequests.Remove(Request);
+				if (bSuccess && Response.IsValid())
+				{
+					OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+				}
+				else
+				{
+					OnComplete(false, -1, FString());
+				}
+			}
+		});
+
+		HttpRequest->ProcessRequest();
+	};
+
+	// FTSTicker-based delay: schedule Work after Seconds, once.
+	FSatoriDelayFn Delay = [WeakThis](float Seconds, TFunction<void()> Work)
+	{
+		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda(
+			[WeakThis, Work](float /*DeltaTime*/) -> bool
+			{
+				if (WeakThis.IsValid())
+				{
+					Work();
+				}
+				return false; // one-shot: unregister after firing
+			}), Seconds);
+	};
+
+	// Seed the RNG from the auth token (or endpoint+content for auth calls).
+	const int32 Seed = SessionToken.IsEmpty()
+		? static_cast<int32>(GetTypeHash(Endpoint + Content))
+		: static_cast<int32>(GetTypeHash(SessionToken));
+
+	FSatoriRetryInvoker::InvokeWithRetry(
+		Send, BuildRetryConfiguration(), Seed, Delay, OnSuccess, OnError);
 }

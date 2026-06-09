@@ -19,9 +19,11 @@
 #include "NakamaRealtimeClient.h"
 #include "NakamaSession.h"
 #include "NakamaLogger.h"
+#include "NakamaRetryInvoker.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/Optional.h"
+#include "Containers/Ticker.h"
 
 void UNakamaClient::InitializeClient(const FString& InHostname, int32 InPort, const FString& InServerKey,
 	bool bInUseSSL)
@@ -101,27 +103,19 @@ void UNakamaClient::AuthenticateCustom(const FString& UserID,
 	const FString& Username,
 	bool CreateAccount,
 	const TMap<FString, FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	// A custom identifier must contain alphanumeric
@@ -136,27 +130,19 @@ void UNakamaClient::AuthenticateEmail(
 	const FString& Username,
 	bool CreateAccount,
 	const TMap<FString,FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	// An email address must be valid as defined by RFC-5322 and passwords must be at least 8 characters.
@@ -172,24 +158,16 @@ void UNakamaClient::AuthenticateDevice(
 	const FOnAuthUpdate& Success,
 	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	// A device identifier must contain alphanumeric characters with dashes and be between 10 and 128 bytes.
@@ -205,27 +183,19 @@ void UNakamaClient::AuthenticateSteam(
 	bool CreateAccount,
 	bool ImportFriends,
 	const TMap<FString, FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateSteam(SteamToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
@@ -236,28 +206,20 @@ void UNakamaClient::AuthenticateGoogle(
 	const FString& Username,
 	bool CreateAccount,
 	const TMap<FString,FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-	auto successCallback = [this, Success](UNakamaSession* session)
+
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Success.Broadcast(session);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateGoogle(AccessToken, Username, CreateAccount, Vars, successCallback, errorCallback);
@@ -273,27 +235,19 @@ void UNakamaClient::AuthenticateGameCenter(
 	const FString& Username,
 	bool CreateAccount,
 	const TMap<FString, FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateGameCenter(
@@ -317,27 +271,19 @@ void UNakamaClient::AuthenticateFacebook(
 	bool CreateAccount,
 	bool ImportFriends,
 	const TMap<FString, FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateFacebook(AccessToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
@@ -348,27 +294,19 @@ void UNakamaClient::AuthenticateApple(
 	const FString& Username,
 	bool CreateAccount,
 	const TMap<FString, FString>& Vars,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateApple(Token, Username, CreateAccount, Vars, successCallback, errorCallback);
@@ -376,27 +314,19 @@ void UNakamaClient::AuthenticateApple(
 
 void UNakamaClient::AuthenticateRefresh(
 	UNakamaSession* Session,
-	FOnAuthUpdate Success,
-	FOnError Error)
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateRefresh(Session, successCallback, errorCallback);
@@ -422,27 +352,19 @@ void UNakamaClient::RestoreSession(
 void UNakamaClient::LinkCustom(
 	UNakamaSession *Session,
 	const FString& CustomId,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkCustom(Session, CustomId, successCallback, errorCallback);
@@ -451,27 +373,19 @@ void UNakamaClient::LinkCustom(
 void UNakamaClient::LinkDevice(
 	UNakamaSession *Session,
 	const FString& DeviceId,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkDevice(Session, DeviceId, successCallback, errorCallback);
@@ -481,27 +395,19 @@ void UNakamaClient::LinkEmail(
 	UNakamaSession *Session,
 	const FString& Email,
 	const FString& Password,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkEmail(Session, Email, Password, successCallback, errorCallback);
@@ -511,27 +417,19 @@ void UNakamaClient::LinkFacebook(
 	UNakamaSession *Session,
 	const FString& AccessToken,
 	bool ImportFriends,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkFacebook(Session, AccessToken, ImportFriends, successCallback, errorCallback);
@@ -545,27 +443,19 @@ void UNakamaClient::LinkGameCenter(
 	const FString& Salt,
 	const FString& Signature,
 	const FString& PublicKeyUrl,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkGameCenter(
@@ -584,27 +474,19 @@ void UNakamaClient::LinkGameCenter(
 void UNakamaClient::LinkGoogle(
 	UNakamaSession *Session,
 	const FString& AccessToken,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkGoogle(Session, AccessToken, successCallback, errorCallback);
@@ -613,27 +495,19 @@ void UNakamaClient::LinkGoogle(
 void UNakamaClient::LinkSteam(
 	UNakamaSession *Session,
 	const FString& SteamToken,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkSteam(Session, SteamToken, successCallback, errorCallback);
@@ -642,27 +516,19 @@ void UNakamaClient::LinkSteam(
 void UNakamaClient::LinkApple(
 	UNakamaSession *Session,
 	const FString& Token,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LinkApple(Session, Token, successCallback, errorCallback);
@@ -675,27 +541,19 @@ void UNakamaClient::LinkApple(
 void UNakamaClient::UnLinkCustom(
 	UNakamaSession *Session,
 	const FString& CustomId,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkCustom(Session, CustomId, successCallback, errorCallback);
@@ -704,27 +562,19 @@ void UNakamaClient::UnLinkCustom(
 void UNakamaClient::UnLinkDevice(
 	UNakamaSession *Session,
 	const FString& DeviceId,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkDevice(Session, DeviceId, successCallback, errorCallback);
@@ -734,27 +584,19 @@ void UNakamaClient::UnLinkEmail(
 	UNakamaSession *Session,
 	const FString& Email,
 	const FString& Password,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkEmail(Session, Email, Password, successCallback, errorCallback);
@@ -763,27 +605,19 @@ void UNakamaClient::UnLinkEmail(
 void UNakamaClient::UnLinkFacebook(
 	UNakamaSession *Session,
 	const FString& AccessToken,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkFacebook(Session, AccessToken, successCallback, errorCallback);
@@ -797,27 +631,19 @@ void UNakamaClient::UnLinkGameCenter(
 	const FString& Salt,
 	const FString& Signature,
 	const FString& PublicKeyUrl,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkGameCenter(
@@ -836,27 +662,19 @@ void UNakamaClient::UnLinkGameCenter(
 void UNakamaClient::UnLinkGoogle(
 	UNakamaSession *Session,
 	const FString& AccessToken,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkGoogle(Session, AccessToken, successCallback, errorCallback);
@@ -865,27 +683,19 @@ void UNakamaClient::UnLinkGoogle(
 void UNakamaClient::UnLinkSteam(
 	UNakamaSession *Session,
 	const FString& SteamToken,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkSteam(Session, SteamToken, successCallback, errorCallback);
@@ -894,27 +704,19 @@ void UNakamaClient::UnLinkSteam(
 void UNakamaClient::UnLinkApple(
 	UNakamaSession *Session,
 	const FString& Token,
-	FOnLinkSuccess Success,
-	FOnError Error)
+	const FOnLinkSuccess& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UnLinkApple(Session, Token, successCallback, errorCallback);
@@ -926,27 +728,19 @@ void UNakamaClient::UnLinkApple(
 
 void UNakamaClient::RefreshSession(
 	UNakamaSession *Session,
-	FOnAuthRefresh Success,
-	FOnAuthRefreshError Error)
+	const FOnAuthRefresh& Success,
+	const FOnAuthRefreshError& Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* Session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(Session);
+	auto successCallback = [WeakThis, Success](UNakamaSession* Session)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, Session);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AuthenticateRefresh(Session, successCallback, errorCallback);
@@ -960,27 +754,19 @@ void UNakamaClient::ImportFacebookFriends(
 	UNakamaSession* Session,
 	const FString& Token,
 	bool Reset,
-	FOnImportFacebookFriends Success,
-	FOnError Error)
+	const FOnImportFacebookFriends& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	ImportFacebookFriends(Session, Token, Reset, successCallback, errorCallback);
@@ -994,27 +780,19 @@ void UNakamaClient::ImportSteamFriends(
 	UNakamaSession* Session,
 	const FString& SteamToken,
 	bool Reset,
-	FOnImportSteamFriends Success,
-	FOnError Error)
+	const FOnImportSteamFriends& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	ImportSteamFriends(Session, SteamToken, Reset, successCallback, errorCallback);
@@ -1026,35 +804,27 @@ void UNakamaClient::ImportSteamFriends(
 
 void UNakamaClient::GetUserAccount(
 	UNakamaSession *Session,
-	FOnUserAccountInfo Success,
-	FOnError Error)
+	const FOnUserAccountInfo& Success,
+	const FOnError& Error)
 {
 	GetAccount(Session, Success, Error);
 }
 
 void UNakamaClient::GetAccount(
 	UNakamaSession *Session,
-	FOnUserAccountInfo Success,
-	FOnError Error)
+	const FOnUserAccountInfo& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaAccount& account)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(account);
+	auto successCallback = [WeakThis, Success](const FNakamaAccount& account)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, account);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	GetAccount(Session, successCallback, errorCallback);
@@ -1069,27 +839,19 @@ void UNakamaClient::GetUsers(
 	const TArray<FString>& UserIds,
 	const TArray<FString>& Usernames,
 	const TArray<FString>& FacebookIds,
-	FOnGetUsers Success,
-	FOnError Error)
+	const FOnGetUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaUserList& UserList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(UserList.Users);
+	auto successCallback = [WeakThis, Success](const FNakamaUserList& UserList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, UserList.Users);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	GetUsers(Session, UserIds, Usernames, FacebookIds,  successCallback, errorCallback);
@@ -1103,27 +865,19 @@ void UNakamaClient::UpdateAccount(
 	const FString& LanguageTag,
 	const FString& Location,
 	const FString& Timezone,
-	FOnUpdateAccount Success,
-	FOnError Error)
+	const FOnUpdateAccount& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	UpdateAccount(
@@ -1139,26 +893,18 @@ void UNakamaClient::UpdateAccount(
 	);
 }
 
-void UNakamaClient::DeleteUser(UNakamaSession* Session, FOnDeleteUser Success, FOnError Error)
+void UNakamaClient::DeleteUser(UNakamaSession* Session, const FOnDeleteUser& Success, const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if (!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if (!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteUser(Session, successCallback, errorCallback);
@@ -1185,27 +931,19 @@ void UNakamaClient::ListMatches(
 	const FString& Label,
 	const FString& Query,
 	bool Authoritative,
-	FOnMatchlist Success,
-	FOnError Error)
+	const FOnMatchlist& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaMatchList& MatchList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(MatchList);
+	auto successCallback = [WeakThis, Success](const FNakamaMatchList& MatchList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, MatchList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLabel = FNakamaUtils::CreateOptional(Label, FString());
@@ -1238,8 +976,8 @@ void UNakamaClient::GetFriends(
 	int32 Limit,
 	ENakamaFriendState State,
 	const FString& Cursor,
-	FOnFriendsList Success,
-	FOnError Error)
+	const FOnFriendsList& Success,
+	const FOnError& Error)
 {
 	ListFriends(Session, Limit, State, Cursor, Success, Error);
 
@@ -1250,27 +988,19 @@ void UNakamaClient::ListFriends(
 	int32 Limit,
 	ENakamaFriendState State,
 	const FString& Cursor,
-	FOnFriendsList Success,
-	FOnError Error)
+	const FOnFriendsList& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaFriendList&  Friends)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(Friends);
+	auto successCallback = [WeakThis, Success](const FNakamaFriendList&  Friends)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, Friends);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -1290,27 +1020,19 @@ void UNakamaClient::AddFriends(
 	UNakamaSession* Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
-	FOnAddedFriend Success,
-	FOnError Error)
+	const FOnAddedFriend& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AddFriends(Session, Ids, Usernames,  successCallback, errorCallback);
@@ -1320,8 +1042,8 @@ void UNakamaClient::RemoveFriends(
 	UNakamaSession* Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
-	FOnRemovedFriends Success,
-	FOnError Error)
+	const FOnRemovedFriends& Success,
+	const FOnError& Error)
 {
 	DeleteFriends(Session, Ids, Usernames, Success, Error);
 }
@@ -1330,27 +1052,19 @@ void UNakamaClient::DeleteFriends(
 	UNakamaSession* Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
-	FOnRemovedFriends Success,
-	FOnError Error)
+	const FOnRemovedFriends& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteFriends(Session, Ids, Usernames,  successCallback, errorCallback);
@@ -1360,27 +1074,19 @@ void UNakamaClient::BlockFriends(
 	UNakamaSession* Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
-	FOnBlockedFriends Success,
-	FOnError Error)
+	const FOnBlockedFriends& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	BlockFriends(Session, Ids, Usernames,  successCallback, errorCallback);
@@ -1399,27 +1105,19 @@ void UNakamaClient::CreateGroup(
 	const FString& LanguageTag,
 	bool Open,
 	int32 MaxMembers,
-	FOnCreateGroup Success,
-	FOnError Error)
+	const FOnCreateGroup& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaGroup& Group)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(Group);
+	auto successCallback = [WeakThis, Success](const FNakamaGroup& Group)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, Group);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptMaxCount = FNakamaUtils::CreateOptional(MaxMembers, 0);
@@ -1442,27 +1140,19 @@ void UNakamaClient::ListGroups(
 	const FString& GroupNameFilter,
 	int32 Limit,
 	const FString& Cursor,
-	FOnGroupsList Success,
-	FOnError Error)
+	const FOnGroupsList& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaGroupList& Groups)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(Groups);
+	auto successCallback = [WeakThis, Success](const FNakamaGroupList& Groups)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, Groups);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	ListGroups(Session, GroupNameFilter, Limit, Cursor, successCallback, errorCallback);
@@ -1471,27 +1161,19 @@ void UNakamaClient::ListGroups(
 void UNakamaClient::JoinGroup(
 	UNakamaSession* Session,
 	const FString& GroupId,
-	FOnJoinedGroup Success,
-	FOnError Error)
+	const FOnJoinedGroup& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	JoinGroup(Session, GroupId, successCallback, errorCallback);
@@ -1504,27 +1186,19 @@ void UNakamaClient::ListUserGroups(
 	int32 Limit,
 	ENakamaGroupState State,
 	const FString& Cursor,
-	FOnUserGroups Success,
-	FOnError Error)
+	const FOnUserGroups& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaUserGroupList&  UserGroupList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(UserGroupList);
+	auto successCallback = [WeakThis, Success](const FNakamaUserGroupList&  UserGroupList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, UserGroupList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -1546,27 +1220,19 @@ void UNakamaClient::ListGroupUsers(
 	int32 Limit,
 	ENakamaGroupState State,
 	const FString& Cursor,
-	FOnListGroupMembers Success,
-	FOnError Error)
+	const FOnListGroupMembers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaGroupUsersList&  GroupUsersList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(GroupUsersList);
+	auto successCallback = [WeakThis, Success](const FNakamaGroupUsersList&  GroupUsersList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, GroupUsersList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -1591,27 +1257,19 @@ void UNakamaClient::UpdateGroup(
 	const FString& AvatarUrl,
 	const FString& LanguageTag,
 	bool Open,
-	FOnUpdateGroup Success,
-	FOnError Error)
+	const FOnUpdateGroup& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptName = FNakamaUtils::CreateOptional(Name, FString());
@@ -1635,27 +1293,19 @@ void UNakamaClient::UpdateGroup(
 void UNakamaClient::LeaveGroup(
 	UNakamaSession* Session,
 	const FString& GroupId,
-	FOnLeaveGroup Success,
-	FOnError Error)
+	const FOnLeaveGroup& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	LeaveGroup(Session, GroupId, successCallback, errorCallback);
@@ -1665,27 +1315,19 @@ void UNakamaClient::AddGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
 	const TArray<FString>& UserIds,
-	FOnAddGroupUsers Success,
-	FOnError Error)
+	const FOnAddGroupUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	AddGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
@@ -1695,27 +1337,19 @@ void UNakamaClient::PromoteGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
 	const TArray<FString>& UserIds,
-	FOnPromoteGroupUsers Success,
-	FOnError Error)
+	const FOnPromoteGroupUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	PromoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
@@ -1725,27 +1359,19 @@ void UNakamaClient::KickGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
 	const TArray<FString>& UserIds,
-	FOnKickGroupUsers Success,
-	FOnError Error)
+	const FOnKickGroupUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	KickGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
@@ -1755,27 +1381,19 @@ void UNakamaClient::BanGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
 	const TArray<FString>& UserIds,
-	FOnBanGroupUsers Success,
-	FOnError Error)
+	const FOnBanGroupUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	BanGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
@@ -1785,27 +1403,19 @@ void UNakamaClient::DemoteGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
 	const TArray<FString>& UserIds,
-	FOnDemoteGroupUsers Success,
-	FOnError Error)
+	const FOnDemoteGroupUsers& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DemoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
@@ -1814,27 +1424,19 @@ void UNakamaClient::DemoteGroupUsers(
 void UNakamaClient::DeleteGroup(
 	UNakamaSession* Session,
 	const FString& GroupId,
-	FOnRemoveGroup Success,
-	FOnError Error)
+	const FOnRemoveGroup& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteGroup(Session, GroupId, successCallback, errorCallback);
@@ -1848,27 +1450,19 @@ void UNakamaClient::ListNotifications(
 	UNakamaSession* Session,
 	int32 Limit,
 	const FString& Cursor,
-	FOnListNotifications Success,
-	FOnError Error)
+	const FOnListNotifications& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaNotificationList& NotificationList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(NotificationList);
+	auto successCallback = [WeakThis, Success](const FNakamaNotificationList& NotificationList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, NotificationList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 
@@ -1881,27 +1475,19 @@ void UNakamaClient::ListNotifications(
 void UNakamaClient::DeleteNotifications(
 	UNakamaSession* Session,
 	const TArray<FString>& NotificationIds,
-	FOnDeleteNotifications Success,
-	FOnError Error)
+	const FOnDeleteNotifications& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteNotifications(Session, NotificationIds, successCallback, errorCallback);
@@ -1914,27 +1500,19 @@ void UNakamaClient::DeleteNotifications(
 void UNakamaClient::WriteStorageObjects(
 	UNakamaSession* Session,
 	const TArray<FNakamaStoreObjectWrite>& StorageObjectsData,
-	FOnStorageObjectAcks Success,
-	FOnError Error)
+	const FOnStorageObjectAcks& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaStoreObjectAcks& StorageObjectAcks)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(StorageObjectAcks);
+	auto successCallback = [WeakThis, Success](const FNakamaStoreObjectAcks& StorageObjectAcks)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, StorageObjectAcks);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	WriteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
@@ -1943,27 +1521,19 @@ void UNakamaClient::WriteStorageObjects(
 void UNakamaClient::ReadStorageObjects(
 	UNakamaSession* Session,
 	const TArray<FNakamaReadStorageObjectId>& StorageObjectsData,
-	FOnStorageObjectsRead Success,
-	FOnError Error)
+	const FOnStorageObjectsRead& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(StorageObjectList);
+	auto successCallback = [WeakThis, Success](const FNakamaStorageObjectList& StorageObjectList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, StorageObjectList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	ReadStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
@@ -1975,27 +1545,19 @@ void UNakamaClient::ListStorageObjects(
 	const FString& UserId,
 	int32 Limit,
 	const FString& Cursor,
-	FOnStorageObjectsListed Success,
-	FOnError Error)
+	const FOnStorageObjectsListed& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(StorageObjectList);
+	auto successCallback = [WeakThis, Success](const FNakamaStorageObjectList& StorageObjectList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, StorageObjectList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2014,8 +1576,8 @@ void UNakamaClient::ListStorageObjects(
 void UNakamaClient::RemoveStorageObjects(
 	UNakamaSession* Session,
 	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
-	FOnRemovedStorageObjects Success,
-	FOnError Error)
+	const FOnRemovedStorageObjects& Success,
+	const FOnError& Error)
 {
 	DeleteStorageObjects(Session, StorageObjectsData, Success, Error);
 }
@@ -2023,27 +1585,19 @@ void UNakamaClient::RemoveStorageObjects(
 void UNakamaClient::DeleteStorageObjects(
 	UNakamaSession* Session,
 	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
-	FOnRemovedStorageObjects Success,
-	FOnError Error)
+	const FOnRemovedStorageObjects& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
@@ -2056,28 +1610,20 @@ void UNakamaClient::ListParties (
 	bool Open,
 	const FString&  Query,
 	const FString&  Cursor,
-	FOnListedParties Success,
-	FOnError Error
+	const FOnListedParties& Success,
+	const FOnError& Error
 )
 {
-	auto successCallback = [this, Success](const FNakamaPartyList& PartyList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(PartyList);
+	auto successCallback = [WeakThis, Success](const FNakamaPartyList& PartyList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, PartyList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2095,27 +1641,19 @@ bool UNakamaClient::RPC(
 	UNakamaSession* Session,
 	const FString& FunctionId,
 	const FString& Payload,
-	FOnRPC Success,
-	FOnError Error)
+	const FOnRPC& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](FNakamaRPC&& Rpc)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(MoveTemp(Rpc));
+	auto successCallback = [WeakThis, Success](FNakamaRPC&& Rpc)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, MoveTemp(Rpc));
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	return RPCm(Session, FunctionId, TOptional<FString>(Payload), successCallback, errorCallback);
@@ -2129,27 +1667,19 @@ bool UNakamaClient::RPCHttpKey(
 	const FString& HttpKey,
 	const FString& FunctionId,
 	const FString& Payload,
-	FOnRPC Success,
-	FOnError Error)
+	const FOnRPC& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(Rpc);
+	auto successCallback = [WeakThis, Success](const FNakamaRPC& Rpc)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, Rpc);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-		{
-			return;
-		}
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	return RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
@@ -2165,23 +1695,19 @@ void UNakamaClient::ListChannelMessages(
 	int32 Limit,
 	const FString& Cursor,
 	bool Forward,
-	FOnListChannelMessages Success,
-	FOnError Error)
+	const FOnListChannelMessages& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaChannelMessageList& ChannelMessageList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(ChannelMessageList);
+	auto successCallback = [WeakThis, Success](const FNakamaChannelMessageList& ChannelMessageList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, ChannelMessageList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2200,23 +1726,19 @@ void UNakamaClient::WriteLeaderboardRecord(
 	int64 Score,
 	int64 SubScore,
 	const FString& Metadata,
-	FOnWriteLeaderboardRecord Success,
-	FOnError Error)
+	const FOnWriteLeaderboardRecord& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(LeaderboardRecord);
+	auto successCallback = [WeakThis, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, LeaderboardRecord);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
@@ -2240,23 +1762,19 @@ void UNakamaClient::ListLeaderboardRecords(
 	int32 Limit,
 	const FString& Cursor,
 	ENakamaLeaderboardListBy ListBy,
-	FOnListLeaderboardRecords Success,
-	FOnError Error)
+	const FOnListLeaderboardRecords& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(LeaderboardRecords);
+	auto successCallback = [WeakThis, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, LeaderboardRecords);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2293,23 +1811,19 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
 	const FString& LeaderboardId,
 	const FString& OwnerId,
 	int32 Limit,
-	FOnListLeaderboardRecords Success,
-	FOnError Error)
+	const FOnListLeaderboardRecords& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(LeaderboardRecords);
+	auto successCallback = [WeakThis, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, LeaderboardRecords);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2320,23 +1834,19 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
 void UNakamaClient::DeleteLeaderboardRecord(
 	UNakamaSession* Session,
 	const FString& LeaderboardId,
-	FOnDeletedLeaderboardRecord Success,
-	FOnError Error)
+	const FOnDeletedLeaderboardRecord& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	DeleteLeaderboardRecord(Session, LeaderboardId, successCallback, errorCallback);
@@ -2352,23 +1862,19 @@ void UNakamaClient::WriteTournamentRecord(
 	int64 Score,
 	int64 SubScore,
 	const FString& Metadata,
-	FOnWriteLeaderboardRecord Success,
-	FOnError Error)
+	const FOnWriteLeaderboardRecord& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(LeaderboardRecord);
+	auto successCallback = [WeakThis, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, LeaderboardRecord);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
@@ -2384,23 +1890,19 @@ void UNakamaClient::ListTournamentRecords(
 	const FString& Cursor,
 	const TArray<FString>& OwnerIds,
 	ENakamaLeaderboardListBy ListBy,
-	FOnListTournamentRecords Success,
-	FOnError Error)
+	const FOnListTournamentRecords& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(TournamentRecordList);
+	auto successCallback = [WeakThis, Success](const FNakamaTournamentRecordList& TournamentRecordList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, TournamentRecordList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2422,23 +1924,19 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
 	const FString& TournamentId,
 	const FString& OwnerId,
 	int32 Limit,
-	FOnListTournamentRecords Success,
-	FOnError Error)
+	const FOnListTournamentRecords& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(TournamentRecordList);
+	auto successCallback = [WeakThis, Success](const FNakamaTournamentRecordList& TournamentRecordList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, TournamentRecordList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2456,23 +1954,19 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
 void UNakamaClient::JoinTournament(
 	UNakamaSession* Session,
 	const FString& TournamentId,
-	FOnJoinedTournament Success,
-	FOnError Error)
+	const FOnJoinedTournament& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast();
+	auto successCallback = [WeakThis, Success]()
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	JoinTournament(Session, TournamentId, successCallback, errorCallback);
@@ -2486,23 +1980,19 @@ void UNakamaClient::ListTournaments(
 	int32 EndTime,
 	int32 Limit,
 	const FString& Cursor,
-	FOnListTournaments Success,
-	FOnError Error)
+	const FOnListTournaments& Success,
+	const FOnError& Error)
 {
-	auto successCallback = [this, Success](const FNakamaTournamentList& TournamentList)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 
-		Success.Broadcast(TournamentList);
+	auto successCallback = [WeakThis, Success](const FNakamaTournamentList& TournamentList)
+	{
+		FNakamaUtils::BroadcastIfActive(WeakThis, Success, TournamentList);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [WeakThis, Error](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		Error.Broadcast(error);
+		FNakamaUtils::BroadcastIfActive(WeakThis, Error, error);
 	};
 
 	const auto OptCategoryStart = FNakamaUtils::CreateOptional(CategoryStart, 0);
@@ -2530,9 +2020,11 @@ void UNakamaClient::AuthenticateDevice(
     const TOptional<bool> bCreate,
     const TOptional<FString>& Username,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/device");
 
@@ -2565,71 +2057,26 @@ void UNakamaClient::AuthenticateDevice(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateEmail(
@@ -2638,9 +2085,11 @@ void UNakamaClient::AuthenticateEmail(
     const FString& Username,
     bool bCreate,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/email");
 
@@ -2667,71 +2116,26 @@ void UNakamaClient::AuthenticateEmail(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-    FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateCustom(
@@ -2739,9 +2143,11 @@ void UNakamaClient::AuthenticateCustom(
     const FString& Username,
     bool bCreate,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/custom");
 
@@ -2767,71 +2173,26 @@ void UNakamaClient::AuthenticateCustom(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateApple(
@@ -2839,9 +2200,11 @@ void UNakamaClient::AuthenticateApple(
     const FString& Username,
     bool bCreate,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/apple");
 
@@ -2867,71 +2230,26 @@ void UNakamaClient::AuthenticateApple(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateFacebook(
@@ -2940,9 +2258,11 @@ void UNakamaClient::AuthenticateFacebook(
     bool bCreate,
     bool bImport,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/facebook");
 
@@ -2969,71 +2289,26 @@ void UNakamaClient::AuthenticateFacebook(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateGoogle(
@@ -3041,9 +2316,11 @@ void UNakamaClient::AuthenticateGoogle(
     const FString& Username,
     bool bCreate,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/google");
 
@@ -3069,71 +2346,26 @@ void UNakamaClient::AuthenticateGoogle(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateGameCenter(
@@ -3146,9 +2378,11 @@ void UNakamaClient::AuthenticateGameCenter(
     const FString& Username,
     bool bCreate,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/gamecenter");
 
@@ -3179,71 +2413,26 @@ void UNakamaClient::AuthenticateGameCenter(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateSteam(
@@ -3252,9 +2441,11 @@ void UNakamaClient::AuthenticateSteam(
     bool bCreate,
     bool bImport,
     const TMap<FString, FString>& Vars,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/authenticate/steam");
 
@@ -3281,78 +2472,35 @@ void UNakamaClient::AuthenticateSteam(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
 }
 
 void UNakamaClient::AuthenticateRefresh(
     UNakamaSession* Session,
-    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     // NOTE: Endpoint taken from from C++ Client - Docs say: /v2/session/refresh/
     const FString Endpoint = TEXT("/v2/account/session/refresh");
@@ -3371,79 +2519,73 @@ void UNakamaClient::AuthenticateRefresh(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), "");
-
-    // Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Send with retry; authenticate endpoints carry no bearer token and use the basic auth header.
+    SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), TEXT(""),
+        [SuccessCallback](const FString& ResponseBody)
         {
-            return;
-        }
-
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+            if (SuccessCallback)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
+                SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
             }
-            else
+        },
+        ErrorCallback,
+        [WeakThis](TSharedRef<IHttpRequest, ESPMode::ThreadSafe>& Req)
+        {
+            UNakamaClient* Self = WeakThis.Get();
+            if (!Self)
             {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
+            	return;
             }
 
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
+            FNakamaUtils::SetBasicAuthorizationHeader(Req, Self->ServerKey);
+        });
+}
 
-    // Process the request
-    HttpRequest->ProcessRequest();
+void UNakamaClient::EnsureValidSession(
+	UNakamaSession* Session,
+	const TFunction<void()>& OnReady,
+	const TFunction<void(const FNakamaError& Error)>& OnError)
+{
+	const FDateTime Deadline =
+		FDateTime::UtcNow() + FTimespan::FromMinutes(SessionRefreshLeewayMinutes);
+
+	// No refresh needed: disabled, no refresh token, or token still fresh enough.
+	if (!bAutoRefreshSession
+		|| Session->GetRefreshToken().IsEmpty()
+		|| !Session->IsExpiredTime(Deadline))
+	{
+		OnReady();
+		return;
+	}
+
+	// Refresh first, then run the deferred request with the refreshed token.
+	AuthenticateRefresh(Session,
+		[Session, OnReady, OnError](UNakamaSession* Refreshed)
+		{
+			if (!Refreshed)
+			{
+				// Refresh response could not be parsed into a session; do not
+				// proceed with the stale token.
+				OnError(FNakamaUtils::CreateRequestFailureError());
+				return;
+			}
+			Session->Update(Refreshed);
+			OnReady();
+		},
+		[OnError](const FNakamaError& Error)
+		{
+			OnError(Error);
+		});
 }
 
 void UNakamaClient::LinkDevice(
     UNakamaSession* Session,
     const FString& Id,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/device");
 
@@ -3466,77 +2608,32 @@ void UNakamaClient::LinkDevice(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkEmail(
     UNakamaSession* Session,
     const FString& Email,
     const FString& Password,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/email");
 
@@ -3560,76 +2657,31 @@ void UNakamaClient::LinkEmail(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
+        {
+        	return;
+        }
 
-    // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        // Add the HttpRequest to ActiveRequests
-        ActiveRequests.Add(HttpRequest);
-
-        // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-            if (!IsValidLowLevel())
-            {
-                return;
-            }
-
-            // Lock the ActiveRequests mutex to protect concurrent access
-            FScopeLock Lock(&ActiveRequestsMutex);
-
-            if (ActiveRequests.Contains(Request))
-            {
-                if (bSuccess && Response.IsValid())
-                {
-                    const FString ResponseBody = Response->GetContentAsString();
-
-                    // Check if Request was successful
-                    if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                    {
-                        // Check for Success Callback
-                        if (SuccessCallback)
-                        {
-                            SuccessCallback();
-                        }
-                    }
-                    else
-                    {
-                        // Check for Error Callback
-                        if (ErrorCallback)
-                        {
-                            const FNakamaError Error(ResponseBody);
-                            ErrorCallback(Error);
-                        }
-                    }
-                }
-                else
-                {
-                    // Handle Invalid Response
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                        ErrorCallback(RequestError);
-                    }
-                }
-
-                // Remove the HttpRequest from ActiveRequests
-                ActiveRequests.Remove(Request);
-            }
-        });
-
-        // Process the request
-        HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkCustom(
     UNakamaSession* Session,
     const FString& Id,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/custom");
 
@@ -3652,76 +2704,31 @@ void UNakamaClient::LinkCustom(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkApple(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/apple");
 
@@ -3744,77 +2751,32 @@ void UNakamaClient::LinkApple(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkFacebook(
     UNakamaSession* Session,
     const FString& Token,
     TOptional<bool> bImport,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/facebook");
 
@@ -3844,76 +2806,31 @@ void UNakamaClient::LinkFacebook(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkGoogle(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/google");
 
@@ -3936,68 +2853,21 @@ void UNakamaClient::LinkGoogle(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkGameCenter(
@@ -4008,8 +2878,10 @@ void UNakamaClient::LinkGameCenter(
     const FString& Salt,
     const FString& Signature,
     const FString& PublicKeyUrl,
-    TFunction<void()> SuccessCallback, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/gamecenter");
 
@@ -4037,77 +2909,32 @@ void UNakamaClient::LinkGameCenter(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LinkSteam(
     UNakamaSession* Session,
     const FString& Token,
     //bool bImport,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/link/steam");
 
@@ -4131,76 +2958,31 @@ void UNakamaClient::LinkSteam(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkDevice(
     UNakamaSession* Session,
     const FString& Id,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/device");
 
@@ -4223,77 +3005,32 @@ void UNakamaClient::UnLinkDevice(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkEmail(
     UNakamaSession* Session,
     const FString& Email,
     const FString& Password,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/email");
 
@@ -4317,76 +3054,31 @@ void UNakamaClient::UnLinkEmail(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkCustom(
     UNakamaSession* Session,
     const FString& Id,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/custom");
 
@@ -4409,76 +3101,31 @@ void UNakamaClient::UnLinkCustom(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkApple(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/apple");
 
@@ -4501,76 +3148,31 @@ void UNakamaClient::UnLinkApple(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkFacebook(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/facebook");
 
@@ -4596,76 +3198,31 @@ void UNakamaClient::UnLinkFacebook(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkGoogle(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/google");
 
@@ -4688,68 +3245,21 @@ void UNakamaClient::UnLinkGoogle(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkGameCenter(
@@ -4760,9 +3270,11 @@ void UNakamaClient::UnLinkGameCenter(
     const FString& Salt,
     const FString& Signature,
     const FString& PublicKeyUrl,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 
@@ -4790,76 +3302,31 @@ void UNakamaClient::UnLinkGameCenter(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UnLinkSteam(
     UNakamaSession* Session,
     const FString& Token,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account/unlink/steam");
 
@@ -4882,77 +3349,32 @@ void UNakamaClient::UnLinkSteam(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ImportFacebookFriends(
     UNakamaSession* Session,
     const FString& Token,
     const TOptional<bool> bReset,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend/facebook");
 
@@ -4981,77 +3403,32 @@ void UNakamaClient::ImportFacebookFriends(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ImportSteamFriends(
     UNakamaSession* Session,
     const FString& SteamToken,
     const TOptional<bool> bReset,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend/steam");
 
@@ -5082,76 +3459,31 @@ void UNakamaClient::ImportSteamFriends(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 
 void UNakamaClient::GetAccount(
     UNakamaSession* Session,
-    TFunction<void(const FNakamaAccount& Account)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaAccount& Account)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account");
 
@@ -5161,69 +3493,24 @@ void UNakamaClient::GetAccount(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaAccount NakamaAccount = FNakamaAccount(ResponseBody);
-                        SuccessCallback(NakamaAccount);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaAccount NakamaAccount = FNakamaAccount(ResponseBody); SuccessCallback(NakamaAccount); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UpdateAccount(
@@ -5234,9 +3521,11 @@ void UNakamaClient::UpdateAccount(
     const TOptional<FString>& LangTag,
     const TOptional<FString>& Location,
     const TOptional<FString>& TimeZone,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/account");
 
@@ -5282,76 +3571,31 @@ void UNakamaClient::UpdateAccount(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 
 void UNakamaClient::DeleteUser(
 	UNakamaSession* Session,
-	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	const TFunction<void()>& SuccessCallback,
+	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v2/account");
 
@@ -5363,73 +3607,24 @@ void UNakamaClient::DeleteUser(
 		return;
 	}
 
-	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
+        {
+        	return;
+        }
 
-	// Lock the ActiveRequests mutex to protect concurrent access
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Add the HttpRequest to ActiveRequests
-	ActiveRequests.Add(HttpRequest);
-
-	// Bind the response callback and handle the response
-	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-		if (!IsValidLowLevel())
-		{
-			const FNakamaError Error("Invalid http request when lambda executes on DeleteUser call.");
-			ErrorCallback(Error);
-			return;
-		}
-
-		// Lock the ActiveRequests mutex to protect concurrent access
-		FScopeLock Lock(&ActiveRequestsMutex);
-
-		if (ActiveRequests.Contains(Request))
-		{
-			if (bSuccess && Response.IsValid())
-			{
-				const FString ResponseBody = Response->GetContentAsString();
-
-				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-				{
-					// Check for Success Callback
-					if (SuccessCallback)
-					{
-						SuccessCallback();
-					}
-				}
-				else
-				{
-					// Check for Error Callback
-					if (ErrorCallback)
-					{
-						const FNakamaError Error(ResponseBody);
-						ErrorCallback(Error);
-					}
-				}
-			}
-			else
-			{
-				// Handle Invalid Response
-				if (ErrorCallback)
-				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-					ErrorCallback(RequestError);
-				}
-			}
-
-			// Remove the HttpRequest from ActiveRequests
-			ActiveRequests.Remove(Request);
-		}
-	});
-
-	// Process the request
-	if (!HttpRequest->ProcessRequest())
-	{
-		const FNakamaError Error("Failed to process request on DeleteUser call.");
-		ErrorCallback(Error);
-	}
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
+            {
+                if (SuccessCallback) { SuccessCallback(); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::GetUsers(
@@ -5437,9 +3632,11 @@ void UNakamaClient::GetUsers(
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames,
     const TArray<FString>& FacebookIds,
-    TFunction<void(const FNakamaUserList& Users)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaUserList& Users)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/user");
 
@@ -5474,78 +3671,35 @@ void UNakamaClient::GetUsers(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaUserList UserList = FNakamaUserList(ResponseBody);
-                        SuccessCallback(UserList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaUserList UserList = FNakamaUserList(ResponseBody); SuccessCallback(UserList); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::AddFriends(
     UNakamaSession* Session,
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend");
 
@@ -5573,77 +3727,32 @@ void UNakamaClient::AddFriends(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DeleteFriends(
     UNakamaSession* Session,
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend");
 
@@ -5671,77 +3780,32 @@ void UNakamaClient::DeleteFriends(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::BlockFriends(
     UNakamaSession* Session,
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend/block");
 
@@ -5769,68 +3833,21 @@ void UNakamaClient::BlockFriends(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListFriends(
@@ -5838,9 +3855,11 @@ void UNakamaClient::ListFriends(
     const TOptional<int32>& Limit,
     TOptional<ENakamaFriendState> State,
     const FString& Cursor,
-    TFunction<void(const FNakamaFriendList& Friends)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaFriendList& Friends)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/friend");
 
@@ -5867,69 +3886,24 @@ void UNakamaClient::ListFriends(
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaFriendList FriendsList = FNakamaFriendList(ResponseBody);
-                        SuccessCallback(FriendsList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaFriendList FriendsList = FNakamaFriendList(ResponseBody); SuccessCallback(FriendsList); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::CreateGroup(
@@ -5940,9 +3914,11 @@ void UNakamaClient::CreateGroup(
     const FString& LangTag,
     const bool bOpen,
     const TOptional<int32>& MaxCount,
-    TFunction<void(const FNakamaGroup& Group)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaGroup& Group)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+     TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
      // Setup the endpoint
     const FString Endpoint = TEXT("/v2/group");
 
@@ -5974,77 +3950,34 @@ void UNakamaClient::CreateGroup(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaGroup Group = FNakamaGroup(ResponseBody);
-                        SuccessCallback(Group);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaGroup Group = FNakamaGroup(ResponseBody); SuccessCallback(Group); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DeleteGroup(
     UNakamaSession* Session,
     const FString& GroupId,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
 
@@ -6054,77 +3987,32 @@ void UNakamaClient::DeleteGroup(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::AddGroupUsers(
     UNakamaSession* Session,
     const FString& GroupId,
     const TArray<FString>& UserIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/add"), *GroupId);
 
@@ -6145,68 +4033,21 @@ void UNakamaClient::AddGroupUsers(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListGroupUsers(
@@ -6214,10 +4055,12 @@ void UNakamaClient::ListGroupUsers(
     const FString& GroupId,
     const TOptional<int32>& Limit,
     TOptional<ENakamaGroupState> State,
-    FString Cursor,
-    TFunction<void(const FNakamaGroupUsersList& GroupUsers)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const FString& Cursor,
+    const TFunction<void(const FNakamaGroupUsersList& GroupUsers)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/user"), *GroupId);
 
@@ -6244,78 +4087,35 @@ void UNakamaClient::ListGroupUsers(
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaGroupUsersList GroupUsersList = FNakamaGroupUsersList(ResponseBody);
-                        SuccessCallback(GroupUsersList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaGroupUsersList GroupUsersList = FNakamaGroupUsersList(ResponseBody); SuccessCallback(GroupUsersList); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::KickGroupUsers(
     UNakamaSession* Session,
     const FString& GroupId,
     const TArray<FString>& UserIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/kick"), *GroupId);
 
@@ -6335,77 +4135,32 @@ void UNakamaClient::KickGroupUsers(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::BanGroupUsers(
     UNakamaSession* Session,
     const FString& GroupId,
     const TArray<FString>& UserIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/ban"), *GroupId);
 
@@ -6425,76 +4180,31 @@ void UNakamaClient::BanGroupUsers(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::JoinGroup(
     UNakamaSession* Session,
     const FString& GroupId,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/join"), *GroupId);
 
@@ -6504,76 +4214,31 @@ void UNakamaClient::JoinGroup(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, {}, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::LeaveGroup(
     UNakamaSession* Session,
     const FString& GroupId,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/leave"), *GroupId);
 
@@ -6583,68 +4248,21 @@ void UNakamaClient::LeaveGroup(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, {}, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListGroups(
@@ -6652,9 +4270,11 @@ void UNakamaClient::ListGroups(
     const FString& Name,
     int32 Limit,
     const FString& Cursor,
-    TFunction<void(const FNakamaGroupList& Groups)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaGroupList& Groups)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/group");
 
@@ -6680,69 +4300,24 @@ void UNakamaClient::ListGroups(
         QueryParams.Add(TEXT("limit"), FString::FromInt(Limit));
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaGroupList GroupList = FNakamaGroupList(ResponseBody);
-                        SuccessCallback(GroupList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaGroupList GroupList = FNakamaGroupList(ResponseBody); SuccessCallback(GroupList); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 // Used instead of passing in UserId, gets UserId from the Session
@@ -6751,8 +4326,8 @@ void UNakamaClient::ListUserGroups(
     const TOptional<int32>& Limit,
     const TOptional<ENakamaGroupState>& State,
     const FString& Cursor,
-    TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaUserGroupList& Groups)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
     if(Session && Session->IsValidLowLevel())
     {
@@ -6777,9 +4352,11 @@ void UNakamaClient::ListUserGroups(
     const TOptional<int32>& Limit,
     const TOptional<ENakamaGroupState>& State,
     const FString& Cursor,
-    TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaUserGroupList& Groups)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/user/%s/group"), *UserId);
 
@@ -6806,77 +4383,34 @@ void UNakamaClient::ListUserGroups(
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaUserGroupList UserGroupList = FNakamaUserGroupList(ResponseBody);
-                        SuccessCallback(UserGroupList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { const FNakamaUserGroupList UserGroupList = FNakamaUserGroupList(ResponseBody); SuccessCallback(UserGroupList); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
     const FString& GroupId,
     const TArray<FString>& UserIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/promote"), *GroupId);
 
@@ -6897,77 +4431,32 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DemoteGroupUsers(
     UNakamaSession* Session,
     const FString& GroupId,
     const TArray<FString>& UserIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/demote"), *GroupId);
 
@@ -6987,68 +4476,21 @@ void UNakamaClient::DemoteGroupUsers(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::UpdateGroup(
@@ -7059,9 +4501,11 @@ void UNakamaClient::UpdateGroup(
     const TOptional<FString>& AvatarUrl,
     const TOptional<FString>& LangTag,
     const TOptional<bool> bOpen,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
 
@@ -7104,68 +4548,21 @@ void UNakamaClient::UpdateGroup(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
-            {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListLeaderboardRecords(
@@ -7174,9 +4571,11 @@ void UNakamaClient::ListLeaderboardRecords(
     const TArray<FString>& OwnerIds,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
-    TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
@@ -7207,69 +4606,24 @@ void UNakamaClient::ListLeaderboardRecords(
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaLeaderboardRecordList LeaderboardRecords = FNakamaLeaderboardRecordList(ResponseBody);
-                        SuccessCallback(LeaderboardRecords);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaLeaderboardRecordList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListLeaderboardRecordsAroundOwner(
@@ -7277,9 +4631,11 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
     const FString& LeaderboardId,
     const FString& OwnerId,
     const TOptional<int32>& Limit,
-    TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s/owner/%s"), *LeaderboardId, *OwnerId);
 
@@ -7297,69 +4653,24 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
         QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaLeaderboardRecordList LeaderboardRecords = FNakamaLeaderboardRecordList(ResponseBody);
-                        SuccessCallback(LeaderboardRecords);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaLeaderboardRecordList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::WriteLeaderboardRecord(
@@ -7368,9 +4679,11 @@ void UNakamaClient::WriteLeaderboardRecord(
     int64 Score,
     const TOptional<int64>& Subscore,
     const TOptional<FString>& Metadata,
-    TFunction<void(const FNakamaLeaderboardRecord& LeaderboardRecord)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaLeaderboardRecord& LeaderboardRecord)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
@@ -7401,76 +4714,33 @@ void UNakamaClient::WriteLeaderboardRecord(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaLeaderboardRecord LeaderboardRecord = FNakamaLeaderboardRecord(ResponseBody);
-                        SuccessCallback(LeaderboardRecord);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaLeaderboardRecord(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
     const FString& LeaderboardId,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
@@ -7480,68 +4750,24 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListMatches(UNakamaSession* Session,
@@ -7551,9 +4777,11 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
     const TOptional<FString>& Label,
     const TOptional<FString>& Query,
     const TOptional<bool> Authoritative,
-    TFunction<void(const FNakamaMatchList& MatchList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaMatchList& MatchList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/match");
 
@@ -7592,77 +4820,34 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
         QueryParams.Add(TEXT("authoritative"), FNakamaUtils::BoolToString(Authoritative.GetValue()));
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaMatchList MatchList = FNakamaMatchList(ResponseBody);
-                        SuccessCallback(MatchList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaMatchList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListNotifications(UNakamaSession* Session,
     const TOptional<int32>& Limit,
     const TOptional<FString>& CacheableCursor,
-    TFunction<void(const FNakamaNotificationList& NotificationList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaNotificationList& NotificationList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/notification");
 
@@ -7684,77 +4869,34 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
         QueryParams.Add(TEXT("cacheable_cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaNotificationList NotificationList = FNakamaNotificationList(ResponseBody);
-                        SuccessCallback(NotificationList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaNotificationList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DeleteNotifications(
     UNakamaSession* Session,
     const TArray<FString>& NotificationIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/notification");
 
@@ -7774,68 +4916,24 @@ void UNakamaClient::DeleteNotifications(
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
@@ -7843,9 +4941,11 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
     const TOptional<bool> Forward,
-    TFunction<void(const FNakamaChannelMessageList& ChannelMessageList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaChannelMessageList& ChannelMessageList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/channel/%s"), *ChannelId);
 
@@ -7871,69 +4971,24 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
         QueryParams.Add(TEXT("forward"), FNakamaUtils::BoolToString(Forward.GetValue()));
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaChannelMessageList ChannelMessageList = FNakamaChannelMessageList(ResponseBody);
-                        SuccessCallback(ChannelMessageList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaChannelMessageList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListTournaments(UNakamaSession* Session,
@@ -7943,9 +4998,11 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
     const TOptional<int32>& EndTime,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
-    TFunction<void(const FNakamaTournamentList& TournamentList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaTournamentList& TournamentList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/tournament");
 
@@ -7983,69 +5040,24 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaTournamentList TournamentList = FNakamaTournamentList(ResponseBody);
-                        SuccessCallback(TournamentList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaTournamentList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
@@ -8053,9 +5065,11 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
     const TArray<FString>& OwnerIds,
-    TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
 
@@ -8084,77 +5098,34 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
         }
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaTournamentRecordList TournamentRecordList = FNakamaTournamentRecordList(ResponseBody);
-                        SuccessCallback(TournamentRecordList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaTournamentRecordList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListTournamentRecordsAroundOwner(
     UNakamaSession* Session, const FString& TournamentId,
     const FString& OwnerId, const TOptional<int32>& Limit,
-    TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/owner/%s"), *TournamentId, *OwnerId);
 
@@ -8171,78 +5142,35 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
         QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaTournamentRecordList TournamentRecordList = FNakamaTournamentRecordList(ResponseBody);
-                        SuccessCallback(TournamentRecordList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaTournamentRecordList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
     const FString& TournamentId, int64 Score,
     const TOptional<int64>& Subscore,
     const TOptional<FString>& Metadata,
-    TFunction<void(const FNakamaLeaderboardRecord& TournamentRecord)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaLeaderboardRecord& TournamentRecord)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
 
@@ -8273,77 +5201,34 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaLeaderboardRecord TournamentRecord = FNakamaLeaderboardRecord(ResponseBody);
-                        SuccessCallback(TournamentRecord);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaLeaderboardRecord(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::JoinTournament(
     UNakamaSession* Session,
     const FString& TournamentId,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/join"), *TournamentId);
 
@@ -8353,77 +5238,35 @@ void UNakamaClient::JoinTournament(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
     const FString& Collection,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
-    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
 
@@ -8447,69 +5290,24 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
 
     //QueryParams.Add(TEXT("user_id"), Session->GetUserId());
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
-                        SuccessCallback(StorageObjectList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaStorageObjectList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
@@ -8517,9 +5315,11 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
     const FString& UserId,
     const TOptional<int32>& Limit,
     const TOptional<FString>& Cursor,
-    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
 
@@ -8542,77 +5342,34 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
-                        SuccessCallback(StorageObjectList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaStorageObjectList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::WriteStorageObjects(
     UNakamaSession* Session,
     const TArray<FNakamaStoreObjectWrite>& Objects,
-    TFunction<void(const FNakamaStoreObjectAcks& StoreObjectAcks)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaStoreObjectAcks& StoreObjectAcks)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/storage");
 
@@ -8654,77 +5411,34 @@ void UNakamaClient::WriteStorageObjects(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaStoreObjectAcks StoreObjectAcks = FNakamaStoreObjectAcks(ResponseBody);
-                        SuccessCallback(StoreObjectAcks);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaStoreObjectAcks(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ReadStorageObjects(
     UNakamaSession* Session,
     const TArray<FNakamaReadStorageObjectId>& ObjectIds,
-    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+     TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
      // Setup the endpoint
     const FString Endpoint = TEXT("/v2/storage");
 
@@ -8758,77 +5472,34 @@ void UNakamaClient::ReadStorageObjects(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
-                        SuccessCallback(StorageObjectList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaStorageObjectList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::DeleteStorageObjects(
     UNakamaSession* Session,
     const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
-    TFunction<void()> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void()>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/storage/delete");
 
@@ -8862,68 +5533,24 @@ void UNakamaClient::DeleteStorageObjects(
         return;
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        SuccessCallback();
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 void UNakamaClient::ListParties (
@@ -8932,10 +5559,12 @@ void UNakamaClient::ListParties (
 	const TOptional<bool>& Open,
 	const TOptional<FString>&  Query,
 	const TOptional<FString>&  Cursor,
-	TFunction<void(const FNakamaPartyList&)> SuccessCallback,
-	TFunction<void(const FNakamaError&)> ErrorCallback
+	const TFunction<void(const FNakamaPartyList&)>& SuccessCallback,
+	const TFunction<void(const FNakamaError&)>& ErrorCallback
 )
 {
+    TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
     // Setup the endpoint
     const FString Endpoint = TEXT("/v2/party");
 
@@ -8966,77 +5595,32 @@ void UNakamaClient::ListParties (
         QueryParams.Add(TEXT("cursor"), EncodedCursor);
     }
 
-    // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    // Add the HttpRequest to ActiveRequests
-    ActiveRequests.Add(HttpRequest);
-
-    // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
-        if (!IsValidLowLevel())
+    // Refresh the session token first if it is about to expire, then send.
+    EnsureValidSession(Session,
+        [WeakThis, Session, Endpoint, QueryParams, SuccessCallback, ErrorCallback]()
+    {
+        UNakamaClient* Self = WeakThis.Get();
+        if (!Self)
         {
-            return;
+        	return;
         }
 
-        // Lock the ActiveRequests mutex to protect concurrent access
-        FScopeLock Lock(&ActiveRequestsMutex);
-
-        if (ActiveRequests.Contains(Request))
-        {
-            if (bSuccess && Response.IsValid())
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken(),
+            [SuccessCallback](const FString& ResponseBody)
             {
-                const FString ResponseBody = Response->GetContentAsString();
-
-                // Check if Request was successful
-                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-                {
-                    // Check for Success Callback
-                    if (SuccessCallback)
-                    {
-                        const FNakamaPartyList PartyList = FNakamaPartyList(ResponseBody);
-                        SuccessCallback(PartyList);
-                    }
-                }
-                else
-                {
-                    // Check for Error Callback
-                    if (ErrorCallback)
-                    {
-                        const FNakamaError Error(ResponseBody);
-                        ErrorCallback(Error);
-                    }
-                }
-            }
-            else
-            {
-                // Handle Invalid Response
-                if (ErrorCallback)
-                {
-                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-                    ErrorCallback(RequestError);
-                }
-            }
-
-            // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(Request);
-        }
-    });
-
-    // Process the request
-    HttpRequest->ProcessRequest();
+                if (SuccessCallback) { SuccessCallback(FNakamaPartyList(ResponseBody)); }
+            },
+            ErrorCallback);
+    },
+    ErrorCallback);
 }
 
 bool UNakamaClient::RPC(
     UNakamaSession* Session,
     const FString& Id,
     const TOptional<FString>& Payload,
-    TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
     // Verify the session
     if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
@@ -9052,8 +5636,8 @@ bool UNakamaClient::RPC(
     const FString& HttpKey,
     const FString& Id,
     const FString& Payload,
-    TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+    const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+    const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
     TMultiMap<FString, FString> QueryParams;
     //QueryParams.Add(TEXT("http_key"), HttpKey);
@@ -9069,8 +5653,8 @@ bool UNakamaClient::RPCm(
 	UNakamaSession* Session,
 	const FString& Id,
 	TOptional<FString>&& Payload,
-	TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
+	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
 	// Verify the session
 	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
@@ -9083,7 +5667,7 @@ bool UNakamaClient::RPCm(
 }
 
 bool UNakamaClient::RPCm(const FString& HttpKey, const FString& Id, FString&& Payload,
-	TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
 	TMultiMap<FString, FString> QueryParams;
 	//QueryParams.Add(TEXT("http_key"), HttpKey);
@@ -9123,6 +5707,100 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UNakamaClient::MakeRequest(const F
 	return FNakamaUtils::MakeRequest(URL, Content, RequestMethod, SessionToken, Timeout);
 }
 
+FNakamaRetryConfiguration UNakamaClient::BuildRetryConfiguration() const
+{
+	FNakamaRetryConfiguration Config;
+	Config.BaseDelayMs = RetryBaseDelayMs;
+	// bEnableRetries == false means zero retries (single attempt).
+	Config.MaxRetries = bEnableRetries ? RetryMaxAttempts : 0;
+	// Jitter defaults to FullJitter; Listener stays null in production.
+	return Config;
+}
+
+void UNakamaClient::SendJsonRequest(
+	const FString& Endpoint,
+	const FString& Content,
+	ENakamaRequestMethod Method,
+	const TMultiMap<FString, FString>& QueryParams,
+	const FString& AuthToken,
+	const TFunction<void(const FString& Body)>& OnSuccess,
+	const TFunction<void(const FNakamaError& Error)>& OnError,
+	const TFunction<void(TSharedRef<IHttpRequest, ESPMode::ThreadSafe>&)>& PrepareRequest)
+{
+	// One attempt: build a FRESH request (UE requests are single-use), bind, fire.
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
+	FNakamaSendFn Send =
+		[WeakThis, Endpoint, Content, Method, QueryParams, AuthToken, PrepareRequest]
+		(TFunction<void(bool, int32, const FString&)> OnComplete)
+	{
+		UNakamaClient* Self = WeakThis.Get();
+		if (!Self)
+		{
+			OnComplete(false, -1, FString());
+			return;
+		}
+
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+			Self->MakeRequest(Endpoint, Content, Method, QueryParams, AuthToken);
+		if (PrepareRequest)
+		{
+			PrepareRequest(HttpRequest);
+		}
+
+		{
+			FScopeLock Lock(&Self->ActiveRequestsMutex);
+			Self->ActiveRequests.Add(HttpRequest);
+		}
+
+		HttpRequest->OnProcessRequestComplete().BindLambda(
+			[WeakThis, OnComplete](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
+		{
+			UNakamaClient* Self = WeakThis.Get();
+			if (!Self || !Self->IsValidLowLevel())
+			{
+				return;
+			}
+			FScopeLock Lock(&Self->ActiveRequestsMutex);
+			if (Self->ActiveRequests.Contains(Request))
+			{
+				Self->ActiveRequests.Remove(Request);
+				if (bSuccess && Response.IsValid())
+				{
+					OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+				}
+				else
+				{
+					OnComplete(false, -1, FString());
+				}
+			}
+		});
+
+		HttpRequest->ProcessRequest();
+	};
+
+	// FTSTicker-based delay: schedule Work after Seconds, once.
+	FNakamaDelayFn Delay = [WeakThis](float Seconds, TFunction<void()> Work)
+	{
+		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda(
+			[WeakThis, Work](float /*DeltaTime*/) -> bool
+			{
+				if (WeakThis.IsValid())
+				{
+					Work();
+				}
+				return false; // one-shot: unregister after firing
+			}), Seconds);
+	};
+
+	// Seed the RNG from the auth token (or endpoint+content for auth calls).
+	const int32 Seed = AuthToken.IsEmpty()
+		? static_cast<int32>(GetTypeHash(Endpoint + Content))
+		: static_cast<int32>(GetTypeHash(AuthToken));
+
+	FNakamaRetryInvoker::InvokeWithRetry(
+		Send, BuildRetryConfiguration(), Seed, Delay, OnSuccess, OnError);
+}
+
 bool UNakamaClient::IsClientValid() const
 {
 	return IsValidLowLevel();
@@ -9130,149 +5808,108 @@ bool UNakamaClient::IsClientValid() const
 }
 
 bool UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
-	TMultiMap<FString, FString> QueryParams, TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TMultiMap<FString, FString> QueryParams, const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
 	// Setup the endpoint
     const FString Endpoint = FString("/v2/rpc/") + Id;
+
+    // The actual send, deferred so it can run after an optional token refresh.
+    auto SendNow = [WeakThis, Session, Endpoint, Id, Payload, QueryParams, SuccessCallback, ErrorCallback]() mutable -> bool
+    {
+    UNakamaClient* Self = WeakThis.Get();
+    if (!Self)
+    {
+    	return false;
+    }
+
+    FString SessionToken;
+    if (Session != nullptr)
+    {
+        SessionToken = Session->GetAuthToken();
+    }
 
     if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
     {
         // This part is important
         const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
 
-        FString SessionToken;
-        if (Session != nullptr)
-        {
-            SessionToken = Session->GetAuthToken();
-        }
-
-        // Make the POST request with payload
-        const auto HttpRequest = MakeRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken);
-
-        // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
-                if (SuccessCallback)
-                {
-                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
-                }
-            }, [ErrorCallback](const FNakamaError& Error) {
-                if (ErrorCallback)
-                {
-                    ErrorCallback(Error);
-                }
-            });
-        });
-
-        // Process the request
-        return HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
+            [SuccessCallback](const FString& ResponseBody)
+            {
+                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+            },
+            ErrorCallback);
     }
     else
     {
         // Add the RPC ID to the query parameters
         QueryParams.Add(TEXT("id"), Id);
 
-        FString SessionToken;
-        if (Session != nullptr)
-        {
-            SessionToken = Session->GetAuthToken();
-        }
-
-        // Make the GET request without payload
-        const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken);
-
-        // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
-                if (SuccessCallback)
-                {
-                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
-                }
-            }, [ErrorCallback](const FNakamaError& Error) {
-                if (ErrorCallback)
-                {
-                    ErrorCallback(Error);
-                }
-            });
-        });
-
-        // Process the request
-        return HttpRequest->ProcessRequest();
+        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
+            [SuccessCallback](const FString& ResponseBody)
+            {
+                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+            },
+            ErrorCallback);
     }
+    return true;
+    };
+
+    // HTTP-key RPC (no session) runs immediately and returns the real result.
+    if (Session == nullptr)
+    {
+        return SendNow();
+    }
+
+    // Session-based RPC: refresh the token first if it is about to expire, then
+    // send. The send is now asynchronous, so we report the request as accepted.
+    EnsureValidSession(Session,
+        [SendNow]() mutable { SendNow(); },
+        ErrorCallback);
+    return true;
 }
 
 bool UNakamaClient::SendRPCm(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
-	TMultiMap<FString, FString> QueryParams, TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TMultiMap<FString, FString> QueryParams, const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
+	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
 	// Setup the endpoint
     const FString Endpoint = FString("/v2/rpc/") + Id;
+
+    FString SessionToken;
+    if (Session != nullptr)
+    {
+        SessionToken = Session->GetAuthToken();
+    }
 
     if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
     {
         // This part is important
         const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
 
-        FString SessionToken;
-        if (Session != nullptr)
-        {
-            SessionToken = Session->GetAuthToken();
-        }
-
-        // Make the POST request with payload
-        const auto HttpRequest = MakeRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken);
-
-        // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
-                if (SuccessCallback)
-                {
-                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
-                }
-            }, [ErrorCallback](const FNakamaError& Error) {
-                if (ErrorCallback)
-                {
-                    ErrorCallback(Error);
-                }
-            });
-        });
-
-        // Process the request
-        return HttpRequest->ProcessRequest();
+        SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
+            [SuccessCallback](const FString& ResponseBody)
+            {
+                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+            },
+            ErrorCallback);
     }
     else
     {
         // Add the RPC ID to the query parameters
         QueryParams.Add(TEXT("id"), Id);
 
-        FString SessionToken;
-        if (Session != nullptr)
-        {
-            SessionToken = Session->GetAuthToken();
-        }
-
-        // Make the GET request without payload
-        const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken);
-
-        // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
-                if (SuccessCallback)
-                {
-                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
-                }
-            }, [ErrorCallback](const FNakamaError& Error) {
-                if (ErrorCallback)
-                {
-                    ErrorCallback(Error);
-                }
-            });
-        });
-
-        // Process the request
-        return HttpRequest->ProcessRequest();
+        SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
+            [SuccessCallback](const FString& ResponseBody)
+            {
+                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+            },
+            ErrorCallback);
     }
+    return true;
 }
 
 void UNakamaClient::CancelAllRequests()

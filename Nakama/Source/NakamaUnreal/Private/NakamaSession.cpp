@@ -110,6 +110,28 @@ UNakamaSession* UNakamaSession::SetupSession(const FString& AuthResponse)
 	return nullptr;
 }
 
+void UNakamaSession::Update(const UNakamaSession* Other)
+{
+	if (!Other)
+	{
+		return;
+	}
+
+	SessionData = Other->SessionData;
+
+	_AuthToken         = Other->_AuthToken;
+	_RefreshToken      = Other->_RefreshToken;
+	_IsCreated         = Other->_IsCreated;
+	_Username          = Other->_Username;
+	_UserId            = Other->_UserId;
+	_CreateTime        = Other->_CreateTime;
+	_ExpireTime        = Other->_ExpireTime;
+	_RefreshExpireTime = Other->_RefreshExpireTime;
+	_IsExpired         = Other->_IsExpired;
+	_IsRefreshExpired  = Other->_IsRefreshExpired;
+	_Variables         = Other->_Variables;
+}
+
 const FString UNakamaSession::GetAuthToken()  const
 {
 	return _AuthToken;

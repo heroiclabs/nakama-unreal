@@ -68,7 +68,7 @@ void FSatoriUtils::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpRe
 	}
 }
 
-void FSatoriUtils::HandleJsonSerializationFailure(TFunction<void(const FSatoriError& Error)> ErrorCallback)
+void FSatoriUtils::HandleJsonSerializationFailure(const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
 	SATORI_LOG_ERROR(TEXT("Failed to generate request content."));
 	FSatoriError Error;
@@ -80,7 +80,7 @@ void FSatoriUtils::HandleJsonSerializationFailure(TFunction<void(const FSatoriEr
 	}
 }
 
-bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, TFunction<void(const FSatoriError& Error)> ErrorCallback)
+bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
 	if (!Session || Session->SessionData.AuthToken.IsEmpty())
 	{
