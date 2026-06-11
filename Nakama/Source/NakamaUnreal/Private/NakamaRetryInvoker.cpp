@@ -20,14 +20,62 @@ bool FNakamaRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
 	}
 	switch (HttpCode)
 	{
-	case 500:
-	case 502:
-	case 503:
-	case 504:
+	// 502/503/504 come from the load balancer in front of Nakama, not from Nakama itself 
+	// usually momentary (deploy, restart, overload), hence retriable.
+	case 500: // Internal Server Error often (but not always) indicates a transient issue, e.g. DB connectivity.
+	case 502: // Bad Gateway: LB received corrupt/invalid data from the server, which may be transient.
+	case 503: // Service Unavailable: LB determined or was told the server cannot handle the request, which may be transient.
+	case 504: // Gateway Timeout: LB could not communicate with the server, which may be temporary.
 		return true;
 	default:
 		return false;
 	}
+}
+
+void FNakamaRetryState::Attempt()
+{
+	TSharedRef<FNakamaRetryState> Self = AsShared();
+	Send([Self](bool bSuccess, int32 HttpCode, const FString& Body)
+	{
+		if (bSuccess && FNakamaUtils::IsResponseSuccessful(HttpCode))
+		{
+			if (Self->OnSuccess)
+			{
+				Self->OnSuccess(Body);
+			}
+			return;
+		}
+
+		if (!FNakamaRetryInvoker::IsTransient(bSuccess, HttpCode))
+		{
+			if (Self->OnError)
+			{
+				Self->OnError(bSuccess ? FNakamaError(Body) : FNakamaUtils::CreateRequestFailureError());
+			}
+			return;
+		}
+
+		// Transient: schedule a retry if we have budget left.
+		if (Self->Retries.Num() >= Self->Configuration.MaxRetries)
+		{
+			if (Self->OnError)
+			{
+				// Retries exhausted: surface the server's actual error body when we
+				// have a response, so callers can see why it failed. Only synthesize
+				// a generic error for transport-level failures (no response body).
+				Self->OnError(bSuccess ? FNakamaError(Body) : FNakamaUtils::CreateRequestFailureError());
+			}
+			return;
+		}
+
+		const FNakamaRetry Retry = FNakamaRetryInvoker::CreateRetry(Self->Retries, Self->Configuration, Self->Stream);
+		Self->Retries.Add(Retry);
+		if (Self->Configuration.Listener)
+		{
+			Self->Configuration.Listener(Self->Retries.Num(), Retry);
+		}
+		Self->Delay(Retry.JitterBackoff / 1000.f, [Self]() { Self->Attempt(); });
+	});
 }
 
 void FNakamaRetryInvoker::InvokeWithRetry(
@@ -38,64 +86,12 @@ void FNakamaRetryInvoker::InvokeWithRetry(
 	const TFunction<void(const FString& Body)>& OnSuccess,
 	const TFunction<void(const FNakamaError& Error)>& OnError)
 {
-	// Shared mutable history across the attempt chain.
-	TSharedRef<FNakamaRetryHistory> History = MakeShared<FNakamaRetryHistory>(Config, Seed);
-
-	// Attempt closure that re-invokes itself after a scheduled delay. It captures a
-	// WEAK ref to itself (no permanent self-cycle); a strong ref is pinned per attempt
-	// and held only by the in-flight closures (the send completion and the delay work),
-	// so the whole chain is released once a terminal outcome is reached.
-	TSharedRef<TFunction<void()>> Attempt = MakeShared<TFunction<void()>>();
-	TWeakPtr<TFunction<void()>> WeakAttempt = Attempt;
-	*Attempt = [Send, History, Delay, OnSuccess, OnError, WeakAttempt]()
-	{
-		TSharedPtr<TFunction<void()>> Self = WeakAttempt.Pin();
-		if (!Self)
-		{
-			return;
-		}
-		Send([History, Delay, OnSuccess, OnError, Self](bool bSuccess, int32 HttpCode, const FString& Body)
-		{
-			if (bSuccess && FNakamaUtils::IsResponseSuccessful(HttpCode))
-			{
-				if (OnSuccess)
-				{
-					OnSuccess(Body);
-				}
-				return;
-			}
-
-			if (!IsTransient(bSuccess, HttpCode))
-			{
-				if (OnError)
-				{
-					OnError(bSuccess ? FNakamaError(Body) : FNakamaUtils::CreateRequestFailureError());
-				}
-				return;
-			}
-
-			// Transient: schedule a retry if we have budget left.
-			if (History->Retries.Num() >= History->Configuration.MaxRetries)
-			{
-				if (OnError)
-				{
-					// Retries exhausted: surface the server's actual error body when we
-					// have a response, so callers can see why it failed. Only synthesize
-					// a generic error for transport-level failures (no response body).
-					OnError(bSuccess ? FNakamaError(Body) : FNakamaUtils::CreateRequestFailureError());
-				}
-				return;
-			}
-
-			const FNakamaRetry Retry = CreateRetry(History->Retries, History->Configuration, History->Stream);
-			History->Retries.Add(Retry);
-			if (History->Configuration.Listener)
-			{
-				History->Configuration.Listener(History->Retries.Num(), Retry);
-			}
-			Delay(Retry.JitterBackoff / 1000.f, [Self]() { (*Self)(); });
-		});
-	};
-
-	(*Attempt)();
+	TSharedRef<FNakamaRetryState> State = MakeShared<FNakamaRetryState>();
+	State->Configuration = Config;
+	State->Stream = FRandomStream(Seed);
+	State->Send = Send;
+	State->Delay = Delay;
+	State->OnSuccess = OnSuccess;
+	State->OnError = OnError;
+	State->Attempt();
 }

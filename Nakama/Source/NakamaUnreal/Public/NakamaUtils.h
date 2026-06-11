@@ -102,7 +102,7 @@ public:
 	template <typename TClient, typename TDelegate, typename... TArgs>
 	static void BroadcastIfActive(const TWeakObjectPtr<TClient>& WeakClient, const TDelegate& Delegate, TArgs&&... Args)
 	{
-		if (IsActive(WeakClient.Get()))
+		if (IsActive(WeakClient.Get()) && Delegate.IsBound())
 		{
 			Delegate.Broadcast(Forward<TArgs>(Args)...);
 		}

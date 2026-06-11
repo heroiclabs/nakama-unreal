@@ -5713,7 +5713,7 @@ FNakamaRetryConfiguration UNakamaClient::BuildRetryConfiguration() const
 	Config.BaseDelayMs = RetryBaseDelayMs;
 	// bEnableRetries == false means zero retries (single attempt).
 	Config.MaxRetries = bEnableRetries ? RetryMaxAttempts : 0;
-	// Jitter defaults to FullJitter; Listener stays null in production.
+	// Jitter defaults to DecorrelatedJitter; Listener stays null in production.
 	return Config;
 }
 

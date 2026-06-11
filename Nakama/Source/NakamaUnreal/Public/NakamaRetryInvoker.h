@@ -17,15 +17,23 @@ using FNakamaSendFn = TFunction<void(TFunction<void(bool /*bSuccess*/, int32 /*H
 /** Defers Work by Seconds. Production uses FTSTicker; tests run Work immediately. */
 using FNakamaDelayFn = TFunction<void(float /*Seconds*/, TFunction<void()> /*Work*/)>;
 
-/** Mutable per-request retry state. */
-struct FNakamaRetryHistory
+/**
+ * Per-request retry state. One heap instance drives an attempt chain: each
+ * in-flight callback holds a shared ref, so the state lives exactly as long
+ * as the chain and is released on the first terminal outcome.
+ */
+struct FNakamaRetryState : TSharedFromThis<FNakamaRetryState>
 {
 	FNakamaRetryConfiguration Configuration;
 	TArray<FNakamaRetry> Retries;
 	FRandomStream Stream;
+	FNakamaSendFn Send;
+	FNakamaDelayFn Delay;
+	TFunction<void(const FString& Body)> OnSuccess;
+	TFunction<void(const FNakamaError& Error)> OnError;
 
-	FNakamaRetryHistory(const FNakamaRetryConfiguration& InConfig, int32 Seed)
-		: Configuration(InConfig), Stream(Seed) {}
+	/** Run one attempt; reschedules itself through Delay on transient failure. */
+	void Attempt();
 };
 
 /** Drives a send with exponential backoff + jitter. */
