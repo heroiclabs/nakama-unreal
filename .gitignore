@@ -572,3 +572,4 @@ vcpkg_installed/
 /NakamaBlueprintsTest/Content/Collections
 NakamaTest/DerivedDataCache
 *.vsconfig
+NakamaTest/Plugins/Satori
