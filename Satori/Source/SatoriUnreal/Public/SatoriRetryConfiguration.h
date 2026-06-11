@@ -16,8 +16,8 @@ struct FSatoriRetryConfiguration
 	/** Max attempts before giving up. */
 	int32 MaxRetries = 4;
 
-	/** Jitter algorithm. Defaults to FullJitter. */
-	FSatoriJitter Jitter = &FSatoriRetryJitter::FullJitter;
+	/** Jitter algorithm. Defaults to DecorrelatedJitter (uses retry history). */
+	FSatoriJitter Jitter = &FSatoriRetryJitter::DecorrelatedJitter;
 
 	/** Optional callback fired before each retry delay. */
 	FSatoriRetryListener Listener = nullptr;

@@ -16,8 +16,8 @@ struct FNakamaRetryConfiguration
 	/** Max attempts before giving up. */
 	int32 MaxRetries = 4;
 
-	/** Jitter algorithm. Defaults to FullJitter. */
-	FNakamaJitter Jitter = &FNakamaRetryJitter::FullJitter;
+	/** Jitter algorithm. Defaults to DecorrelatedJitter (uses retry history). */
+	FNakamaJitter Jitter = &FNakamaRetryJitter::DecorrelatedJitter;
 
 	/** Optional callback fired before each retry delay. */
 	FNakamaRetryListener Listener = nullptr;

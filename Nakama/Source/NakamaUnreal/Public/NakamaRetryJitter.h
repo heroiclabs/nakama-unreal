@@ -19,4 +19,11 @@ struct FNakamaRetryJitter
 	{
 		return FMath::RoundToInt(RetryDelay * Stream.GetFraction()); // GetFraction() in [0,1)
 	}
+
+	static int32 DecorrelatedJitter(const TArray<FNakamaRetry>& RetryHistory, int32 RetryDelay, FRandomStream& Stream)
+	{
+		const int32 Prev = RetryHistory.Num() > 0 ? RetryHistory.Last().JitterBackoff : RetryDelay;
+		const int32 Hi = FMath::Max(RetryDelay, Prev * 3);
+		return Stream.RandRange(RetryDelay, Hi);
+	}
 };

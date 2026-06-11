@@ -8,10 +8,8 @@ FNakamaRetry FNakamaRetryInvoker::CreateRetry(const TArray<FNakamaRetry>& Histor
 	const int32 Exponent = FMath::Min(History.Num(), 30);
 	const int64 Expo64 = static_cast<int64>(FMath::RoundToInt(FMath::Pow(2.f, Exponent))) * static_cast<int64>(Config.BaseDelayMs);
 	const int32 Expo = static_cast<int32>(FMath::Min<int64>(Expo64, MaxBackoffMs));
-	const int32 Jittered = Config.Jitter
-		? Config.Jitter(History, Expo, Stream)
-		: Expo;
-	return FNakamaRetry(Expo, Jittered);
+	const int32 Jittered = Config.Jitter ? Config.Jitter(History, Expo, Stream) : Expo;
+	return FNakamaRetry(Expo, FMath::Clamp(Jittered, 0, MaxBackoffMs));
 }
 
 bool FNakamaRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
