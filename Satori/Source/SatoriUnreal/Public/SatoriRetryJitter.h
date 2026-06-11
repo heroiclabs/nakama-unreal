@@ -17,7 +17,7 @@ struct FSatoriRetryJitter
 	/** Selects a uniformly random point in [0, RetryDelay). */
 	static int32 FullJitter(const TArray<FSatoriRetry>& /*RetryHistory*/, int32 RetryDelay, FRandomStream& Stream)
 	{
-		return FMath::RoundToInt(RetryDelay * Stream.GetFraction()); // GetFraction() in [0,1)
+		return FMath::FloorToInt(RetryDelay * Stream.GetFraction()); // GetFraction() in [0,1)
 	}
 
 	/**
