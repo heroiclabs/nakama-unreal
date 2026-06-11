@@ -108,6 +108,40 @@ public:
 		}
 	}
 
+	// Pick whichever client member the async node owns. Client nodes expose
+	// 'NakamaClient', realtime nodes expose 'RealtimeClient'; the int/long
+	// second parameter makes overload resolution prefer the realtime member
+	// when present (SFINAE removes the overload whose member doesn't exist).
+	template <typename TNode>
+	static auto GetNodeClient(const TNode* Node, int) -> decltype(Node->RealtimeClient)
+	{
+		return Node->RealtimeClient;
+	}
+
+	template <typename TNode>
+	static auto GetNodeClient(const TNode* Node, long) -> decltype(Node->NakamaClient)
+	{
+		return Node->NakamaClient;
+	}
+
+	// Complete a Blueprint async node from an async callback: pin the weak node,
+	// broadcast the given delegate member only if the node's client is still
+	// active, then always schedule the node for destruction.
+	template <typename TNode, typename TDelegate, typename... TArgs>
+	static void FinishNodeIfActive(const TWeakObjectPtr<TNode>& WeakNode, TDelegate TNode::*Delegate, TArgs&&... Args)
+	{
+		TNode* Node = WeakNode.Get();
+		if (!Node)
+		{
+			return;
+		}
+		if (IsActive(GetNodeClient(Node, 0)))
+		{
+			(Node->*Delegate).Broadcast(Forward<TArgs>(Args)...);
+		}
+		Node->SetReadyToDestroy();
+	}
+
 	// Json helpers
 	static FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
 	{

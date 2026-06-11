@@ -55,38 +55,12 @@ void UNakamaClientAuthenticateCustom::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateCustom::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateCustom::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateCustom(UserID, Username, bCreateAccount, Vars, successCallback, errorCallback);
@@ -120,38 +94,12 @@ void UNakamaClientAuthenticateEmail::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateEmail::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateEmail::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateEmail(Email, Password, Username, bCreateAccount, Vars, successCallback, errorCallback);
@@ -184,38 +132,12 @@ void UNakamaClientAuthenticateDevice::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateDevice::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if(!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateDevice::OnError, error, nullptr);
 	};
 
 	const auto OptUsername = FNakamaUtils::CreateOptional(Username, FString());
@@ -251,38 +173,12 @@ void UNakamaClientAuthenticateSteam::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateSteam::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateSteam::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateSteam(SteamToken, Username, bCreateAccount, bImportFriends, Vars, successCallback, errorCallback);
@@ -315,38 +211,12 @@ void UNakamaClientAuthenticateGoogle::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateGoogle::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateGoogle::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateGoogle(AccessToken, Username, bCreateAccount, Vars, successCallback, errorCallback);
@@ -385,38 +255,12 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateGameCenter::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateGameCenter::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateGameCenter(
@@ -461,38 +305,12 @@ void UNakamaClientAuthenticateFacebook::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateFacebook::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateFacebook::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateFacebook(AccessToken, Username, bCreateAccount, ImportFriends, Vars, successCallback, errorCallback);
@@ -525,38 +343,12 @@ void UNakamaClientAuthenticateApple::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateApple::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateApple::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateApple(Token, Username, bCreateAccount, Vars, successCallback, errorCallback);
@@ -602,38 +394,12 @@ void UNakamaClientAuthenticateRefresh::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientAuthenticateRefresh* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateRefresh::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAuthenticateRefresh* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAuthenticateRefresh::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateRefresh(UserSession, successCallback, errorCallback);
@@ -681,38 +447,12 @@ void UNakamaClientLinkCustom::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkCustom::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkCustom::OnError, error);
 	};
 
 	NakamaClient->LinkCustom(UserSession, CustomId, successCallback, errorCallback);
@@ -760,38 +500,12 @@ void UNakamaClientUnLinkCustom::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkCustom::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkCustom* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkCustom::OnError, error);
 	};
 
 	NakamaClient->UnLinkCustom(UserSession, CustomId, successCallback, errorCallback);
@@ -839,38 +553,12 @@ void UNakamaClientUnLinkDevice::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkDevice::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkDevice::OnError, error);
 	};
 
 	NakamaClient->UnLinkDevice(UserSession, DeviceId, successCallback, errorCallback);
@@ -919,38 +607,12 @@ void UNakamaClientUnLinkEmail::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkEmail::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkEmail::OnError, error);
 	};
 
 	NakamaClient->UnLinkEmail(UserSession, Email, Password, successCallback, errorCallback);
@@ -998,38 +660,12 @@ void UNakamaClientUnLinkFacebook::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkFacebook::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkFacebook::OnError, error);
 	};
 
 	NakamaClient->UnLinkFacebook(UserSession, AccessToken, successCallback, errorCallback);
@@ -1083,38 +719,12 @@ void UNakamaClientUnLinkGameCenter::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkGameCenter::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkGameCenter::OnError, error);
 	};
 
 	NakamaClient->UnLinkGameCenter(
@@ -1173,38 +783,12 @@ void UNakamaClientUnLinkGoogle::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkGoogle::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkGoogle::OnError, error);
 	};
 
 	NakamaClient->UnLinkGoogle(UserSession, AccessToken, successCallback, errorCallback);
@@ -1252,38 +836,12 @@ void UNakamaClientUnLinkSteam::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkSteam::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkSteam::OnError, error);
 	};
 
 	NakamaClient->UnLinkSteam(UserSession, SteamToken, successCallback, errorCallback);
@@ -1331,38 +889,12 @@ void UNakamaClientUnLinkApple::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUnLinkApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkApple::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUnLinkApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUnLinkApple::OnError, error);
 	};
 
 	NakamaClient->UnLinkApple(UserSession, Token, successCallback, errorCallback);
@@ -1408,38 +940,12 @@ void UNakamaClientRefreshSession::Activate()
 
 	auto successCallback = [WeakThis](UNakamaSession* session)
 	{
-		UNakamaClientRefreshSession* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, session);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRefreshSession::OnSuccess, FNakamaError(), session);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientRefreshSession* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRefreshSession::OnError, error, nullptr);
 	};
 
 	NakamaClient->AuthenticateRefresh(UserSession, successCallback, errorCallback);
@@ -1488,38 +994,12 @@ void UNakamaClientImportFacebookFriends::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientImportFacebookFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientImportFacebookFriends::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientImportFacebookFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientImportFacebookFriends::OnError, error);
 	};
 
 	NakamaClient->ImportFacebookFriends(UserSession, Token, Reset, successCallback, errorCallback);
@@ -1568,38 +1048,12 @@ void UNakamaClientImportSteamFriends::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientImportSteamFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientImportSteamFriends::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientImportSteamFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientImportSteamFriends::OnError, error);
 	};
 
 	NakamaClient->ImportSteamFriends(UserSession, SteamToken, Reset, successCallback, errorCallback);
@@ -1646,38 +1100,12 @@ void UNakamaClientGetUserAccount::Activate()
 	// Get Account:
 	auto successCallback = [WeakThis](const FNakamaAccount& Account)
 	{
-		UNakamaClientGetUserAccount* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, Account);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetUserAccount::OnSuccess, FNakamaError(), Account);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientGetUserAccount* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetUserAccount::OnError, error, FNakamaAccount());
 	};
 
 	NakamaClient->GetAccount(UserSession, successCallback, errorCallback);
@@ -1727,38 +1155,12 @@ void UNakamaClientGetUsers::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaUserList& UserList)
 	{
-		UNakamaClientGetUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, UserList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetUsers::OnSuccess, FNakamaError(), UserList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientGetUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetUsers::OnError, error, FNakamaUserList());
 	};
 
 	NakamaClient->GetUsers(UserSession, UserIds, Usernames, FacebookIds,  successCallback, errorCallback);
@@ -1811,38 +1213,12 @@ void UNakamaClientUpdateAccount::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUpdateAccount* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUpdateAccount::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUpdateAccount* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUpdateAccount::OnError, error);
 	};
 
 	NakamaClient->UpdateAccount(
@@ -1905,38 +1281,12 @@ void UNakamaClientListMatches::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaMatchList& MatchList)
 	{
-		UNakamaClientListMatches* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, MatchList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListMatches::OnSuccess, FNakamaError(), MatchList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListMatches* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListMatches::OnError, error, FNakamaMatchList());
 	};
 
 	const auto OptLabel = FNakamaUtils::CreateOptional(Label, FString());
@@ -2003,38 +1353,12 @@ void UNakamaClientGetFriends::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaFriendList&  Friends)
 	{
-		UNakamaClientGetFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, Friends);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetFriends::OnSuccess, FNakamaError(), Friends);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientGetFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientGetFriends::OnError, error, FNakamaFriendList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2093,38 +1417,12 @@ void UNakamaClientAddFriends::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientAddFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAddFriends::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAddFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAddFriends::OnError, error);
 	};
 
 	NakamaClient->AddFriends(UserSession, Ids, Usernames, successCallback, errorCallback);
@@ -2174,38 +1472,12 @@ void UNakamaClientRemoveFriends::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientRemoveFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRemoveFriends::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientRemoveFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRemoveFriends::OnError, error);
 	};
 
 	NakamaClient->DeleteFriends(UserSession, Ids, Usernames, successCallback, errorCallback);
@@ -2254,38 +1526,12 @@ void UNakamaClientBlockFriends::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientBlockFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientBlockFriends::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientBlockFriends* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientBlockFriends::OnError, error);
 	};
 
 	NakamaClient->BlockFriends(UserSession, Ids, Usernames, successCallback, errorCallback);
@@ -2338,38 +1584,12 @@ void UNakamaClientCreateGroup::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaGroup& Group)
 	{
-		UNakamaClientCreateGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, Group);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientCreateGroup::OnSuccess, FNakamaError(), Group);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientCreateGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientCreateGroup::OnError, error, FNakamaGroup());
 	};
 
 	const auto OptMaxCount = FNakamaUtils::CreateOptional(MaxMembers, 0);
@@ -2431,38 +1651,12 @@ void UNakamaClientListGroups::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaGroupList& Groups)
 	{
-		UNakamaClientListGroups* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, Groups);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListGroups::OnSuccess, FNakamaError(), Groups);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListGroups* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListGroups::OnError, error, FNakamaGroupList());
 	};
 
 	NakamaClient->ListGroups(UserSession, GroupNameFilter, Limit, Cursor, successCallback, errorCallback);
@@ -2510,38 +1704,12 @@ void UNakamaClientJoinGroup::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientJoinGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientJoinGroup::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientJoinGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientJoinGroup::OnError, error);
 	};
 
 	NakamaClient->JoinGroup(UserSession, GroupId, successCallback, errorCallback);
@@ -2593,38 +1761,12 @@ void UNakamaClientListUserGroups::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaUserGroupList&  UserGroupList)
 	{
-		UNakamaClientListUserGroups* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, UserGroupList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListUserGroups::OnSuccess, FNakamaError(), UserGroupList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListUserGroups* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListUserGroups::OnError, error, FNakamaUserGroupList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2686,38 +1828,12 @@ void UNakamaClientListListGroupUsers::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaGroupUsersList&  GroupUsersList)
 	{
-		UNakamaClientListListGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, GroupUsersList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListListGroupUsers::OnSuccess, FNakamaError(), GroupUsersList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListListGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListListGroupUsers::OnError, error, FNakamaGroupUsersList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -2780,38 +1896,12 @@ void UNakamaClientUpdateGroup::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientUpdateGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUpdateGroup::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientUpdateGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientUpdateGroup::OnError, error);
 	};
 
 	const auto OptName = FNakamaUtils::CreateOptional(Name, FString());
@@ -2874,38 +1964,12 @@ void UNakamaClientLeaveGroup::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLeaveGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLeaveGroup::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLeaveGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLeaveGroup::OnError, error);
 	};
 
 	NakamaClient->LeaveGroup(UserSession, GroupId, successCallback, errorCallback);
@@ -2954,38 +2018,12 @@ void UNakamaClientAddGroupUsers::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientAddGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAddGroupUsers::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientAddGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientAddGroupUsers::OnError, error);
 	};
 
 	NakamaClient->AddGroupUsers(UserSession, GroupId, UserIds, successCallback, errorCallback);
@@ -3034,38 +2072,12 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientPromoteGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientPromoteGroupUsers::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientPromoteGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientPromoteGroupUsers::OnError, error);
 	};
 
 	NakamaClient->PromoteGroupUsers(UserSession, GroupId, UserIds, successCallback, errorCallback);
@@ -3114,38 +2126,12 @@ void UNakamaClientKickGroupUsers::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientKickGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientKickGroupUsers::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientKickGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientKickGroupUsers::OnError, error);
 	};
 
 	NakamaClient->KickGroupUsers(UserSession, GroupId, UserIds, successCallback, errorCallback);
@@ -3194,38 +2180,12 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientDemoteGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDemoteGroupUsers::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientDemoteGroupUsers* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDemoteGroupUsers::OnError, error);
 	};
 
 	NakamaClient->DemoteGroupUsers(UserSession, GroupId, UserIds, successCallback, errorCallback);
@@ -3273,38 +2233,12 @@ void UNakamaClientDeleteGroup::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientDeleteGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteGroup::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientDeleteGroup* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteGroup::OnError, error);
 	};
 
 	NakamaClient->DeleteGroup(UserSession, GroupId, successCallback, errorCallback);
@@ -3353,38 +2287,12 @@ void UNakamaClientListNotifications::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaNotificationList& NotificationList)
 	{
-		UNakamaClientListNotifications* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, NotificationList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListNotifications::OnSuccess, FNakamaError(), NotificationList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListNotifications* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListNotifications::OnError, error, FNakamaNotificationList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -3435,38 +2343,12 @@ void UNakamaClientDeleteNotifications::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientDeleteNotifications* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteNotifications::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientDeleteNotifications* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteNotifications::OnError, error);
 	};
 
 	NakamaClient->DeleteNotifications(UserSession, NotificationIds, successCallback, errorCallback);
@@ -3514,38 +2396,12 @@ void UNakamaClientWriteStorageObjects::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaStoreObjectAcks& StorageObjectAcks)
 	{
-		UNakamaClientWriteStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, StorageObjectAcks);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteStorageObjects::OnSuccess, FNakamaError(), StorageObjectAcks);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientWriteStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteStorageObjects::OnError, error, FNakamaStoreObjectAcks());
 	};
 
 	NakamaClient->WriteStorageObjects(UserSession, StorageObjectsData, successCallback, errorCallback);
@@ -3593,38 +2449,12 @@ void UNakamaClientReadStorageObjects::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaStorageObjectList& StorageObjectList)
 	{
-		UNakamaClientReadStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, StorageObjectList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientReadStorageObjects::OnSuccess, FNakamaError(), StorageObjectList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientReadStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientReadStorageObjects::OnError, error, FNakamaStorageObjectList());
 	};
 
 	NakamaClient->ReadStorageObjects(UserSession, StorageObjectsData, successCallback, errorCallback);
@@ -3675,38 +2505,12 @@ void UNakamaClientListtorageObjects::Activate()
 
 	auto successCallback = [WeakThis](const  FNakamaStorageObjectList& StorageObjectList)
 	{
-		UNakamaClientListtorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, StorageObjectList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListtorageObjects::OnSuccess, FNakamaError(), StorageObjectList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListtorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListtorageObjects::OnError, error, FNakamaStorageObjectList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -3764,38 +2568,12 @@ void UNakamaClientRemoveStorageObjects::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientRemoveStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRemoveStorageObjects::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientRemoveStorageObjects* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRemoveStorageObjects::OnError, error);
 	};
 
 	NakamaClient->DeleteStorageObjects(UserSession, StorageObjectsData, successCallback, errorCallback);
@@ -3844,38 +2622,12 @@ void UNakamaClientRPC::Activate()
 
 	auto successCallback = [WeakThis](FNakamaRPC&& Rpc)
 	{
-		UNakamaClientRPC* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, MoveTemp(Rpc));
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRPC::OnSuccess, FNakamaError(), MoveTemp(Rpc));
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientRPC* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRPC::OnError, error, FNakamaRPC());
 	};
 
 	NakamaClient->RPCm(UserSession, FunctionId, Payload, successCallback, errorCallback);
@@ -3908,38 +2660,12 @@ void UNakamaClientRPCHttpKey::Activate()
 
 	auto successCallback = [WeakThis](FNakamaRPC&& Rpc)
 	{
-		UNakamaClientRPCHttpKey* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, MoveTemp(Rpc));
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRPCHttpKey::OnSuccess, FNakamaError(), MoveTemp(Rpc));
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientRPCHttpKey* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientRPCHttpKey::OnError, error, FNakamaRPC());
 	};
 
 	NakamaClient->RPCm(HttpKey, FunctionId, MoveTemp(Payload), successCallback, errorCallback);
@@ -3992,38 +2718,12 @@ void UNakamaClientListChannelMessages::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaChannelMessageList& ChannelMessageList)
 	{
-		UNakamaClientListChannelMessages* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, ChannelMessageList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListChannelMessages::OnSuccess, FNakamaError(), ChannelMessageList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListChannelMessages* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListChannelMessages::OnError, error, FNakamaChannelMessageList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4077,38 +2777,12 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
-		UNakamaClientWriteLeaderboardRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, LeaderboardRecord);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteLeaderboardRecord::OnSuccess, FNakamaError(), LeaderboardRecord);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientWriteLeaderboardRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteLeaderboardRecord::OnError, error, FNakamaLeaderboardRecord());
 	};
 
 	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
@@ -4172,38 +2846,12 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
-		UNakamaClientListLeaderboardRecords* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, LeaderboardRecords);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListLeaderboardRecords::OnSuccess, FNakamaError(), LeaderboardRecords);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListLeaderboardRecords* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListLeaderboardRecords::OnError, error, FNakamaLeaderboardRecordList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4280,38 +2928,12 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
-		UNakamaClientListLeaderboardRecordsAroundOwner* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, LeaderboardRecords);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListLeaderboardRecordsAroundOwner::OnSuccess, FNakamaError(), LeaderboardRecords);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListLeaderboardRecordsAroundOwner* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListLeaderboardRecordsAroundOwner::OnError, error, FNakamaLeaderboardRecordList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4361,38 +2983,12 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientDeleteLeaderboardRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteLeaderboardRecord::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientDeleteLeaderboardRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientDeleteLeaderboardRecord::OnError, error);
 	};
 
 	NakamaClient->DeleteLeaderboardRecord(UserSession, LeaderboardId, successCallback, errorCallback);
@@ -4443,38 +3039,12 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
-		UNakamaClientWriteTournamentRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, LeaderboardRecord);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteTournamentRecord::OnSuccess, FNakamaError(), LeaderboardRecord);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientWriteTournamentRecord* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientWriteTournamentRecord::OnError, error, FNakamaLeaderboardRecord());
 	};
 
 	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
@@ -4530,38 +3100,12 @@ void UNakamaClientListTournamentRecords::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
-		UNakamaClientListTournamentRecords* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, TournamentRecordList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournamentRecords::OnSuccess, FNakamaError(), TournamentRecordList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListTournamentRecords* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournamentRecords::OnError, error, FNakamaTournamentRecordList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4623,38 +3167,12 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
-		UNakamaClientListTournamentRecordsAroundOwner* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({}, TournamentRecordList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournamentRecordsAroundOwner::OnSuccess, FNakamaError(), TournamentRecordList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListTournamentRecordsAroundOwner* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournamentRecordsAroundOwner::OnError, error, FNakamaTournamentRecordList());
 	};
 
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4709,40 +3227,15 @@ void UNakamaClientJoinTournament::Activate()
 		return;
 	}
 
-	auto successCallback = [WeakThis]()
+	auto successCallback = [WeakThis, TournamentId = TournamentId]()
 	{
-		UNakamaClientJoinTournament* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({},StrongThis->TournamentId); // Deviates from normal client
-		StrongThis->SetReadyToDestroy();
+		// Deviates from normal client: success also reports the tournament id
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientJoinTournament::OnSuccess, FNakamaError(), TournamentId);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientJoinTournament* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientJoinTournament::OnError, error, FString());
 	};
 
 	NakamaClient->JoinTournament(UserSession, TournamentId, successCallback, errorCallback);
@@ -4796,38 +3289,12 @@ void UNakamaClientListTournaments::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaTournamentList& TournamentList)
 	{
-		UNakamaClientListTournaments* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({},TournamentList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournaments::OnSuccess, FNakamaError(), TournamentList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListTournaments* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListTournaments::OnError, error, FNakamaTournamentList());
 	};
 
 	const auto OptCategoryStart = FNakamaUtils::CreateOptional(CategoryStart, 0);
@@ -4894,38 +3361,12 @@ void UNakamaClientListParties::Activate()
 
 	auto successCallback = [WeakThis](const FNakamaPartyList& PartyList)
 	{
-		UNakamaClientListParties* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast({},PartyList);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListParties::OnSuccess, FNakamaError(), PartyList);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientListParties* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error, {});
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientListParties::OnError, error, FNakamaPartyList());
 	};
 	
 	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
@@ -4985,38 +3426,12 @@ void UNakamaClientLinkDevice::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkDevice::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkDevice* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkDevice::OnError, error);
 	};
 
 	NakamaClient->LinkDevice(UserSession, DeviceId, successCallback, errorCallback);
@@ -5065,38 +3480,12 @@ void UNakamaClientLinkEmail::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkEmail::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkEmail* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkEmail::OnError, error);
 	};
 
 	NakamaClient->LinkEmail(UserSession, Email, Password, successCallback, errorCallback);
@@ -5145,38 +3534,12 @@ void UNakamaClientLinkFacebook::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkFacebook::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkFacebook* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkFacebook::OnError, error);
 	};
 
 	NakamaClient->LinkFacebook(UserSession, AccessToken, ImportFriends, successCallback, errorCallback);
@@ -5230,38 +3593,12 @@ void UNakamaClientLinkGameCenter::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkGameCenter::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkGameCenter* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkGameCenter::OnError, error);
 	};
 
 	NakamaClient->LinkGameCenter(UserSession, PlayerId, BundleId, TimeStampSeconds, Salt, Signature, PublicKeyUrl, successCallback, errorCallback);
@@ -5309,38 +3646,12 @@ void UNakamaClientLinkGoogle::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkGoogle::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkGoogle* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkGoogle::OnError, error);
 	};
 
 	NakamaClient->LinkGoogle(UserSession, AccessToken, successCallback, errorCallback);
@@ -5388,38 +3699,12 @@ void UNakamaClientLinkSteam::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkSteam::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkSteam* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkSteam::OnError, error);
 	};
 
 	NakamaClient->LinkSteam(UserSession, SteamToken, successCallback, errorCallback);
@@ -5466,38 +3751,12 @@ void UNakamaClientLinkApple::Activate()
 
 	auto successCallback = [WeakThis]()
 	{
-		UNakamaClientLinkApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnSuccess.Broadcast();
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkApple::OnSuccess);
 	};
 
 	auto errorCallback = [WeakThis](const FNakamaError& error)
 	{
-		UNakamaClientLinkApple* StrongThis = WeakThis.Get();
-		if (!StrongThis)
-		{
-			return;
-		}
-
-		if (!FNakamaUtils::IsClientActive(StrongThis->NakamaClient))
-		{
-			StrongThis->SetReadyToDestroy();
-			return;
-		}
-
-		StrongThis->OnError.Broadcast(error);
-		StrongThis->SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaClientLinkApple::OnError, error);
 	};
 
 	NakamaClient->LinkApple(UserSession, Token, successCallback, errorCallback);
