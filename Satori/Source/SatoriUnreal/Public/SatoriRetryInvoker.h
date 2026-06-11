@@ -17,15 +17,23 @@ using FSatoriSendFn = TFunction<void(TFunction<void(bool /*bSuccess*/, int32 /*H
 /** Defers Work by Seconds. Production uses FTSTicker; tests run Work immediately. */
 using FSatoriDelayFn = TFunction<void(float /*Seconds*/, TFunction<void()> /*Work*/)>;
 
-/** Mutable per-request retry state. */
-struct FSatoriRetryHistory
+/**
+ * Per-request retry state. One heap instance drives an attempt chain: each
+ * in-flight callback holds a shared ref, so the state lives exactly as long
+ * as the chain and is released on the first terminal outcome.
+ */
+struct FSatoriRetryState : TSharedFromThis<FSatoriRetryState>
 {
 	FSatoriRetryConfiguration Configuration;
 	TArray<FSatoriRetry> Retries;
 	FRandomStream Stream;
+	FSatoriSendFn Send;
+	FSatoriDelayFn Delay;
+	TFunction<void(const FString& Body)> OnSuccess;
+	TFunction<void(const FSatoriError& Error)> OnError;
 
-	FSatoriRetryHistory(const FSatoriRetryConfiguration& InConfig, int32 Seed)
-		: Configuration(InConfig), Stream(Seed) {}
+	/** Run one attempt; reschedules itself through Delay on transient failure. */
+	void Attempt();
 };
 
 /** Drives a send with exponential backoff + jitter. */

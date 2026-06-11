@@ -102,6 +102,24 @@ public:
 		}
 	}
 
+	// Complete a Blueprint async node from an async callback: pin the weak node,
+	// broadcast the given delegate member only if the node's client is still
+	// active, then always schedule the node for destruction.
+	template <typename TNode, typename TDelegate, typename... TArgs>
+	static void FinishNodeIfActive(const TWeakObjectPtr<TNode>& WeakNode, TDelegate TNode::*Delegate, TArgs&&... Args)
+	{
+		TNode* Node = WeakNode.Get();
+		if (!Node)
+		{
+			return;
+		}
+		if (IsActive(Node->SatoriClient))
+		{
+			(Node->*Delegate).Broadcast(Forward<TArgs>(Args)...);
+		}
+		Node->SetReadyToDestroy();
+	}
+
 	// Json helpers
 	static FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
 	{
