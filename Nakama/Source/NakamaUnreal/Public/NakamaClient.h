@@ -3034,6 +3034,18 @@ private:
 		const TFunction<void()>& OnReady,
 		const TFunction<void(const FNakamaError& Error)>& OnError);
 
+	// Callbacks queued behind a single in-flight session refresh. A rotating
+	// refresh token can only be redeemed once, so concurrent requests on an
+	// expiring session share one refresh and are all resumed by its result.
+	struct FPendingRefresh
+	{
+		TArray<TFunction<void()>> OnReady;
+		TArray<TFunction<void(const FNakamaError& Error)>> OnError;
+	};
+
+	// Keyed by the session being refreshed. Game-thread only (see EnsureValidSession).
+	TMap<TWeakObjectPtr<UNakamaSession>, TSharedPtr<FPendingRefresh>> InFlightRefreshes;
+
 	// Make HTTP request
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(
 		const FString& Endpoint,

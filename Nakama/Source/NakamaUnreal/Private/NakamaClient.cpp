@@ -2558,23 +2558,67 @@ void UNakamaClient::EnsureValidSession(
 		return;
 	}
 
-	// Refresh first, then run the deferred request with the refreshed token.
+	// Coalesce concurrent refreshes for the same session. A rotating refresh
+	// token can only be redeemed once, so a burst of requests on an expiring
+	// token must share a single refresh; otherwise all but the first would fail.
+	// (Game-thread only: HTTP completions and ticker callbacks both dispatch on
+	// the game thread, so InFlightRefreshes needs no external locking.)
+	const TWeakObjectPtr<UNakamaSession> Key(Session);
+	if (TSharedPtr<FPendingRefresh>* Existing = InFlightRefreshes.Find(Key))
+	{
+		(*Existing)->OnReady.Add(OnReady);
+		(*Existing)->OnError.Add(OnError);
+		return;
+	}
+
+	const TSharedPtr<FPendingRefresh> Pending = MakeShared<FPendingRefresh>();
+	Pending->OnReady.Add(OnReady);
+	Pending->OnError.Add(OnError);
+	InFlightRefreshes.Add(Key, Pending);
+
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
+
+	// Refresh first, then run all deferred requests with the refreshed token.
+	// Callbacks are driven from the captured Pending (not a map lookup) so they
+	// always fire exactly once, even if the client is torn down mid-refresh.
 	AuthenticateRefresh(Session,
-		[Session, OnReady, OnError](UNakamaSession* Refreshed)
+		[WeakThis, Key, Pending](UNakamaSession* Refreshed)
 		{
-			if (!Refreshed)
+			if (UNakamaClient* Self = WeakThis.Get())
 			{
-				// Refresh response could not be parsed into a session; do not
-				// proceed with the stale token.
-				OnError(FNakamaUtils::CreateRequestFailureError());
-				return;
+				Self->InFlightRefreshes.Remove(Key);
 			}
-			Session->Update(Refreshed);
-			OnReady();
+
+			UNakamaSession* LiveSession = Key.Get();
+			if (Refreshed && LiveSession)
+			{
+				LiveSession->Update(Refreshed);
+				for (const TFunction<void()>& Cb : Pending->OnReady)
+				{
+					if (Cb) { Cb(); }
+				}
+			}
+			else
+			{
+				// Refresh response could not be parsed into a session (or the
+				// session was destroyed); do not proceed with the stale token.
+				const FNakamaError Error = FNakamaUtils::CreateRequestFailureError();
+				for (const TFunction<void(const FNakamaError&)>& Cb : Pending->OnError)
+				{
+					if (Cb) { Cb(Error); }
+				}
+			}
 		},
-		[OnError](const FNakamaError& Error)
+		[WeakThis, Key, Pending](const FNakamaError& Error)
 		{
-			OnError(Error);
+			if (UNakamaClient* Self = WeakThis.Get())
+			{
+				Self->InFlightRefreshes.Remove(Key);
+			}
+			for (const TFunction<void(const FNakamaError&)>& Cb : Pending->OnError)
+			{
+				if (Cb) { Cb(Error); }
+			}
 		});
 }
 
@@ -5755,39 +5799,59 @@ void UNakamaClient::SendJsonRequest(
 		HttpRequest->OnProcessRequestComplete().BindLambda(
 			[WeakThis, OnComplete](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
 		{
-			UNakamaClient* Self = WeakThis.Get();
-			if (!Self || !Self->IsValidLowLevel())
+			// Always deliver exactly one terminal outcome to OnComplete so the retry
+			// chain (and the caller's success/error callback) can never be silently
+			// dropped. A response is only forwarded when the request was still active;
+			// a cancelled request (removed from ActiveRequests) or a dead client both
+			// resolve to a transport failure, which ends the chain via OnError.
+			bool bDeliverResponse = bSuccess && Response.IsValid();
+			if (UNakamaClient* Self = WeakThis.Get())
 			{
-				return;
-			}
-			FScopeLock Lock(&Self->ActiveRequestsMutex);
-			if (Self->ActiveRequests.Contains(Request))
-			{
-				Self->ActiveRequests.Remove(Request);
-				if (bSuccess && Response.IsValid())
+				if (Self->IsValidLowLevel())
 				{
-					OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+					FScopeLock Lock(&Self->ActiveRequestsMutex);
+					if (Self->ActiveRequests.Contains(Request))
+					{
+						Self->ActiveRequests.Remove(Request);
+					}
+					else
+					{
+						bDeliverResponse = false; // cancelled or already reaped
+					}
 				}
 				else
 				{
-					OnComplete(false, -1, FString());
+					bDeliverResponse = false;
 				}
+			}
+			else
+			{
+				bDeliverResponse = false; // client gone
+			}
+
+			if (bDeliverResponse)
+			{
+				OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+			}
+			else
+			{
+				OnComplete(false, -1, FString());
 			}
 		});
 
 		HttpRequest->ProcessRequest();
 	};
 
-	// FTSTicker-based delay: schedule Work after Seconds, once.
-	FNakamaDelayFn Delay = [WeakThis](float Seconds, TFunction<void()> Work)
+	// FTSTicker-based delay: schedule Work after Seconds, once. Work is run
+	// unconditionally (even if the client has since been destroyed) so the
+	// retry attempt always executes and self-terminates through the null-client
+	// path in Send, guaranteeing the caller's OnError fires instead of hanging.
+	FNakamaDelayFn Delay = [](float Seconds, TFunction<void()> Work)
 	{
 		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda(
-			[WeakThis, Work](float /*DeltaTime*/) -> bool
+			[Work](float /*DeltaTime*/) -> bool
 			{
-				if (WeakThis.IsValid())
-				{
-					Work();
-				}
+				Work();
 				return false; // one-shot: unregister after firing
 			}), Seconds);
 	};
@@ -5919,17 +5983,23 @@ void UNakamaClient::CancelAllRequests()
 		return;
 	}
 
-	// Lock the mutex to protect access to ActiveRequests
-	FScopeLock Lock(&ActiveRequestsMutex);
-
-	// Iterate over the active requests and cancel each one
-	for (const FHttpRequestPtr& Request : ActiveRequests)
+	// Take ownership of the in-flight set under the lock, then release it before
+	// cancelling so a synchronous completion callback can re-enter the lock safely.
+	TArray<FHttpRequestPtr> ToCancel;
 	{
-		Request->OnProcessRequestComplete().Unbind();
-		Request->CancelRequest();
+		FScopeLock Lock(&ActiveRequestsMutex);
+		ToCancel = MoveTemp(ActiveRequests);
+		ActiveRequests.Empty();
 	}
 
-	// Clear the ActiveRequests array
-	ActiveRequests.Empty();
+	// Cancel each request. We deliberately do NOT unbind the completion delegate:
+	// CancelRequest drives it with bSuccess=false, and since the request is no
+	// longer in ActiveRequests the completion handler resolves it as a transport
+	// failure, delivering a terminal OnError instead of silently dropping the
+	// caller's callback.
+	for (const FHttpRequestPtr& Request : ToCancel)
+	{
+		Request->CancelRequest();
+	}
 }
 
