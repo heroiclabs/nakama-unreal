@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -10,21 +9,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/heroiclabs/nakama-common/runtime"
 )
 
 // authoritativeMatchModule is the registered match handler name used by
 // clientrpc.create_authoritative_match.
 const authoritativeMatchModule = "test_authoritative_match"
-
-// newUUID returns a random v4 UUID string (used for tournament ids).
-func newUUID() string {
-	b := make([]byte, 16)
-	_, _ = rand.Read(b)
-	b[6] = (b[6] & 0x0f) | 0x40
-	b[8] = (b[8] & 0x3f) | 0x80
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
-}
 
 // retryAttempts tracks per-test_id call counts for the retry_test RPC.
 var retryAttempts sync.Map
@@ -179,7 +170,7 @@ func rpcCreateTournament(ctx context.Context, logger runtime.Logger, db *sql.DB,
 		duration = 3600
 	}
 
-	id := newUUID()
+	id := uuid.New().String()
 	err := nk.TournamentCreate(
 		ctx,
 		id,
