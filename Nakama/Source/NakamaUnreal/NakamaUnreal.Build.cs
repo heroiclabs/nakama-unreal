@@ -74,5 +74,13 @@ public class NakamaUnreal : ModuleRules
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        
+        RuntimeDependencies.Add(Path.Combine(
+	        EngineDirectory,
+	        "Content",
+	        "Certificates",
+	        "ThirdParty",
+	        "cacert.pem"
+        ), StagedFileType.NonUFS);
     }
 }
