@@ -8,7 +8,7 @@ public class NakamaBlueprintsTestEditorTarget : TargetRules
 	public NakamaBlueprintsTestEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.V6;
         IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 
         //bIWYU = true;

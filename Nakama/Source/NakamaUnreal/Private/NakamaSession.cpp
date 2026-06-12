@@ -254,7 +254,11 @@ bool UNakamaSession::ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>
 
 	// Decode to bytes
 	TArray<uint8> decodedBytes;
-	FBase64::Decode(payloadString, decodedBytes);
+	if (!FBase64::Decode(payloadString, decodedBytes))
+	{
+		// Invalid Base64 payload
+		return false;
+	}
 
 	// Ensure null termination
 	decodedBytes.Add(0);
