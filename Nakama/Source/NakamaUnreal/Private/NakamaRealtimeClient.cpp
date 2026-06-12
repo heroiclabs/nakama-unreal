@@ -271,9 +271,14 @@ void UNakamaRealtimeClient::Connect(
 
 	WebSocket->OnMessage().AddLambda([WeakThis](const FString& MessageString)
 	{
-		// Client may have been GC'd; the socket can still deliver a queued message.
+		// The socket can still deliver a queued message after the client is GC'd or
+		// deactivated. Gate on IsRealtimeClientActive (IsValid + bIsActive) for
+		// consistency with the other socket handlers, and because the request
+		// response (CID) branch of HandleReceivedMessage is not independently
+		// gated: without this, a torn-down client would still fire pending
+		// per-request callbacks.
 		UNakamaRealtimeClient* Self = WeakThis.Get();
-		if(!Self)
+		if(!FNakamaUtils::IsRealtimeClientActive(Self))
 		{
 			return;
 		}
