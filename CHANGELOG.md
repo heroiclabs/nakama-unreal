@@ -6,7 +6,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Unreleased
 ### Added
 - HTTP clients now pre-emptively refresh an expiring session token before each authenticated request, controlled by `bAutoRefreshSession` (default `true`) on `UNakamaClient` and `USatoriClient`. Refresh fires when the token expires within 5 minutes and a refresh token is present; the caller's session is updated in place. `USatoriSession` now parses token expiry. Session logout is intentionally excluded.
-- `UNakamaClient` now automatically retries transient HTTP failures (status 500/502/503/504) with exponential backoff and full jitter. Configurable via `bEnableRetries` (default `true`), `RetryBaseDelayMs` (default `500`), and `RetryMaxAttempts` (default `4`). All HTTP requests route through a single retry path; connection failures, timeouts, and non-5xx errors are not retried.
+- `UNakamaClient` now automatically retries transient HTTP failures (status 500/502/503/504) with exponential backoff and decorrelated jitter. Configurable via `bEnableRetries` (default `true`), `RetryBaseDelayMs` (default `500`), and `RetryMaxAttempts` (default `4`). All HTTP requests route through a single retry path; connection failures, timeouts, and non-5xx errors are not retried.
 
 ### Changed
 - Session-based `RPC` now returns `true` once the request is accepted, since the send may be deferred behind an automatic token refresh. The HTTP-key `RPC` overload still returns the synchronous send result.
