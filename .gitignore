@@ -570,3 +570,6 @@ IntegrationTests/DerivedDataCache
 vcpkg_installed/
 /NakamaBlueprintsTest/Content/Developers
 /NakamaBlueprintsTest/Content/Collections
+NakamaTest/DerivedDataCache
+*.vsconfig
+NakamaTest/Plugins/Satori

@@ -36,6 +36,8 @@ USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
 
 void USatoriClientAuthenticate::Activate()
 {
+	TWeakObjectPtr<USatoriClientAuthenticate> WeakThis(this);
+
 	if (!SatoriClient)
 	{
 		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
@@ -44,28 +46,14 @@ void USatoriClientAuthenticate::Activate()
 		return;
 	}
 
-	auto successCallback = [this](USatoriSession* session)
+	auto successCallback = [WeakThis](USatoriSession* session)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(session, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticate::OnSuccess, session, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticate::OnError, nullptr, error);
 		};
 
 	SatoriClient->Authenticate(ID, DefaultProperties, CustomProperties, bNoSession, successCallback, errorCallback);
@@ -82,6 +70,8 @@ USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::Authenticate
 
 void USatoriClientAuthenticateRefresh::Activate()
 {
+	TWeakObjectPtr<USatoriClientAuthenticateRefresh> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -107,28 +97,14 @@ void USatoriClientAuthenticateRefresh::Activate()
 		return;
 	}
 
-	auto successCallback = [this](USatoriSession* session)
+	auto successCallback = [WeakThis](USatoriSession* session)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(session, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticateRefresh::OnSuccess, session, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticateRefresh::OnError, nullptr, error);
 		};
 
 	SatoriClient->AuthenticateRefresh(UserSession, successCallback, errorCallback);
@@ -145,6 +121,8 @@ USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLo
 
 void USatoriClientAuthenticateLogout::Activate()
 {
+	TWeakObjectPtr<USatoriClientAuthenticateLogout> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -170,28 +148,14 @@ void USatoriClientAuthenticateLogout::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticateLogout::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientAuthenticateLogout::OnError, error);
 		};
 
 	SatoriClient->AuthenticateLogout(UserSession, successCallback, errorCallback);
@@ -216,6 +180,8 @@ USatoriClientIdentify* USatoriClientIdentify::Identify(
 
 void USatoriClientIdentify::Activate()
 {
+	TWeakObjectPtr<USatoriClientIdentify> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -241,28 +207,14 @@ void USatoriClientIdentify::Activate()
 		return;
 	}
 
-	auto successCallback = [this](USatoriSession* session)
+	auto successCallback = [WeakThis](USatoriSession* session)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(session, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientIdentify::OnSuccess, session, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientIdentify::OnError, nullptr, error);
 		};
 
 	SatoriClient->Identify(UserSession, ID, DefaultProperties, CustomProperties, successCallback, errorCallback);
@@ -279,6 +231,8 @@ USatoriClientListIdentityProperties* USatoriClientListIdentityProperties::ListId
 
 void USatoriClientListIdentityProperties::Activate()
 {
+	TWeakObjectPtr<USatoriClientListIdentityProperties> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -304,28 +258,14 @@ void USatoriClientListIdentityProperties::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriProperties& Properties)
+	auto successCallback = [WeakThis](const FSatoriProperties& Properties)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(Properties, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientListIdentityProperties::OnSuccess, Properties, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientListIdentityProperties::OnError, FSatoriProperties(), error);
 		};
 
 	SatoriClient->ListIdentityProperties(UserSession, successCallback, errorCallback);
@@ -350,6 +290,8 @@ USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
 
 void USatoriClientUpdateProperties::Activate()
 {
+	TWeakObjectPtr<USatoriClientUpdateProperties> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -375,28 +317,14 @@ void USatoriClientUpdateProperties::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientUpdateProperties::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientUpdateProperties::OnError, error);
 		};
 
 	SatoriClient->UpdateProperties(UserSession, DefaultProperties, CustomProperties, bRecompute, successCallback, errorCallback);
@@ -413,6 +341,8 @@ USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(USatori
 
 void USatoriClientDeleteIdentity::Activate()
 {
+	TWeakObjectPtr<USatoriClientDeleteIdentity> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -438,28 +368,14 @@ void USatoriClientDeleteIdentity::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientDeleteIdentity::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientDeleteIdentity::OnError, error);
 		};
 
 	SatoriClient->DeleteIdentity(UserSession, successCallback, errorCallback);
@@ -477,6 +393,8 @@ USatoriClientPostEvent* USatoriClientPostEvent::PostEvent(USatoriClient* Client,
 
 void USatoriClientPostEvent::Activate()
 {
+	TWeakObjectPtr<USatoriClientPostEvent> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -502,28 +420,14 @@ void USatoriClientPostEvent::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientPostEvent::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientPostEvent::OnError, error);
 		};
 
 	SatoriClient->PostEvent(UserSession, Events, successCallback, errorCallback);
@@ -541,6 +445,8 @@ USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(USatori
 
 void USatoriClientGetExperiments::Activate()
 {
+	TWeakObjectPtr<USatoriClientGetExperiments> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -566,28 +472,14 @@ void USatoriClientGetExperiments::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriExperimentList& Experiments)
+	auto successCallback = [WeakThis](const FSatoriExperimentList& Experiments)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(Experiments, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetExperiments::OnSuccess, Experiments, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetExperiments::OnError, FSatoriExperimentList(), error);
 		};
 
 	SatoriClient->GetExperiments(UserSession, Names, successCallback, errorCallback);
@@ -605,6 +497,8 @@ USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(USatoriClient* Client, US
 
 void USatoriClientGetFlags::Activate()
 {
+	TWeakObjectPtr<USatoriClientGetFlags> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -630,28 +524,14 @@ void USatoriClientGetFlags::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriFlagList& Flags)
+	auto successCallback = [WeakThis](const FSatoriFlagList& Flags)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(Flags, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetFlags::OnSuccess, Flags, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetFlags::OnError, FSatoriFlagList(), error);
 		};
 
 	SatoriClient->GetFlags(UserSession, Names, successCallback, errorCallback);
@@ -669,6 +549,8 @@ USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(U
 
 void USatoriClientGetFlagOverrides::Activate()
 {
+	TWeakObjectPtr<USatoriClientGetFlagOverrides> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -694,28 +576,14 @@ void USatoriClientGetFlagOverrides::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriFlagOverrideList& FlagOverrides)
+	auto successCallback = [WeakThis](const FSatoriFlagOverrideList& FlagOverrides)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(FlagOverrides, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetFlagOverrides::OnSuccess, FlagOverrides, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetFlagOverrides::OnError, FSatoriFlagOverrideList(), error);
 		};
 
 	SatoriClient->GetFlagOverrides(UserSession, Names, successCallback, errorCallback);
@@ -733,6 +601,8 @@ USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(USatoriCli
 
 void USatoriClientGetLiveEvents::Activate()
 {
+	TWeakObjectPtr<USatoriClientGetLiveEvents> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -758,28 +628,14 @@ void USatoriClientGetLiveEvents::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriLiveEventList& LiveEvents)
+	auto successCallback = [WeakThis](const FSatoriLiveEventList& LiveEvents)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(LiveEvents, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetLiveEvents::OnSuccess, LiveEvents, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetLiveEvents::OnError, FSatoriLiveEventList(), error);
 		};
 
 	SatoriClient->GetLiveEvents(UserSession, LiveEventNames, successCallback, errorCallback);
@@ -804,6 +660,8 @@ USatoriClientGetMessages* USatoriClientGetMessages::GetMessages(
 
 void USatoriClientGetMessages::Activate()
 {
+	TWeakObjectPtr<USatoriClientGetMessages> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -829,28 +687,14 @@ void USatoriClientGetMessages::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FSatoriMessageList& Messages)
+	auto successCallback = [WeakThis](const FSatoriMessageList& Messages)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast(Messages, {});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetMessages::OnSuccess, Messages, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast({}, error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientGetMessages::OnError, FSatoriMessageList(), error);
 		};
 
 	SatoriClient->GetMessages(UserSession, Limit, Forward, Cursor, successCallback, errorCallback);
@@ -875,6 +719,8 @@ USatoriClientUpdateMessage* USatoriClientUpdateMessage::UpdateMessage(
 
 void USatoriClientUpdateMessage::Activate()
 {
+	TWeakObjectPtr<USatoriClientUpdateMessage> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -900,28 +746,14 @@ void USatoriClientUpdateMessage::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientUpdateMessage::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientUpdateMessage::OnError, error);
 		};
 
 	SatoriClient->UpdateMessage(UserSession, MessageId, ReadTime, ConsumeTime, successCallback, errorCallback);
@@ -939,6 +771,8 @@ USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(USatoriCli
 
 void USatoriClientDeleteMessage::Activate()
 {
+	TWeakObjectPtr<USatoriClientDeleteMessage> WeakThis(this);
+
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
@@ -964,28 +798,14 @@ void USatoriClientDeleteMessage::Activate()
 		return;
 	}
 
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnSuccess.Broadcast({});
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientDeleteMessage::OnSuccess, FSatoriError());
 		};
 
-	auto errorCallback = [this](const FSatoriError& error)
+	auto errorCallback = [WeakThis](const FSatoriError& error)
 		{
-			if (!USatoriClient::IsClientActive(SatoriClient))
-			{
-				SetReadyToDestroy();
-				return;
-			}
-
-			OnError.Broadcast(error);
-			SetReadyToDestroy();
+			FSatoriUtils::FinishNodeIfActive(WeakThis, &USatoriClientDeleteMessage::OnError, error);
 		};
 
 	SatoriClient->DeleteMessage(UserSession, MessageId, successCallback, errorCallback);

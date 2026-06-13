@@ -116,7 +116,7 @@ void FNakamaUtils::ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHt
 	}
 }
 
-void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
+void FNakamaUtils::HandleJsonSerializationFailure(const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 	{
 		NAKAMA_LOG_ERROR(TEXT("Failed to generate request content."));
 		FNakamaError Error;
@@ -125,7 +125,7 @@ void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaEr
 		ErrorCallback(Error);
 	}
 
-	bool FNakamaUtils::IsSessionValid(const UNakamaSession* Session, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	bool FNakamaUtils::IsSessionValid(const UNakamaSession* Session, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 	{
 		if (!Session || Session->SessionData.AuthToken.IsEmpty())
 		{

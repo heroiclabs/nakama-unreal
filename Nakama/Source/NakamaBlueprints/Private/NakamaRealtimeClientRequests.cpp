@@ -35,6 +35,8 @@ UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealt
 
 void UNakamaRealtimeClientConnect::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientConnect> WeakThis(this);
+
 	// Check validity of client and session
 	if (!RealtimeClient && !UserSession)
 	{
@@ -71,29 +73,15 @@ void UNakamaRealtimeClientConnect::Activate()
 	}
 
 	// Connect Callback
-	auto connectSuccessCallback = [this]()
+	auto connectSuccessCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientConnect::OnSuccess);
 	};
 
 	// Connection error Callback
-	auto connectErrorCallback = [this](const FNakamaRtError& Error)
+	auto connectErrorCallback = [WeakThis](const FNakamaRtError& Error)
     {
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+    	FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientConnect::OnError, Error);
     };
 
 	// NOTE: Uses lambdas here
@@ -113,6 +101,8 @@ UNakamaRealtimeClientSendMessage* UNakamaRealtimeClientSendMessage::SendMessage(
 
 void UNakamaRealtimeClientSendMessage::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientSendMessage> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -121,28 +111,14 @@ void UNakamaRealtimeClientSendMessage::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
+	auto successCallback = [WeakThis](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, ChannelMessageAck);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSendMessage::OnSuccess, FNakamaRtError(), ChannelMessageAck);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSendMessage::OnError, Error, FNakamaChannelMessageAck());
 	};
 
 	RealtimeClient->WriteChatMessage(ChannelId, Content, successCallback, errorCallback);
@@ -161,6 +137,8 @@ UNakamaRealtimeClientSendDirectMessage* UNakamaRealtimeClientSendDirectMessage::
 
 void UNakamaRealtimeClientSendDirectMessage::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientSendDirectMessage> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -169,28 +147,14 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
+	auto successCallback = [WeakThis](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, ChannelMessageAck);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSendDirectMessage::OnSuccess, FNakamaRtError(), ChannelMessageAck);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSendDirectMessage::OnError, Error, FNakamaChannelMessageAck());
 	};
 	
 	RealtimeClient->WriteChatMessage(UserID, Content, successCallback, errorCallback);
@@ -210,6 +174,8 @@ UNakamaRealtimeClientUpdateChatMessage* UNakamaRealtimeClientUpdateChatMessage::
 
 void UNakamaRealtimeClientUpdateChatMessage::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientUpdateChatMessage> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -218,28 +184,14 @@ void UNakamaRealtimeClientUpdateChatMessage::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
+	auto successCallback = [WeakThis](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, ChannelMessageAck);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUpdateChatMessage::OnSuccess, FNakamaRtError(), ChannelMessageAck);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUpdateChatMessage::OnError, Error, FNakamaChannelMessageAck());
 	};
 
 	RealtimeClient->UpdateChatMessage(ChannelId, MessageId, Content, successCallback, errorCallback);
@@ -257,6 +209,8 @@ UNakamaRealtimeClientRemoveChatMessage* UNakamaRealtimeClientRemoveChatMessage::
 
 void UNakamaRealtimeClientRemoveChatMessage::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientRemoveChatMessage> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -265,28 +219,14 @@ void UNakamaRealtimeClientRemoveChatMessage::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
+	auto successCallback = [WeakThis](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, ChannelMessageAck);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemoveChatMessage::OnSuccess, FNakamaRtError(), ChannelMessageAck);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemoveChatMessage::OnError, Error, FNakamaChannelMessageAck());
 	};
 
 	RealtimeClient->RemoveChatMessage(ChannelId, MessageId, successCallback, errorCallback);
@@ -308,6 +248,8 @@ UNakamaRealtimeClientJoinChat* UNakamaRealtimeClientJoinChat::JoinChat(UNakamaRe
 
 void UNakamaRealtimeClientJoinChat::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientJoinChat> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -316,28 +258,14 @@ void UNakamaRealtimeClientJoinChat::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaChannel& Channel)
+	auto successCallback = [WeakThis](const FNakamaChannel& Channel)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, Channel);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinChat::OnSuccess, FNakamaRtError(), Channel);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinChat::OnError, Error, FNakamaChannel());
 	};
 	
 	RealtimeClient->JoinChat(ChatId, ChannelType, Persistence, Hidden, successCallback, errorCallback);
@@ -355,6 +283,8 @@ UNakamaRealtimeClientLeaveChat* UNakamaRealtimeClientLeaveChat::LeaveChat(UNakam
 
 void UNakamaRealtimeClientLeaveChat::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientLeaveChat> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -363,28 +293,15 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, ChannelId = ChannelId]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, ChannelId); // Channel Parameter Deviates from the other C++ Client
-		SetReadyToDestroy();
+		// Channel parameter deviates from the other C++ client
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveChat::OnSuccess, FNakamaRtError(), ChannelId);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveChat::OnError, Error, FString());
 	};
 
 	RealtimeClient->LeaveChat(ChannelId, successCallback, errorCallback);
@@ -410,6 +327,8 @@ UNakamaRealtimeClientAddMatchmaker* UNakamaRealtimeClientAddMatchmaker::AddMatch
 
 void UNakamaRealtimeClientAddMatchmaker::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientAddMatchmaker> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -418,28 +337,14 @@ void UNakamaRealtimeClientAddMatchmaker::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaMatchmakerTicket& MatchmakerTicket)
+	auto successCallback = [WeakThis](const FNakamaMatchmakerTicket& MatchmakerTicket)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, MatchmakerTicket);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAddMatchmaker::OnSuccess, FNakamaRtError(), MatchmakerTicket);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAddMatchmaker::OnError, Error, FNakamaMatchmakerTicket());
 	};
 
 	auto OptMinCount = FNakamaUtils::CreateOptional(MinCount, 0);
@@ -474,6 +379,8 @@ UNakamaRealtimeClientLeaveMatchmaker* UNakamaRealtimeClientLeaveMatchmaker::Leav
 
 void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientLeaveMatchmaker> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -482,28 +389,15 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, Ticket = Ticket]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, Ticket); // Deviates from the other C++ Client by returning Ticket
-		SetReadyToDestroy();
+		// Deviates from the other C++ client by returning the ticket
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveMatchmaker::OnSuccess, FNakamaRtError(), Ticket);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveMatchmaker::OnError, Error, FString());
 	};
 	
 	RealtimeClient->RemoveMatchmaker(Ticket, successCallback, errorCallback);
@@ -521,6 +415,8 @@ UNakamaRealtimeClientUpdateStatus* UNakamaRealtimeClientUpdateStatus::UpdateStat
 
 void UNakamaRealtimeClientUpdateStatus::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientUpdateStatus> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -529,28 +425,14 @@ void UNakamaRealtimeClientUpdateStatus::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUpdateStatus::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUpdateStatus::OnError, Error);
 	};
 	
 	RealtimeClient->UpdateStatus(StatusMessage, successCallback, errorCallback);
@@ -567,6 +449,8 @@ UNakamaRealtimeClientSetAppearOffline* UNakamaRealtimeClientSetAppearOffline::Se
 
 void UNakamaRealtimeClientSetAppearOffline::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientSetAppearOffline> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -575,28 +459,14 @@ void UNakamaRealtimeClientSetAppearOffline::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSetAppearOffline::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientSetAppearOffline::OnError, Error);
 	};
 
 	RealtimeClient->UpdateStatus("", successCallback, errorCallback); // "Invisible" Status
@@ -614,6 +484,8 @@ UNakamaRealtimeClientFollowUsers* UNakamaRealtimeClientFollowUsers::FollowUsers(
 
 void UNakamaRealtimeClientFollowUsers::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientFollowUsers> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -622,28 +494,14 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaStatus& Status)
+	auto successCallback = [WeakThis](const FNakamaStatus& Status)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, Status);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientFollowUsers::OnSuccess, FNakamaRtError(), Status);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientFollowUsers::OnError, Error, FNakamaStatus());
 	};
 	
 	RealtimeClient->FollowUsers(UserIds, successCallback, errorCallback);
@@ -661,6 +519,8 @@ UNakamaRealtimeClientUnFollowUsers* UNakamaRealtimeClientUnFollowUsers::UnFollow
 
 void UNakamaRealtimeClientUnFollowUsers::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientUnFollowUsers> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -669,28 +529,14 @@ void UNakamaRealtimeClientUnFollowUsers::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUnFollowUsers::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientUnFollowUsers::OnError, Error);
 	};
 	
 	RealtimeClient->UnfollowUsers(UserIds, successCallback, errorCallback);
@@ -706,6 +552,8 @@ UNakamaRealtimeClientCreateMatch* UNakamaRealtimeClientCreateMatch::CreateMatch(
 
 void UNakamaRealtimeClientCreateMatch::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientCreateMatch> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -714,28 +562,14 @@ void UNakamaRealtimeClientCreateMatch::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaMatch& Match)
+	auto successCallback = [WeakThis](const FNakamaMatch& Match)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({},Match);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCreateMatch::OnSuccess, FNakamaRtError(), Match);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCreateMatch::OnError, Error, FNakamaMatch());
 	};
 	
 	RealtimeClient->CreateMatch(successCallback, errorCallback);
@@ -754,6 +588,8 @@ UNakamaRealtimeClientJoinMatch* UNakamaRealtimeClientJoinMatch::JoinMatch(UNakam
 
 void UNakamaRealtimeClientJoinMatch::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientJoinMatch> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -762,28 +598,14 @@ void UNakamaRealtimeClientJoinMatch::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaMatch& Match)
+	auto successCallback = [WeakThis](const FNakamaMatch& Match)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({},Match);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinMatch::OnSuccess, FNakamaRtError(), Match);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinMatch::OnError, Error, FNakamaMatch());
 	};
 	
 	RealtimeClient->JoinMatch(MatchId, MetaData, successCallback, errorCallback);
@@ -801,6 +623,8 @@ UNakamaRealtimeClientJoinMatchByToken* UNakamaRealtimeClientJoinMatchByToken::Jo
 
 void UNakamaRealtimeClientJoinMatchByToken::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientJoinMatchByToken> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -809,28 +633,14 @@ void UNakamaRealtimeClientJoinMatchByToken::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaMatch& Match)
+	auto successCallback = [WeakThis](const FNakamaMatch& Match)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({},Match);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinMatchByToken::OnSuccess, FNakamaRtError(), Match);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinMatchByToken::OnError, Error, FNakamaMatch());
 	};
 
 	RealtimeClient->JoinMatchByToken(Token, successCallback, errorCallback);
@@ -850,6 +660,8 @@ UNakamaRealtimeClientLeaveMatch* UNakamaRealtimeClientLeaveMatch::LeaveMatch(UNa
 
 void UNakamaRealtimeClientLeaveMatch::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientLeaveMatch> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -858,28 +670,15 @@ void UNakamaRealtimeClientLeaveMatch::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, MatchId = MatchId]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, MatchId); // Deviation from C++ SDK by returning the MatchId
-		SetReadyToDestroy();
+		// Deviation from C++ SDK by returning the MatchId
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveMatch::OnSuccess, FNakamaRtError(), MatchId);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveMatch::OnError, Error, FString());
 	};
 	
 	RealtimeClient->LeaveMatch(MatchId, successCallback, errorCallback);
@@ -898,6 +697,8 @@ UNakamaRealtimeClientCreateParty* UNakamaRealtimeClientCreateParty::CreateParty(
 
 void UNakamaRealtimeClientCreateParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientCreateParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -906,28 +707,14 @@ void UNakamaRealtimeClientCreateParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaParty& Party)
+	auto successCallback = [WeakThis](const FNakamaParty& Party)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, Party);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCreateParty::OnSuccess, FNakamaRtError(), Party);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCreateParty::OnError, Error, FNakamaParty());
 	};
 
 	RealtimeClient->CreateParty(Open, MaxSize, successCallback, errorCallback);
@@ -944,6 +731,8 @@ UNakamaRealtimeClientJoinParty* UNakamaRealtimeClientJoinParty::JoinParty(UNakam
 
 void UNakamaRealtimeClientJoinParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientJoinParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -952,28 +741,15 @@ void UNakamaRealtimeClientJoinParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, PartyId = PartyId]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, PartyId); // Deviates from C++ SDK by returning the PartyId
-		SetReadyToDestroy();
+		// Deviates from C++ SDK by returning the PartyId
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinParty::OnSuccess, FNakamaRtError(), PartyId);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientJoinParty::OnError, Error, FString());
 	};
 	
 	RealtimeClient->JoinParty(PartyId, successCallback, errorCallback);
@@ -990,6 +766,8 @@ UNakamaRealtimeClientLeaveParty* UNakamaRealtimeClientLeaveParty::LeaveParty(UNa
 
 void UNakamaRealtimeClientLeaveParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientLeaveParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -998,28 +776,15 @@ void UNakamaRealtimeClientLeaveParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, PartyId = PartyId]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, PartyId); // Deviates from C++ SDK by returning the PartyId
-		SetReadyToDestroy();
+		// Deviates from C++ SDK by returning the PartyId
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveParty::OnSuccess, FNakamaRtError(), PartyId);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientLeaveParty::OnError, Error, FString());
 	};
 	
 	RealtimeClient->LeaveParty(PartyId, successCallback, errorCallback);
@@ -1037,6 +802,8 @@ UNakamaRealtimeClientListPartyJoinRequests* UNakamaRealtimeClientListPartyJoinRe
 
 void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientListPartyJoinRequests> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1045,28 +812,14 @@ void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaPartyJoinRequest& PartyJoinRequest)
+	auto successCallback = [WeakThis](const FNakamaPartyJoinRequest& PartyJoinRequest)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, PartyJoinRequest);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientListPartyJoinRequests::OnSuccess, FNakamaRtError(), PartyJoinRequest);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientListPartyJoinRequests::OnError, Error, FNakamaPartyJoinRequest());
 	};
 	
 	RealtimeClient->ListPartyJoinRequests(PartyId, successCallback, errorCallback);
@@ -1085,6 +838,8 @@ UNakamaRealtimeClientPromotePartyMember* UNakamaRealtimeClientPromotePartyMember
 
 void UNakamaRealtimeClientPromotePartyMember::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientPromotePartyMember> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1093,28 +848,14 @@ void UNakamaRealtimeClientPromotePartyMember::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientPromotePartyMember::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientPromotePartyMember::OnError, Error);
 	};
 	
 	RealtimeClient->PromotePartyMember(PartyId, PartyMember, successCallback, errorCallback);
@@ -1133,6 +874,8 @@ UNakamaRealtimeClientRemoveMatchmakerParty* UNakamaRealtimeClientRemoveMatchmake
 
 void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientRemoveMatchmakerParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1141,28 +884,15 @@ void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis, Ticket = Ticket]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, Ticket); // Deviates from C++ SDK by returning the Ticket
-		SetReadyToDestroy();
+		// Deviates from C++ SDK by returning the Ticket
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemoveMatchmakerParty::OnSuccess, FNakamaRtError(), Ticket);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemoveMatchmakerParty::OnError, Error, FString());
 	};
 
 	RealtimeClient->RemoveMatchmakerParty(PartyId, Ticket, successCallback, errorCallback);
@@ -1181,6 +911,8 @@ UNakamaRealtimeClientRemovePartyMember* UNakamaRealtimeClientRemovePartyMember::
 
 void UNakamaRealtimeClientRemovePartyMember::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientRemovePartyMember> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1189,28 +921,14 @@ void UNakamaRealtimeClientRemovePartyMember::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemovePartyMember::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRemovePartyMember::OnError, Error);
 	};
 
 	RealtimeClient->RemovePartyMember(PartyId, Presence, successCallback, errorCallback);
@@ -1230,6 +948,8 @@ UNakamaRealtimeClientAcceptPartyMember* UNakamaRealtimeClientAcceptPartyMember::
 
 void UNakamaRealtimeClientAcceptPartyMember::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientAcceptPartyMember> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1238,28 +958,14 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAcceptPartyMember::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAcceptPartyMember::OnError, Error);
 	};
 
 	RealtimeClient->AcceptPartyMember(PartyId, Presence, successCallback, errorCallback);
@@ -1286,6 +992,8 @@ UNakamaRealtimeClientAddMatchmakerParty* UNakamaRealtimeClientAddMatchmakerParty
 
 void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientAddMatchmakerParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1294,28 +1002,14 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaPartyMatchmakerTicket& PartyMatchmakerTicket)
+	auto successCallback = [WeakThis](const FNakamaPartyMatchmakerTicket& PartyMatchmakerTicket)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, PartyMatchmakerTicket);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAddMatchmakerParty::OnSuccess, FNakamaRtError(), PartyMatchmakerTicket);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientAddMatchmakerParty::OnError, Error, FNakamaPartyMatchmakerTicket());
 	};
 
 	auto OptMinCount = FNakamaUtils::CreateOptional(MinCount, 0);
@@ -1351,6 +1045,8 @@ UNakamaRealtimeClientCloseParty* UNakamaRealtimeClientCloseParty::CloseParty(UNa
 
 void UNakamaRealtimeClientCloseParty::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientCloseParty> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1359,28 +1055,14 @@ void UNakamaRealtimeClientCloseParty::Activate()
 		return;
 	}
 	
-	auto successCallback = [this]()
+	auto successCallback = [WeakThis]()
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast();
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCloseParty::OnSuccess);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientCloseParty::OnError, Error);
 	};
 
 	RealtimeClient->CloseParty(PartyId, successCallback, errorCallback);
@@ -1398,6 +1080,8 @@ UNakamaRealtimeClientRPC* UNakamaRealtimeClientRPC::RPC(UNakamaRealtimeClient* R
 
 void UNakamaRealtimeClientRPC::Activate()
 {
+	TWeakObjectPtr<UNakamaRealtimeClientRPC> WeakThis(this);
+
 	if (!RealtimeClient)
 	{
 		const FNakamaRtError Error = FNakamaUtils::HandleInvalidRealtimeClient();
@@ -1406,28 +1090,14 @@ void UNakamaRealtimeClientRPC::Activate()
 		return;
 	}
 	
-	auto successCallback = [this](const FNakamaRPC& rpc)
+	auto successCallback = [WeakThis](const FNakamaRPC& rpc)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnSuccess.Broadcast({}, rpc);
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRPC::OnSuccess, FNakamaRtError(), rpc);
 	};
 
-	auto errorCallback = [this](const FNakamaRtError& Error)
+	auto errorCallback = [WeakThis](const FNakamaRtError& Error)
 	{
-		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
-		{
-			SetReadyToDestroy();
-			return;
-		}
-		
-		OnError.Broadcast(Error, {});
-		SetReadyToDestroy();
+		FNakamaUtils::FinishNodeIfActive(WeakThis, &UNakamaRealtimeClientRPC::OnError, Error, FNakamaRPC());
 	};
 
 	RealtimeClient->RPC(FunctionId, Payload, successCallback, errorCallback);

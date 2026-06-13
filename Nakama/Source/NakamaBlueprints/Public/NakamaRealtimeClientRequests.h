@@ -78,10 +78,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaSession> UserSession;
@@ -122,10 +124,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString ChannelId;
 	FString Content;
@@ -163,10 +167,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString UserID;
 	FString Content;
@@ -205,10 +211,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString ChannelId;
 	FString Content;
@@ -247,10 +255,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString ChannelId;
 	FString MessageId;
@@ -292,10 +302,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString ChatId;
 	ENakamaChannelType ChannelType;
@@ -335,10 +347,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString ChannelId;
 };
@@ -382,10 +396,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	int32 MinCount;
 	int32 MaxCount;
@@ -429,10 +445,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString Ticket;
 
@@ -471,10 +489,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString StatusMessage;
 
@@ -508,10 +528,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString StatusMessage;
 
@@ -548,10 +570,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	TArray<FString> UserIds;
 
@@ -589,10 +613,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	TArray<FString> UserIds;
 
@@ -629,10 +655,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 };
 
@@ -668,10 +696,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString MatchId;
 	TMap<FString, FString> MetaData;
@@ -706,10 +736,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString Token;
 };
@@ -745,10 +777,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString MatchId;
 };
@@ -787,10 +821,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	bool Open;
 	int32 MaxSize;
@@ -827,10 +863,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 
@@ -867,10 +905,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 
@@ -908,10 +948,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 
@@ -945,10 +987,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 	FNakamaUserPresence PartyMember;
@@ -986,10 +1030,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 	FString Ticket;
@@ -1025,10 +1071,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 	FNakamaUserPresence Presence;
@@ -1066,10 +1114,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 	FNakamaUserPresence Presence;
@@ -1112,10 +1162,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 	int32 MinCount;
@@ -1156,10 +1208,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString PartyId;
 
@@ -1198,10 +1252,12 @@ public:
 
 	virtual void Activate() override;
 
-private:
+public:
 
 	UPROPERTY()
 	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
+
+private:
 
 	FString FunctionId;
 	FString Payload;

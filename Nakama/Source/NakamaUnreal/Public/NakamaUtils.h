@@ -91,6 +91,57 @@ public:
 		return IsValid(RealtimeClient) && RealtimeClient->bIsActive == true;
 	}
 
+	// Unified active check so the templated helper can dispatch by client type.
+	static bool IsActive(const UNakamaClient* Client) { return IsClientActive(Client); }
+	static bool IsActive(const UNakamaRealtimeClient* Client) { return IsRealtimeClientActive(Client); }
+
+	// Broadcast a dynamic multicast delegate only if the owning client is still alive.
+	// Async callbacks capture a TWeakObjectPtr to the client and route their broadcast
+	// through this helper, so a response that arrives after the client was released is
+	// dropped instead of dereferencing a dangling 'this'.
+	template <typename TClient, typename TDelegate, typename... TArgs>
+	static void BroadcastIfActive(const TWeakObjectPtr<TClient>& WeakClient, const TDelegate& Delegate, TArgs&&... Args)
+	{
+		if (IsActive(WeakClient.Get()) && Delegate.IsBound())
+		{
+			Delegate.Broadcast(Forward<TArgs>(Args)...);
+		}
+	}
+
+	// Pick whichever client member the async node owns. Client nodes expose
+	// 'NakamaClient', realtime nodes expose 'RealtimeClient'; the int/long
+	// second parameter makes overload resolution prefer the realtime member
+	// when present (SFINAE removes the overload whose member doesn't exist).
+	template <typename TNode>
+	static auto GetNodeClient(const TNode* Node, int) -> decltype(Node->RealtimeClient)
+	{
+		return Node->RealtimeClient;
+	}
+
+	template <typename TNode>
+	static auto GetNodeClient(const TNode* Node, long) -> decltype(Node->NakamaClient)
+	{
+		return Node->NakamaClient;
+	}
+
+	// Complete a Blueprint async node from an async callback: pin the weak node,
+	// broadcast the given delegate member only if the node's client is still
+	// active, then always schedule the node for destruction.
+	template <typename TNode, typename TDelegate, typename... TArgs>
+	static void FinishNodeIfActive(const TWeakObjectPtr<TNode>& WeakNode, TDelegate TNode::*Delegate, TArgs&&... Args)
+	{
+		TNode* Node = WeakNode.Get();
+		if (!Node)
+		{
+			return;
+		}
+		if (IsActive(GetNodeClient(Node, 0)))
+		{
+			(Node->*Delegate).Broadcast(Forward<TArgs>(Args)...);
+		}
+		Node->SetReadyToDestroy();
+	}
+
 	// Json helpers
 	static FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
 	{
@@ -247,8 +298,8 @@ public:
 	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	static void ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(FString&&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	
-	static void HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback);
-	static bool IsSessionValid(const UNakamaSession* Session, TFunction<void(const FNakamaError& Error)> ErrorCallback);
+	static void HandleJsonSerializationFailure(const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
+	static bool IsSessionValid(const UNakamaSession* Session, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	static bool IsResponseSuccessful(int32 ResponseCode);
 	static FNakamaError CreateRequestFailureError();
 

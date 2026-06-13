@@ -235,7 +235,10 @@ inline bool JoinGroupChat::RunTest(const FString& Parameters)
 				StopTest();
 			};
 
-			FString GroupName = FString::Printf(TEXT("Group chat %s"), *Session->GetAuthToken());
+			// Group names must be unique and reasonably short; the user id (a UUID) is
+			// unique per run since each test authenticates a fresh user. Using the full
+			// auth token here produced an over-long name that the server rejected.
+			FString GroupName = FString::Printf(TEXT("Group chat %s"), *Session->GetUserId());
 			Client->CreateGroup(Session, GroupName, TEXT("A group for chatting"), {}, {}, false, {}, CreateGroupSuccessCallback, CreateGroupErrorCallback);
 		});
 		
