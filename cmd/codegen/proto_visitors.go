@@ -27,9 +27,11 @@ func TrimUntilLastDot(s string) string {
 // --------------------
 // Enums
 type ProtoEnum struct {
+	Name    string
 	Comment string
 	Fields  []*enumField
-	Name    string
+
+	Parent *ProtoMessage
 }
 
 type enumField struct {
@@ -41,12 +43,6 @@ type enumField struct {
 type enumVisitor struct {
 	proto.NoopVisitor
 	Enum *ProtoEnum
-}
-
-func (v *enumVisitor) VisitParentMessage(parent *proto.Message) {
-	if parent != nil {
-		v.Enum.Name = parent.Name + "_" + v.Enum.Name
-	}
 }
 
 func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
@@ -78,19 +74,14 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 // --------------------
 // Messages
 
-type ProtoOneofField struct {
-	*proto.OneOfField
-	Categories    []string // Values of (category) field options, e.g. "REQUEST", "RESPONSE", "EVENT"
-	ResponseField string   // Value of (response_field) field option, if present
-}
-
 type ProtoMessage struct {
-	Comment     string
+	Name    string
+	Comment string
+	Parent  *ProtoMessage
+
 	Fields      []*proto.NormalField
 	MapFields   []*proto.MapField
-	OneofFields []*ProtoOneofField
-	Name        string
-	protoMsg    *proto.Message // unexported; used for post-processing field type resolution
+	OneofFields []*proto.OneOfField
 }
 
 type messageVisitor struct {
@@ -126,18 +117,14 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 	oneof.Name = TrimUntilLastDot(oneof.Name)
-
-	field := &ProtoOneofField{OneOfField: oneof}
-	for _, opt := range oneof.Options {
-		switch strings.TrimSpace(opt.Name) {
-		case "(category)":
-			field.Categories = append(field.Categories, opt.Constant.Source)
-		case "(response_field)":
-			field.ResponseField = opt.Constant.Source
+	if oneof.Comment == nil {
+		oneof.Comment = &proto.Comment{
+			Position: scanner.Position{},
+			Lines:    []string{},
 		}
 	}
 
-	v.Message.OneofFields = append(v.Message.OneofFields, field)
+	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
 }
 
 // --------------------

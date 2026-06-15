@@ -63,6 +63,33 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			}
 			return false
 		},
+		"getFullyQualifiedPath": func(name string) []string {
+			path := make([]string, 0)
+			path = append(path, name)
+			var parent *ProtoMessage
+			msg, isMsg := api.MessagesByName[name]
+			if isMsg {
+				parent = msg.Parent
+			}
+			enum, isEnum := api.EnumsByName[name]
+			if isEnum {
+				parent = enum.Parent
+			}
+
+			if !isMsg && !isEnum {
+				return path
+			}
+
+			for current := parent; current != nil; current = current.Parent {
+				currentMsg := api.MessagesByName[current.Name]
+				path = append([]string{currentMsg.Name}, path...)
+			}
+
+			return path
+		},
+		"join": func(input []string, separator string) string {
+			return strings.Join(input, separator)
+		},
 		"isLastField": func(slice []*proto.NormalField, index int) bool {
 			return index == len(slice)-1
 		},
@@ -75,7 +102,7 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"currentYear": func() int {
 			return time.Now().Year()
 		},
-		"stripDot": func(s string) string {
+		"stripTilDot": func(s string) string {
 			return TrimUntilLastDot(s)
 		},
 		"getVersionData": func() string {

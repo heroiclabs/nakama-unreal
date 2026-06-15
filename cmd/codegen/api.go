@@ -17,12 +17,15 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/emicklei/proto"
 )
 
 type Api struct {
+	Package string
+
 	// Use slices to preserve order of proto messages
 	Enums    []*ProtoEnum
 	Messages []*ProtoMessage
@@ -34,105 +37,127 @@ type Api struct {
 	UniqueReturnTypes []*ProtoMessage
 }
 
-// fullMessagePrefix builds the full flattened name for a proto.Message by walking
-// its ancestor chain, e.g. GrandParent > Parent > Child → "GrandParent_Parent_Child".
-func fullMessagePrefix(msg *proto.Message) string {
-	if msg == nil {
-		return ""
+func (api *Api) enumHandler(enum *proto.Enum) {
+	comment := ""
+	if enum.Comment != nil {
+		comment = enum.Comment.Message()
+
+		// Find everything between square brackets
+		re := regexp.MustCompile(`\[(.*?)\]`)
+		matches := re.FindAllStringSubmatch(comment, -1)
+		for _, match := range matches {
+			// match[0] is the entire match, match[1] is the first submatch.
+			comment = match[1]
+		}
 	}
-	if parent, ok := msg.Parent.(*proto.Message); ok {
-		return fullMessagePrefix(parent) + "_" + msg.Name
+
+	visitor := &enumVisitor{
+		Enum: &ProtoEnum{
+			Name:    enum.Name,
+			Comment: strings.Trim(comment, " "),
+			Fields:  make([]*enumField, 0),
+		},
 	}
-	return msg.Name
+	for _, each := range enum.Elements {
+		each.Accept(visitor)
+	}
+	api.Enums = append(api.Enums, visitor.Enum)
+	api.EnumsByName[visitor.Enum.Name] = visitor.Enum
 }
 
-// resolveFieldType converts a raw proto field type (possibly dotted, possibly relative)
-// to the fully-qualified flattened name used in the API maps.
-func (api *Api) resolveFieldType(rawType string, container *proto.Message) string {
-	parts := strings.Split(rawType, ".")
-	var localName string
-	if len(parts) > 1 {
-		if len(parts[0]) > 0 && parts[0][0] >= 'A' && parts[0][0] <= 'Z' {
-			// Relative dotted path (e.g. NestedMessage.NestedEnum) — join with underscore.
-			localName = strings.Join(parts, "_")
-		} else {
-			// Package-qualified absolute name (e.g. google.protobuf.Timestamp) — take last component.
-			localName = parts[len(parts)-1]
-		}
-	} else {
-		localName = rawType
+func (api *Api) enumParentFiller(enum *proto.Enum) {
+	var parentMessage *ProtoMessage
+	if parent, ok := enum.Parent.(*proto.Message); ok {
+		parentMessage = api.MessagesByName[parent.Name]
 	}
 
-	// Walk up the container's ancestor chain from most-specific to least-specific,
-	// trying to find a matching message or enum in the flattened maps.
-	prefix := fullMessagePrefix(container)
-	for prefix != "" {
-		candidate := prefix + "_" + localName
-		if _, ok := api.MessagesByName[candidate]; ok {
-			return candidate
-		}
-		if _, ok := api.EnumsByName[candidate]; ok {
-			return candidate
-		}
-		i := strings.LastIndex(prefix, "_")
-		if i < 0 {
-			break
-		}
-		prefix = prefix[:i]
+	apiEnum, ok := api.EnumsByName[enum.Name]
+	if !ok {
+		log.Fatalf("enum not found: %s\n", enum.Name)
 	}
-
-	// Try the local name without any prefix (top-level type or primitive).
-	return localName
+	apiEnum.Parent = parentMessage
 }
 
-func (api *Api) collectMessage(message *proto.Message) {
-	// Collect nested messages first so they precede their parent in the output.
-	for _, el := range message.Elements {
-		if nested, ok := el.(*proto.Message); ok {
-			api.collectMessage(nested)
-		}
+func (api *Api) messageHandler(message *proto.Message) {
+	if strings.HasPrefix(message.Name, "google.") {
+		return
 	}
 
 	comment := ""
 	if message.Comment != nil {
-		comment = message.Comment.Message()
+		comment = strings.Trim(message.Comment.Message(), " ")
 	}
-	messageName := fullMessagePrefix(message)
-
 	visitor := &messageVisitor{
 		Message: &ProtoMessage{
-			Comment:   comment,
-			Fields:    make([]*proto.NormalField, 0),
-			MapFields: make([]*proto.MapField, 0),
-			Name:      messageName,
-			protoMsg:  message,
+			Name:        message.Name,
+			Comment:     comment,
+			Fields:      make([]*proto.NormalField, 0),
+			MapFields:   make([]*proto.MapField, 0),
+			OneofFields: make([]*proto.OneOfField, 0),
 		},
 	}
-	for _, each := range message.Elements {
-		each.Accept(visitor)
+
+	for _, nf := range message.Elements {
+		nf.Accept(visitor)
 	}
+
 	api.Messages = append(api.Messages, visitor.Message)
 	api.MessagesByName[visitor.Message.Name] = visitor.Message
 }
 
-// resolveAllFieldTypes resolves field types for all collected messages using the
-// fully-populated MessagesByName and EnumsByName maps. Must be called after all
-// proto files have been parsed.
-func (api *Api) resolveAllFieldTypes() {
-	for _, msg := range api.Messages {
-		if msg.protoMsg == nil {
-			continue
-		}
-		for _, field := range msg.Fields {
-			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
-		}
-		for _, field := range msg.MapFields {
-			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
-		}
-		for _, field := range msg.OneofFields {
-			field.Type = api.resolveFieldType(field.Type, msg.protoMsg)
+func (api *Api) messageParentFiller(msg *proto.Message) {
+	var parentMessage *ProtoMessage
+	if parent, ok := msg.Parent.(*proto.Message); ok {
+		parentMessage = api.MessagesByName[parent.Name]
+	}
+
+	apiMsg, ok := api.MessagesByName[msg.Name]
+	if !ok {
+		log.Fatalf("message not found: %s\n", msg.Name)
+	}
+	apiMsg.Parent = parentMessage
+}
+
+func (api *Api) rpcHandler(rpc *proto.RPC) {
+	comment := ""
+	if rpc.Comment != nil {
+		comment = rpc.Comment.Message()
+		comment = strings.TrimSpace(comment)
+	}
+
+	resolveType := func(fullTypeName string) *ProtoMessage {
+		if fullTypeName == "google.protobuf.Empty" {
+			return nil
+		} else {
+			// We get something like `api.MyRequestType`, so trim until the last dot.
+			t, ok := api.MessagesByName[TrimUntilLastDot(fullTypeName)]
+			if !ok {
+				log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
+			}
+			return t
 		}
 	}
+
+	requestType := resolveType(rpc.RequestType)
+	returnType := resolveType(rpc.ReturnsType)
+
+	visitor := &rpcVisitor{
+		Rpc: &ProtoRpc{
+			Name:        rpc.Name,
+			Comment:     comment,
+			RequestType: requestType,
+			ReturnType:  returnType,
+			PathParams:  make([]string, 0),
+			QueryParams: make([]string, 0),
+			BodyParams:  make([]string, 0),
+		},
+	}
+
+	for _, each := range rpc.Elements {
+		each.Accept(visitor)
+	}
+	api.Rpcs = append(api.Rpcs, visitor.Rpc)
+	api.RpcsByName[visitor.Rpc.Name] = visitor.Rpc
 }
 
 func (api *Api) addFile(protoFile string) error {
@@ -149,98 +174,20 @@ func (api *Api) addFile(protoFile string) error {
 
 	proto.Walk(
 		parsedProto,
-		proto.WithEnum(
-			func(enum *proto.Enum) {
-				comment := ""
-				if enum.Comment != nil {
-					comment = enum.Comment.Message()
-
-					// Find everything between square brackets
-					re := regexp.MustCompile(`\[(.*?)\]`)
-					matches := re.FindAllStringSubmatch(comment, -1)
-					for _, match := range matches {
-						// match[0] is the entire match, match[1] is the first submatch.
-						comment = match[1]
-					}
-				}
-
-				// Build fully qualified enum name by walking the full ancestor chain.
-				enumName := enum.Name
-				if enum.Parent != nil {
-					if parentMsg, ok := enum.Parent.(*proto.Message); ok {
-						enumName = fullMessagePrefix(parentMsg) + "_" + enum.Name
-					}
-				}
-
-				visitor := &enumVisitor{
-					Enum: &ProtoEnum{
-						Comment: strings.Trim(comment, " "),
-						Fields:  make([]*enumField, 0),
-						Name:    enumName,
-					},
-				}
-				for _, each := range enum.Elements {
-					each.Accept(visitor)
-				}
-				api.Enums = append(api.Enums, visitor.Enum)
-				api.EnumsByName[visitor.Enum.Name] = visitor.Enum
+		proto.WithPackage(
+			func(pkg *proto.Package) {
+				api.Package = pkg.Name
 			},
 		),
-		proto.WithMessage(
-			func(message *proto.Message) {
-				if strings.HasPrefix(message.Name, "google.") {
-					return
-				}
-				// Skip nested messages; collectMessage handles them in post-order.
-				if _, ok := message.Parent.(*proto.Message); ok {
-					return
-				}
-				api.collectMessage(message)
-			},
-		),
-		proto.WithRPC(
-			func(rpc *proto.RPC) {
-				comment := ""
-				if rpc.Comment != nil {
-					comment = rpc.Comment.Message()
-					comment = strings.TrimSpace(comment)
-				}
+		proto.WithMessage(api.messageHandler),
+		proto.WithEnum(api.enumHandler),
+		proto.WithRPC(api.rpcHandler),
+	)
 
-				resolveType := func(fullTypeName string) *ProtoMessage {
-					if fullTypeName == "google.protobuf.Empty" {
-						return nil
-					} else {
-						// We get something like `api.MyRequestType`, so trim until the last dot.
-						t, ok := api.MessagesByName[TrimUntilLastDot(fullTypeName)]
-						if !ok {
-							log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
-						}
-						return t
-					}
-				}
-
-				requestType := resolveType(rpc.RequestType)
-				returnType := resolveType(rpc.ReturnsType)
-
-				visitor := &rpcVisitor{
-					Rpc: &ProtoRpc{
-						Comment:     comment,
-						RequestType: requestType,
-						ReturnType:  returnType,
-						Name:        rpc.Name,
-						PathParams:  make([]string, 0),
-						QueryParams: make([]string, 0),
-						BodyParams:  make([]string, 0),
-					},
-				}
-
-				for _, each := range rpc.Elements {
-					each.Accept(visitor)
-				}
-				api.Rpcs = append(api.Rpcs, visitor.Rpc)
-				api.RpcsByName[visitor.Rpc.Name] = visitor.Rpc
-			},
-		),
+	proto.Walk(
+		parsedProto,
+		proto.WithEnum(api.enumParentFiller),
+		proto.WithMessage(api.messageParentFiller),
 	)
 
 	return nil
@@ -264,8 +211,19 @@ func LoadApi(protoFiles []string) (Api, error) {
 		api.addFile(f)
 	}
 
-	// Resolve field types now that all messages and enums are known.
-	api.resolveAllFieldTypes()
+	// Pull up messages that are more deeply embedded.
+	slices.SortFunc(api.Messages, func(a, b *ProtoMessage) int {
+		aDepth := GetMessageDepth(a)
+		bDepth := GetMessageDepth(b)
+
+		if aDepth < bDepth {
+			return 1
+		} else if aDepth > bDepth {
+			return -1
+		} else {
+			return 0
+		}
+	})
 
 	// Collect one entry per distinct RPC return type for Result struct generation.
 	seen := make(map[string]bool)
@@ -277,4 +235,12 @@ func LoadApi(protoFiles []string) (Api, error) {
 	}
 
 	return api, nil
+}
+
+func GetMessageDepth(msg *ProtoMessage) int {
+	depth := 0
+	for current := msg.Parent; current != nil; current = current.Parent {
+		depth++
+	}
+	return depth
 }
