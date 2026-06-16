@@ -23,6 +23,7 @@
 #include "NakamaFriend.h"
 #include "NakamaGroup.h"
 #include "NakamaError.h"
+#include "NakamaRetryConfiguration.h"
 #include "NakamaNotification.h"
 #include "NakamaStorageObject.h"
 #include "NakamaLeaderboard.h"
@@ -127,6 +128,26 @@ public:
 
 	bool bEnableDebug;
 
+	/**
+	 * When true (default), the client refreshes an expiring session token before
+	 * each authenticated request, using the session's refresh token. Set false to
+	 * manage token lifetime yourself.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Client")
+	bool bAutoRefreshSession = true;
+
+	/** Enable automatic retry of transient HTTP failures with exponential backoff + jitter. */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Retry")
+	bool bEnableRetries = true;
+
+	/** Base retry delay (ms); doubled each attempt before jitter. */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Retry")
+	int32 RetryBaseDelayMs = 500;
+
+	/** Maximum retry attempts before failing the request. */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Retry")
+	int32 RetryMaxAttempts = 4;
+
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
 	FOnDisconnected DisconnectedEvent;
 
@@ -202,8 +223,8 @@ public:
 		const FString& Username,
 		bool CreateAccount,
 		const TMap<FString, FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -224,8 +245,8 @@ public:
 		const FString& Username,
 		bool CreateAccount,
 		const TMap<FString,FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -268,8 +289,8 @@ public:
 		bool CreateAccount,
 		bool ImportFriends,
 		const TMap<FString, FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -288,8 +309,8 @@ public:
 		const FString& Username,
 		bool CreateAccount,
 		const TMap<FString,FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -318,8 +339,8 @@ public:
 		const FString& Username,
 		bool CreateAccount,
 		const TMap<FString, FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -340,8 +361,8 @@ public:
 		bool CreateAccount,
 		bool ImportFriends,
 		const TMap<FString, FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -360,8 +381,8 @@ public:
 		const FString& Username,
 		bool CreateAccount,
 		const TMap<FString, FString>& Vars,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -373,8 +394,8 @@ public:
 	UFUNCTION(Category = "Nakama|Authentication")
 	void AuthenticateRefresh(
 		UNakamaSession* Session,
-		FOnAuthUpdate Success,
-		FOnError Error
+		const FOnAuthUpdate& Success,
+		const FOnError& Error
 	);
 
 	// --- Restore Session --- //
@@ -409,8 +430,8 @@ public:
 	void LinkCustom(
 		UNakamaSession *Session,
 		const FString& CustomId,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -425,8 +446,8 @@ public:
 	void LinkDevice(
 		UNakamaSession *Session,
 		const FString& DeviceId,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -443,8 +464,8 @@ public:
 		UNakamaSession *Session,
 		const FString& Email,
 		const FString& Password,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -461,8 +482,8 @@ public:
 		UNakamaSession *Session,
 		const FString& AccessToken,
 		bool ImportFriends,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -487,8 +508,8 @@ public:
 		const FString& Salt,
 		const FString& Signature,
 		const FString& PublicKeyUrl,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -503,8 +524,8 @@ public:
 	void LinkGoogle(
 		UNakamaSession *Session,
 		const FString& AccessToken,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -519,8 +540,8 @@ public:
 	void LinkSteam(
 		UNakamaSession *Session,
 		const FString& SteamToken,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -535,8 +556,8 @@ public:
 	void LinkApple(
 		UNakamaSession *Session,
 		const FString& Token,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	// --- Unlinking --- //
@@ -553,8 +574,8 @@ public:
 	void UnLinkCustom(
 		UNakamaSession *Session,
 		const FString& CustomId,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -569,8 +590,8 @@ public:
 	void UnLinkDevice(
 		UNakamaSession *Session,
 		const FString& DeviceId,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -587,8 +608,8 @@ public:
 		UNakamaSession *Session,
 		const FString& Email,
 		const FString& Password,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -603,8 +624,8 @@ public:
 	void UnLinkFacebook(
 		UNakamaSession *Session,
 		const FString& AccessToken,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -629,8 +650,8 @@ public:
 		const FString& Salt,
 		const FString& Signature,
 		const FString& PublicKeyUrl,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -645,8 +666,8 @@ public:
 	void UnLinkGoogle(
 		UNakamaSession *Session,
 		const FString& AccessToken,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -661,8 +682,8 @@ public:
 	void UnLinkSteam(
 		UNakamaSession *Session,
 		const FString& SteamToken,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -677,8 +698,8 @@ public:
 	void UnLinkApple(
 		UNakamaSession *Session,
 		const FString& Token,
-		FOnLinkSuccess Success,
-		FOnError Error
+		const FOnLinkSuccess& Success,
+		const FOnError& Error
 	);
 
 	// --- Functions --- //
@@ -692,8 +713,8 @@ public:
 	UFUNCTION(Category = "Nakama|Authentication|Refresh")
 	void RefreshSession(
 		UNakamaSession *Session,
-		FOnAuthRefresh Success,
-		FOnAuthRefreshError Error
+		const FOnAuthRefresh& Success,
+		const FOnAuthRefreshError& Error
 	);
 
 	/**
@@ -713,8 +734,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Token,
 		bool Reset,
-		FOnImportFacebookFriends Success,
-		FOnError Error
+		const FOnImportFacebookFriends& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -734,8 +755,8 @@ public:
 		UNakamaSession* Session,
 		const FString& SteamToken,
 		bool Reset,
-		FOnImportSteamFriends Success,
-		FOnError Error
+		const FOnImportSteamFriends& Success,
+		const FOnError& Error
 	);
 
 	// --- Get Account and User Info --- //
@@ -751,8 +772,8 @@ public:
 	UFUNCTION(Category = "Nakama|Users", meta=(DeprecatedFunction, DeprecationMessage="Use GetAccount instead"))
 	void GetUserAccount(
 		UNakamaSession *Session,
-		FOnUserAccountInfo Success,
-		FOnError Error
+		const FOnUserAccountInfo& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -765,8 +786,8 @@ public:
 	UFUNCTION(Category = "Nakama|Users")
 	void GetAccount(
 		UNakamaSession *Session,
-		FOnUserAccountInfo Success,
-		FOnError Error
+		const FOnUserAccountInfo& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -786,8 +807,8 @@ public:
 		const TArray<FString>& UserIds,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
-		FOnGetUsers Success,
-		FOnError Error
+		const FOnGetUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -812,8 +833,8 @@ public:
 		const FString& LanguageTag,
 		const FString& Location,
 		const FString& Timezone,
-		FOnUpdateAccount Success,
-		FOnError Error
+		const FOnUpdateAccount& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -826,8 +847,8 @@ public:
 	UFUNCTION(Category = "Nakama|Users")
 	void DeleteUser(
 		UNakamaSession* Session,
-		FOnDeleteUser Success,
-		FOnError Error
+		const FOnDeleteUser& Success,
+		const FOnError& Error
 	);
 
 	// --- Realtime Client --- //
@@ -860,8 +881,8 @@ public:
 		const FString& Label,
 		const FString& Query,
 		bool Authoritative,
-		FOnMatchlist Success,
-		FOnError Error
+		const FOnMatchlist& Success,
+		const FOnError& Error
 	);
 
 	// --- Friends --- //
@@ -882,8 +903,8 @@ public:
 		int32 Limit,
 		ENakamaFriendState State,
 		const FString& Cursor,
-		FOnFriendsList Success,
-		FOnError Error
+		const FOnFriendsList& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -902,8 +923,8 @@ public:
 		int32 Limit,
 		ENakamaFriendState State,
 		const FString& Cursor,
-		FOnFriendsList Success,
-		FOnError Error
+		const FOnFriendsList& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -921,8 +942,8 @@ public:
 		UNakamaSession* Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FOnAddedFriend Success,
-		FOnError Error
+		const FOnAddedFriend& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -939,8 +960,8 @@ public:
 		UNakamaSession* Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FOnRemovedFriends Success,
-		FOnError Error
+		const FOnRemovedFriends& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -957,8 +978,8 @@ public:
 		UNakamaSession* Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FOnRemovedFriends Success,
-		FOnError Error
+		const FOnRemovedFriends& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -975,8 +996,8 @@ public:
 		UNakamaSession* Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FOnBlockedFriends Success,
-		FOnError Error
+		const FOnBlockedFriends& Success,
+		const FOnError& Error
 	);
 
 	// --- Groups --- //
@@ -1003,8 +1024,8 @@ public:
 		const FString& LanguageTag,
 		bool Open,
 		int32 MaxMembers,
-		FOnCreateGroup Success,
-		FOnError Error
+		const FOnCreateGroup& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1023,8 +1044,8 @@ public:
 		const FString& GroupNameFilter,
 		int32 Limit,
 		const FString& Cursor,
-		FOnGroupsList Success,
-		FOnError Error
+		const FOnGroupsList& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1039,8 +1060,8 @@ public:
 	void JoinGroup(
 		UNakamaSession* Session,
 		const FString& GroupId,
-		FOnJoinedGroup Success,
-		FOnError Error
+		const FOnJoinedGroup& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1060,8 +1081,8 @@ public:
 		int32 Limit,
 		ENakamaGroupState State,
 		const FString& Cursor,
-		FOnUserGroups Success,
-		FOnError Error
+		const FOnUserGroups& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1082,8 +1103,8 @@ public:
 		int32 Limit,
 		ENakamaGroupState State,
 		const FString& Cursor,
-		FOnListGroupMembers Success,
-		FOnError Error
+		const FOnListGroupMembers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1110,8 +1131,8 @@ public:
 		const FString& AvatarUrl,
 		const FString& LanguageTag,
 		bool Open,
-		FOnUpdateGroup Success,
-		FOnError Error
+		const FOnUpdateGroup& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1127,8 +1148,8 @@ public:
 	void LeaveGroup(
 		UNakamaSession* Session,
 		const FString& GroupId,
-		FOnLeaveGroup Success,
-		FOnError Error
+		const FOnLeaveGroup& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1145,8 +1166,8 @@ public:
 		UNakamaSession* Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		FOnAddGroupUsers Success,
-		FOnError Error
+		const FOnAddGroupUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1163,8 +1184,8 @@ public:
 		UNakamaSession* Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		FOnPromoteGroupUsers Success,
-		FOnError Error
+		const FOnPromoteGroupUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1181,8 +1202,8 @@ public:
 		UNakamaSession* Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		FOnKickGroupUsers Success,
-		FOnError Error
+		const FOnKickGroupUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1199,8 +1220,8 @@ public:
 		UNakamaSession* Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		FOnBanGroupUsers Success,
-		FOnError Error
+		const FOnBanGroupUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1218,8 +1239,8 @@ public:
 		UNakamaSession* Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		FOnDemoteGroupUsers Success,
-		FOnError Error
+		const FOnDemoteGroupUsers& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1234,8 +1255,8 @@ public:
 	void DeleteGroup(
 		UNakamaSession* Session,
 		const FString& GroupId,
-		FOnRemoveGroup Success,
-		FOnError Error
+		const FOnRemoveGroup& Success,
+		const FOnError& Error
 	);
 
 	// --- Notifications --- //
@@ -1254,8 +1275,8 @@ public:
 		UNakamaSession* Session,
 		int32 Limit,
 		const FString& Cursor,
-		FOnListNotifications Success,
-		FOnError Error
+		const FOnListNotifications& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1270,8 +1291,8 @@ public:
 	void DeleteNotifications(
 		UNakamaSession* Session,
 		const TArray<FString>& NotificationIds,
-		FOnDeleteNotifications Success,
-		FOnError Error
+		const FOnDeleteNotifications& Success,
+		const FOnError& Error
 	);
 
 	// --- Storage --- //
@@ -1288,8 +1309,8 @@ public:
 	void WriteStorageObjects(
 		UNakamaSession* Session,
 		const TArray<FNakamaStoreObjectWrite>& StorageObjectsData,
-		FOnStorageObjectAcks Success,
-		FOnError Error
+		const FOnStorageObjectAcks& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1304,8 +1325,8 @@ public:
 	void ReadStorageObjects(
 		UNakamaSession* Session,
 		const TArray<FNakamaReadStorageObjectId>& StorageObjectsData,
-		FOnStorageObjectsRead Success,
-		FOnError Error
+		const FOnStorageObjectsRead& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1326,8 +1347,8 @@ public:
 		const FString& UserId,
 		int32 Limit,
 		const FString& Cursor,
-		FOnStorageObjectsListed Success,
-		FOnError Error
+		const FOnStorageObjectsListed& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1342,8 +1363,8 @@ public:
 	void RemoveStorageObjects(
 		UNakamaSession* Session,
 		const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
-		FOnRemovedStorageObjects Success,
-		FOnError Error
+		const FOnRemovedStorageObjects& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1358,8 +1379,8 @@ public:
 	void DeleteStorageObjects (
 		UNakamaSession* Session,
 		const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
-		FOnRemovedStorageObjects Success,
-		FOnError Error
+		const FOnRemovedStorageObjects& Success,
+		const FOnError& Error
 		);
 
 	/**
@@ -1380,8 +1401,8 @@ public:
 		bool Open,
 		const FString&  Query,
 		const FString&  Cursor,
-		FOnListedParties Success,
-		FOnError Error
+		const FOnListedParties& Success,
+		const FOnError& Error
 	);
 
 	// --- RPC --- //
@@ -1400,8 +1421,8 @@ public:
 		UNakamaSession* Session,
 		const FString& FunctionId,
 		const FString& Payload,
-		FOnRPC Success,
-		FOnError Error
+		const FOnRPC& Success,
+		const FOnError& Error
 	);
 
 	// --- RPC HttpKey --- //
@@ -1420,8 +1441,8 @@ public:
 		const FString& HttpKey,
 		const FString& FunctionId,
 		const FString& Payload,
-		FOnRPC Success,
-		FOnError Error
+		const FOnRPC& Success,
+		const FOnError& Error
 	);
 
 
@@ -1445,8 +1466,8 @@ public:
 		int32 Limit,
 		const FString& Cursor,
 		bool Forward,
-		FOnListChannelMessages Success,
-		FOnError Error
+		const FOnListChannelMessages& Success,
+		const FOnError& Error
 	);
 
 	// --- Leaderboards --- //
@@ -1469,8 +1490,8 @@ public:
 		int64 Score,
 		int64 SubScore,
 		const FString& Metadata,
-		FOnWriteLeaderboardRecord Success,
-		FOnError Error
+		const FOnWriteLeaderboardRecord& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1493,8 +1514,8 @@ public:
 		int32 Limit,
 		const FString& Cursor,
 		ENakamaLeaderboardListBy ListBy,
-		FOnListLeaderboardRecords Success,
-		FOnError Error
+		const FOnListLeaderboardRecords& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1513,8 +1534,8 @@ public:
 		const FString& LeaderboardId,
 		const FString& OwnerId,
 		int32 Limit,
-		FOnListLeaderboardRecords Success,
-		FOnError Error
+		const FOnListLeaderboardRecords& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1529,8 +1550,8 @@ public:
 	void DeleteLeaderboardRecord(
 		UNakamaSession* Session,
 		const FString& LeaderboardId,
-		FOnDeletedLeaderboardRecord Success,
-		FOnError Error
+		const FOnDeletedLeaderboardRecord& Success,
+		const FOnError& Error
 	);
 
 	// --- Tournaments --- //
@@ -1553,8 +1574,8 @@ public:
 		int64 Score,
 		int64 SubScore,
 		const FString& Metadata,
-		FOnWriteLeaderboardRecord Success,
-		FOnError Error
+		const FOnWriteLeaderboardRecord& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1577,8 +1598,8 @@ public:
 		const FString& Cursor,
 		const TArray<FString>& OwnerIds,
 		ENakamaLeaderboardListBy ListBy,
-		FOnListTournamentRecords Success,
-		FOnError Error
+		const FOnListTournamentRecords& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1597,8 +1618,8 @@ public:
 		const FString& TournamentId,
 		const FString& OwnerId,
 		int32 Limit,
-		FOnListTournamentRecords Success,
-		FOnError Error
+		const FOnListTournamentRecords& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1613,8 +1634,8 @@ public:
 	void JoinTournament(
 		UNakamaSession* Session,
 		const FString& TournamentId,
-		FOnJoinedTournament Success,
-		FOnError Error
+		const FOnJoinedTournament& Success,
+		const FOnError& Error
 	);
 
 	/**
@@ -1639,8 +1660,8 @@ public:
 		int32 EndTime,
 		int32 Limit,
 		const FString& Cursor,
-		FOnListTournaments Success,
-		FOnError Error
+		const FOnListTournaments& Success,
+		const FOnError& Error
 	);
 
 
@@ -1664,8 +1685,8 @@ public:
 		const TOptional<FString>& Username,
 		const TMap<FString,
 		FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1685,8 +1706,8 @@ public:
 		const FString& Username,
 		bool bCreate,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1704,8 +1725,8 @@ public:
 		const FString& Username,
 		bool bCreate,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Social Authentication --- //
@@ -1725,8 +1746,8 @@ public:
 		const FString& Username,
 		bool bCreate,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1745,8 +1766,8 @@ public:
 		bool bCreate,
 		bool bImport,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1764,8 +1785,8 @@ public:
 		const FString& Username,
 		bool bCreate,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1793,8 +1814,8 @@ public:
 		const FString& Username,
 		bool bCreate,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1814,8 +1835,8 @@ public:
 		bool bCreate,
 		bool bImport,
 		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1828,8 +1849,8 @@ public:
 	**/
 	void AuthenticateRefresh(
 		UNakamaSession* Session,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(UNakamaSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Linking --- //
@@ -1845,8 +1866,8 @@ public:
 	void LinkDevice(
 		UNakamaSession* Session,
 		const FString& Id,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1862,8 +1883,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Email,
 		const FString& Password,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1877,8 +1898,8 @@ public:
 	void LinkCustom(
 		UNakamaSession* Session,
 		const FString& Id,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1891,8 +1912,8 @@ public:
 	 */
 	void LinkApple(
 		UNakamaSession* Session,
-		const FString& Token, TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const FString& Token, const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1908,8 +1929,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Token,
 		TOptional<bool> bImport,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1923,8 +1944,8 @@ public:
 	void LinkGoogle(
 		UNakamaSession* Session,
 		const FString& Token,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1948,8 +1969,8 @@ public:
 		const FString& Salt,
 		const FString& Signature,
 		const FString& PublicKeyUrl,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1964,8 +1985,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Token,
 		//bool bImport,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Unlinking --- //
@@ -1981,8 +2002,8 @@ public:
 	void UnLinkDevice(
 		UNakamaSession* Session,
 		const FString& Id,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1998,8 +2019,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Email,
 		const FString& Password,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2013,8 +2034,8 @@ public:
 	void UnLinkCustom(
 		UNakamaSession* Session,
 		const FString& Id,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2028,8 +2049,8 @@ public:
 	void UnLinkApple(
 		UNakamaSession* Session,
 		const FString& Token,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2043,8 +2064,8 @@ public:
 	void UnLinkFacebook(
 		UNakamaSession* Session,
 		const FString& Token,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2058,8 +2079,8 @@ public:
 	void UnLinkGoogle(
 		UNakamaSession* Session,
 		const FString& Token,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2083,8 +2104,8 @@ public:
 		const FString& Salt,
 		const FString& Signature,
 		const FString& PublicKeyUrl,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2098,8 +2119,8 @@ public:
 	void UnLinkSteam(
 		UNakamaSession* Session,
 		const FString& Token,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Import Friends --- //
@@ -2120,8 +2141,8 @@ public:
 		UNakamaSession* Session,
 		const FString& Token,
 		const TOptional<bool> bReset,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2140,8 +2161,8 @@ public:
 		UNakamaSession* Session,
 		const FString& SteamToken,
 		const TOptional<bool> bReset,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Accounts --- //
@@ -2155,8 +2176,8 @@ public:
 	 */
 	void GetAccount(
 		UNakamaSession *Session,
-		TFunction<void(const FNakamaAccount& Account)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaAccount& Account)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2180,8 +2201,8 @@ public:
 		const TOptional<FString>& LangTag,
 		const TOptional<FString>& Location,
 		const TOptional<FString>& TimeZone,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 
@@ -2192,8 +2213,8 @@ public:
 	 * @param SuccessCallback Callback invoked upon successfully deleting the user's account.
 	 * @param ErrorCallback Callback invoked if the delete operation fails, detailing the encountered error.
 	 */
-	void DeleteUser(UNakamaSession* Session, TFunction<void()> SuccessCallback,
-	                TFunction<void(const FNakamaError& Error)> ErrorCallback);
+	void DeleteUser(UNakamaSession* Session, const TFunction<void()>& SuccessCallback,
+	                const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 
 	// --- Users --- //
 
@@ -2212,8 +2233,8 @@ public:
 		const TArray<FString>& UserIds,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
-		TFunction<void(const FNakamaUserList& Users)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaUserList& Users)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Friends --- //
@@ -2231,8 +2252,8 @@ public:
 		UNakamaSession *Session,
 		const TArray<FString>& UserIds,
 		const TArray<FString>& Usernames,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2249,8 +2270,8 @@ public:
 		UNakamaSession *Session,
 		const TArray<FString>& UserIds,
 		const TArray<FString>& Usernames,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2266,8 +2287,8 @@ public:
 		UNakamaSession *Session,
 		const TArray<FString>& UserIds,
 		const TArray<FString>& Usernames,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2285,8 +2306,8 @@ public:
 		const TOptional<int32>& Limit,
 		TOptional<ENakamaFriendState> State,
 		const FString& Cursor,
-		TFunction<void(const FNakamaFriendList& Friends)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaFriendList& Friends)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Groups --- //
@@ -2312,8 +2333,8 @@ public:
 		const FString& LangTag,
 		const bool bOpen,
 		const TOptional<int32>& MaxCount,
-		TFunction<void(const FNakamaGroup& Group)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaGroup& Group)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2327,8 +2348,8 @@ public:
 	void DeleteGroup(
 		UNakamaSession *Session,
 		const FString& GroupId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2344,8 +2365,8 @@ public:
 		UNakamaSession *Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2364,9 +2385,9 @@ public:
 		 const FString& GroupId,
 		 const TOptional<int32>& Limit,
 		 TOptional<ENakamaGroupState> State,
-		 FString Cursor,
-		 TFunction<void(const FNakamaGroupUsersList& GroupUsers)> SuccessCallback,
-		 TFunction<void(const FNakamaError& Error)> ErrorCallback
+		 const FString& Cursor,
+		 const TFunction<void(const FNakamaGroupUsersList& GroupUsers)>& SuccessCallback,
+		 const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2382,8 +2403,8 @@ public:
 		UNakamaSession *Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 
@@ -2400,8 +2421,8 @@ public:
 		UNakamaSession *Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2415,8 +2436,8 @@ public:
 	void JoinGroup(
 		UNakamaSession *Session,
 		const FString& GroupId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2430,8 +2451,8 @@ public:
 	void LeaveGroup(
 		UNakamaSession *Session,
 		const FString& GroupId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2449,8 +2470,8 @@ public:
 		const FString& Name,
 		int32 Limit,
 		const FString& Cursor,
-		TFunction<void(const FNakamaGroupList& Groups)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaGroupList& Groups)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2467,8 +2488,8 @@ public:
 		const TOptional<int32>& Limit,
 		const TOptional<ENakamaGroupState>& State,
 		const FString& Cursor,
-		TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaUserGroupList& Groups)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	); // Uses UserId from Session
 
 	/**
@@ -2487,8 +2508,8 @@ public:
 		const TOptional<int32>& Limit,
 		const TOptional<ENakamaGroupState>& State,
 		const FString& Cursor,
-		TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaUserGroupList& Groups)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	); // Has UserId
 
 	/**
@@ -2504,8 +2525,8 @@ public:
 		UNakamaSession *Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2521,8 +2542,8 @@ public:
 		UNakamaSession *Session,
 		const FString& GroupId,
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2548,8 +2569,8 @@ public:
 		const TOptional<FString>& AvatarUrl,
 		const TOptional<FString>& LangTag,
 		const TOptional<bool> bOpen,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Leaderboards --- //
@@ -2571,8 +2592,8 @@ public:
 		const TArray<FString>& OwnerIds,
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
-		TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)>
-		SuccessCallback, TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)>&
+		SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2590,8 +2611,8 @@ public:
 		const FString& LeaderboardId,
 		const FString& OwnerId,
 		const TOptional<int32>& Limit,
-		TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2611,8 +2632,8 @@ public:
 		int64 Score,
 		const TOptional<int64>& Subscore,
 		const TOptional<FString>& Metadata,
-		TFunction<void(const FNakamaLeaderboardRecord& LeaderboardRecord)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaLeaderboardRecord& LeaderboardRecord)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2626,8 +2647,8 @@ public:
 	void DeleteLeaderboardRecord(
 		UNakamaSession *Session,
 		const FString& LeaderboardId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Matches --- //
@@ -2653,8 +2674,8 @@ public:
 		const TOptional<FString>& Label,
 		const TOptional<FString>& Query,
 		const TOptional<bool> Authoritative,
-		TFunction<void(const FNakamaMatchList& MatchList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaMatchList& MatchList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Notifications --- //
@@ -2672,8 +2693,8 @@ public:
 		UNakamaSession *Session,
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& CacheableCursor,
-		TFunction<void(const FNakamaNotificationList& NotificationList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaNotificationList& NotificationList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2687,8 +2708,8 @@ public:
 	void DeleteNotifications(
 		UNakamaSession *Session,
 		const TArray<FString>& NotificationIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Chat --- //
@@ -2710,8 +2731,8 @@ public:
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
 		const TOptional<bool> Forward,
-		TFunction<void(const FNakamaChannelMessageList& ChannelMessageList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaChannelMessageList& ChannelMessageList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Tournaments --- //
@@ -2737,8 +2758,8 @@ public:
 		const TOptional<int32>& EndTime,
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
-		TFunction<void(const FNakamaTournamentList& TournamentList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaTournamentList& TournamentList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2758,8 +2779,8 @@ public:
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
 		const TArray<FString>& OwnerIds,
-		TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2777,8 +2798,8 @@ public:
 		const FString& TournamentId,
 		const FString& OwnerId,
 		const TOptional<int32>& Limit,
-		TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2798,8 +2819,8 @@ public:
 		int64 Score,
 		const TOptional<int64>& Subscore,
 		const TOptional<FString>& Metadata,
-		TFunction<void(const FNakamaLeaderboardRecord& TournamentRecord)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaLeaderboardRecord& TournamentRecord)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2813,8 +2834,8 @@ public:
 	void JoinTournament(
 		UNakamaSession *Session,
 		const FString& TournamentId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// --- Storage --- //
@@ -2834,8 +2855,8 @@ public:
 		const FString& Collection,
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
-		TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2855,8 +2876,8 @@ public:
 		const FString& UserId,
 		const TOptional<int32>& Limit,
 		const TOptional<FString>& Cursor,
-		TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2870,8 +2891,8 @@ public:
 	void WriteStorageObjects(
 		UNakamaSession *Session,
 		const TArray<FNakamaStoreObjectWrite>& Objects,
-		TFunction<void(const FNakamaStoreObjectAcks& StoreObjectAcks)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaStoreObjectAcks& StoreObjectAcks)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2885,8 +2906,8 @@ public:
 	void ReadStorageObjects(
 		UNakamaSession *Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
-		TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaStorageObjectList& StorageObjectList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2900,8 +2921,8 @@ public:
 	void DeleteStorageObjects(
 		UNakamaSession *Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2921,8 +2942,8 @@ public:
 		const TOptional<bool>& Open,
 		const TOptional<FString>&  Query,
 		const TOptional<FString>&  Cursor,
-		TFunction<void(const FNakamaPartyList& PartyList)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaPartyList& PartyList)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 	
 	// --- RPC --- //
@@ -2941,8 +2962,8 @@ public:
 		UNakamaSession *Session,
 		const FString& Id,
 		const TOptional<FString>& Payload,
-		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2959,8 +2980,8 @@ public:
 		const FString& HttpKey,
 		const FString& Id,
 		const FString& Payload,
-		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 		);
 
 	/**
@@ -2977,8 +2998,8 @@ public:
 		UNakamaSession *Session,
 		const FString& Id,
 		TOptional<FString>&& Payload,
-		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -2995,14 +3016,35 @@ public:
 		const FString& HttpKey,
 		const FString& Id,
 		FString&& Payload,
-		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 private:
 
 	// Utils
 	FString ConstructURL(const FString& Endpoint);
+
+	// Refresh leeway: refresh if the token expires within this many minutes.
+	static constexpr int32 SessionRefreshLeewayMinutes = 5;
+
+	// Run OnReady once the session token is valid, refreshing first if needed.
+	void EnsureValidSession(
+		UNakamaSession* Session,
+		const TFunction<void()>& OnReady,
+		const TFunction<void(const FNakamaError& Error)>& OnError);
+
+	// Callbacks queued behind a single in-flight session refresh. A rotating
+	// refresh token can only be redeemed once, so concurrent requests on an
+	// expiring session share one refresh and are all resumed by its result.
+	struct FPendingRefresh
+	{
+		TArray<TFunction<void()>> OnReady;
+		TArray<TFunction<void(const FNakamaError& Error)>> OnError;
+	};
+
+	// Keyed by the session being refreshed. Game-thread only (see EnsureValidSession).
+	TMap<TWeakObjectPtr<UNakamaSession>, TSharedPtr<FPendingRefresh>> InFlightRefreshes;
 
 	// Make HTTP request
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(
@@ -3013,6 +3055,35 @@ private:
 		const FString& SessionToken
 	);
 
+	// Build the retry configuration from current client settings.
+	FNakamaRetryConfiguration BuildRetryConfiguration() const;
+
+	/**
+	 * Centralized JSON request send with transient-failure retry (exponential
+	 * backoff + jitter). Builds a fresh request per attempt and retries
+	 * transient HTTP codes (500/502/503/504).
+	 *
+	 * @param Endpoint       API path (e.g. "/v2/account").
+	 * @param Content        Serialized request body.
+	 * @param Method         HTTP verb.
+	 * @param QueryParams    Query string params.
+	 * @param AuthToken      Bearer token; empty for authenticate endpoints.
+	 * @param OnSuccess      Receives the successful response body. Per-site parsing lives here.
+	 * @param OnError        Receives the FNakamaError on failure.
+	 * @param PrepareRequest Optional per-site mutation of the freshly-built request
+	 *                       (e.g. SetBasicAuthorizationHeader for authenticate calls).
+	 *                       Re-applied on every attempt.
+	 */
+	void SendJsonRequest(
+		const FString& Endpoint,
+		const FString& Content,
+		ENakamaRequestMethod Method,
+		const TMultiMap<FString, FString>& QueryParams,
+		const FString& AuthToken,
+		const TFunction<void(const FString& Body)>& OnSuccess,
+		const TFunction<void(const FNakamaError& Error)>& OnError,
+		const TFunction<void(TSharedRef<IHttpRequest, ESPMode::ThreadSafe>&)>& PrepareRequest = nullptr);
+
 	// Working with requests
 	bool IsClientValid() const;
 
@@ -3022,8 +3093,8 @@ private:
 		const FString& Id,
 		const TOptional<FString>& Payload,
 		TMultiMap<FString, FString> QueryParams,
-		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 		);
 
 	bool SendRPCm(
@@ -3031,8 +3102,8 @@ private:
 		const FString& Id,
 		const TOptional<FString>& Payload,
 		TMultiMap<FString, FString> QueryParams,
-		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaError& Error)>& ErrorCallback
 	);
 
 	// Requests

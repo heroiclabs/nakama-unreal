@@ -55,6 +55,49 @@ public:
 	const FSatoriProperties GetProperties() const;
 
 	/**
+	 * @return The timestamp when this session will expire.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	const FDateTime GetExpireTime() const;
+
+	/**
+	 * @return The timestamp when the refresh token will expire.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	const FDateTime GetRefreshExpireTime() const;
+
+	/**
+	 * @return <c>True</c> if the session has expired against the current time.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	bool IsExpired() const;
+
+	/**
+	 * Check if the session's token has expired against the input time.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	bool IsExpiredTime(FDateTime Time) const;
+
+	/**
+	 * @return <c>True</c> if the refresh token has expired against the current time.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	bool IsRefreshExpired() const;
+
+	/**
+	 * Check if the session's refresh token has expired against the input time.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
+	bool IsRefreshExpiredTime(FDateTime Time) const;
+
+	/**
+	 * Copy all session fields (tokens, expiry, properties) from another session
+	 * into this one, in place. Used by auto-refresh so the caller's session
+	 * pointer reflects refreshed tokens.
+	 */
+	void Update(const USatoriSession* Other);
+
+	/**
 	 * Restore User Session
 	 *
 	 * @param Token Authentication Token from Session
@@ -69,4 +112,8 @@ private:
 	FString _AuthToken;
 	FString _RefreshToken;
 	FSatoriProperties _Properties;
+	FDateTime _ExpireTime;
+	FDateTime _RefreshExpireTime;
+
+	static bool ParseJwtPayload(const FString& jwt, TSharedPtr<class FJsonObject>& payloadJson);
 };

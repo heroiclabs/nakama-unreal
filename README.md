@@ -538,4 +538,4 @@ You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unrea
 
 ## License
 
-This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-dotnet/blob/master/LICENSE).
+This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-unreal/blob/master/LICENSE).
