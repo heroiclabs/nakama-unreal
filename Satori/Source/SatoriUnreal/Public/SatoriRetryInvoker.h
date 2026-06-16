@@ -7,12 +7,24 @@
 #include "SatoriError.h"
 
 /**
- * One HTTP attempt. Reports its outcome through OnComplete:
- *   bSuccess  - transport-level success (response received)
- *   HttpCode  - HTTP status (e.g. 200, 503); -1 when bSuccess is false
- *   Body      - response body (valid only on a successful response)
+ * Terminal classification of one HTTP attempt, reported through OnComplete.
+ * Replaces the old (bSuccess, magic HttpCode) pair so a cancelled/released
+ * request is a first-class outcome rather than a sentinel status code.
  */
-using FSatoriSendFn = TFunction<void(TFunction<void(bool /*bSuccess*/, int32 /*HttpCode*/, const FString& /*Body*/)> /*OnComplete*/)>;
+enum class ESatoriRequestOutcome : uint8
+{
+	Response,          // a response was received; HttpCode/Body are meaningful
+	ConnectionFailure, // transport-level failure, no response (retry-terminal)
+	Cancelled,         // request cancelled or owning client released (not a fault)
+};
+
+/**
+ * One HTTP attempt. Reports its outcome through OnComplete:
+ *   Outcome   - how the attempt resolved (see ESatoriRequestOutcome)
+ *   HttpCode  - HTTP status (e.g. 200, 503); only meaningful for Response
+ *   Body      - response body; only meaningful for Response
+ */
+using FSatoriSendFn = TFunction<void(TFunction<void(ESatoriRequestOutcome /*Outcome*/, int32 /*HttpCode*/, const FString& /*Body*/)> /*OnComplete*/)>;
 
 /** Defers Work by Seconds. Production uses FTSTicker; tests run Work immediately. */
 using FSatoriDelayFn = TFunction<void(float /*Seconds*/, TFunction<void()> /*Work*/)>;
@@ -46,8 +58,14 @@ public:
 	/** Pure: compute the next retry from history + config. */
 	static FSatoriRetry CreateRetry(const TArray<FSatoriRetry>& History, const FSatoriRetryConfiguration& Config, FRandomStream& Stream);
 
-	/** True for transient HTTP codes (500/502/503/504). */
-	static bool IsTransient(bool bSuccess, int32 HttpCode);
+	/** True only for a Response carrying a transient HTTP code (500/502/503/504). */
+	static bool IsTransient(ESatoriRequestOutcome Outcome, int32 HttpCode);
+
+	/**
+	 * Build the terminal error for a non-retried outcome: the server's body for a
+	 * Response, a cancelled error for Cancelled, else a generic connection failure.
+	 */
+	static FSatoriError MakeTerminalError(ESatoriRequestOutcome Outcome, const FString& Body);
 
 	/**
 	 * Invoke Send, retrying transient failures with backoff+jitter.

@@ -131,14 +131,16 @@ inline bool RetryDeterministic::RunTest(const FString& Parameters)
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RetryTransientClassification, FNakamaTestBase, "Nakama.Base.Retry.Transient", NAKAMA_MODULE_TEST_MASK)
 inline bool RetryTransientClassification::RunTest(const FString& Parameters)
 {
-	TestTrue(TEXT("500 transient"),  FNakamaRetryInvoker::IsTransient(true, 500));
-	TestTrue(TEXT("502 transient"),  FNakamaRetryInvoker::IsTransient(true, 502));
-	TestTrue(TEXT("503 transient"),  FNakamaRetryInvoker::IsTransient(true, 503));
-	TestTrue(TEXT("504 transient"),  FNakamaRetryInvoker::IsTransient(true, 504));
-	TestFalse(TEXT("400 not transient"), FNakamaRetryInvoker::IsTransient(true, 400));
-	TestFalse(TEXT("429 not transient"), FNakamaRetryInvoker::IsTransient(true, 429));
-	TestFalse(TEXT("501 not transient"), FNakamaRetryInvoker::IsTransient(true, 501));
-	TestFalse(TEXT("conn failure not transient"), FNakamaRetryInvoker::IsTransient(false, -1));
+	using EOutcome = ENakamaRequestOutcome;
+	TestTrue(TEXT("500 transient"),  FNakamaRetryInvoker::IsTransient(EOutcome::Response, 500));
+	TestTrue(TEXT("502 transient"),  FNakamaRetryInvoker::IsTransient(EOutcome::Response, 502));
+	TestTrue(TEXT("503 transient"),  FNakamaRetryInvoker::IsTransient(EOutcome::Response, 503));
+	TestTrue(TEXT("504 transient"),  FNakamaRetryInvoker::IsTransient(EOutcome::Response, 504));
+	TestFalse(TEXT("400 not transient"), FNakamaRetryInvoker::IsTransient(EOutcome::Response, 400));
+	TestFalse(TEXT("429 not transient"), FNakamaRetryInvoker::IsTransient(EOutcome::Response, 429));
+	TestFalse(TEXT("501 not transient"), FNakamaRetryInvoker::IsTransient(EOutcome::Response, 501));
+	TestFalse(TEXT("conn failure not transient"), FNakamaRetryInvoker::IsTransient(EOutcome::ConnectionFailure, -1));
+	TestFalse(TEXT("cancelled not transient"), FNakamaRetryInvoker::IsTransient(EOutcome::Cancelled, 0));
 	return true;
 }
 
@@ -155,7 +157,7 @@ inline bool RetryConnectionFailure::RunTest(const FString& Parameters)
 	FNakamaRetryConfiguration Config(1, 3);
 	int32 Attempt = 0; int32 ListenerCalls = 0; bool bErrored = false;
 	Config.Listener = [&ListenerCalls](int32, const FNakamaRetry&) { ++ListenerCalls; };
-	FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C){ ++Attempt; C(false, -1, FString()); };
+	FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ ++Attempt; C(ENakamaRequestOutcome::ConnectionFailure, 0, FString()); };
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 	FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay,
 		[](const FString&){}, [&](const FNakamaError&){ bErrored = true; });
@@ -179,9 +181,9 @@ inline bool RetryExactlyOnce::RunTest(const FString& Parameters)
 	bool bSucceeded = false;
 	FString ReceivedBody;
 
-	FNakamaSendFn Send = [&Schedule, &Attempt](TFunction<void(bool, int32, const FString&)> OnComplete) {
+	FNakamaSendFn Send = [&Schedule, &Attempt](TFunction<void(ENakamaRequestOutcome, int32, const FString&)> OnComplete) {
 		const int32 Code = Schedule[Attempt++];
-		OnComplete(true, Code, Code == 200 ? TEXT("{}") : TEXT(""));
+		OnComplete(ENakamaRequestOutcome::Response, Code, Code == 200 ? TEXT("{}") : TEXT(""));
 	};
 	FNakamaDelayFn Delay = [](float /*Seconds*/, TFunction<void()> Work) { Work(); };
 
@@ -206,7 +208,7 @@ inline bool RetryFiveTimes::RunTest(const FString& Parameters)
 	Config.Listener = [&LastNumRetry](int32 N, const FNakamaRetry&) { LastNumRetry = N; };
 	TArray<int32> Schedule = { 503, 503, 503, 503, 503, 200 };
 	int32 Attempt = 0; bool bOk = false; bool bErrored = false;
-	FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C){ int32 Code = Schedule[Attempt++]; C(true, Code, Code==200?TEXT("{}"):TEXT("")); };
+	FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ int32 Code = Schedule[Attempt++]; C(ENakamaRequestOutcome::Response,Code, Code==200?TEXT("{}"):TEXT("")); };
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 	FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay, [&](const FString&){ bOk = true; }, [&](const FNakamaError&){ bErrored = true; });
 	TestTrue(TEXT("succeeded"), bOk);
@@ -223,7 +225,7 @@ inline bool RetryPastMax::RunTest(const FString& Parameters)
 	int32 LastNumRetry = -1;
 	Config.Listener = [&LastNumRetry](int32 N, const FNakamaRetry&) { LastNumRetry = N; };
 	int32 Attempt = 0; bool bSucceeded = false; bool bErrored = false;
-	FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C){ ++Attempt; C(true, 503, TEXT("")); }; // always transient
+	FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ ++Attempt; C(ENakamaRequestOutcome::Response,503, TEXT("")); }; // always transient
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 	FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay, [&](const FString&){ bSucceeded = true; }, [&](const FNakamaError&){ bErrored = true; });
 	TestTrue(TEXT("errored after exhausting retries"), bErrored);
@@ -239,7 +241,7 @@ inline bool RetryZero::RunTest(const FString& Parameters)
 	FNakamaRetryConfiguration Config(1, 0);
 	int32 Attempt = 0; int32 ListenerCalls = 0; bool bErrored = false;
 	Config.Listener = [&ListenerCalls](int32, const FNakamaRetry&) { ++ListenerCalls; };
-	FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C){ ++Attempt; C(true, 503, TEXT("")); };
+	FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ ++Attempt; C(ENakamaRequestOutcome::Response,503, TEXT("")); };
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 	FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay, [](const FString&){}, [&](const FNakamaError&){ bErrored = true; });
 	TestTrue(TEXT("errored"), bErrored);
@@ -254,7 +256,7 @@ inline bool RetryNonTransient::RunTest(const FString& Parameters)
 	FNakamaRetryConfiguration Config(1, 5);
 	int32 Attempt = 0; bool bErrored = false;
 	FNakamaError ReceivedError;
-	FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C){ ++Attempt; C(true, 400, TEXT("{\"message\":\"bad\"}")); };
+	FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ ++Attempt; C(ENakamaRequestOutcome::Response,400, TEXT("{\"message\":\"bad\"}")); };
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 	FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay, [](const FString&){}, [&](const FNakamaError& Error){ bErrored = true; ReceivedError = Error; });
 	TestTrue(TEXT("errored immediately"), bErrored);
@@ -268,7 +270,8 @@ inline bool RetryNonTransient::RunTest(const FString& Parameters)
 // OnComplete, the invoker must fire exactly one terminal callback - never zero
 // (caller hangs) and never two (double delivery). The production glue now
 // guarantees its completion handler always calls OnComplete - including the
-// teardown / cancelled cases, modeled here as OnComplete(false, -1).
+// teardown / cancelled cases, modeled here via the ConnectionFailure / Cancelled
+// outcomes.
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RetryTerminalContract, FNakamaTestBase, "Nakama.Base.Retry.TerminalContract", NAKAMA_MODULE_TEST_MASK)
 inline bool RetryTerminalContract::RunTest(const FString& Parameters)
 {
@@ -282,10 +285,11 @@ inline bool RetryTerminalContract::RunTest(const FString& Parameters)
 	// Each scenario: (label, Send) -> assert exactly one terminal callback total.
 	struct FScenario { const TCHAR* Label; FNakamaSendFn Send; };
 	TArray<FScenario> Scenarios = {
-		{ TEXT("immediate success"),        [](TFunction<void(bool,int32,const FString&)> C){ C(true, 200, TEXT("{}")); } },
-		{ TEXT("non-transient error"),      [](TFunction<void(bool,int32,const FString&)> C){ C(true, 400, TEXT("{}")); } },
-		{ TEXT("transport failure"),        [](TFunction<void(bool,int32,const FString&)> C){ C(false, -1, FString()); } },
-		{ TEXT("exhausted transient"),      [](TFunction<void(bool,int32,const FString&)> C){ C(true, 503, FString()); } },
+		{ TEXT("immediate success"),        [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Response,200, TEXT("{}")); } },
+		{ TEXT("non-transient error"),      [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Response,400, TEXT("{}")); } },
+		{ TEXT("transport failure"),        [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::ConnectionFailure, 0, FString()); } },
+		{ TEXT("cancelled / released"),     [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Cancelled, 0, FString()); } },
+		{ TEXT("exhausted transient"),      [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Response,503, FString()); } },
 	};
 
 	for (const FScenario& S : Scenarios)
@@ -300,16 +304,16 @@ inline bool RetryTerminalContract::RunTest(const FString& Parameters)
 	}
 
 	// Teardown mid-backoff: first attempt is transient (schedules a retry through
-	// Delay); the retry observes a "gone" client and reports a transport failure -
+	// Delay); the retry observes a "gone" client and reports ConnectionFailure -
 	// exactly the path the fixed Delay (always runs Work) + Send (null-client ->
-	// OnComplete(false,-1)) now produce. Must still deliver one OnError, no hang.
+	// ConnectionFailure) now produce. Must still deliver one OnError, no hang.
 	{
 		FNakamaRetryConfiguration Config(/*base*/ 1, /*max*/ 3);
 		int32 Attempt = 0, Successes = 0, Errors = 0;
-		FNakamaSendFn Send = [&](TFunction<void(bool,int32,const FString&)> C)
+		FNakamaSendFn Send = [&](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C)
 		{
-			if (Attempt++ == 0) { C(true, 503, FString()); }  // transient -> backoff scheduled
-			else                { C(false, -1, FString()); }  // "client torn down" on the retry
+			if (Attempt++ == 0) { C(ENakamaRequestOutcome::Response,503, FString()); }  // transient -> backoff scheduled
+			else                { C(ENakamaRequestOutcome::ConnectionFailure, 0, FString()); }  // "client torn down" on the retry
 		};
 		FNakamaRetryInvoker::InvokeWithRetry(Send, Config, 7, Delay,
 			[&](const FString&){ ++Successes; }, [&](const FNakamaError&){ ++Errors; });
@@ -327,13 +331,13 @@ inline bool RetryEmptyCallbacks::RunTest(const FString& Parameters)
 	FNakamaRetryConfiguration Config(1, 2);
 	FNakamaDelayFn Delay = [](float, TFunction<void()> W){ W(); };
 
-	FNakamaSendFn FailSend = [](TFunction<void(bool,int32,const FString&)> C){ C(false, -1, FString()); };
+	FNakamaSendFn FailSend = [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::ConnectionFailure, 0, FString()); };
 	FNakamaRetryInvoker::InvokeWithRetry(FailSend, Config, 7, Delay, nullptr, nullptr);
 
-	FNakamaSendFn TransientSend = [](TFunction<void(bool,int32,const FString&)> C){ C(true, 503, FString()); };
+	FNakamaSendFn TransientSend = [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Response,503, FString()); };
 	FNakamaRetryInvoker::InvokeWithRetry(TransientSend, Config, 7, Delay, nullptr, nullptr);
 
-	FNakamaSendFn OkSend = [](TFunction<void(bool,int32,const FString&)> C){ C(true, 200, TEXT("{}")); };
+	FNakamaSendFn OkSend = [](TFunction<void(ENakamaRequestOutcome,int32,const FString&)> C){ C(ENakamaRequestOutcome::Response,200, TEXT("{}")); };
 	FNakamaRetryInvoker::InvokeWithRetry(OkSend, Config, 7, Delay, nullptr, nullptr);
 
 	TestTrue(TEXT("reached end without crashing on empty callbacks"), true);

@@ -7,12 +7,24 @@
 #include "NakamaError.h"
 
 /**
- * One HTTP attempt. Reports its outcome through OnComplete:
- *   bSuccess  - transport-level success (response received)
- *   HttpCode  - HTTP status (e.g. 200, 503); -1 when bSuccess is false
- *   Body      - response body (valid only on a successful response)
+ * Terminal classification of one HTTP attempt, reported through OnComplete.
+ * Replaces the old (bSuccess, magic HttpCode) pair so a cancelled/released
+ * request is a first-class outcome rather than a sentinel status code.
  */
-using FNakamaSendFn = TFunction<void(TFunction<void(bool /*bSuccess*/, int32 /*HttpCode*/, const FString& /*Body*/)> /*OnComplete*/)>;
+enum class ENakamaRequestOutcome : uint8
+{
+	Response,          // a response was received; HttpCode/Body are meaningful
+	ConnectionFailure, // transport-level failure, no response (retry-terminal)
+	Cancelled,         // request cancelled or owning client released (not a fault)
+};
+
+/**
+ * One HTTP attempt. Reports its outcome through OnComplete:
+ *   Outcome   - how the attempt resolved (see ENakamaRequestOutcome)
+ *   HttpCode  - HTTP status (e.g. 200, 503); only meaningful for Response
+ *   Body      - response body; only meaningful for Response
+ */
+using FNakamaSendFn = TFunction<void(TFunction<void(ENakamaRequestOutcome /*Outcome*/, int32 /*HttpCode*/, const FString& /*Body*/)> /*OnComplete*/)>;
 
 /** Defers Work by Seconds. Production uses FTSTicker; tests run Work immediately. */
 using FNakamaDelayFn = TFunction<void(float /*Seconds*/, TFunction<void()> /*Work*/)>;
@@ -46,15 +58,14 @@ public:
 	/** Pure: compute the next retry from history + config. */
 	static FNakamaRetry CreateRetry(const TArray<FNakamaRetry>& History, const FNakamaRetryConfiguration& Config, FRandomStream& Stream);
 
-	/** True for transient HTTP codes (500/502/503/504). */
-	static bool IsTransient(bool bSuccess, int32 HttpCode);
+	/** True only for a Response carrying a transient HTTP code (500/502/503/504). */
+	static bool IsTransient(ENakamaRequestOutcome Outcome, int32 HttpCode);
 
 	/**
-	 * Build the terminal error for a non-retried outcome: the server's body when
-	 * one was received, a cancelled error for a released/cancelled request
-	 * (HttpCode == FNakamaUtils::CancelledStatusCode), else a generic failure.
+	 * Build the terminal error for a non-retried outcome: the server's body for a
+	 * Response, a cancelled error for Cancelled, else a generic connection failure.
 	 */
-	static FNakamaError MakeTerminalError(bool bSuccess, int32 HttpCode, const FString& Body);
+	static FNakamaError MakeTerminalError(ENakamaRequestOutcome Outcome, const FString& Body);
 
 	/**
 	 * Invoke Send, retrying transient failures with backoff+jitter.

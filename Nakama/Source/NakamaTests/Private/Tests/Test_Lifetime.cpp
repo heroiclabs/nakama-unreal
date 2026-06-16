@@ -158,11 +158,12 @@ inline bool ClientReleasedDeferredRPCCallback::RunTest(const FString& Parameters
 		++SuccessFired;
 	};
 
-	// The deferred HTTP completion, capturing WeakThis exactly like the shipped
-	// completion lambda. Only delivers the response while the client is alive.
+	// The deferred HTTP completion, mirroring SendJsonRequest's guard exactly:
+	// resolve the weak client to a strong pointer and only deliver the response
+	// when it is still valid; a null resolve is the "client gone" terminal path.
 	auto DeliverResponse = [WeakThis, UserSuccess, &FailurePath]()
 	{
-		if (FNakamaUtils::IsClientActive(WeakThis.Get()))
+		if (WeakThis.Get())
 		{
 			UserSuccess();
 		}

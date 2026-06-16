@@ -12,11 +12,26 @@ FSatoriRetry FSatoriRetryInvoker::CreateRetry(const TArray<FSatoriRetry>& Histor
 	return FSatoriRetry(Expo, FMath::Clamp(Jittered, 0, MaxBackoffMs));
 }
 
-bool FSatoriRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
+FSatoriError FSatoriRetryInvoker::MakeTerminalError(ESatoriRequestOutcome Outcome, const FString& Body)
 {
-	if (!bSuccess)
+	switch (Outcome)
 	{
-		return false; // connection failures are NOT retried
+	case ESatoriRequestOutcome::Response:
+		// Server responded with an error body: surface it verbatim.
+		return FSatoriError(Body);
+	case ESatoriRequestOutcome::Cancelled:
+		// Expected outcome, not a transport fault; must not log at Error level.
+		return FSatoriUtils::CreateRequestCancelledError();
+	default:
+		return FSatoriUtils::CreateRequestFailureError();
+	}
+}
+
+bool FSatoriRetryInvoker::IsTransient(ESatoriRequestOutcome Outcome, int32 HttpCode)
+{
+	if (Outcome != ESatoriRequestOutcome::Response)
+	{
+		return false; // connection failures and cancellations are NOT retried
 	}
 	switch (HttpCode)
 	{
@@ -35,9 +50,9 @@ bool FSatoriRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
 void FSatoriRetryState::Attempt()
 {
 	TSharedRef<FSatoriRetryState> Self = AsShared();
-	Send([Self](bool bSuccess, int32 HttpCode, const FString& Body)
+	Send([Self](ESatoriRequestOutcome Outcome, int32 HttpCode, const FString& Body)
 	{
-		if (bSuccess && FSatoriUtils::IsResponseSuccessful(HttpCode))
+		if (Outcome == ESatoriRequestOutcome::Response && FSatoriUtils::IsResponseSuccessful(HttpCode))
 		{
 			if (Self->OnSuccess)
 			{
@@ -46,11 +61,11 @@ void FSatoriRetryState::Attempt()
 			return;
 		}
 
-		if (!FSatoriRetryInvoker::IsTransient(bSuccess, HttpCode))
+		if (!FSatoriRetryInvoker::IsTransient(Outcome, HttpCode))
 		{
 			if (Self->OnError)
 			{
-				Self->OnError(bSuccess ? FSatoriError(Body) : FSatoriUtils::CreateRequestFailureError());
+				Self->OnError(FSatoriRetryInvoker::MakeTerminalError(Outcome, Body));
 			}
 			return;
 		}
@@ -63,7 +78,7 @@ void FSatoriRetryState::Attempt()
 				// Retries exhausted: surface the server's actual error body when we
 				// have a response, so callers can see why it failed. Only synthesize
 				// a generic error for transport-level failures (no response body).
-				Self->OnError(bSuccess ? FSatoriError(Body) : FSatoriUtils::CreateRequestFailureError());
+				Self->OnError(FSatoriRetryInvoker::MakeTerminalError(Outcome, Body));
 			}
 			return;
 		}

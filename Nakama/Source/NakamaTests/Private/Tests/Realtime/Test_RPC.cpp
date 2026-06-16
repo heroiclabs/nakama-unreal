@@ -16,13 +16,51 @@
 
 #include "NakamaTestBase.h"
 
+// Runs once after the wait ends and fails the test unless a terminal RPC outcome
+// was actually observed. Without this, a regression that silently drops BOTH the
+// success and error callbacks (the use-after-free-adjacent failure mode) would
+// end the wait via timeout and pass - the very bug class the test guards.
+DEFINE_LATENT_AUTOMATION_COMMAND_TWO_PARAMETER(FRequireTerminalOutcome, FNakamaTestBase*, Base, TSharedPtr<bool>, TerminalSeen);
+inline bool FRequireTerminalOutcome::Update()
+{
+	Base->TestTrue(TEXT("RPC produced a terminal outcome (did not silently drop both callbacks)"), *TerminalSeen);
+	return true;
+}
+
+// Physically reclaims the released client on a clean game-thread tick, once the
+// test signals it has marked the client garbage. Deliberately NOT done inline in
+// the auth callback: a full purge from inside the HTTP completion callstack that
+// is still unwinding through client-owned async machinery is a sharp edge. The
+// client is already logically released (MarkAsGarbage makes WeakThis.Get() null),
+// so the in-flight response is dropped whether it returns before or after this.
+DEFINE_LATENT_AUTOMATION_COMMAND_TWO_PARAMETER(FPurgeAfterRelease, FNakamaTestBase*, Base, TSharedPtr<bool>, ReleaseRequested);
+inline bool FPurgeAfterRelease::Update()
+{
+	if (Base->IsFinished())
+	{
+		return true; // test ended early (e.g. auth failure); nothing to purge
+	}
+	if (!*ReleaseRequested)
+	{
+		return false; // keep ticking the engine until the client is released
+	}
+	CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS, /*bPerformFullPurge*/ true);
+	return true;
+}
+
 // Real-server counterpart to Nakama.Base.Lifetime.ClientReleasedDeferredRPCCallback:
 // issue an RPC, release the client before the HTTP response is delivered, and
 // confirm the late response is dropped (no crash, success callback never fires).
 //
 // HTTP completions are marshalled to the game thread and cannot run until this
-// auth callback returns, so releasing the client synchronously here guarantees
-// the response arrives after release - the in-flight scenario, deterministically.
+// auth callback returns, so marking the client garbage synchronously here makes
+// WeakThis.Get() null before any in-flight response can be delivered - the late
+// response is dropped deterministically. The in-flight request is whichever the
+// RPC call set in motion: the token refresh EnsureValidSession issues first when
+// the session is near expiry (in which case the RPC body is never sent), or the
+// RPC request itself. Either way its completion observes the released client.
+// The physical purge is deferred to a clean latent tick (FPurgeAfterRelease)
+// rather than run from this callstack.
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCReleaseClientBeforeResponse, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCReleaseClientBeforeResponse", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCReleaseClientBeforeResponse::RunTest(const FString& Parameters)
 {
@@ -35,46 +73,60 @@ inline bool RPCReleaseClientBeforeResponse::RunTest(const FString& Parameters)
 	// Flags live past this stack frame: the deferred callbacks outlive RunTest,
 	// so a captured TSharedPtr is required (capturing &locals would dangle).
 	TSharedPtr<bool> SuccessFired = MakeShared<bool>(false);
+	// Set by any path that ends the test, so the post-wait command can prove a
+	// terminal outcome was reached rather than the wait simply timing out.
+	TSharedPtr<bool> TerminalSeen = MakeShared<bool>(false);
+	// Set once the client has been marked garbage, gating the deferred purge.
+	TSharedPtr<bool> ReleaseRequested = MakeShared<bool>(false);
 
-	auto successCallback = [this, SuccessFired](UNakamaSession* session)
+	auto successCallback = [this, SuccessFired, TerminalSeen, ReleaseRequested](UNakamaSession* session)
 	{
 		Session = session;
 
-		auto RPCSuccess = [this, SuccessFired](const FNakamaRPC& RPC)
+		auto RPCSuccess = [this, SuccessFired, TerminalSeen](const FNakamaRPC& RPC)
 		{
 			// Must never run: the owning client was released before this returned.
 			*SuccessFired = true;
+			*TerminalSeen = true;
 			TestFalse("RPC success callback fired after client release", true);
 			StopTest();
 		};
 
-		auto RPCError = [this, SuccessFired](const FNakamaError& Error)
+		auto RPCError = [this, SuccessFired, TerminalSeen](const FNakamaError& Error)
 		{
 			// Expected terminal outcome once the client is gone.
+			*TerminalSeen = true;
 			UE_LOG(LogTemp, Display, TEXT("RPC resolved to failure after release: %s"), *Error.Message);
 			TestFalse("success callback did not fire before the failure path", *SuccessFired);
 			StopTest();
 		};
 
-		// Issue the RPC, then immediately release the client. The request is now
-		// in flight; its completion lambda holds a TWeakObjectPtr that the GC
-		// below invalidates.
+		// Issue the RPC, then logically release the client: MarkAsGarbage makes
+		// the in-flight request's captured WeakThis resolve to null (that request
+		// is the token refresh when the session is near expiry, otherwise the RPC
+		// itself), so its response is dropped whenever it returns. The physical
+		// purge runs later on a clean tick (FPurgeAfterRelease) to avoid
+		// collecting from inside this HTTP completion callstack.
 		Client->RPC(Session, "clientrpc.rpc", {}, RPCSuccess, RPCError);
 
 		Client->MarkAsGarbage();
 		Client = nullptr;
-		CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS, /*bPerformFullPurge*/ true);
+		*ReleaseRequested = true;
 	};
 
-	auto errorCallback = [this](const FNakamaError& Error)
+	auto errorCallback = [this, TerminalSeen](const FNakamaError& Error)
 	{
+		// Auth itself failed: a definite (wrong) terminal outcome, asserted here.
+		*TerminalSeen = true;
 		TestFalse("Authentication failed", true);
 		StopTest();
 	};
 
 	Client->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, successCallback, errorCallback);
 
+	ADD_LATENT_AUTOMATION_COMMAND(FPurgeAfterRelease(this, ReleaseRequested));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
+	ADD_LATENT_AUTOMATION_COMMAND(FRequireTerminalOutcome(this, TerminalSeen));
 
 	return true;
 }

@@ -295,19 +295,10 @@ public:
 	}
 
 	// Common functions used by multiple clients
-	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
-	static void ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(FString&&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
-	
 	static void HandleJsonSerializationFailure(const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	static bool IsSessionValid(const UNakamaSession* Session, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	static bool IsResponseSuccessful(int32 ResponseCode);
 	static FNakamaError CreateRequestFailureError();
-
-	// Sentinel HttpCode used by the send path to mark a terminal outcome that is
-	// not a transport error: the request was cancelled or its owning client was
-	// released. Distinct from -1 (genuine connection failure) so the retry
-	// invoker can surface it without logging at Error level.
-	static constexpr int32 CancelledStatusCode = -2;
 
 	// Terminal error for a cancelled/released request. Unlike
 	// CreateRequestFailureError this is an expected outcome, so it logs at Debug

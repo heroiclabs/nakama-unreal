@@ -1499,12 +1499,13 @@ void USatoriClient::SendJsonRequest(
 	TWeakObjectPtr<USatoriClient> WeakThis(this);
 	FSatoriSendFn Send =
 		[WeakThis, Endpoint, Content, Method, QueryParams, SessionToken, PrepareRequest]
-		(TFunction<void(bool, int32, const FString&)> OnComplete)
+		(TFunction<void(ESatoriRequestOutcome, int32, const FString&)> OnComplete)
 	{
 		USatoriClient* Self = WeakThis.Get();
 		if (!Self)
 		{
-			OnComplete(false, -1, FString());
+			// Client released before this attempt ran: cancelled, not a fault.
+			OnComplete(ESatoriRequestOutcome::Cancelled, 0, FString());
 			return;
 		}
 
@@ -1525,10 +1526,12 @@ void USatoriClient::SendJsonRequest(
 		{
 			// Always deliver exactly one terminal outcome to OnComplete so the retry
 			// chain (and the caller's success/error callback) can never be silently
-			// dropped. A response is only forwarded when the request was still active;
-			// a cancelled request (removed from ActiveRequests) or a dead client both
-			// resolve to a transport failure, which ends the chain via OnError.
+			// dropped. A response is only forwarded when the request was still active.
+			// A cancelled request (removed from ActiveRequests) or a dead client are
+			// expected outcomes, reported as ESatoriRequestOutcome::Cancelled so OnError
+			// does not log them as faults; a genuine transport failure is ConnectionFailure.
 			bool bDeliverResponse = bSuccess && Response.IsValid();
+			bool bCancelled = false;
 			if (USatoriClient* Self = WeakThis.Get())
 			{
 				if (Self->IsValidLowLevel())
@@ -1541,25 +1544,28 @@ void USatoriClient::SendJsonRequest(
 					else
 					{
 						bDeliverResponse = false; // cancelled or already reaped
+						bCancelled = true;
 					}
 				}
 				else
 				{
 					bDeliverResponse = false;
+					bCancelled = true; // client mid-destruction
 				}
 			}
 			else
 			{
-				bDeliverResponse = false; // client gone
+				bDeliverResponse = false;
+				bCancelled = true; // client gone
 			}
 
 			if (bDeliverResponse)
 			{
-				OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+				OnComplete(ESatoriRequestOutcome::Response, Response->GetResponseCode(), Response->GetContentAsString());
 			}
 			else
 			{
-				OnComplete(false, -1, FString());
+				OnComplete(bCancelled ? ESatoriRequestOutcome::Cancelled : ESatoriRequestOutcome::ConnectionFailure, 0, FString());
 			}
 		});
 

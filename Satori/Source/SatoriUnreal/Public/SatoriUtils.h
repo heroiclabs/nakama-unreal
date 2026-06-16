@@ -262,12 +262,15 @@ public:
 	}
 
 	// Common functions used by multiple clients
-	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
-	
 	static void HandleJsonSerializationFailure(const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
 	static bool IsSessionValid(const USatoriSession* Session, const TFunction<void(const FSatoriError& Error)>& ErrorCallback);
 	static bool IsResponseSuccessful(int32 ResponseCode);
 	static FSatoriError CreateRequestFailureError();
+
+	// Terminal error for a cancelled/released request. Unlike
+	// CreateRequestFailureError this is an expected outcome, so it logs at Debug
+	// rather than Error and never trips automation log-error capture.
+	static FSatoriError CreateRequestCancelledError();
 
 	// Make HTTP request
 	static TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(

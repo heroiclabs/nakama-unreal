@@ -12,27 +12,26 @@ FNakamaRetry FNakamaRetryInvoker::CreateRetry(const TArray<FNakamaRetry>& Histor
 	return FNakamaRetry(Expo, FMath::Clamp(Jittered, 0, MaxBackoffMs));
 }
 
-FNakamaError FNakamaRetryInvoker::MakeTerminalError(bool bSuccess, int32 HttpCode, const FString& Body)
+FNakamaError FNakamaRetryInvoker::MakeTerminalError(ENakamaRequestOutcome Outcome, const FString& Body)
 {
-	// Server responded with an error body: surface it verbatim.
-	if (bSuccess)
+	switch (Outcome)
 	{
+	case ENakamaRequestOutcome::Response:
+		// Server responded with an error body: surface it verbatim.
 		return FNakamaError(Body);
-	}
-	// No response. A cancelled/released request is an expected outcome, not a
-	// transport fault, so it must not be logged at Error level.
-	if (HttpCode == FNakamaUtils::CancelledStatusCode)
-	{
+	case ENakamaRequestOutcome::Cancelled:
+		// Expected outcome, not a transport fault; must not log at Error level.
 		return FNakamaUtils::CreateRequestCancelledError();
+	default:
+		return FNakamaUtils::CreateRequestFailureError();
 	}
-	return FNakamaUtils::CreateRequestFailureError();
 }
 
-bool FNakamaRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
+bool FNakamaRetryInvoker::IsTransient(ENakamaRequestOutcome Outcome, int32 HttpCode)
 {
-	if (!bSuccess)
+	if (Outcome != ENakamaRequestOutcome::Response)
 	{
-		return false; // connection failures are NOT retried
+		return false; // connection failures and cancellations are NOT retried
 	}
 	switch (HttpCode)
 	{
@@ -51,9 +50,9 @@ bool FNakamaRetryInvoker::IsTransient(bool bSuccess, int32 HttpCode)
 void FNakamaRetryState::Attempt()
 {
 	TSharedRef<FNakamaRetryState> Self = AsShared();
-	Send([Self](bool bSuccess, int32 HttpCode, const FString& Body)
+	Send([Self](ENakamaRequestOutcome Outcome, int32 HttpCode, const FString& Body)
 	{
-		if (bSuccess && FNakamaUtils::IsResponseSuccessful(HttpCode))
+		if (Outcome == ENakamaRequestOutcome::Response && FNakamaUtils::IsResponseSuccessful(HttpCode))
 		{
 			if (Self->OnSuccess)
 			{
@@ -62,11 +61,11 @@ void FNakamaRetryState::Attempt()
 			return;
 		}
 
-		if (!FNakamaRetryInvoker::IsTransient(bSuccess, HttpCode))
+		if (!FNakamaRetryInvoker::IsTransient(Outcome, HttpCode))
 		{
 			if (Self->OnError)
 			{
-				Self->OnError(FNakamaRetryInvoker::MakeTerminalError(bSuccess, HttpCode, Body));
+				Self->OnError(FNakamaRetryInvoker::MakeTerminalError(Outcome, Body));
 			}
 			return;
 		}
@@ -79,7 +78,7 @@ void FNakamaRetryState::Attempt()
 				// Retries exhausted: surface the server's actual error body when we
 				// have a response, so callers can see why it failed. Only synthesize
 				// a generic error for transport-level failures (no response body).
-				Self->OnError(FNakamaRetryInvoker::MakeTerminalError(bSuccess, HttpCode, Body));
+				Self->OnError(FNakamaRetryInvoker::MakeTerminalError(Outcome, Body));
 			}
 			return;
 		}

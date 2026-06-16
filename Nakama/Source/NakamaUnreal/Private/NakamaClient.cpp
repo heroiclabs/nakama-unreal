@@ -5775,13 +5775,13 @@ void UNakamaClient::SendJsonRequest(
 	TWeakObjectPtr<UNakamaClient> WeakThis(this);
 	FNakamaSendFn Send =
 		[WeakThis, Endpoint, Content, Method, QueryParams, AuthToken, PrepareRequest]
-		(TFunction<void(bool, int32, const FString&)> OnComplete)
+		(TFunction<void(ENakamaRequestOutcome, int32, const FString&)> OnComplete)
 	{
 		UNakamaClient* Self = WeakThis.Get();
 		if (!Self)
 		{
 			// Client released before this attempt ran: cancelled, not a fault.
-			OnComplete(false, FNakamaUtils::CancelledStatusCode, FString());
+			OnComplete(ENakamaRequestOutcome::Cancelled, 0, FString());
 			return;
 		}
 
@@ -5804,8 +5804,8 @@ void UNakamaClient::SendJsonRequest(
 			// chain (and the caller's success/error callback) can never be silently
 			// dropped. A response is only forwarded when the request was still active.
 			// A cancelled request (removed from ActiveRequests) or a dead client are
-			// expected outcomes, reported with CancelledStatusCode so OnError does not
-			// log them as faults; a genuine transport failure keeps the -1 code.
+			// expected outcomes, reported as ENakamaRequestOutcome::Cancelled so OnError
+			// does not log them as faults; a genuine transport failure is ConnectionFailure.
 			bool bDeliverResponse = bSuccess && Response.IsValid();
 			bool bCancelled = false;
 			if (UNakamaClient* Self = WeakThis.Get())
@@ -5837,11 +5837,11 @@ void UNakamaClient::SendJsonRequest(
 
 			if (bDeliverResponse)
 			{
-				OnComplete(true, Response->GetResponseCode(), Response->GetContentAsString());
+				OnComplete(ENakamaRequestOutcome::Response, Response->GetResponseCode(), Response->GetContentAsString());
 			}
 			else
 			{
-				OnComplete(false, bCancelled ? FNakamaUtils::CancelledStatusCode : -1, FString());
+				OnComplete(bCancelled ? ENakamaRequestOutcome::Cancelled : ENakamaRequestOutcome::ConnectionFailure, 0, FString());
 			}
 		});
 
