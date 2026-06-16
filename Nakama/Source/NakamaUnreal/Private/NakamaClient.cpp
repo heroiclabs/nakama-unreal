@@ -5780,7 +5780,8 @@ void UNakamaClient::SendJsonRequest(
 		UNakamaClient* Self = WeakThis.Get();
 		if (!Self)
 		{
-			OnComplete(false, -1, FString());
+			// Client released before this attempt ran: cancelled, not a fault.
+			OnComplete(false, FNakamaUtils::CancelledStatusCode, FString());
 			return;
 		}
 
@@ -5801,10 +5802,12 @@ void UNakamaClient::SendJsonRequest(
 		{
 			// Always deliver exactly one terminal outcome to OnComplete so the retry
 			// chain (and the caller's success/error callback) can never be silently
-			// dropped. A response is only forwarded when the request was still active;
-			// a cancelled request (removed from ActiveRequests) or a dead client both
-			// resolve to a transport failure, which ends the chain via OnError.
+			// dropped. A response is only forwarded when the request was still active.
+			// A cancelled request (removed from ActiveRequests) or a dead client are
+			// expected outcomes, reported with CancelledStatusCode so OnError does not
+			// log them as faults; a genuine transport failure keeps the -1 code.
 			bool bDeliverResponse = bSuccess && Response.IsValid();
+			bool bCancelled = false;
 			if (UNakamaClient* Self = WeakThis.Get())
 			{
 				if (Self->IsValidLowLevel())
@@ -5817,16 +5820,19 @@ void UNakamaClient::SendJsonRequest(
 					else
 					{
 						bDeliverResponse = false; // cancelled or already reaped
+						bCancelled = true;
 					}
 				}
 				else
 				{
 					bDeliverResponse = false;
+					bCancelled = true; // client mid-destruction
 				}
 			}
 			else
 			{
-				bDeliverResponse = false; // client gone
+				bDeliverResponse = false;
+				bCancelled = true; // client gone
 			}
 
 			if (bDeliverResponse)
@@ -5835,7 +5841,7 @@ void UNakamaClient::SendJsonRequest(
 			}
 			else
 			{
-				OnComplete(false, -1, FString());
+				OnComplete(false, bCancelled ? FNakamaUtils::CancelledStatusCode : -1, FString());
 			}
 		});
 

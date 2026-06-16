@@ -50,6 +50,13 @@ public:
 	static bool IsTransient(bool bSuccess, int32 HttpCode);
 
 	/**
+	 * Build the terminal error for a non-retried outcome: the server's body when
+	 * one was received, a cancelled error for a released/cancelled request
+	 * (HttpCode == FNakamaUtils::CancelledStatusCode), else a generic failure.
+	 */
+	static FNakamaError MakeTerminalError(bool bSuccess, int32 HttpCode, const FString& Body);
+
+	/**
 	 * Invoke Send, retrying transient failures with backoff+jitter.
 	 * @param Send      One attempt; reports outcome via its OnComplete.
 	 * @param Config    Retry configuration.

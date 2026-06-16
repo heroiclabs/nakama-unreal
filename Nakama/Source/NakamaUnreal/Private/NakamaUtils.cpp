@@ -153,6 +153,17 @@ void FNakamaUtils::HandleJsonSerializationFailure(const TFunction<void(const FNa
 		Error.Message = TEXT("Failed to proccess request. Request failed.");
 		return Error;
 	}
+
+	FNakamaError FNakamaUtils::CreateRequestCancelledError()
+	{
+		// Expected outcome (request cancelled or owning client released), not a
+		// fault: log at Debug so it does not read as an error or fail automation.
+		NAKAMA_LOG_DEBUG(TEXT("Request cancelled or client released before completion."));
+		FNakamaError Error;
+		Error.Code = ENakamaErrorCode::Unknown;
+		Error.Message = TEXT("Request cancelled or client released before completion.");
+		return Error;
+	}
 	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> FNakamaUtils::MakeRequest(const FString& URL, const FString& Content, ENakamaRequestMethod RequestMethod, const FString& SessionToken, float Timeout)
 	{

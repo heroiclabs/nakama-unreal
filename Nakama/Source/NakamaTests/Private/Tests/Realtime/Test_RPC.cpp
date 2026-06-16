@@ -16,6 +16,69 @@
 
 #include "NakamaTestBase.h"
 
+// Real-server counterpart to Nakama.Base.Lifetime.ClientReleasedDeferredRPCCallback:
+// issue an RPC, release the client before the HTTP response is delivered, and
+// confirm the late response is dropped (no crash, success callback never fires).
+//
+// HTTP completions are marshalled to the game thread and cannot run until this
+// auth callback returns, so releasing the client synchronously here guarantees
+// the response arrives after release - the in-flight scenario, deterministically.
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCReleaseClientBeforeResponse, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCReleaseClientBeforeResponse", NAKAMA_MODULE_TEST_MASK)
+inline bool RPCReleaseClientBeforeResponse::RunTest(const FString& Parameters)
+{
+	InitiateTest();
+
+	// Bail out of the (forever) wait early; the release path resolves to a
+	// transport failure that fires the error callback, but keep a tight net.
+	Timeout = 15.0;
+
+	// Flags live past this stack frame: the deferred callbacks outlive RunTest,
+	// so a captured TSharedPtr is required (capturing &locals would dangle).
+	TSharedPtr<bool> SuccessFired = MakeShared<bool>(false);
+
+	auto successCallback = [this, SuccessFired](UNakamaSession* session)
+	{
+		Session = session;
+
+		auto RPCSuccess = [this, SuccessFired](const FNakamaRPC& RPC)
+		{
+			// Must never run: the owning client was released before this returned.
+			*SuccessFired = true;
+			TestFalse("RPC success callback fired after client release", true);
+			StopTest();
+		};
+
+		auto RPCError = [this, SuccessFired](const FNakamaError& Error)
+		{
+			// Expected terminal outcome once the client is gone.
+			UE_LOG(LogTemp, Display, TEXT("RPC resolved to failure after release: %s"), *Error.Message);
+			TestFalse("success callback did not fire before the failure path", *SuccessFired);
+			StopTest();
+		};
+
+		// Issue the RPC, then immediately release the client. The request is now
+		// in flight; its completion lambda holds a TWeakObjectPtr that the GC
+		// below invalidates.
+		Client->RPC(Session, "clientrpc.rpc", {}, RPCSuccess, RPCError);
+
+		Client->MarkAsGarbage();
+		Client = nullptr;
+		CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS, /*bPerformFullPurge*/ true);
+	};
+
+	auto errorCallback = [this](const FNakamaError& Error)
+	{
+		TestFalse("Authentication failed", true);
+		StopTest();
+	};
+
+	Client->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, successCallback, errorCallback);
+
+	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
+
+	return true;
+}
+
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 {

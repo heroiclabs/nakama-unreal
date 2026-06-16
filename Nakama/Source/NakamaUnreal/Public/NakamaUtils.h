@@ -303,6 +303,17 @@ public:
 	static bool IsResponseSuccessful(int32 ResponseCode);
 	static FNakamaError CreateRequestFailureError();
 
+	// Sentinel HttpCode used by the send path to mark a terminal outcome that is
+	// not a transport error: the request was cancelled or its owning client was
+	// released. Distinct from -1 (genuine connection failure) so the retry
+	// invoker can surface it without logging at Error level.
+	static constexpr int32 CancelledStatusCode = -2;
+
+	// Terminal error for a cancelled/released request. Unlike
+	// CreateRequestFailureError this is an expected outcome, so it logs at Debug
+	// rather than Error and never trips automation log-error capture.
+	static FNakamaError CreateRequestCancelledError();
+
 	// Make HTTP request
 	static TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(
 		const FString& URL,

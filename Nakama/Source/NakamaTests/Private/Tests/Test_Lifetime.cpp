@@ -134,3 +134,58 @@ inline bool ClientReleasedMemberAccess::RunTest(const FString& Parameters)
 	TestEqual(TEXT("no member access after release"), TouchedMembers, 1);
 	return true;
 }
+
+// Models the real async RPC ordering: a slow RPC is in flight, the owning client
+// is released, then the response arrives. Mirrors the WeakThis guard shipped in
+// UNakamaClient::SendJsonRequest's OnProcessRequestComplete lambda - a late
+// response with a dead client must resolve to the "client gone" path and never
+// dereference a dangling 'this' nor invoke the user's success callback.
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ClientReleasedDeferredRPCCallback, FNakamaTestBase, "Nakama.Base.Lifetime.ClientReleasedDeferredRPCCallback", NAKAMA_MODULE_TEST_MASK)
+inline bool ClientReleasedDeferredRPCCallback::RunTest(const FString& Parameters)
+{
+	UNakamaClient* LocalClient = NewObject<UNakamaClient>();
+	LocalClient->bIsActive = true;
+	TWeakObjectPtr<UNakamaClient> WeakThis(LocalClient);
+
+	int32 SuccessFired = 0;
+	int32 FailurePath = 0;
+
+	// The user's success callback. Touches a client member so a dangling deref
+	// would surface under ASan/GC-validation if the guard ever let it run.
+	auto UserSuccess = [WeakThis, &SuccessFired]()
+	{
+		(void)WeakThis.Get()->bIsActive;
+		++SuccessFired;
+	};
+
+	// The deferred HTTP completion, capturing WeakThis exactly like the shipped
+	// completion lambda. Only delivers the response while the client is alive.
+	auto DeliverResponse = [WeakThis, UserSuccess, &FailurePath]()
+	{
+		if (FNakamaUtils::IsClientActive(WeakThis.Get()))
+		{
+			UserSuccess();
+		}
+		else
+		{
+			++FailurePath; // client gone -> terminal failure, no user callback
+		}
+	};
+
+	// Positive control: response arrives while the client is alive.
+	DeliverResponse();
+	TestEqual(TEXT("success callback fires when the response beats release"), SuccessFired, 1);
+	TestEqual(TEXT("no failure path while alive"), FailurePath, 0);
+
+	// Now the slow-RPC scenario: free the caller before the response returns.
+	LocalClient = nullptr;
+	ReleaseAndCollect(WeakThis.Get());
+	TestFalse(TEXT("weak pointer is invalid after release"), WeakThis.IsValid());
+
+	// The response "returns" late, after the owning UObject was released.
+	DeliverResponse(); // must not dereference a dangling pointer
+
+	TestEqual(TEXT("success callback does not fire after release"), SuccessFired, 1);
+	TestEqual(TEXT("late response routes to the client-gone path"), FailurePath, 1);
+	return true;
+}
