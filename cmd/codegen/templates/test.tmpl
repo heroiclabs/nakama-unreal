@@ -1,0 +1,19 @@
+{{- range $enum := $.Enums }}
+
+enum {{ fullyQualifiedName $enum.Type "_" }}
+  {{- range $field := $enum.Fields }}
+  {{ $field.Name }}
+  {{- end }}
+
+{{- end }}
+
+{{- range $message := $.Messages }}
+
+struct {{ fullyQualifiedName $message.Type "_" }}
+  {{- range $member := $message.Fields }}
+  {{ fullyQualifiedName $member.Type "_" }}
+  {{ if $member.Repeated }}[]{{ end }} {{ $member.Name | pascalCase }}
+  {{- end }}
+
+{{- end }}
+

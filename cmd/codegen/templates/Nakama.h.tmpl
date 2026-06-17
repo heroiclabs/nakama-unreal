@@ -1,0 +1,123 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+{{ $prefix := "Nakama" }}
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NakamaOptionals.h"
+#include "NakamaError.h"
+#include "NakamaApiRequestModel.h"
+#include "NakamaSession.h"
+#include "Nakama.gen.generated.h"
+
+{{/*--------------- ENUMS ---------------------*/}}
+{{ range $enum := .Enums }}
+{{- $fullyQualifiedEnumName := join ($enum.Name | getFullyQualifiedPath) "_" }}
+
+/*
+* {{ $enum.Comment }}
+*/
+UENUM(BlueprintType)
+enum class E{{ $prefix }}{{ $fullyQualifiedEnumName }} : uint8
+{
+  {{ range $field := $enum.Fields }}
+  {{ $field.Name }} = {{ $field.Integer }}, // {{ $field.Comment.Message }}
+  {{- end }}
+};
+{{- end }}
+
+{{/*--------------- TYPES ---------------------*/}}
+{{ range $message := .Messages }}
+{{- if ne $message.Name "Session" }}
+
+{{- $fullyQualifiedMessageName := join ($message.Name | getFullyQualifiedPath) "_" }}
+
+/*
+* {{ $message.Comment }}
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API F{{ $prefix }}{{ $fullyQualifiedMessageName }}
+{
+  GENERATED_BODY() 
+
+  {{- range $member := $message.Fields }}
+  {{- $fullyQualifiedMemberType := join ($member.Type | getFullyQualifiedPath) "_" }}
+
+  // {{ $member.Comment.Message }}
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
+  {{- if $member.Repeated }} 
+  TArray<{{ toUnrealType $prefix $fullyQualifiedMemberType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{- else }}
+  {{ toUnrealType $prefix $fullyQualifiedMemberType }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $prefix $member.Type }};
+  {{- end }}
+  {{- end }}
+  {{- range $member := $message.MapFields }}
+  {{- $fullyQualifiedMemberType := join ($member.Type | getFullyQualifiedPath) "_" }}
+
+  // {{ $member.Comment.Message }}
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
+  TMap<FString, {{ toUnrealType $prefix $fullyQualifiedMemberType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  {{- end }}
+
+  // Creates a {{ $message.Name }} from the given FJsonObject.
+  static F{{ $prefix }}{{ $fullyQualifiedMessageName }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  
+  // Converts this {{ $message.Name }} to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+};
+{{- end }}
+{{- end }}
+
+{{/*--------------- RESPONSES (For Futures) ---------------------*/}}
+
+/** Tag type used as the value type for RPCs that return no data. */
+struct NAKAMA_API FNakamaVoid {};
+struct NAKAMA_API FNakamaVoidResult
+{
+  using ValueType = FNakamaVoid;
+  FNakamaVoid Value{};
+  FNakamaError Error;
+  bool bIsError = true;
+};
+
+{{ range $msg := .UniqueReturnTypes }}
+{{- $fullyQualifiedMessageName := join ($msg.Name | getFullyQualifiedPath) "_" }}
+struct NAKAMA_API F{{ $prefix }}{{ $fullyQualifiedMessageName }}Result
+{
+  using ValueType = F{{ $prefix }}{{ $fullyQualifiedMessageName }};
+  F{{ $prefix }}{{ $fullyQualifiedMessageName }} Value {};
+  FNakamaError Error;
+  bool bIsError = true;
+};
+{{- end }}
+
+{{/*--------------- REQUESTS ---------------------*/}}
+namespace NakamaInternal
+{
+{{- range $rpc := .Rpcs }}
+
+FNakamaApiRequestModel NAKAMA_API Build{{ $rpc.Name }}Request (
+  {{- if ne nil $rpc.RequestType }}
+  const F{{ $prefix }}{{ join ($rpc.RequestType.Name | getFullyQualifiedPath) "_" }}& Params
+  {{- end }}
+);
+{{- end }}
+}
+
