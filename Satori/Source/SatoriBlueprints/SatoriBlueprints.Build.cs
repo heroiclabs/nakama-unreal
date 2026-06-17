@@ -40,7 +40,7 @@ public class SatoriBlueprints : ModuleRules
 			new string[]
 			{
 				"Core",
-				"SatoriUnreal"
+				"SatoriApi"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
