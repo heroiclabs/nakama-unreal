@@ -27,14 +27,14 @@ type Api struct {
 	Package string
 
 	// Use slices to preserve order of proto messages
-	Enums    []*ProtoEnum
-	Messages []*ProtoMessage
-	Rpcs     []*ProtoRpc
+	Enums    []*Enum
+	Messages []*Message
+	Rpcs     []*Rpc
 
-	EnumsByName       map[string]*ProtoEnum
-	MessagesByName    map[string]*ProtoMessage
-	RpcsByName        map[string]*ProtoRpc
-	UniqueReturnTypes []*ProtoMessage
+	EnumsByName       map[string]*Enum
+	MessagesByName    map[string]*Message
+	RpcsByName        map[string]*Rpc
+	UniqueReturnTypes []*Message
 }
 
 func (api *Api) enumHandler(enum *proto.Enum) {
@@ -52,10 +52,12 @@ func (api *Api) enumHandler(enum *proto.Enum) {
 	}
 
 	visitor := &enumVisitor{
-		Enum: &ProtoEnum{
-			Name:    enum.Name,
-			Comment: strings.Trim(comment, " "),
-			Fields:  make([]*enumField, 0),
+		Enum: &Enum{
+			Type: Type{
+				Name:    enum.Name,
+				Comment: strings.Trim(comment, " "),
+			},
+			Fields: make([]*enumField, 0),
 		},
 	}
 	for _, each := range enum.Elements {
@@ -66,7 +68,7 @@ func (api *Api) enumHandler(enum *proto.Enum) {
 }
 
 func (api *Api) enumParentFiller(enum *proto.Enum) {
-	var parentMessage *ProtoMessage
+	var parentMessage *Message
 	if parent, ok := enum.Parent.(*proto.Message); ok {
 		parentMessage = api.MessagesByName[parent.Name]
 	}
@@ -75,10 +77,11 @@ func (api *Api) enumParentFiller(enum *proto.Enum) {
 	if !ok {
 		log.Fatalf("enum not found: %s\n", enum.Name)
 	}
-	apiEnum.Parent = parentMessage
+	apiEnum.Parent = &parentMessage.Type
 }
 
 func (api *Api) messageHandler(message *proto.Message) {
+	// TODO: Do we want these?
 	if strings.HasPrefix(message.Name, "google.") {
 		return
 	}
@@ -88,12 +91,12 @@ func (api *Api) messageHandler(message *proto.Message) {
 		comment = strings.Trim(message.Comment.Message(), " ")
 	}
 	visitor := &messageVisitor{
-		Message: &ProtoMessage{
-			Name:        message.Name,
-			Comment:     comment,
-			Fields:      make([]*proto.NormalField, 0),
-			MapFields:   make([]*proto.MapField, 0),
-			OneofFields: make([]*proto.OneOfField, 0),
+		Message: &Message{
+			Type: Type{
+				Name:    message.Name,
+				Comment: comment,
+			},
+			Fields: make([]Field, 0),
 		},
 	}
 
@@ -106,16 +109,15 @@ func (api *Api) messageHandler(message *proto.Message) {
 }
 
 func (api *Api) messageParentFiller(msg *proto.Message) {
-	var parentMessage *ProtoMessage
-	if parent, ok := msg.Parent.(*proto.Message); ok {
-		parentMessage = api.MessagesByName[parent.Name]
-	}
-
 	apiMsg, ok := api.MessagesByName[msg.Name]
 	if !ok {
 		log.Fatalf("message not found: %s\n", msg.Name)
 	}
-	apiMsg.Parent = parentMessage
+
+	if parent, ok := msg.Parent.(*proto.Message); ok {
+		parentMessage := api.MessagesByName[parent.Name]
+		apiMsg.Parent = &parentMessage.Type
+	}
 }
 
 func (api *Api) rpcHandler(rpc *proto.RPC) {
@@ -125,7 +127,7 @@ func (api *Api) rpcHandler(rpc *proto.RPC) {
 		comment = strings.TrimSpace(comment)
 	}
 
-	resolveType := func(fullTypeName string) *ProtoMessage {
+	resolveType := func(fullTypeName string) *Message {
 		if fullTypeName == "google.protobuf.Empty" {
 			return nil
 		} else {
@@ -142,7 +144,7 @@ func (api *Api) rpcHandler(rpc *proto.RPC) {
 	returnType := resolveType(rpc.ReturnsType)
 
 	visitor := &rpcVisitor{
-		Rpc: &ProtoRpc{
+		Rpc: &Rpc{
 			Name:        rpc.Name,
 			Comment:     comment,
 			RequestType: requestType,
@@ -195,13 +197,13 @@ func (api *Api) addFile(protoFile string) error {
 
 func LoadApi(protoFiles []string) (Api, error) {
 	api := Api{
-		Enums:    make([]*ProtoEnum, 0),
-		Messages: make([]*ProtoMessage, 0),
-		Rpcs:     make([]*ProtoRpc, 0),
+		Enums:    make([]*Enum, 0),
+		Messages: make([]*Message, 0),
+		Rpcs:     make([]*Rpc, 0),
 
-		EnumsByName:    make(map[string]*ProtoEnum, 0),
-		MessagesByName: make(map[string]*ProtoMessage, 0),
-		RpcsByName:     make(map[string]*ProtoRpc, 0),
+		EnumsByName:    make(map[string]*Enum, 0),
+		MessagesByName: make(map[string]*Message, 0),
+		RpcsByName:     make(map[string]*Rpc, 0),
 	}
 
 	// Load file by file...
@@ -212,7 +214,7 @@ func LoadApi(protoFiles []string) (Api, error) {
 	}
 
 	// Pull up messages that are more deeply embedded.
-	slices.SortFunc(api.Messages, func(a, b *ProtoMessage) int {
+	slices.SortFunc(api.Messages, func(a, b *Message) int {
 		aDepth := GetMessageDepth(a)
 		bDepth := GetMessageDepth(b)
 
@@ -237,7 +239,7 @@ func LoadApi(protoFiles []string) (Api, error) {
 	return api, nil
 }
 
-func GetMessageDepth(msg *ProtoMessage) int {
+func GetMessageDepth(msg *Message) int {
 	depth := 0
 	for current := msg.Parent; current != nil; current = current.Parent {
 		depth++

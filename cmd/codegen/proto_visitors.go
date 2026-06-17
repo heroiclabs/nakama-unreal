@@ -24,34 +24,38 @@ func TrimUntilLastDot(s string) string {
 	return s[strings.LastIndex(s, ".")+1:]
 }
 
-// --------------------
-// Enums
-type ProtoEnum struct {
+type Type struct {
 	Name    string
 	Comment string
-	Fields  []*enumField
+	Parent  *Type
+}
 
-	Parent *ProtoMessage
+// --------------------
+// Enums
+type Enum struct {
+	Type
+	Fields []*enumField
 }
 
 type enumField struct {
-	*proto.EnumField
-	Input  string
-	Output string
+	Name    string
+	Comment string
+	Integer int
+	Input   string
+	Output  string
 }
 
 type enumVisitor struct {
 	proto.NoopVisitor
-	Enum *ProtoEnum
+	Enum *Enum
 }
 
 func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
-	if ef.Comment == nil {
-		ef.Comment = &proto.Comment{
-			Position: scanner.Position{},
-			Lines:    []string{},
-		}
+	comment := ""
+	if ef.Comment != nil {
+		comment = ef.Comment.Message()
 	}
+
 	var input, output string
 	for _, each := range ef.Elements {
 		option, ok := each.(*proto.Option)
@@ -65,48 +69,70 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 	}
 
 	v.Enum.Fields = append(v.Enum.Fields, &enumField{
-		EnumField: ef,
-		Input:     input,
-		Output:    output,
+		Name:    ef.Name,
+		Comment: comment,
+		Integer: ef.Integer,
+		Input:   input,
+		Output:  output,
 	})
 }
 
 // --------------------
 // Messages
 
-type ProtoMessage struct {
+type Field struct {
+	Type    *Type
 	Name    string
 	Comment string
-	Parent  *ProtoMessage
 
-	Fields      []*proto.NormalField
-	MapFields   []*proto.MapField
-	OneofFields []*proto.OneOfField
+	IsMap      bool
+	IsRepeated bool
+}
+
+type Message struct {
+	Type
+	Fields []Field
 }
 
 type messageVisitor struct {
 	proto.NoopVisitor
-	Message *ProtoMessage
+	Message *Message
 }
 
 func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
-	if nf.Comment == nil {
-		nf.Comment = &proto.Comment{
-			Position: scanner.Position{},
-			Lines:    []string{},
-		}
+	comment := ""
+	if nf.Comment != nil {
+		comment = nf.Comment.Message()
 	}
-	v.Message.Fields = append(v.Message.Fields, nf)
+
+	// TODO: Resolve type
+	var t *Type
+
+	v.Message.Fields = append(v.Message.Fields, Field{
+		Type:       t,
+		Name:       nf.Name,
+		Comment:    comment,
+		IsMap:      false,
+		IsRepeated: nf.Repeated,
+	})
 }
 
 func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
-	if mf.Comment == nil {
-		mf.Comment = &proto.Comment{
-			Position: scanner.Position{},
-			Lines:    []string{},
-		}
+	comment := ""
+	if mf.Comment != nil {
+		comment = mf.Comment.Message()
 	}
-	v.Message.MapFields = append(v.Message.MapFields, mf)
+
+	// TODO: Resolve type
+	var t *Type
+
+	v.Message.Fields = append(v.Message.Fields, Field{
+		Type:       t,
+		Name:       mf.Name,
+		Comment:    comment,
+		IsMap:      true,
+		IsRepeated: false,
+	})
 }
 
 func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
@@ -124,17 +150,18 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 		}
 	}
 
-	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
+	// TODO
+	// v.Message.OneofFields = append(v.Message.OneofFields, oneof)
 }
 
 // --------------------
 // RPCs
 
-type ProtoRpc struct {
+type Rpc struct {
 	Name        string
 	Comment     string
-	RequestType *ProtoMessage
-	ReturnType  *ProtoMessage
+	RequestType *Message
+	ReturnType  *Message
 	Endpoint    string
 	Method      string
 	PathParams  []string
@@ -145,7 +172,7 @@ type ProtoRpc struct {
 
 type rpcVisitor struct {
 	proto.NoopVisitor
-	Rpc *ProtoRpc
+	Rpc *Rpc
 }
 
 func tryGetHttpMethod(str string) (string, bool) {
@@ -219,11 +246,6 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 	if v.Rpc.BodyField == "*" {
 		if v.Rpc.RequestType != nil {
 			for _, f := range v.Rpc.RequestType.Fields {
-				if !slices.Contains(v.Rpc.PathParams, f.Name) {
-					v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
-				}
-			}
-			for _, f := range v.Rpc.RequestType.MapFields {
 				if !slices.Contains(v.Rpc.PathParams, f.Name) {
 					v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
 				}

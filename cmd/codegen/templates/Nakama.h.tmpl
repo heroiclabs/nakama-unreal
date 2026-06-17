@@ -29,11 +29,13 @@
 
 {{/*--------------- ENUMS ---------------------*/}}
 {{ range $enum := .Enums }}
+{{- $fullyQualifiedEnumName := join ($enum.Name | getFullyQualifiedPath) "_" }}
+
 /*
 * {{ $enum.Comment }}
 */
 UENUM(BlueprintType)
-enum class E{{ $prefix }}{{ $enum.Name }} : uint8
+enum class E{{ $prefix }}{{ $fullyQualifiedEnumName }} : uint8
 {
   {{ range $field := $enum.Fields }}
   {{ $field.Name }} = {{ $field.Integer }}, // {{ $field.Comment.Message }}
@@ -45,33 +47,37 @@ enum class E{{ $prefix }}{{ $enum.Name }} : uint8
 {{ range $message := .Messages }}
 {{- if ne $message.Name "Session" }}
 
+{{- $fullyQualifiedMessageName := join ($message.Name | getFullyQualifiedPath) "_" }}
+
 /*
 * {{ $message.Comment }}
 */
 USTRUCT(BlueprintType)
-struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
+struct NAKAMA_API F{{ $prefix }}{{ $fullyQualifiedMessageName }}
 {
   GENERATED_BODY() 
 
   {{- range $member := $message.Fields }}
+  {{- $fullyQualifiedMemberType := join ($member.Type | getFullyQualifiedPath) "_" }}
 
   // {{ $member.Comment.Message }}
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   {{- if $member.Repeated }} 
-  TArray<{{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  TArray<{{ toUnrealType $prefix $fullyQualifiedMemberType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- else }}
-  {{ toUnrealType $prefix $member.Type }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $prefix $member.Type }};
+  {{ toUnrealType $prefix $fullyQualifiedMemberType }} {{ $member.Name | pascalCase | normalizeIdentifier }}{{ toUnrealDefaultValue $prefix $member.Type }};
   {{- end }}
   {{- end }}
   {{- range $member := $message.MapFields }}
+  {{- $fullyQualifiedMemberType := join ($member.Type | getFullyQualifiedPath) "_" }}
 
   // {{ $member.Comment.Message }}
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
-  TMap<FString, {{ toUnrealType $prefix $member.Type }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
+  TMap<FString, {{ toUnrealType $prefix $fullyQualifiedMemberType }}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- end }}
 
   // Creates a {{ $message.Name }} from the given FJsonObject.
-  static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+  static F{{ $prefix }}{{ $fullyQualifiedMessageName }} FromJson(const TSharedPtr<FJsonObject>& Json);
   
   // Converts this {{ $message.Name }} to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
@@ -85,17 +91,18 @@ struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
 struct NAKAMA_API FNakamaVoid {};
 struct NAKAMA_API FNakamaVoidResult
 {
-	using ValueType = FNakamaVoid;
-	FNakamaVoid Value{};
-	FNakamaError Error;
-	bool bIsError = true;
+  using ValueType = FNakamaVoid;
+  FNakamaVoid Value{};
+  FNakamaError Error;
+  bool bIsError = true;
 };
 
 {{ range $msg := .UniqueReturnTypes }}
-struct NAKAMA_API F{{ $prefix }}{{ $msg.Name }}Result
+{{- $fullyQualifiedMessageName := join ($msg.Name | getFullyQualifiedPath) "_" }}
+struct NAKAMA_API F{{ $prefix }}{{ $fullyQualifiedMessageName }}Result
 {
-  using ValueType = F{{ $prefix }}{{ $msg.Name }};
-  F{{ $prefix }}{{ $msg.Name }} Value {};
+  using ValueType = F{{ $prefix }}{{ $fullyQualifiedMessageName }};
+  F{{ $prefix }}{{ $fullyQualifiedMessageName }} Value {};
   FNakamaError Error;
   bool bIsError = true;
 };
@@ -108,7 +115,7 @@ namespace NakamaInternal
 
 FNakamaApiRequestModel NAKAMA_API Build{{ $rpc.Name }}Request (
   {{- if ne nil $rpc.RequestType }}
-  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
+  const F{{ $prefix }}{{ join ($rpc.RequestType.Name | getFullyQualifiedPath) "_" }}& Params
   {{- end }}
 );
 {{- end }}

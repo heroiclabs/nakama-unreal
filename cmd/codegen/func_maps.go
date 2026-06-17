@@ -36,7 +36,7 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			_, ok := api.MessagesByName[key]
 			return ok
 		},
-		"getMessage": func(key string) *ProtoMessage {
+		"getMessage": func(key string) *Message {
 			result, _ := api.MessagesByName[key]
 			return result
 		},
@@ -63,10 +63,34 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			}
 			return false
 		},
+		"fullyQualifiedName": func(t *Type, separator string) string {
+			var parent *Type
+			msg, isMsg := api.MessagesByName[t.Name]
+			if isMsg {
+				parent = msg.Parent
+			}
+			enum, isEnum := api.EnumsByName[t.Name]
+			if isEnum {
+				parent = enum.Parent
+			}
+
+			if !isMsg && !isEnum {
+				return t.Name
+			}
+
+			path := make([]string, 0)
+			path = append(path, t.Name)
+			for current := parent; current != nil; current = current.Parent {
+				currentMsg := api.MessagesByName[current.Name]
+				path = append([]string{currentMsg.Name}, path...)
+			}
+
+			return strings.Join(path, separator)
+		},
 		"getFullyQualifiedPath": func(name string) []string {
 			path := make([]string, 0)
 			path = append(path, name)
-			var parent *ProtoMessage
+			var parent *Type
 			msg, isMsg := api.MessagesByName[name]
 			if isMsg {
 				parent = msg.Parent
@@ -138,7 +162,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			switch s {
 			case "bool":
 				return " = false"
-			case "int32", "sint32", "sfixed32", "uint32", "fixed32":
+			case "int", "int32", "sint32", "sfixed32", "uint32", "fixed32":
 				return " = 0"
 			case "int64", "sint64", "sfixed64", "uint64", "fixed64":
 				return " = 0"
@@ -146,8 +170,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				return " = 0.f"
 			case "double":
 				return " = 0.0"
-			case "BoolValue", "Int32Value", "UInt32Value", "Int64Value", "UInt64Value", "FloatValue", "DoubleValue":
-				return " = {}"
+			case "BoolValue", "Int32Value", "UInt32Value", "Int64Value", "UInt64Value", "FloatValue", "DoubleValue",
+				"FNakamaOptionalBool", "FNakamaOptionalInt32", "FNakamaOptionalInt64", "FNakamaOptionalFloat", "FNakamaOptionalDouble":
+				return " = { }"
 			case "Timestamp":
 				return " = FDateTime(0)"
 			}
@@ -166,7 +191,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				return "FString"
 			case "bool":
 				return "bool"
-			case "int32", "sint32", "sfixed32":
+			case "int", "int32", "sint32", "sfixed32":
 				return "int32"
 			case "int64", "sint64", "sfixed64":
 				return "int64"
