@@ -1,0 +1,282 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+{{ $prefix := "Nakama" }}
+
+#include "Nakama.gen.h"
+#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+
+{{/*---------------- MESSAGES ------------------*/}}
+{{ range $message := .Messages }}
+{{- if ne $message.Name "Session" }}
+
+F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  F{{ $prefix }}{{ $message.Name }} Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  {{- range $field := $message.Fields }}
+  {{- $var := $field.Name | pascalCase | normalizeIdentifier }}
+  if (Json->HasField(TEXT("{{ $field.Name }}")))
+  {
+    {{- if $field.Repeated }}
+    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+    if (Json->TryGetArrayField(TEXT("{{ $field.Name }}"), ArrayPtr))
+    {
+      for (const auto& Item : *ArrayPtr)
+      {
+        {{- if containsMessage $field.Type }}
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.{{ $var }}.Add(F{{ $prefix }}{{ $field.Type }}::FromJson(*ItemObj));
+        }
+        {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+        Result.{{ $var }}.Add(Item->AsString());
+        {{- else if eq $field.Type "bool" }}
+        Result.{{ $var }}.Add(Item->AsBool());
+        {{- else if isEnumType $field.Type }}
+        Result.{{ $var }}.Add(static_cast<E{{ $prefix }}{{ $field.Type }}>(static_cast<int32>(Item->AsNumber())));
+        {{- else }}
+        Result.{{ $var }}.Add(Item->AsNumber());
+        {{- end }}
+      }
+    }
+    {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+    Result.{{ $var }} = Json->GetStringField(TEXT("{{ $field.Name }}"));
+    {{- else if eq $field.Type "bool" "BoolValue" }}
+    Result.{{ $var }} = Json->GetBoolField(TEXT("{{ $field.Name }}"));
+    {{- else if eq $field.Type "Timestamp" }}
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("{{ $field.Name }}")), Result.{{ $var }});
+    {{- else if isEnumType $field.Type }}
+    Result.{{ $var }} = static_cast<E{{ $prefix }}{{ $field.Type }}>(Json->GetNumberField(TEXT("{{ $field.Name }}")));
+    {{- else if containsMessage $field.Type }}
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("{{ $field.Name }}"), NestedObj))
+    {
+      Result.{{ $var }} = F{{ $prefix }}{{ $field.Type }}::FromJson(*NestedObj);
+    }
+    {{- else }}
+    Result.{{ $var }} = Json->GetNumberField(TEXT("{{ $field.Name }}"));
+    {{- end }}
+  }
+  {{- end }}
+  {{- range $member := $message.MapFields }}
+  {{- $var := $member.Name | pascalCase | normalizeIdentifier }}
+  if (Json->HasField(TEXT("{{ $member.Name }}")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("{{ $member.Name }}"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        {{- if eq $member.Type "string" "bytes" "StringValue" "BytesValue" }}
+        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsString());
+        {{- else if eq $member.Type "bool" }}
+        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsBool());
+        {{- else if containsMessage $member.Type }}
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Pair.Value->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.{{ $var }}.Add(Pair.Key, F{{ $prefix }}{{ $member.Type }}::FromJson(*ItemObj));
+        }
+        {{- else }}
+        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsNumber());
+        {{- end }}
+      }
+    }
+  }
+  {{- end }}
+  return Result;
+}
+
+TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  {{- range $field := $message.Fields }}
+  {{- $var := $field.Name | pascalCase | normalizeIdentifier }}
+  {{- if $field.Repeated }}
+  if ({{ $var }}.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : {{ $var }})
+    {
+      {{- if containsMessage $field.Type }}
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+      {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+      Array.Add(MakeShared<FJsonValueString>(Item));
+      {{- else if eq $field.Type "bool" }}
+      Array.Add(MakeShared<FJsonValueBoolean>(Item));
+      {{- else if isEnumType $field.Type }}
+      Array.Add(MakeShared<FJsonValueNumber>(static_cast<int32>(Item)));
+      {{- else }}
+      Array.Add(MakeShared<FJsonValueNumber>(Item));
+      {{- end }}
+    }
+    Json->SetArrayField(TEXT("{{ $field.Name }}"), Array);
+  }
+  {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+  if ({{ $var }}.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("{{ $field.Name }}"), {{ $var }});
+  }
+  {{- else if eq $field.Type "BoolValue" }}
+  if ({{ $var }}.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("{{ $field.Name }}"), {{ $var }}.GetValue());
+  }
+  {{- else if eq $field.Type "Int32Value" "UInt32Value" "Int64Value" "UInt64Value" "FloatValue" "DoubleValue" }}
+  if ({{ $var }}.IsEmpty() == false)
+  {
+    Json->SetNumberField(TEXT("{{ $field.Name }}"), {{ $var }}.GetValue());
+  }
+  {{- else if eq $field.Type "bool" }}
+  Json->SetBoolField(TEXT("{{ $field.Name }}"), {{ $var }});
+  {{- else if eq $field.Type "Timestamp" }}
+  Json->SetStringField(TEXT("{{ $field.Name }}"), {{ $var }}.ToIso8601());
+  {{- else if isEnumType $field.Type }}
+  Json->SetNumberField(TEXT("{{ $field.Name }}"), static_cast<int32>({{ $var }}));
+  {{- else if containsMessage $field.Type }}
+  Json->SetObjectField(TEXT("{{ $field.Name }}"), {{ $var }}.ToJson());
+  {{- else }}
+  Json->SetNumberField(TEXT("{{ $field.Name }}"), {{ $var }});
+  {{- end }}
+  {{- end }}
+  {{- range $member := $message.MapFields }}
+  {{- $var := $member.Name | pascalCase | normalizeIdentifier }}
+  if ({{ $var }}.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : {{ $var }})
+    {
+      {{- if eq $member.Type "string" "bytes" "StringValue" "BytesValue" }}
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+      {{- else if eq $member.Type "bool" }}
+      MapObj->SetBoolField(Pair.Key, Pair.Value);
+      {{- else if containsMessage $member.Type }}
+      MapObj->SetObjectField(Pair.Key, Pair.Value.ToJson());
+      {{- else }}
+      MapObj->SetNumberField(Pair.Key, Pair.Value);
+      {{- end }}
+    }
+    Json->SetObjectField(TEXT("{{ $member.Name }}"), MapObj);
+  }
+  {{- end }}
+  return Json;
+}
+{{- end }}
+{{- end }}
+
+{{/*---------------- RPCs ------------------*/}}
+{{- range $rpc := .Rpcs }}
+
+FNakamaApiRequestModel NakamaInternal::Build{{ $rpc.Name }}Request (
+  {{- if ne nil $rpc.RequestType }}
+  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
+  {{- end }}
+)
+{
+  FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("{{ $rpc.Endpoint }}");
+  {{- range $param := $rpc.PathParams }}
+  Url = Url.Replace(TEXT("{{"{"}}{{ $param }}{{"}"}}"), *FGenericPlatformHttp::UrlEncode(Params.{{ $param | pascalCase | normalizeIdentifier }}));
+  {{- end }}
+  {{- if gt (len $rpc.QueryParams) 0 }}
+
+  //
+  // Query params
+  TArray<TPair<FString, FString>> QueryParams;
+  {{- range $field := $rpc.RequestType.Fields }}
+  {{- if containsInSlice $rpc.QueryParams $field.Name }}
+  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
+  {{- if $field.Repeated }}
+  for (const FString& Item : {{ $accessor }})
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), Item});
+  }
+  {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), {{ $accessor }}});
+  }
+  {{- else if eq $field.Type "BoolValue" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), LexToString({{ $accessor }}.GetValue())});
+  }
+  {{- else if eq $field.Type "Int32Value" "UInt32Value" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%d"), {{ $accessor }}.GetValue())});
+  }
+  {{- else if eq $field.Type "Int64Value" "UInt64Value" }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%lld"), {{ $accessor }}.GetValue())});
+  }
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  Url += NakamaHttpInternal::BuildQueryString(QueryParams);
+  {{- end }}
+  Request.Url = Url;
+
+  //
+  // Verb
+  Request.Verb = TEXT("{{ $rpc.Method }}");
+  {{- if eq $rpc.BodyField "*" }}
+
+  //
+  // Body (whole message, minus path params)
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  {{- range $param := $rpc.PathParams }}
+  if (BodyJson.IsValid())
+  {
+    BodyJson->RemoveField(TEXT("{{ $param }}"));
+  }
+  {{- end }}
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+  {{- else if ne $rpc.BodyField "" }}
+  {{- range $field := $rpc.RequestType.Fields }}
+  {{- if eq $field.Name $rpc.BodyField }}
+  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
+
+  //
+  // Body (the "{{ $field.Name }}" field)
+  {{- if containsMessage $field.Type }}
+  Request.Body = NakamaHttpInternal::SerializeJsonToString({{ $accessor }}.ToJson());
+  {{- else }}
+  if ({{ $accessor }}.IsEmpty() == false)
+  {
+    const FString Escaped = {{ $accessor }}.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    Request.Body = TEXT("\"") + Escaped + TEXT("\"");
+  }
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+
+  return Request;
+}
+{{- end }}
