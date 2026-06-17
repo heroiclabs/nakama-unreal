@@ -3,20 +3,26 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-### [2.11.3] - 2026-06-17
-### Added
-- HTTP clients now pre-emptively refresh an expiring session token before each authenticated request, controlled by `bAutoRefreshSession` (default `true`) on `UNakamaClient` and `USatoriClient`. Refresh fires when the token expires within 5 minutes and a refresh token is present; the caller's session is updated in place. `USatoriSession` now parses token expiry. Session logout is intentionally excluded.
-- `UNakamaClient` and `USatoriClient` now automatically retry transient HTTP failures (status 500/502/503/504) with exponential backoff and decorrelated jitter. Configurable via `bEnableRetries` (default `true`), `RetryBaseDelayMs` (default `500`), and `RetryMaxAttempts` (default `4`). All HTTP requests route through a single retry path; connection failures, timeouts, and non-5xx errors are not retried.
-- `CancelAllRequests` on `USatoriClient`, mirroring `UNakamaClient` for parity.
+### [3.0.0] - 2026-05-11
+### Added 
+- Async Future-based API.
+- Missing Server-to-server methods.
+- Auto-generation from Nakama/Satori schema.
+- Extensive Integration Test suite.
 
 ### Changed
-- Session-based `RPC` now returns `true` once the request is accepted, since the send may be deferred behind an automatic token refresh. The HTTP-key `RPC` overload still returns the synchronous send result.
-- Request completion is now modelled by an explicit outcome enum (`ENakamaRequestOutcome` / `ESatoriRequestOutcome`): a request cancelled or completing after its owning client was released is treated as `Cancelled`.
+- Function signatures (please refer to documentation).
+- Component lifetimes are less coupled to Unreal Engine Garbage Collector.
 
 ### Fixed
-- Manual callback paths no longer silently drop `OnSuccess`/`OnError`; each request delivers exactly one terminal callback.
-- Realtime client `OnMessage` handler captures a weak reference, avoiding use of a released client.
-- `ParseJwtPayload` now checks the return value of `FBase64::Decode` instead of ignoring it.
+- Improved consistency across the SDK.
+- Revamped real-time websocket code.
+
+This is a major release with a larger list of changes.
+For more information on the current version and the differences to previous versions, 
+please refer to [documentation](https://heroiclabs.com/docs/nakama/client-libraries/unreal/index.html) 
+and the [migration guide](https://heroiclabs.com/docs/nakama/client-libraries/unreal/migration-guide).
+
 
 ### [2.11.2] - 2026-04-27
 ### Added
