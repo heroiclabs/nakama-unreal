@@ -17,16 +17,13 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 {{ $prefix := .Prefix }}
-{{ $api := .Prefix | upperCase }}
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "{{ $prefix }}Optionals.h"
-#include "{{ $prefix }}Error.h"
-#include "{{ $prefix }}ApiRequestModel.h"
-#include "{{ $prefix }}Session.h"
-#include "{{ $prefix }}.gen.generated.h"
+#include "NakamaOptionals.h"
+#include "Nakama.gen.h"
+#include "NakamaRealtime.gen.generated.h"
 
 {{/*--------------- ENUMS ---------------------*/}}
 {{ range $enum := .Enums }}
@@ -44,20 +41,19 @@ enum class E{{ $prefix }}{{ join (getFullyQualifiedPath $enum.Name) "" }} : uint
 
 {{/*--------------- TYPES ---------------------*/}}
 {{ range $message := .Messages }}
-{{- if ne $message.Name "Session" }}
 
 /*
 * {{ $message.Comment }}
 */
 USTRUCT(BlueprintType)
-struct {{ $api }}_API F{{ $prefix }}{{ $message.Name }}
+struct NAKAMA_API F{{ $prefix }}{{ $message.Name }}
 {
-  GENERATED_BODY() 
+  GENERATED_BODY()
 
   {{- range $member := $message.Fields }}
 
   // {{ $member.Comment.Message }}
-  UPROPERTY(BlueprintReadWrite, Category = "{{ $prefix }}", meta = (JsonName = "{{ $member.Name }}"))
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   {{- if $member.Repeated }}
   TArray<{{template "unrealType" (dict "Prefix" $prefix "Type" $member.Type)}}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- else }}
@@ -67,51 +63,14 @@ struct {{ $api }}_API F{{ $prefix }}{{ $message.Name }}
   {{- range $member := $message.MapFields }}
 
   // {{ $member.Comment.Message }}
-  UPROPERTY(BlueprintReadWrite, Category = "{{ $prefix }}", meta = (JsonName = "{{ $member.Name }}"))
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "{{ $member.Name }}"))
   TMap<FString, {{template "unrealType" (dict "Prefix" $prefix "Type" $member.Type)}}> {{ $member.Name | pascalCase | normalizeIdentifier }};
   {{- end }}
 
   // Creates a {{ $message.Name }} from the given FJsonObject.
   static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
-  
+
   // Converts this {{ $message.Name }} to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };
 {{- end }}
-{{- end }}
-
-{{/*--------------- RESPONSES (For Futures) ---------------------*/}}
-
-/** Tag type used as the value type for RPCs that return no data. */
-struct {{ $api }}_API F{{ $prefix }}Void {};
-struct {{ $api }}_API F{{ $prefix }}VoidResult
-{
-	using ValueType = F{{ $prefix }}Void;
-	F{{ $prefix }}Void Value{};
-	F{{ $prefix }}Error Error;
-	bool bIsError = true;
-};
-
-{{ range $msg := .UniqueReturnTypes }}
-struct {{ $api }}_API F{{ $prefix }}{{ $msg.Name }}Result
-{
-  using ValueType = F{{ $prefix }}{{ $msg.Name }};
-  F{{ $prefix }}{{ $msg.Name }} Value {};
-  F{{ $prefix }}Error Error;
-  bool bIsError = true;
-};
-{{- end }}
-
-{{/*--------------- REQUESTS ---------------------*/}}
-namespace {{ $prefix }}Internal
-{
-{{- range $rpc := .Rpcs }}
-
-F{{ $prefix }}ApiRequestModel {{ $api }}_API Build{{ $rpc.Name }}Request (
-  {{- if ne nil $rpc.RequestType }}
-  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
-  {{- end }}
-);
-{{- end }}
-}
-

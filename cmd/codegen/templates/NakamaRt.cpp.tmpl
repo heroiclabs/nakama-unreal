@@ -17,15 +17,11 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 {{ $prefix := .Prefix }}
-{{ $api := .Prefix | upperCase }}
 
-#include "{{ $prefix }}.gen.h"
-#include "{{ $prefix }}HttpHelper.h"
-#include "GenericPlatform/GenericPlatformHttp.h"
+#include "NakamaRealtime.gen.h"
 
 {{/*---------------- MESSAGES ------------------*/}}
 {{ range $message := .Messages }}
-{{- if ne $message.Name "Session" }}
 
 F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
@@ -49,6 +45,12 @@ F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(co
         if (Item->TryGetObject(ItemObj) && ItemObj)
         {
           Result.{{ $var }}.Add(F{{ $prefix }}{{ $field.Type }}::FromJson(*ItemObj));
+        }
+        {{- else if containsString $field.Type "." }}
+        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+        if (Item->TryGetObject(ItemObj) && ItemObj)
+        {
+          Result.{{ $var }}.Add(FNakama{{ $field.Type | stripTilDot }}::FromJson(*ItemObj));
         }
         {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
         Result.{{ $var }}.Add(Item->AsString());
@@ -120,7 +122,7 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : {{ $var }})
     {
-      {{- if containsMessage $field.Type }}
+      {{- if or (containsMessage $field.Type) (containsString $field.Type ".") }}
       Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
       {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
       Array.Add(MakeShared<FJsonValueString>(Item));
@@ -155,7 +157,7 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
   Json->SetStringField(TEXT("{{ $field.Name }}"), {{ $var }}.ToIso8601());
   {{- else if isEnumType $field.Type }}
   Json->SetNumberField(TEXT("{{ $field.Name }}"), static_cast<int32>({{ $var }}));
-  {{- else if containsMessage $field.Type }}
+  {{- else if or (containsMessage $field.Type) (containsString $field.Type ".") }}
   Json->SetObjectField(TEXT("{{ $field.Name }}"), {{ $var }}.ToJson());
   {{- else }}
   Json->SetNumberField(TEXT("{{ $field.Name }}"), {{ $var }});
@@ -182,102 +184,5 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
   }
   {{- end }}
   return Json;
-}
-{{- end }}
-{{- end }}
-
-{{/*---------------- RPCs ------------------*/}}
-{{- range $rpc := .Rpcs }}
-
-F{{ $prefix }}ApiRequestModel {{ $prefix }}Internal::Build{{ $rpc.Name }}Request (
-  {{- if ne nil $rpc.RequestType }}
-  const F{{ $prefix }}{{ $rpc.RequestType.Name }}& Params
-  {{- end }}
-)
-{
-  F{{ $prefix }}ApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("{{ $rpc.Endpoint }}");
-  {{- range $param := $rpc.PathParams }}
-  Url = Url.Replace(TEXT("{{"{"}}{{ $param }}{{"}"}}"), *FGenericPlatformHttp::UrlEncode(Params.{{ $param | pascalCase | normalizeIdentifier }}));
-  {{- end }}
-  {{- if gt (len $rpc.QueryParams) 0 }}
-
-  //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  {{- range $field := $rpc.RequestType.Fields }}
-  {{- if containsInSlice $rpc.QueryParams $field.Name }}
-  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
-  {{- if $field.Repeated }}
-  for (const FString& Item : {{ $accessor }})
-  {
-    QueryParams.Add({TEXT("{{ $field.Name }}"), Item});
-  }
-  {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
-  if ({{ $accessor }}.IsEmpty() == false)
-  {
-    QueryParams.Add({TEXT("{{ $field.Name }}"), {{ $accessor }}});
-  }
-  {{- else if eq $field.Type "BoolValue" }}
-  if ({{ $accessor }}.IsEmpty() == false)
-  {
-    QueryParams.Add({TEXT("{{ $field.Name }}"), LexToString({{ $accessor }}.GetValue())});
-  }
-  {{- else if eq $field.Type "Int32Value" "UInt32Value" }}
-  if ({{ $accessor }}.IsEmpty() == false)
-  {
-    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%d"), {{ $accessor }}.GetValue())});
-  }
-  {{- else if eq $field.Type "Int64Value" "UInt64Value" }}
-  if ({{ $accessor }}.IsEmpty() == false)
-  {
-    QueryParams.Add({TEXT("{{ $field.Name }}"), FString::Printf(TEXT("%lld"), {{ $accessor }}.GetValue())});
-  }
-  {{- end }}
-  {{- end }}
-  {{- end }}
-  Url += {{ $prefix }}HttpInternal::BuildQueryString(QueryParams);
-  {{- end }}
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("{{ $rpc.Method }}");
-  {{- if eq $rpc.BodyField "*" }}
-
-  //
-  // Body (whole message, minus path params)
-  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  {{- range $param := $rpc.PathParams }}
-  if (BodyJson.IsValid())
-  {
-    BodyJson->RemoveField(TEXT("{{ $param }}"));
-  }
-  {{- end }}
-  Request.Body = {{ $prefix }}HttpInternal::SerializeJsonToString(BodyJson);
-  {{- else if ne $rpc.BodyField "" }}
-  {{- range $field := $rpc.RequestType.Fields }}
-  {{- if eq $field.Name $rpc.BodyField }}
-  {{- $accessor := printf "Params.%s" ($field.Name | pascalCase | normalizeIdentifier) }}
-
-  //
-  // Body (the "{{ $field.Name }}" field)
-  {{- if containsMessage $field.Type }}
-  Request.Body = {{ $prefix }}HttpInternal::SerializeJsonToString({{ $accessor }}.ToJson());
-  {{- else }}
-  if ({{ $accessor }}.IsEmpty() == false)
-  {
-    const FString Escaped = {{ $accessor }}.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
-    Request.Body = TEXT("\"") + Escaped + TEXT("\"");
-  }
-  {{- end }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-
-  return Request;
 }
 {{- end }}

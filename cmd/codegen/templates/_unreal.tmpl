@@ -1,0 +1,47 @@
+{{- define "unrealType" -}}
+{{- $p := .Prefix -}}
+{{- $t := .Type -}}
+{{- if eq $t "string"}}FString
+{{- else if eq $t "bool"}}bool
+{{- else if eq $t "int32" "sint32" "sfixed32"}}int32
+{{- else if eq $t "int64" "sint64" "sfixed64"}}int64
+{{- else if eq $t "uint32" "fixed32"}}int32
+{{- else if eq $t "uint64" "fixed64"}}int64
+{{- else if eq $t "float"}}float
+{{- else if eq $t "double"}}double
+{{- else if eq $t "bytes" "StringValue" "BytesValue"}}FString
+{{- else if eq $t "Timestamp"}}FDateTime
+{{- else if eq $t "BoolValue"}}F{{$p}}OptionalBool
+{{- else if eq $t "Int32Value" "UInt32Value"}}F{{$p}}OptionalInt32
+{{- else if eq $t "Int64Value" "UInt64Value"}}F{{$p}}OptionalInt64
+{{- else if eq $t "FloatValue"}}F{{$p}}OptionalFloat
+{{- else if eq $t "DoubleValue"}}F{{$p}}OptionalDouble
+{{- else if isEnumType $t}}E{{$p}}{{join (getFullyQualifiedPath $t) ""}}
+{{- else if containsMessage $t}}F{{$p}}{{$t}}
+{{- else if containsString $t "."}}
+  {{- $base := $t | stripTilDot -}}
+  {{- if containsMessage $base}}FNakama{{$base}}
+  {{- else if isEnumType $base}}ENakama{{$base}}
+  {{- else}}UNRESOLVED_PROTO_TYPE_{{$t}}
+  {{- end -}}
+{{- else}}UNRESOLVED_PROTO_TYPE_{{$t}}
+{{- end -}}
+{{- end}}
+
+{{- define "unrealDefaultValue" -}}
+{{- $p := .Prefix -}}
+{{- $t := .Type -}}
+{{- if eq $t "bool"}} = false
+{{- else if eq $t "int32" "sint32" "sfixed32" "uint32" "fixed32"}} = 0
+{{- else if eq $t "int64" "sint64" "sfixed64" "uint64" "fixed64"}} = 0
+{{- else if eq $t "float"}} = 0.f
+{{- else if eq $t "double"}} = 0.0
+{{- else if eq $t "BoolValue" "Int32Value" "UInt32Value" "Int64Value" "UInt64Value" "FloatValue" "DoubleValue"}} = {}
+{{- else if eq $t "Timestamp"}} = FDateTime(0)
+{{- else if isEnumType $t -}}
+  {{- $enum := getEnum $t -}}
+  {{- range $f := $enum.Fields -}}
+    {{- if eq $f.Integer 0}} = E{{$p}}{{join (getFullyQualifiedPath $t) ""}}::{{$f.Name}}{{end -}}
+  {{- end -}}
+{{- end -}}
+{{- end}}

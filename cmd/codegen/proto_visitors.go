@@ -27,9 +27,11 @@ func TrimUntilLastDot(s string) string {
 // --------------------
 // Enums
 type ProtoEnum struct {
-	Name    string
-	Comment string
-	Fields  []*enumField
+	Name          string
+	QualifiedName string
+	Comment       string
+	Package       string
+	Fields        []*enumField
 
 	Parent *ProtoMessage
 }
@@ -75,9 +77,11 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 // Messages
 
 type ProtoMessage struct {
-	Name    string
-	Comment string
-	Parent  *ProtoMessage
+	Name          string
+	QualifiedName string
+	Comment       string
+	Package       string
+	Parent        *ProtoMessage
 
 	Fields      []*proto.NormalField
 	MapFields   []*proto.MapField
@@ -90,6 +94,9 @@ type messageVisitor struct {
 }
 
 func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
+	if strings.HasPrefix(nf.Type, "google.protobuf.") {
+		nf.Type = TrimUntilLastDot(nf.Type)
+	}
 	if nf.Comment == nil {
 		nf.Comment = &proto.Comment{
 			Position: scanner.Position{},
@@ -100,6 +107,9 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 }
 
 func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
+	if strings.HasPrefix(mf.Type, "google.protobuf.") {
+		mf.Type = TrimUntilLastDot(mf.Type)
+	}
 	if mf.Comment == nil {
 		mf.Comment = &proto.Comment{
 			Position: scanner.Position{},
@@ -133,6 +143,7 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 type ProtoRpc struct {
 	Name        string
 	Comment     string
+	Package     string
 	RequestType *ProtoMessage
 	ReturnType  *ProtoMessage
 	Endpoint    string

@@ -40,8 +40,15 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			result, _ := api.MessagesByName[key]
 			return result
 		},
-		"minus": func(a, b int) int {
-			return a - b
+		"getEnum": func(key string) *ProtoEnum {
+			return api.EnumsByName[key]
+		},
+		"dict": func(pairs ...any) map[string]any {
+			m := make(map[string]any, len(pairs)/2)
+			for i := 0; i+1 < len(pairs); i += 2 {
+				m[pairs[i].(string)] = pairs[i+1]
+			}
+			return m
 		},
 		"lowerCase": func(s string) string {
 			return strings.ToLower(s[:1]) + s[1:]
@@ -118,99 +125,21 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 
 			return strings.TrimSpace(out.String())
 		},
-	}
-
-	return fnMap
-}
-
-func getUnrealFuncMap(api Api) template.FuncMap {
-	fnMap := template.FuncMap{
 		"normalizeIdentifier": func(s string) string {
-			if _, isUeReserved := ueParamKeywords[s]; isUeReserved {
-				return s + "_"
-			}
-			if _, isCppReserved := cppKeywords[s]; isCppReserved {
+			if _, isReserved := keywords[s]; isReserved {
 				return s + "_"
 			}
 			return s
 		},
-		"toUnrealDefaultValue": func(prefix, s string) string {
-			switch s {
-			case "bool":
-				return " = false"
-			case "int32", "sint32", "sfixed32", "uint32", "fixed32":
-				return " = 0"
-			case "int64", "sint64", "sfixed64", "uint64", "fixed64":
-				return " = 0"
-			case "float":
-				return " = 0.f"
-			case "double":
-				return " = 0.0"
-			case "BoolValue", "Int32Value", "UInt32Value", "Int64Value", "UInt64Value", "FloatValue", "DoubleValue":
-				return " = {}"
-			case "Timestamp":
-				return " = FDateTime(0)"
-			}
-			if enum, ok := api.EnumsByName[s]; ok {
-				for _, f := range enum.Fields {
-					if f.Integer == 0 {
-						return " = E" + prefix + s + "::" + f.Name
-					}
-				}
-			}
-			return ""
-		},
-		"toUnrealType": func(prefix, s string) string {
-			switch s {
-			case "string":
-				return "FString"
-			case "bool":
-				return "bool"
-			case "int32", "sint32", "sfixed32":
-				return "int32"
-			case "int64", "sint64", "sfixed64":
-				return "int64"
-			case "uint32", "fixed32":
-				return "int32"
-			case "uint64", "fixed64":
-				return "int64"
-			case "float":
-				return "float"
-			case "double":
-				return "double"
-			case "bytes", "StringValue", "BytesValue":
-				return "FString"
-			case "Timestamp":
-				return "FDateTime"
-			case "BoolValue":
-				return "F" + prefix + "OptionalBool"
-			case "Int32Value", "UInt32Value":
-				return "F" + prefix + "OptionalInt32"
-			case "Int64Value", "UInt64Value":
-				return "F" + prefix + "OptionalInt64"
-			case "FloatValue":
-				return "F" + prefix + "OptionalFloat"
-			case "DoubleValue":
-				return "F" + prefix + "OptionalDouble"
-			}
-			if _, ok := api.EnumsByName[s]; ok {
-				return "E" + prefix + s
-			}
-			if _, ok := api.MessagesByName[s]; ok {
-				return "F" + prefix + s
-			}
-			return "NAKAMA_UNKNOWN_PROTO_TYPE_" + s
-		},
 	}
 
 	return fnMap
 }
 
-var ueParamKeywords = map[string]struct{}{
+var keywords = map[string]struct{}{
+	// Unreal
 	"Self": {},
-}
-
-var cppKeywords = map[string]struct{}{
+	// C/C++
 	"alignas":          {},
 	"alignof":          {},
 	"and":              {},

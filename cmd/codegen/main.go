@@ -4,20 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"maps"
 	"os"
 	"path/filepath"
 	"text/template"
 )
-
-func mergeFuncMaps(funcMaps ...template.FuncMap) template.FuncMap {
-	result := template.FuncMap{}
-
-	for _, m := range funcMaps {
-		maps.Copy(result, m)
-	}
-	return result
-}
 
 type fileList []string
 
@@ -33,6 +23,8 @@ func main() {
 	//
 	// Parse command line args.
 	argTmpl := flag.String("template", "", "template file path.")
+	argPrefix := flag.String("prefix", "Nakama", "prefix for generated type names (e.g. Nakama, NakamaRealtime).")
+	argPackage := flag.String("package", "", "if set, only emit types from this proto package; other packages remain available for cross-reference lookups.")
 
 	var argProtoFiles fileList
 	flag.Var(&argProtoFiles, "proto", "list of proto files to parse. Proto files provided later can depend on files provided earlier.")
@@ -53,16 +45,18 @@ func main() {
 		log.Fatalf("Failed to load API: %s", err.Error())
 	}
 
+	if *argPackage != "" {
+		api.FilterByPackage(*argPackage)
+	}
+	api.Prefix = *argPrefix
+
 	//
 	// Make function maps that we will use in templates.
-	generalFuncMap := getGeneralFuncMap(api)
-	unrealFuncMap := getUnrealFuncMap(api)
-
-	combinedFuncMap := mergeFuncMaps(generalFuncMap, unrealFuncMap)
+	funcMap := getGeneralFuncMap(api)
 
 	//
 	// Read and parse the template file (with partials)
-	tmpl := template.New("codegen").Funcs(combinedFuncMap)
+	tmpl := template.New("codegen").Funcs(funcMap)
 
 	// Load partial templates (_*.tmpl) from the same directory as the main template
 	partialPattern := filepath.Join(filepath.Dir(*argTmpl), "_*.tmpl")

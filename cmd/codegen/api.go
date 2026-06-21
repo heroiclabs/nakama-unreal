@@ -25,6 +25,7 @@ import (
 
 type Api struct {
 	Package string
+	Prefix  string
 
 	// Use slices to preserve order of proto messages
 	Enums    []*ProtoEnum
@@ -55,6 +56,7 @@ func (api *Api) enumHandler(enum *proto.Enum) {
 		Enum: &ProtoEnum{
 			Name:    enum.Name,
 			Comment: strings.Trim(comment, " "),
+			Package: api.Package,
 			Fields:  make([]*enumField, 0),
 		},
 	}
@@ -76,6 +78,11 @@ func (api *Api) enumParentFiller(enum *proto.Enum) {
 		log.Fatalf("enum not found: %s\n", enum.Name)
 	}
 	apiEnum.Parent = parentMessage
+	if parentMessage == nil {
+		apiEnum.QualifiedName = apiEnum.Name
+	} else {
+		apiEnum.QualifiedName = parentMessage.QualifiedName + apiEnum.Name
+	}
 }
 
 func (api *Api) messageHandler(message *proto.Message) {
@@ -91,6 +98,7 @@ func (api *Api) messageHandler(message *proto.Message) {
 		Message: &ProtoMessage{
 			Name:        message.Name,
 			Comment:     comment,
+			Package:     api.Package,
 			Fields:      make([]*proto.NormalField, 0),
 			MapFields:   make([]*proto.MapField, 0),
 			OneofFields: make([]*proto.OneOfField, 0),
@@ -116,6 +124,11 @@ func (api *Api) messageParentFiller(msg *proto.Message) {
 		log.Fatalf("message not found: %s\n", msg.Name)
 	}
 	apiMsg.Parent = parentMessage
+	if parentMessage == nil {
+		apiMsg.QualifiedName = apiMsg.Name
+	} else {
+		apiMsg.QualifiedName = parentMessage.QualifiedName + apiMsg.Name
+	}
 }
 
 func (api *Api) rpcHandler(rpc *proto.RPC) {
@@ -145,6 +158,7 @@ func (api *Api) rpcHandler(rpc *proto.RPC) {
 		Rpc: &ProtoRpc{
 			Name:        rpc.Name,
 			Comment:     comment,
+			Package:     api.Package,
 			RequestType: requestType,
 			ReturnType:  returnType,
 			PathParams:  make([]string, 0),
@@ -235,6 +249,41 @@ func LoadApi(protoFiles []string) (Api, error) {
 	}
 
 	return api, nil
+}
+
+func (api *Api) FilterByPackage(pkg string) {
+	filteredEnums := make([]*ProtoEnum, 0, len(api.Enums))
+	for _, e := range api.Enums {
+		if e.Package == pkg {
+			filteredEnums = append(filteredEnums, e)
+		}
+	}
+	api.Enums = filteredEnums
+
+	filteredMsgs := make([]*ProtoMessage, 0, len(api.Messages))
+	for _, m := range api.Messages {
+		if m.Package == pkg {
+			filteredMsgs = append(filteredMsgs, m)
+		}
+	}
+	api.Messages = filteredMsgs
+
+	filteredRpcs := make([]*ProtoRpc, 0, len(api.Rpcs))
+	for _, r := range api.Rpcs {
+		if r.Package == pkg {
+			filteredRpcs = append(filteredRpcs, r)
+		}
+	}
+	api.Rpcs = filteredRpcs
+
+	seen := make(map[string]bool)
+	api.UniqueReturnTypes = nil
+	for _, rpc := range api.Rpcs {
+		if rpc.ReturnType != nil && !seen[rpc.ReturnType.Name] {
+			seen[rpc.ReturnType.Name] = true
+			api.UniqueReturnTypes = append(api.UniqueReturnTypes, rpc.ReturnType)
+		}
+	}
 }
 
 func GetMessageDepth(msg *ProtoMessage) int {
