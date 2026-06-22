@@ -9,14 +9,15 @@
 {{- else if eq $t "uint64" "fixed64"}}int64
 {{- else if eq $t "float"}}float
 {{- else if eq $t "double"}}double
-{{- else if eq $t "bytes" "StringValue" "BytesValue"}}FString
+{{- else if eq $t "bytes"}}TArray<uint8>
+{{- else if eq $t "StringValue" "BytesValue"}}FString
 {{- else if eq $t "Timestamp"}}FDateTime
 {{- else if eq $t "BoolValue"}}F{{$p}}OptionalBool
 {{- else if eq $t "Int32Value" "UInt32Value"}}F{{$p}}OptionalInt32
 {{- else if eq $t "Int64Value" "UInt64Value"}}F{{$p}}OptionalInt64
 {{- else if eq $t "FloatValue"}}F{{$p}}OptionalFloat
 {{- else if eq $t "DoubleValue"}}F{{$p}}OptionalDouble
-{{- else if isEnumType $t}}E{{$p}}{{join (getFullyQualifiedPath $t) ""}}
+{{- else if isEnumType $t}}E{{$p}}{{join (getEnum $t).QualifiedPath ""}}
 {{- else if containsMessage $t}}F{{$p}}{{$t}}
 {{- else if containsString $t "."}}
   {{- $base := $t | stripTilDot -}}
@@ -41,7 +42,7 @@
 {{- else if isEnumType $t -}}
   {{- $enum := getEnum $t -}}
   {{- range $f := $enum.Fields -}}
-    {{- if eq $f.Integer 0}} = E{{$p}}{{join (getFullyQualifiedPath $t) ""}}::{{$f.Name}}{{end -}}
+    {{- if eq $f.Integer 0}} = E{{$p}}{{join $enum.QualifiedPath ""}}::{{$f.Name}}{{end -}}
   {{- end -}}
 {{- end -}}
 {{- end}}

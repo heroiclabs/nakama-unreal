@@ -17,7 +17,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/emicklei/proto"
@@ -32,9 +31,10 @@ type Api struct {
 	Messages []*ProtoMessage
 	Rpcs     []*ProtoRpc
 
-	EnumsByName       map[string]*ProtoEnum
-	MessagesByName    map[string]*ProtoMessage
-	RpcsByName        map[string]*ProtoRpc
+	EnumsByName    map[string]*ProtoEnum
+	MessagesByName map[string]*ProtoMessage
+	RpcsByName     map[string]*ProtoRpc
+
 	UniqueReturnTypes []*ProtoMessage
 }
 
@@ -54,6 +54,7 @@ func (api *Api) enumHandler(enum *proto.Enum) {
 
 	visitor := &enumVisitor{
 		Enum: &ProtoEnum{
+			raw:     enum,
 			Name:    enum.Name,
 			Comment: strings.Trim(comment, " "),
 			Package: api.Package,
@@ -64,25 +65,31 @@ func (api *Api) enumHandler(enum *proto.Enum) {
 		each.Accept(visitor)
 	}
 	api.Enums = append(api.Enums, visitor.Enum)
-	api.EnumsByName[visitor.Enum.Name] = visitor.Enum
 }
 
 func (api *Api) enumParentFiller(enum *proto.Enum) {
 	var parentMessage *ProtoMessage
 	if parent, ok := enum.Parent.(*proto.Message); ok {
-		parentMessage = api.MessagesByName[parent.Name]
+		for _, m := range api.Messages {
+			if m.raw == parent {
+				parentMessage = m
+			}
+		}
 	}
 
-	apiEnum, ok := api.EnumsByName[enum.Name]
-	if !ok {
+	var apiEnum *ProtoEnum
+	for _, e := range api.Enums {
+		if e.raw == enum {
+			apiEnum = e
+		}
+	}
+	if apiEnum == nil {
 		log.Fatalf("enum not found: %s\n", enum.Name)
 	}
+
 	apiEnum.Parent = parentMessage
-	if parentMessage == nil {
-		apiEnum.QualifiedName = apiEnum.Name
-	} else {
-		apiEnum.QualifiedName = parentMessage.QualifiedName + apiEnum.Name
-	}
+	apiEnum.QualifiedPath = buildQualifiedPath(apiEnum.Name, parentMessage)
+	api.EnumsByName[strings.Join(apiEnum.QualifiedPath, "")] = apiEnum
 }
 
 func (api *Api) messageHandler(message *proto.Message) {
@@ -96,6 +103,7 @@ func (api *Api) messageHandler(message *proto.Message) {
 	}
 	visitor := &messageVisitor{
 		Message: &ProtoMessage{
+			raw:         message,
 			Name:        message.Name,
 			Comment:     comment,
 			Package:     api.Package,
@@ -110,25 +118,31 @@ func (api *Api) messageHandler(message *proto.Message) {
 	}
 
 	api.Messages = append(api.Messages, visitor.Message)
-	api.MessagesByName[visitor.Message.Name] = visitor.Message
 }
 
 func (api *Api) messageParentFiller(msg *proto.Message) {
 	var parentMessage *ProtoMessage
 	if parent, ok := msg.Parent.(*proto.Message); ok {
-		parentMessage = api.MessagesByName[parent.Name]
+		for _, m := range api.Messages {
+			if m.raw == parent {
+				parentMessage = m
+			}
+		}
 	}
 
-	apiMsg, ok := api.MessagesByName[msg.Name]
-	if !ok {
-		log.Fatalf("message not found: %s\n", msg.Name)
+	var apiMsg *ProtoMessage
+	for _, m := range api.Messages {
+		if m.raw == msg {
+			apiMsg = m
+		}
 	}
+	if apiMsg == nil {
+		log.Fatalf("enum not found: %s\n", msg.Name)
+	}
+
 	apiMsg.Parent = parentMessage
-	if parentMessage == nil {
-		apiMsg.QualifiedName = apiMsg.Name
-	} else {
-		apiMsg.QualifiedName = parentMessage.QualifiedName + apiMsg.Name
-	}
+	apiMsg.QualifiedPath = buildQualifiedPath(apiMsg.Name, parentMessage)
+	api.MessagesByName[strings.Join(apiMsg.QualifiedPath, "")] = apiMsg
 }
 
 func (api *Api) rpcHandler(rpc *proto.RPC) {
@@ -195,13 +209,17 @@ func (api *Api) addFile(protoFile string) error {
 		),
 		proto.WithMessage(api.messageHandler),
 		proto.WithEnum(api.enumHandler),
-		proto.WithRPC(api.rpcHandler),
 	)
 
 	proto.Walk(
 		parsedProto,
 		proto.WithEnum(api.enumParentFiller),
 		proto.WithMessage(api.messageParentFiller),
+	)
+
+	proto.Walk(
+		parsedProto,
+		proto.WithRPC(api.rpcHandler),
 	)
 
 	return nil
@@ -225,19 +243,7 @@ func LoadApi(protoFiles []string) (Api, error) {
 		api.addFile(f)
 	}
 
-	// Pull up messages that are more deeply embedded.
-	slices.SortFunc(api.Messages, func(a, b *ProtoMessage) int {
-		aDepth := GetMessageDepth(a)
-		bDepth := GetMessageDepth(b)
-
-		if aDepth < bDepth {
-			return 1
-		} else if aDepth > bDepth {
-			return -1
-		} else {
-			return 0
-		}
-	})
+	api.sortMessagesByDependencies()
 
 	// Collect one entry per distinct RPC return type for Result struct generation.
 	seen := make(map[string]bool)
@@ -286,10 +292,64 @@ func (api *Api) FilterByPackage(pkg string) {
 	}
 }
 
-func GetMessageDepth(msg *ProtoMessage) int {
-	depth := 0
-	for current := msg.Parent; current != nil; current = current.Parent {
-		depth++
+func buildQualifiedPath(name string, parent *ProtoMessage) []string {
+	if parent == nil {
+		return []string{name}
 	}
-	return depth
+	path := make([]string, len(parent.QualifiedPath)+1)
+	copy(path, parent.QualifiedPath)
+	path[len(parent.QualifiedPath)] = name
+	return path
+}
+
+func (api *Api) sortMessagesByDependencies() {
+	const (
+		unvisited = iota
+		visiting
+		done
+	)
+
+	state := make(map[*ProtoMessage]int, len(api.Messages))
+	ordered := make([]*ProtoMessage, 0, len(api.Messages))
+
+	dependencies := func(m *ProtoMessage) []*ProtoMessage {
+		seen := make(map[*ProtoMessage]bool)
+		deps := make([]*ProtoMessage, 0)
+		add := func(typeName string) {
+			dep, ok := api.MessagesByName[typeName]
+			if ok && dep != m && !seen[dep] {
+				seen[dep] = true
+				deps = append(deps, dep)
+			}
+		}
+		for _, f := range m.Fields {
+			add(f.Type)
+		}
+		for _, f := range m.MapFields {
+			add(f.Type)
+		}
+		for _, f := range m.OneofFields {
+			add(f.Type)
+		}
+		return deps
+	}
+
+	var visit func(m *ProtoMessage)
+	visit = func(m *ProtoMessage) {
+		if state[m] != unvisited {
+			return
+		}
+		state[m] = visiting
+		for _, dep := range dependencies(m) {
+			visit(dep)
+		}
+		state[m] = done
+		ordered = append(ordered, m)
+	}
+
+	for _, m := range api.Messages {
+		visit(m)
+	}
+
+	api.Messages = ordered
 }

@@ -34,7 +34,7 @@
 * {{ $enum.Comment }}
 */
 UENUM(BlueprintType)
-enum class E{{ $prefix }}{{ join (getFullyQualifiedPath $enum.Name) "" }} : uint8
+enum class E{{ $prefix }}{{ join $enum.QualifiedPath "" }} : uint8
 {
   {{ range $field := $enum.Fields }}
   {{ $field.Name }} = {{ $field.Integer }}, // {{ $field.Comment.Message }}
@@ -50,9 +50,10 @@ enum class E{{ $prefix }}{{ join (getFullyQualifiedPath $enum.Name) "" }} : uint
 * {{ $message.Comment }}
 */
 USTRUCT(BlueprintType)
-struct {{ $api }}_API F{{ $prefix }}{{ $message.Name }}
+{{- $qname := join $message.QualifiedPath "" }}
+struct {{ $api }}_API F{{ $prefix }}{{ $qname }}
 {
-  GENERATED_BODY() 
+  GENERATED_BODY()
 
   {{- range $member := $message.Fields }}
 
@@ -72,8 +73,8 @@ struct {{ $api }}_API F{{ $prefix }}{{ $message.Name }}
   {{- end }}
 
   // Creates a {{ $message.Name }} from the given FJsonObject.
-  static F{{ $prefix }}{{ $message.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
-  
+  static F{{ $prefix }}{{ $qname }} FromJson(const TSharedPtr<FJsonObject>& Json);
+
   // Converts this {{ $message.Name }} to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 };

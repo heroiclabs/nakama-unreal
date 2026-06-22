@@ -27,8 +27,9 @@ func TrimUntilLastDot(s string) string {
 // --------------------
 // Enums
 type ProtoEnum struct {
+	raw           *proto.Enum
 	Name          string
-	QualifiedName string
+	QualifiedPath []string
 	Comment       string
 	Package       string
 	Fields        []*enumField
@@ -77,8 +78,9 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 // Messages
 
 type ProtoMessage struct {
+	raw           *proto.Message
 	Name          string
-	QualifiedName string
+	QualifiedPath []string
 	Comment       string
 	Package       string
 	Parent        *ProtoMessage
@@ -96,6 +98,8 @@ type messageVisitor struct {
 func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 	if strings.HasPrefix(nf.Type, "google.protobuf.") {
 		nf.Type = TrimUntilLastDot(nf.Type)
+	} else {
+		nf.Type = qualifyType(nf.Type, v.Message.raw)
 	}
 	if nf.Comment == nil {
 		nf.Comment = &proto.Comment{
@@ -109,6 +113,8 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
 	if strings.HasPrefix(mf.Type, "google.protobuf.") {
 		mf.Type = TrimUntilLastDot(mf.Type)
+	} else {
+		mf.Type = qualifyType(mf.Type, v.Message.raw)
 	}
 	if mf.Comment == nil {
 		mf.Comment = &proto.Comment{
@@ -126,7 +132,11 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 }
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
-	oneof.Name = TrimUntilLastDot(oneof.Name)
+	if strings.HasPrefix(oneof.Type, "google.protobuf.") {
+		oneof.Type = TrimUntilLastDot(oneof.Type)
+	} else {
+		oneof.Type = qualifyType(oneof.Type, v.Message.raw)
+	}
 	if oneof.Comment == nil {
 		oneof.Comment = &proto.Comment{
 			Position: scanner.Position{},
@@ -135,6 +145,41 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 	}
 
 	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
+	v.Message.Fields = append(v.Message.Fields, &proto.NormalField{Field: oneof.Field})
+}
+
+// qualifyType returns the fully-qualified (concatenated) key for the given typename
+func qualifyType(typeName string, rawParent *proto.Message) string {
+	for scope := rawParent; scope != nil; {
+		for _, elem := range scope.Elements {
+			switch t := elem.(type) {
+			case *proto.Message:
+				if t.Name == typeName {
+					return rawQualifiedKey(t.Parent, t.Name)
+				}
+			case *proto.Enum:
+				if t.Name == typeName {
+					return rawQualifiedKey(t.Parent, t.Name)
+				}
+			}
+		}
+		// Climb to the enclosing message scope, if any.
+		if parent, ok := scope.Parent.(*proto.Message); ok {
+			scope = parent
+		} else {
+			scope = nil
+		}
+	}
+	return typeName
+}
+
+// rawQualifiedKey builds "Parent1Parent2...name" by walking the proto.Visitee
+// parent chain until a non-message parent is reached.
+func rawQualifiedKey(parent proto.Visitee, name string) string {
+	if msg, ok := parent.(*proto.Message); ok {
+		return rawQualifiedKey(msg.Parent, msg.Name) + name
+	}
+	return name
 }
 
 // --------------------

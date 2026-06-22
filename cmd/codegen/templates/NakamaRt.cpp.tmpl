@@ -18,14 +18,17 @@
 
 {{ $prefix := .Prefix }}
 
-#include "NakamaRealtime.gen.h"
+#include "Realtime/NakamaRtTypes.gen.h"
+#include "Dom/JsonObject.h"
+#include "Misc/Base64.h"
 
 {{/*---------------- MESSAGES ------------------*/}}
 {{ range $message := .Messages }}
 
-F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+{{- $qname := join $message.QualifiedPath "" }}
+F{{ $prefix }}{{ $qname }} F{{ $prefix }}{{ $qname }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  F{{ $prefix }}{{ $message.Name }} Result;
+  F{{ $prefix }}{{ $qname }} Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -52,30 +55,44 @@ F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(co
         {
           Result.{{ $var }}.Add(FNakama{{ $field.Type | stripTilDot }}::FromJson(*ItemObj));
         }
-        {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+        {{- else if eq $field.Type "bytes" }}
+        {
+          TArray<uint8> Bytes;
+          FBase64::Decode(Item->AsString(), Bytes);
+          Result.{{ $var }}.Add(Bytes);
+        }
+        {{- else if eq $field.Type "string" "StringValue" "BytesValue" }}
         Result.{{ $var }}.Add(Item->AsString());
         {{- else if eq $field.Type "bool" }}
         Result.{{ $var }}.Add(Item->AsBool());
         {{- else if isEnumType $field.Type }}
-        Result.{{ $var }}.Add(static_cast<E{{ $prefix }}{{ join (getFullyQualifiedPath $field.Type) "" }}>(static_cast<int32>(Item->AsNumber())));
+        Result.{{ $var }}.Add(static_cast<E{{ $prefix }}{{ join (getEnum $field.Type).QualifiedPath "" }}>(static_cast<int32>(Item->AsNumber())));
         {{- else }}
         Result.{{ $var }}.Add(Item->AsNumber());
         {{- end }}
       }
     }
-    {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+    {{- else if eq $field.Type "bytes" }}
+    FBase64::Decode(Json->GetStringField(TEXT("{{ $field.Name }}")), Result.{{ $var }});
+    {{- else if eq $field.Type "string" "StringValue" "BytesValue" }}
     Result.{{ $var }} = Json->GetStringField(TEXT("{{ $field.Name }}"));
     {{- else if eq $field.Type "bool" "BoolValue" }}
     Result.{{ $var }} = Json->GetBoolField(TEXT("{{ $field.Name }}"));
     {{- else if eq $field.Type "Timestamp" }}
     FDateTime::ParseIso8601(*Json->GetStringField(TEXT("{{ $field.Name }}")), Result.{{ $var }});
     {{- else if isEnumType $field.Type }}
-    Result.{{ $var }} = static_cast<E{{ $prefix }}{{ join (getFullyQualifiedPath $field.Type) "" }}>(Json->GetNumberField(TEXT("{{ $field.Name }}")));
+    Result.{{ $var }} = static_cast<E{{ $prefix }}{{ join (getEnum $field.Type).QualifiedPath "" }}>(Json->GetNumberField(TEXT("{{ $field.Name }}")));
     {{- else if containsMessage $field.Type }}
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("{{ $field.Name }}"), NestedObj))
     {
       Result.{{ $var }} = F{{ $prefix }}{{ $field.Type }}::FromJson(*NestedObj);
+    }
+    {{- else if containsString $field.Type "." }}
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("{{ $field.Name }}"), NestedObj))
+    {
+      Result.{{ $var }} = FNakama{{ $field.Type | stripTilDot }}::FromJson(*NestedObj);
     }
     {{- else }}
     Result.{{ $var }} = Json->GetNumberField(TEXT("{{ $field.Name }}"));
@@ -91,7 +108,13 @@ F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(co
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        {{- if eq $member.Type "string" "bytes" "StringValue" "BytesValue" }}
+        {{- if eq $member.Type "bytes" }}
+        {
+          TArray<uint8> Bytes;
+          FBase64::Decode(Pair.Value->AsString(), Bytes);
+          Result.{{ $var }}.Add(Pair.Key, Bytes);
+        }
+        {{- else if eq $member.Type "string" "StringValue" "BytesValue" }}
         Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsString());
         {{- else if eq $member.Type "bool" }}
         Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsBool());
@@ -111,7 +134,7 @@ F{{ $prefix }}{{ $message.Name }} F{{ $prefix }}{{ $message.Name }}::FromJson(co
   return Result;
 }
 
-TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
+TSharedPtr<FJsonObject> F{{ $prefix }}{{ $qname }}::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   {{- range $field := $message.Fields }}
@@ -124,7 +147,9 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
     {
       {{- if or (containsMessage $field.Type) (containsString $field.Type ".") }}
       Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+      {{- else if eq $field.Type "bytes" }}
+      Array.Add(MakeShared<FJsonValueString>(FBase64::Encode(Item)));
+      {{- else if eq $field.Type "string" "StringValue" "BytesValue" }}
       Array.Add(MakeShared<FJsonValueString>(Item));
       {{- else if eq $field.Type "bool" }}
       Array.Add(MakeShared<FJsonValueBoolean>(Item));
@@ -136,7 +161,12 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
     }
     Json->SetArrayField(TEXT("{{ $field.Name }}"), Array);
   }
-  {{- else if eq $field.Type "string" "bytes" "StringValue" "BytesValue" }}
+  {{- else if eq $field.Type "bytes" }}
+  if ({{ $var }}.Num() > 0)
+  {
+    Json->SetStringField(TEXT("{{ $field.Name }}"), FBase64::Encode({{ $var }}));
+  }
+  {{- else if eq $field.Type "string" "StringValue" "BytesValue" }}
   if ({{ $var }}.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("{{ $field.Name }}"), {{ $var }});
@@ -170,7 +200,9 @@ TSharedPtr<FJsonObject> F{{ $prefix }}{{ $message.Name }}::ToJson() const
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : {{ $var }})
     {
-      {{- if eq $member.Type "string" "bytes" "StringValue" "BytesValue" }}
+      {{- if eq $member.Type "bytes" }}
+      MapObj->SetStringField(Pair.Key, FBase64::Encode(Pair.Value));
+      {{- else if eq $member.Type "string" "StringValue" "BytesValue" }}
       MapObj->SetStringField(Pair.Key, Pair.Value);
       {{- else if eq $member.Type "bool" }}
       MapObj->SetBoolField(Pair.Key, Pair.Value);
