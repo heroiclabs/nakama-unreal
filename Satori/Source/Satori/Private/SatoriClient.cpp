@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "Satori.h"
+#include "SatoriClient.h"
 #include "Containers/Ticker.h"
 
 bool Satori::IsTransientError(const FSatoriError& Error)
@@ -278,65 +278,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::AuthenticateRefresh(
   (*DoRequest)();
   return TSatoriFuture<FSatoriSessionResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-  ]()
-  {
-
-    SatoriApi::DeleteIdentity(
-      ClientConfig,
-      HttpKey,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -417,68 +359,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::Event(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const TArray<FSatoriEvent>& Events,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Events
-  ]()
-  {
-
-    SatoriApi::Event(
-      ClientConfig,
-      HttpKey,
-      Events,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::Event(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -625,155 +506,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
-  const FSatoriClientConfig& ClientConfig,
-  const FSatoriSession& Session,
-  const TArray<FSatoriEvent>& Events,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto SessionState = MakeShared<FSatoriSession>(Session);
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , SessionState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , Session
-    , Events
-  ]()
-  { 
-    MaybeRefreshThenCall(
-      SessionState
-      , ClientConfig
-      , RetryConfig
-      , CancellationToken
-      , OnError
-      , [
-        FutureState
-        , SessionState
-        , DoRequest
-        , OnError
-        , ClientConfig
-        , RetryConfig
-        , CancellationToken
-        , Session
-        , Events
-        ]()
-        {
-
-          SatoriApi::ServerEvent(
-            ClientConfig,
-            *SessionState,
-            Events,
-            [FutureState, DoRequest, OnError]()
-            {
-              *DoRequest = nullptr;
-              *OnError = nullptr;
-              FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-            },
-            *OnError,
-            RetryConfig.Timeout,
-            CancellationToken
-          );
-        }
-      );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
-TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const TArray<FString>& Names,
-  const TArray<FString>& Labels,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriExperimentListResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
-
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriExperimentListResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Names
-    , Labels
-  ]()
-  {
-
-    SatoriApi::GetExperiments(
-      ClientConfig,
-      HttpKey,
-      Names,
-      Labels,
-      [FutureState, DoRequest, OnError](const FSatoriExperimentList& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriExperimentListResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriExperimentListResult>(FutureState);
-}
 TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -862,71 +595,7 @@ TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
   (*DoRequest)();
   return TSatoriFuture<FSatoriExperimentListResult>(FutureState);
 }
-TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const TArray<FString>& Names,
-  const TArray<FString>& Labels,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriFlagOverrideListResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriFlagOverrideListResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Names
-    , Labels
-  ]()
-  {
-
-    SatoriApi::GetFlagOverrides(
-      ClientConfig,
-      HttpKey,
-      Names,
-      Labels,
-      [FutureState, DoRequest, OnError](const FSatoriFlagOverrideList& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriFlagOverrideListResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriFlagOverrideListResult>(FutureState);
-}
 TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1015,71 +684,7 @@ TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
   (*DoRequest)();
   return TSatoriFuture<FSatoriFlagOverrideListResult>(FutureState);
 }
-TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const TArray<FString>& Names,
-  const TArray<FString>& Labels,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriFlagListResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriFlagListResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Names
-    , Labels
-  ]()
-  {
-
-    SatoriApi::GetFlags(
-      ClientConfig,
-      HttpKey,
-      Names,
-      Labels,
-      [FutureState, DoRequest, OnError](const FSatoriFlagList& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriFlagListResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriFlagListResult>(FutureState);
-}
 TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1168,83 +773,7 @@ TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
   (*DoRequest)();
   return TSatoriFuture<FSatoriFlagListResult>(FutureState);
 }
-TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const TArray<FString>& Names,
-  const TArray<FString>& Labels,
-  int32 PastRunCount,
-  int32 FutureRunCount,
-  int64 StartTimeSec,
-  int64 EndTimeSec,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriLiveEventListResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriLiveEventListResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Names
-    , Labels
-    , PastRunCount
-    , FutureRunCount
-    , StartTimeSec
-    , EndTimeSec
-  ]()
-  {
-
-    SatoriApi::GetLiveEvents(
-      ClientConfig,
-      HttpKey,
-      Names,
-      Labels,
-      PastRunCount,
-      FutureRunCount,
-      StartTimeSec,
-      EndTimeSec,
-      [FutureState, DoRequest, OnError](const FSatoriLiveEventList& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriLiveEventListResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriLiveEventListResult>(FutureState);
-}
 TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1349,68 +878,7 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
   (*DoRequest)();
   return TSatoriFuture<FSatoriLiveEventListResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FString& Id,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Id
-  ]()
-  {
-
-    SatoriApi::JoinLiveEvent(
-      ClientConfig,
-      HttpKey,
-      Id,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1495,6 +963,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
+
 TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
@@ -1554,154 +1023,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
-  const FSatoriClientConfig& ClientConfig,
-  const FSatoriSession& Session,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto SessionState = MakeShared<FSatoriSession>(Session);
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , SessionState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , Session
-  ]()
-  { 
-    MaybeRefreshThenCall(
-      SessionState
-      , ClientConfig
-      , RetryConfig
-      , CancellationToken
-      , OnError
-      , [
-        FutureState
-        , SessionState
-        , DoRequest
-        , OnError
-        , ClientConfig
-        , RetryConfig
-        , CancellationToken
-        , Session
-        ]()
-        {
-
-          SatoriApi::Healthcheck(
-            ClientConfig,
-            *SessionState,
-            [FutureState, DoRequest, OnError]()
-            {
-              *DoRequest = nullptr;
-              *OnError = nullptr;
-              FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-            },
-            *OnError,
-            RetryConfig.Timeout,
-            CancellationToken
-          );
-        }
-      );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
-TSatoriFuture<FSatoriSessionResult> Satori::Identify(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FString& Id,
-  const TMap<FString, FString>& Default,
-  const TMap<FString, FString>& Custom,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriSessionResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
-
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriSessionResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Id
-    , Default
-    , Custom
-  ]()
-  {
-
-    SatoriApi::Identify(
-      ClientConfig,
-      HttpKey,
-      Id,
-      Default,
-      Custom,
-      [FutureState, DoRequest, OnError](const FSatoriSession& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriSessionResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriSessionResult>(FutureState);
-}
 TSatoriFuture<FSatoriSessionResult> Satori::Identify(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1794,65 +1116,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
   (*DoRequest)();
   return TSatoriFuture<FSatoriSessionResult>(FutureState);
 }
-TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriPropertiesResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriPropertiesResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-  ]()
-  {
-
-    SatoriApi::ListProperties(
-      ClientConfig,
-      HttpKey,
-      [FutureState, DoRequest, OnError](const FSatoriProperties& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriPropertiesResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriPropertiesResult>(FutureState);
-}
 TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -1933,6 +1197,7 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
   (*DoRequest)();
   return TSatoriFuture<FSatoriPropertiesResult>(FutureState);
 }
+
 TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
@@ -1992,154 +1257,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
-  const FSatoriClientConfig& ClientConfig,
-  const FSatoriSession& Session,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto SessionState = MakeShared<FSatoriSession>(Session);
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , SessionState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , Session
-  ]()
-  { 
-    MaybeRefreshThenCall(
-      SessionState
-      , ClientConfig
-      , RetryConfig
-      , CancellationToken
-      , OnError
-      , [
-        FutureState
-        , SessionState
-        , DoRequest
-        , OnError
-        , ClientConfig
-        , RetryConfig
-        , CancellationToken
-        , Session
-        ]()
-        {
-
-          SatoriApi::Readycheck(
-            ClientConfig,
-            *SessionState,
-            [FutureState, DoRequest, OnError]()
-            {
-              *DoRequest = nullptr;
-              *OnError = nullptr;
-              FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-            },
-            *OnError,
-            RetryConfig.Timeout,
-            CancellationToken
-          );
-        }
-      );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
-TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  FSatoriOptionalBool Recompute,
-  const TMap<FString, FString>& Default,
-  const TMap<FString, FString>& Custom,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
-
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Recompute
-    , Default
-    , Custom
-  ]()
-  {
-
-    SatoriApi::UpdateProperties(
-      ClientConfig,
-      HttpKey,
-      Recompute,
-      Default,
-      Custom,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -2232,77 +1350,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  int32 Limit,
-  bool Forward,
-  const FString& Cursor,
-  const TArray<FString>& MessageIds,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriGetMessageListResponseResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriGetMessageListResponseResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Limit
-    , Forward
-    , Cursor
-    , MessageIds
-  ]()
-  {
-
-    SatoriApi::GetMessageList(
-      ClientConfig,
-      HttpKey,
-      Limit,
-      Forward,
-      Cursor,
-      MessageIds,
-      [FutureState, DoRequest, OnError](const FSatoriGetMessageListResponse& Result)
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriGetMessageListResponseResult{ Result, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriGetMessageListResponseResult>(FutureState);
-}
 TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -2399,74 +1447,7 @@ TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
   (*DoRequest)();
   return TSatoriFuture<FSatoriGetMessageListResponseResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FString& Id,
-  int64 ReadTime,
-  int64 ConsumeTime,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Id
-    , ReadTime
-    , ConsumeTime
-  ]()
-  {
-
-    SatoriApi::UpdateMessage(
-      ClientConfig,
-      HttpKey,
-      Id,
-      ReadTime,
-      ConsumeTime,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
@@ -2559,68 +1540,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
   (*DoRequest)();
   return TSatoriFuture<FSatoriVoidResult>(FutureState);
 }
-TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
-  const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
-  const FString& Id,
-  const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<TAtomic<bool>> CancellationToken
-)
-{
-	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
-	auto RetryCount = MakeShared<int32>(0);
-	auto DoRequest = MakeShared<TFunction<void()>>();
 
-	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
-  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
-  {
-    if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
-    {
-      (*RetryCount)++;
-      float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
-      FTSTicker::GetCoreTicker().AddTicker(
-        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
-        Delay);
-    }
-    else
-    {
-      *DoRequest = nullptr;
-      *OnError = nullptr;
-      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
-    }
-  };
-
-  *DoRequest = [
-    FutureState
-    , DoRequest
-    , OnError
-    , ClientConfig
-    , RetryConfig
-    , CancellationToken
-    , HttpKey
-    , Id
-  ]()
-  {
-
-    SatoriApi::DeleteMessage(
-      ClientConfig,
-      HttpKey,
-      Id,
-      [FutureState, DoRequest, OnError]()
-      {
-        *DoRequest = nullptr;
-        *OnError = nullptr;
-        FutureState->Resolve(FSatoriVoidResult{ FSatoriVoid{}, {}, false });
-      },
-      *OnError,
-      RetryConfig.Timeout,
-      CancellationToken
-    );
-  };
-
-  (*DoRequest)();
-  return TSatoriFuture<FSatoriVoidResult>(FutureState);
-}
 TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,

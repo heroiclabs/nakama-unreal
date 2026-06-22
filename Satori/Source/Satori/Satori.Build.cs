@@ -72,6 +72,18 @@ public class Satori : ModuleRules
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
+		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
+		{
+        	PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+		}
+
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        RuntimeDependencies.Add(Path.Combine(
+	        EngineDirectory,
+	        "Content",
+	        "Certificates",
+	        "ThirdParty",
+	        "cacert.pem"
+        ), StagedFileType.NonUFS);
     }
 }

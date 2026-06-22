@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -190,22 +188,7 @@ namespace Satori
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
-
-  /**
-  * Delete the caller's identity and associated data.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteIdentity(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
+  
   /**
   * Delete the caller's identity and associated data.
   *
@@ -217,23 +200,6 @@ namespace Satori
   SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteIdentity(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Publish an event for this session.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Events	 Some number of events produced by a client.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -273,42 +239,6 @@ namespace Satori
   );
 
   /**
-  * Publish server events for multiple distinct identities.
-  *
-  * @param Config	The client configuration.
-  * @param Session	The session of the user.
-  * @param Events	 Some number of events produced by a client.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
-    const FSatoriClientConfig& ClientConfig,
-    const FSatoriSession& Session,
-    const TArray<FSatoriEvent>& Events,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Get or list all available experiments for this identity.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Names	 Experiment names; if empty string, all experiments are returned based on the remaining filters.
-  * @param Labels	 Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriExperimentListResult> GetExperiments(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const TArray<FString>& Names,
-    const TArray<FString>& Labels,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
   * Get or list all available experiments for this identity.
   *
   * @param Config	The client configuration.
@@ -321,25 +251,6 @@ namespace Satori
   SATORI_API TSatoriFuture<FSatoriExperimentListResult> GetExperiments(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
-    const TArray<FString>& Names,
-    const TArray<FString>& Labels,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * List all available flags and their value overrides for this identity.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Names	 Flag names; if empty string, all flags are returned based on the remaining filters.
-  * @param Labels	 Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriFlagOverrideListResult> GetFlagOverrides(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
@@ -369,25 +280,6 @@ namespace Satori
   * List all available flags for this identity.
   *
   * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Names	 Flag names; if empty string, all flags are returned based on the remaining filters.
-  * @param Labels	 Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriFlagListResult> GetFlags(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const TArray<FString>& Names,
-    const TArray<FString>& Labels,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * List all available flags for this identity.
-  *
-  * @param Config	The client configuration.
   * @param Session	The session of the user.
   * @param Names	 Flag names; if empty string, all flags are returned based on the remaining filters.
   * @param Labels	 Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
@@ -399,33 +291,6 @@ namespace Satori
     const FSatoriSession& Session,
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * List available live events.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Names	 Live event names; if empty string, all live events are returned based on the remaining filters.
-  * @param Labels	 Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters.
-  * @param PastRunCount	 The maximum number of past event runs to return for each live event.
-  * @param FutureRunCount	 The maximum number of future event runs to return for each live event.
-  * @param StartTimeSec	 Start time of the time window filter to apply.
-  * @param EndTimeSec	 End time of the time window filter to apply.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriLiveEventListResult> GetLiveEvents(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const TArray<FString>& Names,
-    const TArray<FString>& Labels,
-    int32 PastRunCount,
-    int32 FutureRunCount,
-    int64 StartTimeSec,
-    int64 EndTimeSec,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -461,23 +326,6 @@ namespace Satori
   * Join an 'explicit join' live event.
   *
   * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Id	 Live event id to join.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> JoinLiveEvent(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const FString& Id,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Join an 'explicit join' live event.
-  *
-  * @param Config	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 Live event id to join.
   * @param RetryConfig Retry configuration.
@@ -505,43 +353,7 @@ namespace Satori
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
-
-  /**
-  * A healthcheck which load balancers can use to check the service.
-  *
-  * @param Config	The client configuration.
-  * @param Session	The session of the user.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> Healthcheck(
-    const FSatoriClientConfig& ClientConfig,
-    const FSatoriSession& Session,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Enrich/replace the current session with new identifier.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Id	 Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
-  * @param Default	 Optional default properties to update with this call.
-  * @param Custom	 Optional custom properties to update with this call.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriSessionResult> Identify(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const FString& Id,
-    const TMap<FString, FString>& Default,
-    const TMap<FString, FString>& Custom,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
+  
   /**
   * Enrich/replace the current session with new identifier.
   *
@@ -559,21 +371,6 @@ namespace Satori
     const FString& Id,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * List properties associated with this identity.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriPropertiesResult> ListProperties(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -609,42 +406,6 @@ namespace Satori
   );
 
   /**
-  * A readycheck which load balancers can use to check the service.
-  *
-  * @param Config	The client configuration.
-  * @param Session	The session of the user.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> Readycheck(
-    const FSatoriClientConfig& ClientConfig,
-    const FSatoriSession& Session,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Update identity properties.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Recompute	 Informs the server to recompute the audience membership of the identity.
-  * @param Default	 Event default properties.
-  * @param Custom	 Event custom properties.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateProperties(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    FSatoriOptionalBool Recompute,
-    const TMap<FString, FString>& Default,
-    const TMap<FString, FString>& Custom,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
   * Update identity properties.
   *
   * @param Config	The client configuration.
@@ -661,29 +422,6 @@ namespace Satori
     FSatoriOptionalBool Recompute,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Get the list of messages for the identity.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Limit	 Max number of messages to return. Between 1 and 100.
-  * @param Forward	 True if listing should be older messages to newer, false if reverse.
-  * @param Cursor	 A pagination cursor, if any.
-  * @param MessageIds	 A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriGetMessageListResponseResult> GetMessageList(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    int32 Limit,
-    bool Forward,
-    const FString& Cursor,
-    const TArray<FString>& MessageIds,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -715,27 +453,6 @@ namespace Satori
   * Updates a message for an identity.
   *
   * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Id	 The identifier of the messages.
-  * @param ReadTime	 The time the message was read at the client.
-  * @param ConsumeTime	 The time the message was consumed by the identity.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateMessage(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const FString& Id,
-    int64 ReadTime,
-    int64 ConsumeTime,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Updates a message for an identity.
-  *
-  * @param Config	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 The identifier of the messages.
   * @param ReadTime	 The time the message was read at the client.
@@ -749,23 +466,6 @@ namespace Satori
     const FString& Id,
     int64 ReadTime,
     int64 ConsumeTime,
-    const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  );
-
-  /**
-  * Deletes a message for an identity.
-  *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
-  * @param Id	 The identifier of the message.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteMessage(
-    const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
-    const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
