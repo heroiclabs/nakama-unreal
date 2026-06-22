@@ -16,7 +16,9 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaRtHandle.h"
+#include "Blueprints/NakamaRtHandle.h"
+
+#include "Async/Async.h"
 
 UNakamaRtHandle* UNakamaRtHandle::CreateNakamaRtConnection()
 {
@@ -79,7 +81,7 @@ void UNakamaRtHandle::SetupRtEventHandlers()
     });
   });
 
-  Connection->ChannelMessage.AddLambda([WeakHandle](const FNakamaRtChannelMessage& Data)
+  Connection->ChannelMessage.AddLambda([WeakHandle](const FNakamaChannelMessage& Data)
   {
     AsyncTask(ENamedThreads::GameThread, [WeakHandle, Data]
     { 

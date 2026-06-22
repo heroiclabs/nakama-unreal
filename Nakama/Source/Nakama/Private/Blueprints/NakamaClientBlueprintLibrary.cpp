@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
+#include "Blueprints/NakamaClientBlueprintLibrary.h"
 
-#include "NakamaClientBlueprintLibrary.h"
+#include "UObject/Package.h"
 
 UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
   UObject* WorldContextObject
@@ -45,29 +45,27 @@ void UNakamaClientAddFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientAddFriends> WeakThis(this);
 
-  NakamaApi::AddFriends(
+  Nakama::AddFriends(
     StoredClientConfig,
     StoredSession,
     StoredIds,
     StoredUsernames,
-    StoredMetadata,
-    [WeakThis]()
+    StoredMetadata
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
@@ -95,28 +93,26 @@ void UNakamaClientAddGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientAddGroupUsers> WeakThis(this);
 
-  NakamaApi::AddGroupUsers(
+  Nakama::AddGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
-    StoredUserIds,
-    [WeakThis]()
+    StoredUserIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
@@ -142,27 +138,25 @@ void UNakamaClientSessionRefresh::Activate()
 
   TWeakObjectPtr<UNakamaClientSessionRefresh> WeakThis(this);
 
-  NakamaApi::SessionRefresh(
+  Nakama::SessionRefresh(
     StoredClientConfig,
     StoredToken,
-    StoredVars,
-    [WeakThis](const FNakamaSession& Result)
+    StoredVars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
@@ -190,28 +184,26 @@ void UNakamaClientSessionLogout::Activate()
 
   TWeakObjectPtr<UNakamaClientSessionLogout> WeakThis(this);
 
-  NakamaApi::SessionLogout(
+  Nakama::SessionLogout(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredRefreshToken,
-    [WeakThis]()
+    StoredRefreshToken
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateApple(
@@ -239,28 +231,27 @@ void UNakamaClientAuthenticateApple::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateApple> WeakThis(this);
 
-  NakamaApi::AuthenticateApple(
+  Nakama::AuthenticateApple(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(
@@ -288,28 +279,27 @@ void UNakamaClientAuthenticateCustom::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateCustom> WeakThis(this);
 
-  NakamaApi::AuthenticateCustom(
+  Nakama::AuthenticateCustom(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Id,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDevice(
@@ -337,28 +327,27 @@ void UNakamaClientAuthenticateDevice::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateDevice> WeakThis(this);
 
-  NakamaApi::AuthenticateDevice(
+  Nakama::AuthenticateDevice(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Id,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmail(
@@ -386,28 +375,28 @@ void UNakamaClientAuthenticateEmail::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateEmail> WeakThis(this);
 
-  NakamaApi::AuthenticateEmail(
+  Nakama::AuthenticateEmail(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Email,
+    StoredAccount.Password,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::AuthenticateFacebook(
@@ -437,29 +426,28 @@ void UNakamaClientAuthenticateFacebook::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateFacebook> WeakThis(this);
 
-  NakamaApi::AuthenticateFacebook(
+  Nakama::AuthenticateFacebook(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
     StoredSync,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookInstantGame::AuthenticateFacebookInstantGame(
@@ -487,28 +475,27 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateFacebookInstantGame> WeakThis(this);
 
-  NakamaApi::AuthenticateFacebookInstantGame(
+  Nakama::AuthenticateFacebookInstantGame(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.SignedPlayerInfo,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::AuthenticateGameCenter(
@@ -536,28 +523,32 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateGameCenter> WeakThis(this);
 
-  NakamaApi::AuthenticateGameCenter(
+  Nakama::AuthenticateGameCenter(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.PlayerId,
+    StoredAccount.BundleId,
+    StoredAccount.TimestampSeconds,
+    StoredAccount.Salt,
+    StoredAccount.Signature,
+    StoredAccount.PublicKeyUrl,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGoogle(
@@ -585,28 +576,27 @@ void UNakamaClientAuthenticateGoogle::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateGoogle> WeakThis(this);
 
-  NakamaApi::AuthenticateGoogle(
+  Nakama::AuthenticateGoogle(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateSteam(
@@ -636,29 +626,28 @@ void UNakamaClientAuthenticateSteam::Activate()
 
   TWeakObjectPtr<UNakamaClientAuthenticateSteam> WeakThis(this);
 
-  NakamaApi::AuthenticateSteam(
+  Nakama::AuthenticateSteam(
     StoredClientConfig,
-    StoredAccount,
     StoredCreate,
     StoredUsername,
     StoredSync,
-    [WeakThis](const FNakamaSession& Result)
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
@@ -686,28 +675,26 @@ void UNakamaClientBanGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientBanGroupUsers> WeakThis(this);
 
-  NakamaApi::BanGroupUsers(
+  Nakama::BanGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
-    StoredUserIds,
-    [WeakThis]()
+    StoredUserIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
@@ -735,28 +722,26 @@ void UNakamaClientBlockFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientBlockFriends> WeakThis(this);
 
-  NakamaApi::BlockFriends(
+  Nakama::BlockFriends(
     StoredClientConfig,
     StoredSession,
     StoredIds,
-    StoredUsernames,
-    [WeakThis]()
+    StoredUsernames
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
@@ -792,7 +777,7 @@ void UNakamaClientCreateGroup::Activate()
 
   TWeakObjectPtr<UNakamaClientCreateGroup> WeakThis(this);
 
-  NakamaApi::CreateGroup(
+  Nakama::CreateGroup(
     StoredClientConfig,
     StoredSession,
     StoredName,
@@ -800,24 +785,22 @@ void UNakamaClientCreateGroup::Activate()
     StoredLangTag,
     StoredAvatarUrl,
     StoredOpen,
-    StoredMaxCount,
-    [WeakThis](const FNakamaGroup& Result)
+    StoredMaxCount
+  ).Next([WeakThis](const FNakamaGroupResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
@@ -841,26 +824,24 @@ void UNakamaClientDeleteAccount::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteAccount> WeakThis(this);
 
-  NakamaApi::DeleteAccount(
+  Nakama::DeleteAccount(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis]()
+    StoredSession
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
@@ -888,28 +869,26 @@ void UNakamaClientDeleteFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteFriends> WeakThis(this);
 
-  NakamaApi::DeleteFriends(
+  Nakama::DeleteFriends(
     StoredClientConfig,
     StoredSession,
     StoredIds,
-    StoredUsernames,
-    [WeakThis]()
+    StoredUsernames
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
@@ -935,27 +914,25 @@ void UNakamaClientDeleteGroup::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteGroup> WeakThis(this);
 
-  NakamaApi::DeleteGroup(
+  Nakama::DeleteGroup(
     StoredClientConfig,
     StoredSession,
-    StoredGroupId,
-    [WeakThis]()
+    StoredGroupId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::DeleteLeaderboardRecord(
@@ -981,27 +958,25 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteLeaderboardRecord> WeakThis(this);
 
-  NakamaApi::DeleteLeaderboardRecord(
+  Nakama::DeleteLeaderboardRecord(
     StoredClientConfig,
     StoredSession,
-    StoredLeaderboardId,
-    [WeakThis]()
+    StoredLeaderboardId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifications(
@@ -1027,27 +1002,25 @@ void UNakamaClientDeleteNotifications::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteNotifications> WeakThis(this);
 
-  NakamaApi::DeleteNotifications(
+  Nakama::DeleteNotifications(
     StoredClientConfig,
     StoredSession,
-    StoredIds,
-    [WeakThis]()
+    StoredIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::DeleteTournamentRecord(
@@ -1073,27 +1046,25 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteTournamentRecord> WeakThis(this);
 
-  NakamaApi::DeleteTournamentRecord(
+  Nakama::DeleteTournamentRecord(
     StoredClientConfig,
     StoredSession,
-    StoredTournamentId,
-    [WeakThis]()
+    StoredTournamentId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
@@ -1119,27 +1090,25 @@ void UNakamaClientDeleteStorageObjects::Activate()
 
   TWeakObjectPtr<UNakamaClientDeleteStorageObjects> WeakThis(this);
 
-  NakamaApi::DeleteStorageObjects(
+  Nakama::DeleteStorageObjects(
     StoredClientConfig,
     StoredSession,
-    StoredObjectIds,
-    [WeakThis]()
+    StoredObjectIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientEvent* UNakamaClientEvent::Event(
@@ -1171,30 +1140,28 @@ void UNakamaClientEvent::Activate()
 
   TWeakObjectPtr<UNakamaClientEvent> WeakThis(this);
 
-  NakamaApi::Event(
+  Nakama::Event(
     StoredClientConfig,
     StoredSession,
     StoredName,
     StoredTimestamp,
     StoredExternal,
-    StoredProperties,
-    [WeakThis]()
+    StoredProperties
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
@@ -1218,26 +1185,24 @@ void UNakamaClientGetAccount::Activate()
 
   TWeakObjectPtr<UNakamaClientGetAccount> WeakThis(this);
 
-  NakamaApi::GetAccount(
+  Nakama::GetAccount(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis](const FNakamaAccount& Result)
+    StoredSession
+  ).Next([WeakThis](const FNakamaAccountResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
@@ -1267,29 +1232,27 @@ void UNakamaClientGetUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientGetUsers> WeakThis(this);
 
-  NakamaApi::GetUsers(
+  Nakama::GetUsers(
     StoredClientConfig,
     StoredSession,
     StoredIds,
     StoredUsernames,
-    StoredFacebookIds,
-    [WeakThis](const FNakamaUsers& Result)
+    StoredFacebookIds
+  ).Next([WeakThis](const FNakamaUsersResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
@@ -1315,27 +1278,25 @@ void UNakamaClientGetSubscription::Activate()
 
   TWeakObjectPtr<UNakamaClientGetSubscription> WeakThis(this);
 
-  NakamaApi::GetSubscription(
+  Nakama::GetSubscription(
     StoredClientConfig,
     StoredSession,
-    StoredProductId,
-    [WeakThis](const FNakamaValidatedSubscription& Result)
+    StoredProductId
+  ).Next([WeakThis](const FNakamaValidatedSubscriptionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerStats(
@@ -1359,26 +1320,24 @@ void UNakamaClientGetMatchmakerStats::Activate()
 
   TWeakObjectPtr<UNakamaClientGetMatchmakerStats> WeakThis(this);
 
-  NakamaApi::GetMatchmakerStats(
+  Nakama::GetMatchmakerStats(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis](const FNakamaMatchmakerStats& Result)
+    StoredSession
+  ).Next([WeakThis](const FNakamaMatchmakerStatsResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
@@ -1402,26 +1361,24 @@ void UNakamaClientHealthcheck::Activate()
 
   TWeakObjectPtr<UNakamaClientHealthcheck> WeakThis(this);
 
-  NakamaApi::Healthcheck(
+  Nakama::Healthcheck(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis]()
+    StoredSession
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFacebookFriends(
@@ -1449,28 +1406,27 @@ void UNakamaClientImportFacebookFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientImportFacebookFriends> WeakThis(this);
 
-  NakamaApi::ImportFacebookFriends(
+  Nakama::ImportFacebookFriends(
     StoredClientConfig,
     StoredSession,
-    StoredAccount,
     StoredReset,
-    [WeakThis]()
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFriends(
@@ -1498,28 +1454,27 @@ void UNakamaClientImportSteamFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientImportSteamFriends> WeakThis(this);
 
-  NakamaApi::ImportSteamFriends(
+  Nakama::ImportSteamFriends(
     StoredClientConfig,
     StoredSession,
-    StoredAccount,
     StoredReset,
-    [WeakThis]()
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
@@ -1545,27 +1500,25 @@ void UNakamaClientJoinGroup::Activate()
 
   TWeakObjectPtr<UNakamaClientJoinGroup> WeakThis(this);
 
-  NakamaApi::JoinGroup(
+  Nakama::JoinGroup(
     StoredClientConfig,
     StoredSession,
-    StoredGroupId,
-    [WeakThis]()
+    StoredGroupId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
@@ -1591,27 +1544,25 @@ void UNakamaClientJoinTournament::Activate()
 
   TWeakObjectPtr<UNakamaClientJoinTournament> WeakThis(this);
 
-  NakamaApi::JoinTournament(
+  Nakama::JoinTournament(
     StoredClientConfig,
     StoredSession,
-    StoredTournamentId,
-    [WeakThis]()
+    StoredTournamentId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
@@ -1639,28 +1590,26 @@ void UNakamaClientKickGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientKickGroupUsers> WeakThis(this);
 
-  NakamaApi::KickGroupUsers(
+  Nakama::KickGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
-    StoredUserIds,
-    [WeakThis]()
+    StoredUserIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
@@ -1686,27 +1635,25 @@ void UNakamaClientLeaveGroup::Activate()
 
   TWeakObjectPtr<UNakamaClientLeaveGroup> WeakThis(this);
 
-  NakamaApi::LeaveGroup(
+  Nakama::LeaveGroup(
     StoredClientConfig,
     StoredSession,
-    StoredGroupId,
-    [WeakThis]()
+    StoredGroupId
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
@@ -1734,28 +1681,26 @@ void UNakamaClientLinkApple::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkApple> WeakThis(this);
 
-  NakamaApi::LinkApple(
+  Nakama::LinkApple(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
@@ -1783,28 +1728,26 @@ void UNakamaClientLinkCustom::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkCustom> WeakThis(this);
 
-  NakamaApi::LinkCustom(
+  Nakama::LinkCustom(
     StoredClientConfig,
     StoredSession,
     StoredId,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
@@ -1832,28 +1775,26 @@ void UNakamaClientLinkDevice::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkDevice> WeakThis(this);
 
-  NakamaApi::LinkDevice(
+  Nakama::LinkDevice(
     StoredClientConfig,
     StoredSession,
     StoredId,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
@@ -1883,29 +1824,27 @@ void UNakamaClientLinkEmail::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkEmail> WeakThis(this);
 
-  NakamaApi::LinkEmail(
+  Nakama::LinkEmail(
     StoredClientConfig,
     StoredSession,
     StoredEmail,
     StoredPassword,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
@@ -1933,28 +1872,27 @@ void UNakamaClientLinkFacebook::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkFacebook> WeakThis(this);
 
-  NakamaApi::LinkFacebook(
+  Nakama::LinkFacebook(
     StoredClientConfig,
     StoredSession,
-    StoredAccount,
     StoredSync,
-    [WeakThis]()
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::LinkFacebookInstantGame(
@@ -1982,28 +1920,26 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkFacebookInstantGame> WeakThis(this);
 
-  NakamaApi::LinkFacebookInstantGame(
+  Nakama::LinkFacebookInstantGame(
     StoredClientConfig,
     StoredSession,
     StoredSignedPlayerInfo,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
@@ -2041,7 +1977,7 @@ void UNakamaClientLinkGameCenter::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkGameCenter> WeakThis(this);
 
-  NakamaApi::LinkGameCenter(
+  Nakama::LinkGameCenter(
     StoredClientConfig,
     StoredSession,
     StoredPlayerId,
@@ -2050,24 +1986,22 @@ void UNakamaClientLinkGameCenter::Activate()
     StoredSalt,
     StoredSignature,
     StoredPublicKeyUrl,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
@@ -2095,28 +2029,26 @@ void UNakamaClientLinkGoogle::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkGoogle> WeakThis(this);
 
-  NakamaApi::LinkGoogle(
+  Nakama::LinkGoogle(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
@@ -2144,28 +2076,27 @@ void UNakamaClientLinkSteam::Activate()
 
   TWeakObjectPtr<UNakamaClientLinkSteam> WeakThis(this);
 
-  NakamaApi::LinkSteam(
+  Nakama::LinkSteam(
     StoredClientConfig,
     StoredSession,
-    StoredAccount,
     StoredSync,
-    [WeakThis]()
+    StoredAccount.Token,
+    StoredAccount.Vars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelMessages(
@@ -2197,30 +2128,28 @@ void UNakamaClientListChannelMessages::Activate()
 
   TWeakObjectPtr<UNakamaClientListChannelMessages> WeakThis(this);
 
-  NakamaApi::ListChannelMessages(
+  Nakama::ListChannelMessages(
     StoredClientConfig,
     StoredSession,
     StoredChannelId,
     StoredLimit,
     StoredForward,
-    StoredCursor,
-    [WeakThis](const FNakamaChannelMessageList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaChannelMessageListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
@@ -2250,29 +2179,27 @@ void UNakamaClientListFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientListFriends> WeakThis(this);
 
-  NakamaApi::ListFriends(
+  Nakama::ListFriends(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
     StoredState,
-    StoredCursor,
-    [WeakThis](const FNakamaFriendList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaFriendListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriendsOfFriends(
@@ -2300,28 +2227,26 @@ void UNakamaClientListFriendsOfFriends::Activate()
 
   TWeakObjectPtr<UNakamaClientListFriendsOfFriends> WeakThis(this);
 
-  NakamaApi::ListFriendsOfFriends(
+  Nakama::ListFriendsOfFriends(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
-    StoredCursor,
-    [WeakThis](const FNakamaFriendsOfFriendsList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaFriendsOfFriendsListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
@@ -2357,7 +2282,7 @@ void UNakamaClientListGroups::Activate()
 
   TWeakObjectPtr<UNakamaClientListGroups> WeakThis(this);
 
-  NakamaApi::ListGroups(
+  Nakama::ListGroups(
     StoredClientConfig,
     StoredSession,
     StoredName,
@@ -2365,24 +2290,22 @@ void UNakamaClientListGroups::Activate()
     StoredLimit,
     StoredLangTag,
     StoredMembers,
-    StoredOpen,
-    [WeakThis](const FNakamaGroupList& Result)
+    StoredOpen
+  ).Next([WeakThis](const FNakamaGroupListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
@@ -2414,30 +2337,28 @@ void UNakamaClientListGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientListGroupUsers> WeakThis(this);
 
-  NakamaApi::ListGroupUsers(
+  Nakama::ListGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
     StoredLimit,
     StoredState,
-    StoredCursor,
-    [WeakThis](const FNakamaGroupUserList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaGroupUserListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLeaderboardRecords(
@@ -2471,31 +2392,29 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
   TWeakObjectPtr<UNakamaClientListLeaderboardRecords> WeakThis(this);
 
-  NakamaApi::ListLeaderboardRecords(
+  Nakama::ListLeaderboardRecords(
     StoredClientConfig,
     StoredSession,
     StoredLeaderboardId,
     StoredOwnerIds,
     StoredLimit,
     StoredCursor,
-    StoredExpiry,
-    [WeakThis](const FNakamaLeaderboardRecordList& Result)
+    StoredExpiry
+  ).Next([WeakThis](const FNakamaLeaderboardRecordListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardRecordsAroundOwner::ListLeaderboardRecordsAroundOwner(
@@ -2529,31 +2448,29 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
   TWeakObjectPtr<UNakamaClientListLeaderboardRecordsAroundOwner> WeakThis(this);
 
-  NakamaApi::ListLeaderboardRecordsAroundOwner(
+  Nakama::ListLeaderboardRecordsAroundOwner(
     StoredClientConfig,
     StoredSession,
     StoredLeaderboardId,
     StoredLimit,
     StoredOwnerId,
     StoredExpiry,
-    StoredCursor,
-    [WeakThis](const FNakamaLeaderboardRecordList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaLeaderboardRecordListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
@@ -2589,7 +2506,7 @@ void UNakamaClientListMatches::Activate()
 
   TWeakObjectPtr<UNakamaClientListMatches> WeakThis(this);
 
-  NakamaApi::ListMatches(
+  Nakama::ListMatches(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
@@ -2597,24 +2514,22 @@ void UNakamaClientListMatches::Activate()
     StoredLabel,
     StoredMinSize,
     StoredMaxSize,
-    StoredQuery,
-    [WeakThis](const FNakamaMatchList& Result)
+    StoredQuery
+  ).Next([WeakThis](const FNakamaMatchListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListParties* UNakamaClientListParties::ListParties(
@@ -2646,30 +2561,28 @@ void UNakamaClientListParties::Activate()
 
   TWeakObjectPtr<UNakamaClientListParties> WeakThis(this);
 
-  NakamaApi::ListParties(
+  Nakama::ListParties(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
     StoredOpen,
     StoredQuery,
-    StoredCursor,
-    [WeakThis](const FNakamaPartyList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaPartyListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotifications(
@@ -2697,28 +2610,26 @@ void UNakamaClientListNotifications::Activate()
 
   TWeakObjectPtr<UNakamaClientListNotifications> WeakThis(this);
 
-  NakamaApi::ListNotifications(
+  Nakama::ListNotifications(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
-    StoredCacheableCursor,
-    [WeakThis](const FNakamaNotificationList& Result)
+    StoredCacheableCursor
+  ).Next([WeakThis](const FNakamaNotificationListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObjects(
@@ -2750,30 +2661,28 @@ void UNakamaClientListStorageObjects::Activate()
 
   TWeakObjectPtr<UNakamaClientListStorageObjects> WeakThis(this);
 
-  NakamaApi::ListStorageObjects(
+  Nakama::ListStorageObjects(
     StoredClientConfig,
     StoredSession,
     StoredUserId,
     StoredCollection,
     StoredLimit,
-    StoredCursor,
-    [WeakThis](const FNakamaStorageObjectList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaStorageObjectListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscriptions(
@@ -2801,28 +2710,26 @@ void UNakamaClientListSubscriptions::Activate()
 
   TWeakObjectPtr<UNakamaClientListSubscriptions> WeakThis(this);
 
-  NakamaApi::ListSubscriptions(
+  Nakama::ListSubscriptions(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
-    StoredCursor,
-    [WeakThis](const FNakamaSubscriptionList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaSubscriptionListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
@@ -2858,7 +2765,7 @@ void UNakamaClientListTournaments::Activate()
 
   TWeakObjectPtr<UNakamaClientListTournaments> WeakThis(this);
 
-  NakamaApi::ListTournaments(
+  Nakama::ListTournaments(
     StoredClientConfig,
     StoredSession,
     StoredCategoryStart,
@@ -2866,24 +2773,22 @@ void UNakamaClientListTournaments::Activate()
     StoredStartTime,
     StoredEndTime,
     StoredLimit,
-    StoredCursor,
-    [WeakThis](const FNakamaTournamentList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaTournamentListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTournamentRecords(
@@ -2917,31 +2822,29 @@ void UNakamaClientListTournamentRecords::Activate()
 
   TWeakObjectPtr<UNakamaClientListTournamentRecords> WeakThis(this);
 
-  NakamaApi::ListTournamentRecords(
+  Nakama::ListTournamentRecords(
     StoredClientConfig,
     StoredSession,
     StoredTournamentId,
     StoredOwnerIds,
     StoredLimit,
     StoredCursor,
-    StoredExpiry,
-    [WeakThis](const FNakamaTournamentRecordList& Result)
+    StoredExpiry
+  ).Next([WeakThis](const FNakamaTournamentRecordListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecordsAroundOwner::ListTournamentRecordsAroundOwner(
@@ -2975,31 +2878,29 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
   TWeakObjectPtr<UNakamaClientListTournamentRecordsAroundOwner> WeakThis(this);
 
-  NakamaApi::ListTournamentRecordsAroundOwner(
+  Nakama::ListTournamentRecordsAroundOwner(
     StoredClientConfig,
     StoredSession,
     StoredTournamentId,
     StoredLimit,
     StoredOwnerId,
     StoredExpiry,
-    StoredCursor,
-    [WeakThis](const FNakamaTournamentRecordList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaTournamentRecordListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
@@ -3031,30 +2932,28 @@ void UNakamaClientListUserGroups::Activate()
 
   TWeakObjectPtr<UNakamaClientListUserGroups> WeakThis(this);
 
-  NakamaApi::ListUserGroups(
+  Nakama::ListUserGroups(
     StoredClientConfig,
     StoredSession,
     StoredUserId,
     StoredLimit,
     StoredState,
-    StoredCursor,
-    [WeakThis](const FNakamaUserGroupList& Result)
+    StoredCursor
+  ).Next([WeakThis](const FNakamaUserGroupListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
@@ -3082,28 +2981,26 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientPromoteGroupUsers> WeakThis(this);
 
-  NakamaApi::PromoteGroupUsers(
+  Nakama::PromoteGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
-    StoredUserIds,
-    [WeakThis]()
+    StoredUserIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
@@ -3131,28 +3028,26 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
   TWeakObjectPtr<UNakamaClientDemoteGroupUsers> WeakThis(this);
 
-  NakamaApi::DemoteGroupUsers(
+  Nakama::DemoteGroupUsers(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
-    StoredUserIds,
-    [WeakThis]()
+    StoredUserIds
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObjects(
@@ -3178,27 +3073,25 @@ void UNakamaClientReadStorageObjects::Activate()
 
   TWeakObjectPtr<UNakamaClientReadStorageObjects> WeakThis(this);
 
-  NakamaApi::ReadStorageObjects(
+  Nakama::ReadStorageObjects(
     StoredClientConfig,
     StoredSession,
-    StoredObjectIds,
-    [WeakThis](const FNakamaStorageObjects& Result)
+    StoredObjectIds
+  ).Next([WeakThis](const FNakamaStorageObjectsResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
@@ -3226,28 +3119,26 @@ void UNakamaClientRpcFunc::Activate()
 
   TWeakObjectPtr<UNakamaClientRpcFunc> WeakThis(this);
 
-  NakamaApi::RpcFunc(
+  Nakama::RpcFunc(
     StoredClientConfig,
     StoredSession,
     StoredId,
-    StoredPayload,
-    [WeakThis](const FNakamaRpc& Result)
+    StoredPayload
+  ).Next([WeakThis](const FNakamaRpcResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
@@ -3275,28 +3166,26 @@ void UNakamaClientUnlinkApple::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkApple> WeakThis(this);
 
-  NakamaApi::UnlinkApple(
+  Nakama::UnlinkApple(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
@@ -3324,28 +3213,26 @@ void UNakamaClientUnlinkCustom::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkCustom> WeakThis(this);
 
-  NakamaApi::UnlinkCustom(
+  Nakama::UnlinkCustom(
     StoredClientConfig,
     StoredSession,
     StoredId,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
@@ -3373,28 +3260,26 @@ void UNakamaClientUnlinkDevice::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkDevice> WeakThis(this);
 
-  NakamaApi::UnlinkDevice(
+  Nakama::UnlinkDevice(
     StoredClientConfig,
     StoredSession,
     StoredId,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
@@ -3424,29 +3309,27 @@ void UNakamaClientUnlinkEmail::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkEmail> WeakThis(this);
 
-  NakamaApi::UnlinkEmail(
+  Nakama::UnlinkEmail(
     StoredClientConfig,
     StoredSession,
     StoredEmail,
     StoredPassword,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
@@ -3474,28 +3357,26 @@ void UNakamaClientUnlinkFacebook::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkFacebook> WeakThis(this);
 
-  NakamaApi::UnlinkFacebook(
+  Nakama::UnlinkFacebook(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::UnlinkFacebookInstantGame(
@@ -3523,28 +3404,26 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkFacebookInstantGame> WeakThis(this);
 
-  NakamaApi::UnlinkFacebookInstantGame(
+  Nakama::UnlinkFacebookInstantGame(
     StoredClientConfig,
     StoredSession,
     StoredSignedPlayerInfo,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
@@ -3582,7 +3461,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkGameCenter> WeakThis(this);
 
-  NakamaApi::UnlinkGameCenter(
+  Nakama::UnlinkGameCenter(
     StoredClientConfig,
     StoredSession,
     StoredPlayerId,
@@ -3591,24 +3470,22 @@ void UNakamaClientUnlinkGameCenter::Activate()
     StoredSalt,
     StoredSignature,
     StoredPublicKeyUrl,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
@@ -3636,28 +3513,26 @@ void UNakamaClientUnlinkGoogle::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkGoogle> WeakThis(this);
 
-  NakamaApi::UnlinkGoogle(
+  Nakama::UnlinkGoogle(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
@@ -3685,28 +3560,26 @@ void UNakamaClientUnlinkSteam::Activate()
 
   TWeakObjectPtr<UNakamaClientUnlinkSteam> WeakThis(this);
 
-  NakamaApi::UnlinkSteam(
+  Nakama::UnlinkSteam(
     StoredClientConfig,
     StoredSession,
     StoredToken,
-    StoredVars,
-    [WeakThis]()
+    StoredVars
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
@@ -3742,7 +3615,7 @@ void UNakamaClientUpdateAccount::Activate()
 
   TWeakObjectPtr<UNakamaClientUpdateAccount> WeakThis(this);
 
-  NakamaApi::UpdateAccount(
+  Nakama::UpdateAccount(
     StoredClientConfig,
     StoredSession,
     StoredUsername,
@@ -3750,24 +3623,22 @@ void UNakamaClientUpdateAccount::Activate()
     StoredAvatarUrl,
     StoredLangTag,
     StoredLocation,
-    StoredTimezone,
-    [WeakThis]()
+    StoredTimezone
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
@@ -3803,7 +3674,7 @@ void UNakamaClientUpdateGroup::Activate()
 
   TWeakObjectPtr<UNakamaClientUpdateGroup> WeakThis(this);
 
-  NakamaApi::UpdateGroup(
+  Nakama::UpdateGroup(
     StoredClientConfig,
     StoredSession,
     StoredGroupId,
@@ -3811,24 +3682,22 @@ void UNakamaClientUpdateGroup::Activate()
     StoredDescription,
     StoredLangTag,
     StoredAvatarUrl,
-    StoredOpen,
-    [WeakThis]()
+    StoredOpen
+  ).Next([WeakThis](const FNakamaVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::ValidatePurchaseApple(
@@ -3856,28 +3725,26 @@ void UNakamaClientValidatePurchaseApple::Activate()
 
   TWeakObjectPtr<UNakamaClientValidatePurchaseApple> WeakThis(this);
 
-  NakamaApi::ValidatePurchaseApple(
+  Nakama::ValidatePurchaseApple(
     StoredClientConfig,
     StoredSession,
     StoredReceipt,
-    StoredPersist,
-    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidatePurchaseResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::ValidateSubscriptionApple(
@@ -3905,28 +3772,26 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 
   TWeakObjectPtr<UNakamaClientValidateSubscriptionApple> WeakThis(this);
 
-  NakamaApi::ValidateSubscriptionApple(
+  Nakama::ValidateSubscriptionApple(
     StoredClientConfig,
     StoredSession,
     StoredReceipt,
-    StoredPersist,
-    [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidateSubscriptionResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::ValidatePurchaseGoogle(
@@ -3954,28 +3819,26 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 
   TWeakObjectPtr<UNakamaClientValidatePurchaseGoogle> WeakThis(this);
 
-  NakamaApi::ValidatePurchaseGoogle(
+  Nakama::ValidatePurchaseGoogle(
     StoredClientConfig,
     StoredSession,
     StoredPurchase,
-    StoredPersist,
-    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidatePurchaseResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle::ValidateSubscriptionGoogle(
@@ -4003,28 +3866,26 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 
   TWeakObjectPtr<UNakamaClientValidateSubscriptionGoogle> WeakThis(this);
 
-  NakamaApi::ValidateSubscriptionGoogle(
+  Nakama::ValidateSubscriptionGoogle(
     StoredClientConfig,
     StoredSession,
     StoredReceipt,
-    StoredPersist,
-    [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidateSubscriptionResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::ValidatePurchaseHuawei(
@@ -4054,29 +3915,27 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 
   TWeakObjectPtr<UNakamaClientValidatePurchaseHuawei> WeakThis(this);
 
-  NakamaApi::ValidatePurchaseHuawei(
+  Nakama::ValidatePurchaseHuawei(
     StoredClientConfig,
     StoredSession,
     StoredPurchase,
     StoredSignature,
-    StoredPersist,
-    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidatePurchaseResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFacebookInstant::ValidatePurchaseFacebookInstant(
@@ -4104,28 +3963,26 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 
   TWeakObjectPtr<UNakamaClientValidatePurchaseFacebookInstant> WeakThis(this);
 
-  NakamaApi::ValidatePurchaseFacebookInstant(
+  Nakama::ValidatePurchaseFacebookInstant(
     StoredClientConfig,
     StoredSession,
     StoredSignedRequest,
-    StoredPersist,
-    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    StoredPersist
+  ).Next([WeakThis](const FNakamaValidatePurchaseResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteLeaderboardRecord(
@@ -4153,28 +4010,29 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
   TWeakObjectPtr<UNakamaClientWriteLeaderboardRecord> WeakThis(this);
 
-  NakamaApi::WriteLeaderboardRecord(
+  Nakama::WriteLeaderboardRecord(
     StoredClientConfig,
     StoredSession,
     StoredLeaderboardId,
-    StoredRecord,
-    [WeakThis](const FNakamaLeaderboardRecord& Result)
+    StoredRecord.Score,
+    StoredRecord.Subscore,
+    StoredRecord.Metadata,
+    StoredRecord.Operator
+  ).Next([WeakThis](const FNakamaLeaderboardRecordResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorageObjects(
@@ -4200,27 +4058,25 @@ void UNakamaClientWriteStorageObjects::Activate()
 
   TWeakObjectPtr<UNakamaClientWriteStorageObjects> WeakThis(this);
 
-  NakamaApi::WriteStorageObjects(
+  Nakama::WriteStorageObjects(
     StoredClientConfig,
     StoredSession,
-    StoredObjects,
-    [WeakThis](const FNakamaStorageObjectAcks& Result)
+    StoredObjects
+  ).Next([WeakThis](const FNakamaStorageObjectAcksResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTournamentRecord(
@@ -4248,26 +4104,27 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
   TWeakObjectPtr<UNakamaClientWriteTournamentRecord> WeakThis(this);
 
-  NakamaApi::WriteTournamentRecord(
+  Nakama::WriteTournamentRecord(
     StoredClientConfig,
     StoredSession,
     StoredTournamentId,
-    StoredRecord,
-    [WeakThis](const FNakamaLeaderboardRecord& Result)
+    StoredRecord.Score,
+    StoredRecord.Subscore,
+    StoredRecord.Metadata,
+    StoredRecord.Operator
+  ).Next([WeakThis](const FNakamaLeaderboardRecordResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FNakamaError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }

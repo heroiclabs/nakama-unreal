@@ -15,7 +15,8 @@
  */
 
 #include "NakamaModule.h"
-#include "NakamaApi.h"
+#include "NakamaClient.h"
+#include "NakamaLog.h"
 
 void FNakamaModule::StartupModule()
 {

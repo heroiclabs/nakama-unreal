@@ -17,6 +17,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Dom/JsonObject.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NakamaSession.generated.h"
 

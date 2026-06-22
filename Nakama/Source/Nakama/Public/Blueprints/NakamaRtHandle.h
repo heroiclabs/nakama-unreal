@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaRt.h"
+#include "Realtime/NakamaRt.h"
 #include "NakamaRtHandle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnectCompleted, const FNakamaWebSocketConnectionResult&, Result);
@@ -28,7 +26,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateOnMessageError, EWebSocket
 
 //
 // Delegates for event callbacks (dynamic = BlueprintAssignable; native = C++ AddLambda)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelMessage, const FNakamaRtChannelMessage&, Data);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelMessage, const FNakamaChannelMessage&, Data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&, Data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchData, const FNakamaRtMatchData&, Data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&, Data);

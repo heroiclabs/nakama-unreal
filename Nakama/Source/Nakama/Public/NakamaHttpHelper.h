@@ -22,7 +22,6 @@
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/Base64.h"
-#include "Misc/DateTime.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
@@ -32,6 +31,7 @@
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "NakamaError.h"
 #include "NakamaClientConfig.h"
+#include "Policies/CondensedJsonPrintPolicy.h"
 
 /** Authentication scheme applied to an outgoing HTTP request. */
 enum class ENakamaRequestAuth : uint8

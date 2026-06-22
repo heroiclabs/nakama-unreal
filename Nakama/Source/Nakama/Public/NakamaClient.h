@@ -22,198 +22,6 @@
 #include "NakamaSession.h"
 #include "NakamaFuture.h"
 
-/** Tag type used as the value type for RPCs that return no data. */
-struct NAKAMA_API FNakamaVoid {};
-struct NAKAMA_API FNakamaVoidResult
-{
-	using ValueType = FNakamaVoid;
-	FNakamaVoid Value{};
-	FNakamaError Error;
-	bool bIsError = true;
-};
-struct NAKAMA_API FNakamaSessionResult
-{
-  using ValueType = FNakamaSession;
-  FNakamaSession Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupResult
-{
-  using ValueType = FNakamaGroup;
-  FNakamaGroup Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaAccountResult
-{
-  using ValueType = FNakamaAccount;
-  FNakamaAccount Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaUsersResult
-{
-  using ValueType = FNakamaUsers;
-  FNakamaUsers Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidatedSubscriptionResult
-{
-  using ValueType = FNakamaValidatedSubscription;
-  FNakamaValidatedSubscription Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaMatchmakerStatsResult
-{
-  using ValueType = FNakamaMatchmakerStats;
-  FNakamaMatchmakerStats Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaChannelMessageListResult
-{
-  using ValueType = FNakamaChannelMessageList;
-  FNakamaChannelMessageList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaFriendListResult
-{
-  using ValueType = FNakamaFriendList;
-  FNakamaFriendList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaFriendsOfFriendsListResult
-{
-  using ValueType = FNakamaFriendsOfFriendsList;
-  FNakamaFriendsOfFriendsList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupListResult
-{
-  using ValueType = FNakamaGroupList;
-  FNakamaGroupList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaGroupUserListResult
-{
-  using ValueType = FNakamaGroupUserList;
-  FNakamaGroupUserList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaLeaderboardRecordListResult
-{
-  using ValueType = FNakamaLeaderboardRecordList;
-  FNakamaLeaderboardRecordList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaMatchListResult
-{
-  using ValueType = FNakamaMatchList;
-  FNakamaMatchList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaPartyListResult
-{
-  using ValueType = FNakamaPartyList;
-  FNakamaPartyList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaNotificationListResult
-{
-  using ValueType = FNakamaNotificationList;
-  FNakamaNotificationList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectListResult
-{
-  using ValueType = FNakamaStorageObjectList;
-  FNakamaStorageObjectList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaSubscriptionListResult
-{
-  using ValueType = FNakamaSubscriptionList;
-  FNakamaSubscriptionList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaTournamentListResult
-{
-  using ValueType = FNakamaTournamentList;
-  FNakamaTournamentList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaTournamentRecordListResult
-{
-  using ValueType = FNakamaTournamentRecordList;
-  FNakamaTournamentRecordList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaUserGroupListResult
-{
-  using ValueType = FNakamaUserGroupList;
-  FNakamaUserGroupList Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectsResult
-{
-  using ValueType = FNakamaStorageObjects;
-  FNakamaStorageObjects Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaRpcResult
-{
-  using ValueType = FNakamaRpc;
-  FNakamaRpc Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidatePurchaseResponseResult
-{
-  using ValueType = FNakamaValidatePurchaseResponse;
-  FNakamaValidatePurchaseResponse Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaValidateSubscriptionResponseResult
-{
-  using ValueType = FNakamaValidateSubscriptionResponse;
-  FNakamaValidateSubscriptionResponse Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaLeaderboardRecordResult
-{
-  using ValueType = FNakamaLeaderboardRecord;
-  FNakamaLeaderboardRecord Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-struct NAKAMA_API FNakamaStorageObjectAcksResult
-{
-  using ValueType = FNakamaStorageObjectAcks;
-  FNakamaStorageObjectAcks Value {};
-  FNakamaError Error;
-  bool bIsError = true;
-};
-
 /** Retry configuration for transient error handling + session auto-refresh. */
 struct NAKAMA_API FNakamaRetryConfig
 {
@@ -1565,13 +1373,30 @@ namespace Nakama
   * @param Session	The session of the user.
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
-  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
+    const FString& Id,
+    const FString& Payload,
+    const FNakamaRetryConfig& RetryConfig = {},
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
+  );
+  
+  /**
+  * Execute a Lua function on the server. (S2S Variant)
+  *
+  * @param ClientConfig	The client configuration.
+  * @param Id	 The identifier of the function.
+  * @param Payload	 The payload of the function which must be a JSON object.
+  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
+  * @param RetryConfig Retry configuration.
+  * @param CancellationToken	Set to true to cancel the in-flight request.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
+    const FNakamaClientConfig& ClientConfig,
     const FString& Id,
     const FString& Payload,
     const FString& HttpKey,

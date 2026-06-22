@@ -17,8 +17,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaRtConnection.h"
-#include "NakamaRtTypes.h"
+#include "Realtime/NakamaRtConnection.h"
+#include "Realtime/NakamaRtTypes.gen.h"
 
 namespace NakamaRt
 {
@@ -45,6 +45,8 @@ namespace NakamaRt
       return Result;
     }
   };
+  
+  struct FNakamaRtEmptyResponse { };
 
   /*
   *  Join a realtime chat channel.
@@ -200,7 +202,7 @@ namespace NakamaRt
   * @param Payload	 The payload of the function which must be a JSON object.
   * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
   */
-  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
+  NAKAMA_API TNakamaFuture<FNakamaRtResult<FNakamaRpc>> Rpc(
     const TSharedPtr<FNakamaRtConnection>& Connection
     , const FString& Id
     , const FString& Payload

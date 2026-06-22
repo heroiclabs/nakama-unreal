@@ -21,7 +21,7 @@
 #include "Templates/SharedPointer.h"
 #include "IWebSocket.h"
 #include "NakamaFuture.h"
-#include "NakamaRtTypes.h"
+#include "Containers/Ticker.h"
 #include "NakamaRtConnection.generated.h"
 
 UENUM(BlueprintType)
@@ -99,7 +99,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateClosed, int32, const FString&, b
 
 //
 // Delegates for event callbacks
-DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelMessage, const FNakamaRtChannelMessage&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelMessage, const FNakamaChannelMessage&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMatchData, const FNakamaRtMatchData&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&);

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-#include "NakamaRt.h"
+#include "Realtime/NakamaRt.h"
+
+#include "Realtime/NakamaRtTypes.gen.h"
 
 namespace NakamaRt
 {
@@ -743,7 +745,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchmakerRemove(
     });
 }
 
-TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
+TNakamaFuture<FNakamaRtResult<FNakamaRpc>> Rpc(
   const TSharedPtr<FNakamaRtConnection>& Connection
   , const FString& Id
   , const FString& Payload
@@ -756,12 +758,12 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
     Error.Code = -1;
     Error.Message = TEXT("Realtime Connection is not initialized or is invalid.");
 
-    FNakamaRtResult<FNakamaRtRpc> ErrorResult
-      = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
+    FNakamaRtResult<FNakamaRpc> ErrorResult
+      = FNakamaRtResult<FNakamaRpc>::Failure(Error);
     return MakeCompletedFuture(ErrorResult);
   }
 
-  FNakamaRtRpc RequestMsg;
+  FNakamaRpc RequestMsg;
   RequestMsg.Id = Id;
   RequestMsg.Payload = Payload;
   RequestMsg.HttpKey = HttpKey;
@@ -771,9 +773,9 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
     {
       if (Response.ErrorCode == ENakamaWebSocketError::None)
       {
-        FNakamaRtRpc ResultData = FNakamaRtRpc::FromJson(Response.Data);
-        FNakamaRtResult<FNakamaRtRpc> Result
-          = FNakamaRtResult<FNakamaRtRpc>::Success(ResultData);
+        FNakamaRpc ResultData = FNakamaRpc::FromJson(Response.Data);
+        FNakamaRtResult<FNakamaRpc> Result
+          = FNakamaRtResult<FNakamaRpc>::Success(ResultData);
 
         return MakeCompletedFuture(Result);
       }
@@ -805,8 +807,8 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtRpc>> Rpc(
           break;
       }
 
-      FNakamaRtResult<FNakamaRtRpc> ErrorResult
-        = FNakamaRtResult<FNakamaRtRpc>::Failure(Error);
+      FNakamaRtResult<FNakamaRpc> ErrorResult
+        = FNakamaRtResult<FNakamaRpc>::Failure(Error);
       return MakeCompletedFuture(ErrorResult);
     });
 }

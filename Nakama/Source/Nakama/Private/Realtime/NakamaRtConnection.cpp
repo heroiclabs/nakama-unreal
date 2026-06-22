@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-#include "NakamaRtConnection.h"
+#include "Realtime/NakamaRtConnection.h"
 #include "WebSocketsModule.h"
-#include "NakamaApi.h"
+#include "Realtime/NakamaRtTypes.gen.h"
+#include "Async/Async.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
+#include "Serialization/JsonSerializer.h"
+#include "NakamaLog.h"
 
 FNakamaRtConnection::FNakamaRtConnection()
 {
@@ -490,7 +493,7 @@ void FNakamaRtConnection::HandleServerEvent(const TSharedPtr<FJsonObject>& Envel
   {
     if (ChannelMessage.IsBound())
     {
-      const FNakamaRtChannelMessage Data = FNakamaRtChannelMessage::FromJson(Envelope->GetObjectField(TEXT("channel_message")));
+      const FNakamaChannelMessage Data = FNakamaChannelMessage::FromJson(Envelope->GetObjectField(TEXT("channel_message")));
       ChannelMessage.Broadcast(Data);
     }
     return;

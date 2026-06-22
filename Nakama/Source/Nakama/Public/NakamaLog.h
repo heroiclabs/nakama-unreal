@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
+#include "CoreMinimal.h"
 
-class FNakamaBlueprintsModule : public IModuleInterface
-{
-};
+NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);

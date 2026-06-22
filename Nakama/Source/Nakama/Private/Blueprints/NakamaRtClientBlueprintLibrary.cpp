@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
+#include "Blueprints/NakamaRtClientBlueprintLibrary.h"
 
-#include "NakamaRtClientBlueprintLibrary.h"
-#include "NakamaRt.h"
+#include "UObject/Package.h"
 
 UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   UObject* WorldContextObject
@@ -114,7 +113,7 @@ void UNakamaRealtimeClientChannelLeave::Activate()
     StoredConnection
     , StoredChannelId
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -403,7 +402,7 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
     , StoredPresences
     , StoredReliable
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -515,7 +514,7 @@ void UNakamaRealtimeClientMatchLeave::Activate()
     StoredConnection
     , StoredMatchId
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -636,7 +635,7 @@ void UNakamaRealtimeClientMatchmakerRemove::Activate()
     StoredConnection
     , StoredTicket
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -695,7 +694,7 @@ void UNakamaRealtimeClientRpc::Activate()
     , StoredPayload
     , StoredHttpKey
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtRpc> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRpc> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -804,7 +803,7 @@ void UNakamaRealtimeClientStatusUnfollow::Activate()
     StoredConnection
     , StoredUserIds
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -857,7 +856,7 @@ void UNakamaRealtimeClientStatusUpdate::Activate()
     StoredConnection
     , StoredStatus
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1022,7 +1021,7 @@ void UNakamaRealtimeClientPartyJoin::Activate()
     StoredConnection
     , StoredPartyId
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1075,7 +1074,7 @@ void UNakamaRealtimeClientPartyLeave::Activate()
     StoredConnection
     , StoredPartyId
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1131,7 +1130,7 @@ void UNakamaRealtimeClientPartyPromote::Activate()
     , StoredPartyId
     , StoredPresence
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1187,7 +1186,7 @@ void UNakamaRealtimeClientPartyAccept::Activate()
     , StoredPartyId
     , StoredPresence
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1243,7 +1242,7 @@ void UNakamaRealtimeClientPartyRemove::Activate()
     , StoredPartyId
     , StoredPresence
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1296,7 +1295,7 @@ void UNakamaRealtimeClientPartyClose::Activate()
     StoredConnection
     , StoredPartyId
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1476,7 +1475,7 @@ void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
     , StoredPartyId
     , StoredTicket
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1535,7 +1534,7 @@ void UNakamaRealtimeClientPartyDataSend::Activate()
     , StoredOpCode
     , StoredData
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)
@@ -1597,7 +1596,7 @@ void UNakamaRealtimeClientPartyUpdate::Activate()
     , StoredOpen
     , StoredHidden
   )
-  .Next([WeakThis](NakamaRt::FNakamaRtResult<FNakamaRtEmptyResponse> Resp)
+  .Next([WeakThis](NakamaRt::FNakamaRtResult<NakamaRt::FNakamaRtEmptyResponse> Resp)
   {
     auto* Self = WeakThis.Get();
     if (!Self)

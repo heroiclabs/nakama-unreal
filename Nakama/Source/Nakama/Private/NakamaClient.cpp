@@ -8260,7 +8260,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 					, RecordOperator
 				]()
 				{
-					FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+					FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite Record;
 					Record.Score = RecordScore;
 					Record.Subscore = RecordSubscore;
 					Record.Metadata = RecordMetadata;
@@ -8474,7 +8474,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 					, RecordOperator
 				]()
 				{
-					FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+					FNakamaWriteTournamentRecordRequestTournamentRecordWrite Record;
 					Record.Score = RecordScore;
 					Record.Subscore = RecordSubscore;
 					Record.Metadata = RecordMetadata;

@@ -18,10 +18,11 @@
 
 
 
+
 #include "Nakama.gen.h"
 #include "NakamaHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
-
+#include "Misc/Base64.h"
 
 
 
@@ -172,7 +173,6 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountRefresh Result;
@@ -216,7 +216,6 @@ TSharedPtr<FJsonObject> FNakamaAccountRefresh::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountApple Result;
@@ -260,7 +259,6 @@ TSharedPtr<FJsonObject> FNakamaAccountApple::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountCustom Result;
@@ -304,7 +302,6 @@ TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountDevice Result;
@@ -348,7 +345,6 @@ TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountEmail Result;
@@ -400,7 +396,6 @@ TSharedPtr<FJsonObject> FNakamaAccountEmail::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountFacebook Result;
@@ -444,7 +439,6 @@ TSharedPtr<FJsonObject> FNakamaAccountFacebook::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountFacebookInstantGame Result;
@@ -488,7 +482,6 @@ TSharedPtr<FJsonObject> FNakamaAccountFacebookInstantGame::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountGameCenter Result;
@@ -569,7 +562,6 @@ TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountGoogle Result;
@@ -613,7 +605,6 @@ TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountSteam Result;
@@ -657,7 +648,6 @@ TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
   }
   return Json;
 }
-
 FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccount Result;
@@ -740,7 +730,6 @@ TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
   Json->SetStringField(TEXT("disable_time"), DisableTime.ToIso8601());
   return Json;
 }
-
 FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAddFriendsRequest Result;
@@ -804,7 +793,6 @@ TSharedPtr<FJsonObject> FNakamaAddFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAddGroupUsersRequest Result;
@@ -848,7 +836,6 @@ TSharedPtr<FJsonObject> FNakamaAddGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaSessionRefreshRequest Result;
@@ -892,7 +879,6 @@ TSharedPtr<FJsonObject> FNakamaSessionRefreshRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaSessionLogoutRequest Result;
@@ -924,7 +910,6 @@ TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateAppleRequest Result;
@@ -965,7 +950,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateCustomRequest Result;
@@ -1006,7 +990,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateDeviceRequest Result;
@@ -1047,7 +1030,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateEmailRequest Result;
@@ -1088,7 +1070,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateFacebookRequest Result;
@@ -1137,7 +1118,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateFacebookInstantGameRequest Result;
@@ -1178,7 +1158,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() 
   }
   return Json;
 }
-
 FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateGameCenterRequest Result;
@@ -1219,7 +1198,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateGoogleRequest Result;
@@ -1260,7 +1238,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAuthenticateSteamRequest Result;
@@ -1309,7 +1286,6 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaBanGroupUsersRequest Result;
@@ -1353,7 +1329,6 @@ TSharedPtr<FJsonObject> FNakamaBanGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaBlockFriendsRequest Result;
@@ -1409,7 +1384,6 @@ TSharedPtr<FJsonObject> FNakamaBlockFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaChannelMessage Result;
@@ -1523,7 +1497,6 @@ TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const
   }
   return Json;
 }
-
 FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaChannelMessageList Result;
@@ -1587,7 +1560,6 @@ TSharedPtr<FJsonObject> FNakamaChannelMessageList::ToJson() const
   }
   return Json;
 }
-
 FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaCreateGroupRequest Result;
@@ -1645,7 +1617,6 @@ TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const
   Json->SetNumberField(TEXT("max_count"), MaxCount);
   return Json;
 }
-
 FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteFriendsRequest Result;
@@ -1701,7 +1672,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteGroupRequest Result;
@@ -1725,7 +1695,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteGroupRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteLeaderboardRecordRequest Result;
@@ -1749,7 +1718,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteLeaderboardRecordRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteNotificationsRequest Result;
@@ -1785,7 +1753,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteNotificationsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteTournamentRecordRequest Result;
@@ -1809,7 +1776,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteTournamentRecordRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteStorageObjectId Result;
@@ -1849,7 +1815,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectId::ToJson() const
   }
   return Json;
 }
-
 FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDeleteStorageObjectsRequest Result;
@@ -1889,7 +1854,6 @@ TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaEvent Result;
@@ -1943,7 +1907,6 @@ TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const
   }
   return Json;
 }
-
 FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaFriend Result;
@@ -1989,7 +1952,6 @@ TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
   }
   return Json;
 }
-
 FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaFriendList Result;
@@ -2037,10 +1999,9 @@ TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const
   }
   return Json;
 }
-
-FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriendsOfFriendsListFriendOfFriend FNakamaFriendsOfFriendsListFriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaFriendsOfFriendsList_FriendOfFriend Result;
+  FNakamaFriendsOfFriendsListFriendOfFriend Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -2060,7 +2021,7 @@ FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfF
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsListFriendOfFriend::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Referrer.IsEmpty() == false)
@@ -2070,7 +2031,6 @@ TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() con
   Json->SetObjectField(TEXT("user"), User.ToJson());
   return Json;
 }
-
 FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaFriendsOfFriendsList Result;
@@ -2088,7 +2048,7 @@ FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedP
         const TSharedPtr<FJsonObject>* ItemObj = nullptr;
         if (Item->TryGetObject(ItemObj) && ItemObj)
         {
-          Result.FriendsOfFriends.Add(FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(*ItemObj));
+          Result.FriendsOfFriends.Add(FNakamaFriendsOfFriendsListFriendOfFriend::FromJson(*ItemObj));
         }
       }
     }
@@ -2118,7 +2078,6 @@ TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const
   }
   return Json;
 }
-
 FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaGetUsersRequest Result;
@@ -2194,7 +2153,6 @@ TSharedPtr<FJsonObject> FNakamaGetUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaGetSubscriptionRequest Result;
@@ -2218,7 +2176,6 @@ TSharedPtr<FJsonObject> FNakamaGetSubscriptionRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaGroup Result;
@@ -2318,7 +2275,6 @@ TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const
   Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   return Json;
 }
-
 FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaGroupList Result;
@@ -2366,10 +2322,9 @@ TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const
   }
   return Json;
 }
-
-FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroupUserListGroupUser FNakamaGroupUserListGroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaGroupUserList_GroupUser Result;
+  FNakamaGroupUserListGroupUser Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -2389,7 +2344,7 @@ FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroupUserListGroupUser::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetObjectField(TEXT("user"), User.ToJson());
@@ -2399,7 +2354,6 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
   }
   return Json;
 }
-
 FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaGroupUserList Result;
@@ -2417,7 +2371,7 @@ FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject
         const TSharedPtr<FJsonObject>* ItemObj = nullptr;
         if (Item->TryGetObject(ItemObj) && ItemObj)
         {
-          Result.GroupUsers.Add(FNakamaGroupUserList_GroupUser::FromJson(*ItemObj));
+          Result.GroupUsers.Add(FNakamaGroupUserListGroupUser::FromJson(*ItemObj));
         }
       }
     }
@@ -2447,7 +2401,6 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
   }
   return Json;
 }
-
 FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaImportFacebookFriendsRequest Result;
@@ -2480,7 +2433,6 @@ TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaImportSteamFriendsRequest Result;
@@ -2513,7 +2465,6 @@ TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaJoinGroupRequest Result;
@@ -2537,7 +2488,6 @@ TSharedPtr<FJsonObject> FNakamaJoinGroupRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaJoinTournamentRequest Result;
@@ -2561,7 +2511,6 @@ TSharedPtr<FJsonObject> FNakamaJoinTournamentRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaKickGroupUsersRequest Result;
@@ -2605,7 +2554,6 @@ TSharedPtr<FJsonObject> FNakamaKickGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLeaderboard Result;
@@ -2667,7 +2615,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const
   Json->SetBoolField(TEXT("authoritative"), Authoritative);
   return Json;
 }
-
 FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLeaderboardList Result;
@@ -2715,7 +2662,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardList::ToJson() const
   }
   return Json;
 }
-
 FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLeaderboardRecord Result;
@@ -2803,7 +2749,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
   Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
   return Json;
 }
-
 FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLeaderboardRecordList Result;
@@ -2888,7 +2833,6 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const
   Json->SetNumberField(TEXT("rank_count"), RankCount);
   return Json;
 }
-
 FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLeaveGroupRequest Result;
@@ -2912,7 +2856,6 @@ TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLinkFacebookRequest Result;
@@ -2945,7 +2888,6 @@ TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaLinkSteamRequest Result;
@@ -2978,7 +2920,6 @@ TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListChannelMessagesRequest Result;
@@ -3026,7 +2967,6 @@ TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListFriendsRequest Result;
@@ -3066,7 +3006,6 @@ TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListFriendsOfFriendsRequest Result;
@@ -3098,7 +3037,6 @@ TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListGroupsRequest Result;
@@ -3162,7 +3100,6 @@ TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListGroupUsersRequest Result;
@@ -3210,7 +3147,6 @@ TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListLeaderboardRecordsAroundOwnerRequest Result;
@@ -3266,7 +3202,6 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson(
   }
   return Json;
 }
-
 FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListLeaderboardRecordsRequest Result;
@@ -3334,7 +3269,6 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListMatchesRequest Result;
@@ -3398,7 +3332,6 @@ TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListNotificationsRequest Result;
@@ -3430,7 +3363,6 @@ TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListStorageObjectsRequest Result;
@@ -3478,7 +3410,6 @@ TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListSubscriptionsRequest Result;
@@ -3510,7 +3441,6 @@ TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListTournamentRecordsAroundOwnerRequest Result;
@@ -3566,7 +3496,6 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson()
   }
   return Json;
 }
-
 FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListTournamentRecordsRequest Result;
@@ -3634,7 +3563,6 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListTournamentsRequest Result;
@@ -3698,7 +3626,6 @@ TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListUserGroupsRequest Result;
@@ -3746,7 +3673,6 @@ TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaMatch Result;
@@ -3801,7 +3727,6 @@ TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const
   }
   return Json;
 }
-
 FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaMatchList Result;
@@ -3841,7 +3766,6 @@ TSharedPtr<FJsonObject> FNakamaMatchList::ToJson() const
   }
   return Json;
 }
-
 FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaMatchmakerCompletionStats Result;
@@ -3867,7 +3791,6 @@ TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const
   Json->SetStringField(TEXT("complete_time"), CompleteTime.ToIso8601());
   return Json;
 }
-
 FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaMatchmakerStats Result;
@@ -3917,7 +3840,6 @@ TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const
   }
   return Json;
 }
-
 FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaNotification Result;
@@ -3980,7 +3902,6 @@ TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const
   Json->SetBoolField(TEXT("persistent"), Persistent);
   return Json;
 }
-
 FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaNotificationList Result;
@@ -4028,7 +3949,6 @@ TSharedPtr<FJsonObject> FNakamaNotificationList::ToJson() const
   }
   return Json;
 }
-
 FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaPromoteGroupUsersRequest Result;
@@ -4072,7 +3992,6 @@ TSharedPtr<FJsonObject> FNakamaPromoteGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaDemoteGroupUsersRequest Result;
@@ -4116,7 +4035,6 @@ TSharedPtr<FJsonObject> FNakamaDemoteGroupUsersRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaReadStorageObjectId Result;
@@ -4156,7 +4074,6 @@ TSharedPtr<FJsonObject> FNakamaReadStorageObjectId::ToJson() const
   }
   return Json;
 }
-
 FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaReadStorageObjectsRequest Result;
@@ -4196,7 +4113,6 @@ TSharedPtr<FJsonObject> FNakamaReadStorageObjectsRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaRpc Result;
@@ -4236,7 +4152,6 @@ TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const
   }
   return Json;
 }
-
 FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObject Result;
@@ -4312,7 +4227,6 @@ TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const
   Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   return Json;
 }
-
 FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObjectAck Result;
@@ -4370,7 +4284,6 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const
   Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   return Json;
 }
-
 FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObjectAcks Result;
@@ -4410,7 +4323,6 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectAcks::ToJson() const
   }
   return Json;
 }
-
 FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObjects Result;
@@ -4450,7 +4362,6 @@ TSharedPtr<FJsonObject> FNakamaStorageObjects::ToJson() const
   }
   return Json;
 }
-
 FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaStorageObjectList Result;
@@ -4498,7 +4409,6 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectList::ToJson() const
   }
   return Json;
 }
-
 FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaTournament Result;
@@ -4631,7 +4541,6 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const
   Json->SetBoolField(TEXT("join_required"), JoinRequired);
   return Json;
 }
-
 FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaTournamentList Result;
@@ -4679,7 +4588,6 @@ TSharedPtr<FJsonObject> FNakamaTournamentList::ToJson() const
   }
   return Json;
 }
-
 FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaTournamentRecordList Result;
@@ -4764,7 +4672,6 @@ TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const
   Json->SetNumberField(TEXT("rank_count"), RankCount);
   return Json;
 }
-
 FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUpdateAccountRequest Result;
@@ -4828,7 +4735,6 @@ TSharedPtr<FJsonObject> FNakamaUpdateAccountRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUpdateGroupRequest Result;
@@ -4892,10 +4798,9 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
   }
   return Json;
 }
-
-FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUserGroupListUserGroup FNakamaUserGroupListUserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaUserGroupList_UserGroup Result;
+  FNakamaUserGroupListUserGroup Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -4915,7 +4820,7 @@ FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUserGroupListUserGroup::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetObjectField(TEXT("group"), Group.ToJson());
@@ -4925,7 +4830,6 @@ TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
   }
   return Json;
 }
-
 FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUserGroupList Result;
@@ -4943,7 +4847,7 @@ FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject
         const TSharedPtr<FJsonObject>* ItemObj = nullptr;
         if (Item->TryGetObject(ItemObj) && ItemObj)
         {
-          Result.UserGroups.Add(FNakamaUserGroupList_UserGroup::FromJson(*ItemObj));
+          Result.UserGroups.Add(FNakamaUserGroupListUserGroup::FromJson(*ItemObj));
         }
       }
     }
@@ -4973,7 +4877,6 @@ TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const
   }
   return Json;
 }
-
 FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaUsers Result;
@@ -5013,7 +4916,6 @@ TSharedPtr<FJsonObject> FNakamaUsers::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatePurchaseAppleRequest Result;
@@ -5045,7 +4947,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidateSubscriptionAppleRequest Result;
@@ -5077,7 +4978,6 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatePurchaseGoogleRequest Result;
@@ -5109,7 +5009,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidateSubscriptionGoogleRequest Result;
@@ -5141,7 +5040,6 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatePurchaseHuaweiRequest Result;
@@ -5181,7 +5079,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookInstantRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatePurchaseFacebookInstantRequest Result;
@@ -5213,7 +5110,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() 
   }
   return Json;
 }
-
 FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatedPurchase Result;
@@ -5296,7 +5192,6 @@ TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const
   Json->SetBoolField(TEXT("seen_before"), SeenBefore);
   return Json;
 }
-
 FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatePurchaseResponse Result;
@@ -5336,7 +5231,6 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const
   }
   return Json;
 }
-
 FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidatedSubscription Result;
@@ -5432,7 +5326,6 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
   Json->SetBoolField(TEXT("active"), Active);
   return Json;
 }
-
 FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaValidateSubscriptionResponse Result;
@@ -5457,7 +5350,6 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
   Json->SetObjectField(TEXT("validated_subscription"), ValidatedSubscription.ToJson());
   return Json;
 }
-
 FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaPurchaseList Result;
@@ -5513,7 +5405,6 @@ TSharedPtr<FJsonObject> FNakamaPurchaseList::ToJson() const
   }
   return Json;
 }
-
 FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaSubscriptionList Result;
@@ -5569,10 +5460,9 @@ TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const
   }
   return Json;
 }
-
-FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Result;
+  FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -5596,7 +5486,7 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetNumberField(TEXT("score"), Score);
@@ -5608,7 +5498,6 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWr
   Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
   return Json;
 }
-
 FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaWriteLeaderboardRecordRequest Result;
@@ -5625,7 +5514,7 @@ FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJ
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("record"), NestedObj))
     {
-      Result.Record = FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(*NestedObj);
+      Result.Record = FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::FromJson(*NestedObj);
     }
   }
   return Result;
@@ -5641,7 +5530,6 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
   Json->SetObjectField(TEXT("record"), Record.ToJson());
   return Json;
 }
-
 FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaWriteStorageObject Result;
@@ -5705,7 +5593,6 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const
   }
   return Json;
 }
-
 FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaWriteStorageObjectsRequest Result;
@@ -5745,10 +5632,9 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const
   }
   return Json;
 }
-
-FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteTournamentRecordRequestTournamentRecordWrite FNakamaWriteTournamentRecordRequestTournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-  FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Result;
+  FNakamaWriteTournamentRecordRequestTournamentRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -5772,7 +5658,7 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequestTournamentRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetNumberField(TEXT("score"), Score);
@@ -5784,7 +5670,6 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrit
   Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
   return Json;
 }
-
 FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaWriteTournamentRecordRequest Result;
@@ -5801,7 +5686,7 @@ FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJso
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("record"), NestedObj))
     {
-      Result.Record = FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(*NestedObj);
+      Result.Record = FNakamaWriteTournamentRecordRequestTournamentRecordWrite::FromJson(*NestedObj);
     }
   }
   return Result;
@@ -5817,7 +5702,6 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
   Json->SetObjectField(TEXT("record"), Record.ToJson());
   return Json;
 }
-
 FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaListPartiesRequest Result;
@@ -5865,7 +5749,6 @@ TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const
   }
   return Json;
 }
-
 FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaParty Result;
@@ -5912,7 +5795,6 @@ TSharedPtr<FJsonObject> FNakamaParty::ToJson() const
   }
   return Json;
 }
-
 FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaPartyList Result;

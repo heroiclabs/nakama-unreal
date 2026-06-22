@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "NakamaRtTypes.h"
-#include "NakamaRtConnection.h"
+#include "Realtime/NakamaRtTypes.gen.h"
+#include "Realtime/NakamaRtConnection.h"
 #include "NakamaRtHandle.h"
 
 #include "NakamaRtClientBlueprintLibrary.generated.h"
@@ -38,7 +36,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaChannelMessageRemoveRespon
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchCreateResponse, const FNakamaRtError&, Error, const FNakamaRtMatch&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchJoinResponse, const FNakamaRtError&, Error, const FNakamaRtMatch&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaMatchmakerAddResponse, const FNakamaRtError&, Error, const FNakamaRtMatchmakerTicket&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcResponse, const FNakamaRtError&, Error, const FNakamaRtRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcResponse, const FNakamaRtError&, Error, const FNakamaRpc&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaStatusFollowResponse, const FNakamaRtError&, Error, const FNakamaRtStatus&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPingResponse, const FNakamaRtError&, Error, const FNakamaRtPong&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPartyCreateResponse, const FNakamaRtError&, Error, const FNakamaRtParty&, Result);

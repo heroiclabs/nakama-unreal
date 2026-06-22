@@ -16,6 +16,10 @@
 
 #include "NakamaSession.h"
 
+#include "Misc/Base64.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+
 bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;

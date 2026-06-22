@@ -19,7 +19,7 @@
 #include "NakamaError.generated.h"
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaError
+struct NAKAMA_API FNakamaError
 {
 	GENERATED_BODY()
 
