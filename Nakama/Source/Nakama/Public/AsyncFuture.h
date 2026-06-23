@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-#pragma once
+#ifndef HEROICLABS_ASYNC_FUTURE_H
+#define HEROICLABS_ASYNC_FUTURE_H
 
 #include "CoreMinimal.h"
 #include "Tasks/Task.h"
@@ -196,3 +197,5 @@ TAsyncFuture<ResultT> MakeCompletedAsyncFuture(ResultT Value)
 	State->Resolve(MoveTemp(Value));
 	return TAsyncFuture<ResultT>(State);
 }
+
+#endif // HEROICLABS_ASYNC_FUTURE_H

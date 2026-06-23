@@ -50,7 +50,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaPartyMatchmakerAddResponse
 *  Join a realtime chat channel.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelJoin : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientChannelJoin : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -91,7 +91,7 @@ private:
 *  Leave a realtime chat channel.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelLeave : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientChannelLeave : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -126,7 +126,7 @@ private:
 *  Send a message to a realtime chat channel.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageSend : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientChannelMessageSend : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -163,7 +163,7 @@ private:
 *  Update a message previously sent to a realtime chat channel.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageUpdate : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientChannelMessageUpdate : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -202,7 +202,7 @@ private:
 *  Remove a message previously sent to a realtime chat channel.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientChannelMessageRemove : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientChannelMessageRemove : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -239,7 +239,7 @@ private:
 *  A client to server request to create a realtime match.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchCreate : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchCreate : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -274,7 +274,7 @@ private:
 *  A client to server request to send data to a realtime match.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchDataSend : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchDataSend : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -317,7 +317,7 @@ private:
 *  A client to server request to join a realtime match.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchJoin : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchJoin : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -356,7 +356,7 @@ private:
 *  A client to server request to leave a realtime match.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchLeave : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchLeave : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -391,7 +391,7 @@ private:
 *  Submit a new matchmaking process request.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerAdd : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchmakerAdd : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -436,7 +436,7 @@ private:
 *  Cancel a matchmaking process using a ticket.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientMatchmakerRemove : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientMatchmakerRemove : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -471,7 +471,7 @@ private:
 *  RPC call or response.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRpc : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientRpc : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -510,7 +510,7 @@ private:
 *  Start following some set of users to receive their status updates.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusFollow : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientStatusFollow : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -547,7 +547,7 @@ private:
 *  Stop following some set of users to no longer receive their status updates.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUnfollow : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientStatusUnfollow : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -582,7 +582,7 @@ private:
 *  Set the user's own status.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientStatusUpdate : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientStatusUpdate : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -617,7 +617,7 @@ private:
 *  Application-level heartbeat and connection check.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPing : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPing : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -650,7 +650,7 @@ private:
 *  Create a party.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyCreate : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyCreate : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -691,7 +691,7 @@ private:
 *  Join a party, or request to join if the party is not open.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoin : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyJoin : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -726,7 +726,7 @@ private:
 *  Leave a party.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyLeave : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyLeave : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -761,7 +761,7 @@ private:
 *  Promote a new party leader.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyPromote : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyPromote : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -798,7 +798,7 @@ private:
 *  Accept a request to join.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyAccept : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyAccept : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -835,7 +835,7 @@ private:
 *  Kick a party member, or decline a request to join.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyRemove : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyRemove : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -872,7 +872,7 @@ private:
 *  End a party, kicking all party members and closing it.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyClose : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyClose : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -907,7 +907,7 @@ private:
 *  Request a list of pending join requests for a party.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyJoinRequestList : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyJoinRequestList : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -942,7 +942,7 @@ private:
 *  Begin matchmaking as a party.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerAdd : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyMatchmakerAdd : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -989,7 +989,7 @@ private:
 *  Cancel a party matchmaking process using a ticket.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyMatchmakerRemove : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyMatchmakerRemove : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1026,7 +1026,7 @@ private:
 *  A client to server request to send data to a party.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyDataSend : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyDataSend : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1065,7 +1065,7 @@ private:
 *  Update Party label and whether it's open or closed.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClientPartyUpdate : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaRealtimeClientPartyUpdate : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 

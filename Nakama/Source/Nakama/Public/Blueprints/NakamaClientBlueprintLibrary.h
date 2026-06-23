@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -81,7 +79,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteTournamentRecord, con
 * Add friends by ID or username to a user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAddFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAddFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -124,7 +122,7 @@ private:
 * Add users to a group.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAddGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAddGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -165,7 +163,7 @@ private:
 * Refresh a user's session using a refresh token retrieved from a previous authentication request.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientSessionRefresh : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientSessionRefresh : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -204,7 +202,7 @@ private:
 * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientSessionLogout : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientSessionLogout : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -245,7 +243,7 @@ private:
 * Authenticate a user with an Apple ID against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateApple : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateApple : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -286,7 +284,7 @@ private:
 * Authenticate a user with a custom id against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateCustom : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateCustom : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -327,7 +325,7 @@ private:
 * Authenticate a user with a device id against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateDevice : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateDevice : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -368,7 +366,7 @@ private:
 * Authenticate a user with an email+password against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -409,7 +407,7 @@ private:
 * Authenticate a user with a Facebook OAuth token against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateFacebook : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateFacebook : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -452,7 +450,7 @@ private:
 * Authenticate a user with a Facebook Instant Game token against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateFacebookInstantGame : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateFacebookInstantGame : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -493,7 +491,7 @@ private:
 * Authenticate a user with Apple's GameCenter against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGameCenter : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateGameCenter : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -534,7 +532,7 @@ private:
 * Authenticate a user with Google against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGoogle : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateGoogle : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -575,7 +573,7 @@ private:
 * Authenticate a user with Steam against the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateSteam : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientAuthenticateSteam : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -618,7 +616,7 @@ private:
 * Ban a set of users from a group.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientBanGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientBanGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -659,7 +657,7 @@ private:
 * Block one or more users by ID or username.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientBlockFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientBlockFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -700,7 +698,7 @@ private:
 * Create a new group with the current user as the owner.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientCreateGroup : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientCreateGroup : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -749,7 +747,7 @@ private:
 * Delete the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteAccount : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteAccount : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -786,7 +784,7 @@ private:
 * Delete one or more users by ID or username.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -827,7 +825,7 @@ private:
 * Delete a group by ID.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteGroup : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteGroup : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -866,7 +864,7 @@ private:
 * Delete a leaderboard record.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteLeaderboardRecord : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteLeaderboardRecord : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -905,7 +903,7 @@ private:
 * Delete one or more notifications for the current user.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteNotifications : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteNotifications : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -944,7 +942,7 @@ private:
 * Delete a tournament record.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteTournamentRecord : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteTournamentRecord : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -983,7 +981,7 @@ private:
 * Delete one or more objects by ID or username.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDeleteStorageObjects : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDeleteStorageObjects : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1022,7 +1020,7 @@ private:
 * Submit an event for processing in the server's registered runtime custom events handler.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientEvent : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientEvent : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1067,7 +1065,7 @@ private:
 * Fetch the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientGetAccount : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientGetAccount : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1104,7 +1102,7 @@ private:
 * Fetch zero or more users by ID and/or username.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientGetUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientGetUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1147,7 +1145,7 @@ private:
 * Get subscription by product id.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientGetSubscription : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientGetSubscription : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1186,7 +1184,7 @@ private:
 * Get matchmaker stats.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientGetMatchmakerStats : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientGetMatchmakerStats : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1223,7 +1221,7 @@ private:
 * A healthcheck which load balancers can use to check the service.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientHealthcheck : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientHealthcheck : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1260,7 +1258,7 @@ private:
 * Import Facebook friends and add them to a user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientImportFacebookFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientImportFacebookFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1301,7 +1299,7 @@ private:
 * Import Steam friends and add them to a user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientImportSteamFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1342,7 +1340,7 @@ private:
 * Immediately join an open group, or request to join a closed one.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientJoinGroup : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientJoinGroup : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1381,7 +1379,7 @@ private:
 * Attempt to join an open and running tournament.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientJoinTournament : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientJoinTournament : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1420,7 +1418,7 @@ private:
 * Kick a set of users from a group.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientKickGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientKickGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1461,7 +1459,7 @@ private:
 * Leave a group the user is a member of.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLeaveGroup : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLeaveGroup : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1500,7 +1498,7 @@ private:
 * Add an Apple ID to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkApple : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkApple : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1541,7 +1539,7 @@ private:
 * Add a custom ID to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkCustom : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkCustom : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1582,7 +1580,7 @@ private:
 * Add a device ID to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkDevice : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkDevice : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1623,7 +1621,7 @@ private:
 * Add an email+password to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkEmail : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkEmail : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1666,7 +1664,7 @@ private:
 * Add Facebook to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebook : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkFacebook : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1707,7 +1705,7 @@ private:
 * Add Facebook Instant Game to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebookInstantGame : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkFacebookInstantGame : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1748,7 +1746,7 @@ private:
 * Add Apple's GameCenter to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkGameCenter : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkGameCenter : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1799,7 +1797,7 @@ private:
 * Add Google to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkGoogle : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkGoogle : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1840,7 +1838,7 @@ private:
 * Add Steam to the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientLinkSteam : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientLinkSteam : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1881,7 +1879,7 @@ private:
 * List a channel's message history.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListChannelMessages : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListChannelMessages : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1926,7 +1924,7 @@ private:
 * List all friends for the current user.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -1969,7 +1967,7 @@ private:
 * List friends of friends for the current user.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListFriendsOfFriends : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListFriendsOfFriends : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2010,7 +2008,7 @@ private:
 * List groups based on given filters.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListGroups : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListGroups : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2059,7 +2057,7 @@ private:
 * List all users that are part of a group.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2104,7 +2102,7 @@ private:
 * List leaderboard records.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecords : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListLeaderboardRecords : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2151,7 +2149,7 @@ private:
 * List leaderboard records around the target ownerId.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecordsAroundOwner : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListLeaderboardRecordsAroundOwner : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2198,7 +2196,7 @@ private:
 * List running matches and optionally filter by matching criteria.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListMatches : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListMatches : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2247,7 +2245,7 @@ private:
 * List parties and optionally filter by matching criteria.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListParties : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListParties : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2292,7 +2290,7 @@ private:
 * Fetch list of notifications.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListNotifications : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListNotifications : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2333,7 +2331,7 @@ private:
 * List publicly readable storage objects in a given collection.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListStorageObjects : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListStorageObjects : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2378,7 +2376,7 @@ private:
 * List user's subscriptions.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListSubscriptions : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListSubscriptions : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2419,7 +2417,7 @@ private:
 * List current or upcoming tournaments.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListTournaments : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListTournaments : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2468,7 +2466,7 @@ private:
 * List tournament records.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecords : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListTournamentRecords : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2515,7 +2513,7 @@ private:
 * List tournament records for a given owner.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecordsAroundOwner : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListTournamentRecordsAroundOwner : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2562,7 +2560,7 @@ private:
 * List groups the current user belongs to.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientListUserGroups : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientListUserGroups : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2607,7 +2605,7 @@ private:
 * Promote a set of users in a group to the next role up.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientPromoteGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientPromoteGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2648,7 +2646,7 @@ private:
 * Demote a set of users in a group to the next role down.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientDemoteGroupUsers : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientDemoteGroupUsers : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2689,7 +2687,7 @@ private:
 * Get storage objects.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2728,7 +2726,7 @@ private:
 * Execute a Lua function on the server.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientRpcFunc : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientRpcFunc : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2769,7 +2767,7 @@ private:
 * Remove the Apple ID from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkApple : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkApple : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2810,7 +2808,7 @@ private:
 * Remove the custom ID from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkCustom : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkCustom : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2851,7 +2849,7 @@ private:
 * Remove the device ID from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkDevice : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkDevice : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2892,7 +2890,7 @@ private:
 * Remove the email+password from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkEmail : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkEmail : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2935,7 +2933,7 @@ private:
 * Remove Facebook from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebook : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkFacebook : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -2976,7 +2974,7 @@ private:
 * Remove Facebook Instant Game profile from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebookInstantGame : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkFacebookInstantGame : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3017,7 +3015,7 @@ private:
 * Remove Apple's GameCenter from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGameCenter : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkGameCenter : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3068,7 +3066,7 @@ private:
 * Remove Google from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGoogle : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkGoogle : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3109,7 +3107,7 @@ private:
 * Remove Steam from the social profiles on the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUnlinkSteam : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUnlinkSteam : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3150,7 +3148,7 @@ private:
 * Update fields in the current user's account.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUpdateAccount : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUpdateAccount : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3199,7 +3197,7 @@ private:
 * Update fields in a given group.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientUpdateGroup : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientUpdateGroup : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3248,7 +3246,7 @@ private:
 * Validate Apple IAP Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseApple : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidatePurchaseApple : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3289,7 +3287,7 @@ private:
 * Validate Apple Subscription Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidateSubscriptionApple : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidateSubscriptionApple : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3330,7 +3328,7 @@ private:
 * Validate Google IAP Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseGoogle : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidatePurchaseGoogle : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3371,7 +3369,7 @@ private:
 * Validate Google Subscription Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidateSubscriptionGoogle : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidateSubscriptionGoogle : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3412,7 +3410,7 @@ private:
 * Validate Huawei IAP Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseHuawei : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidatePurchaseHuawei : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3455,7 +3453,7 @@ private:
 * Validate FB Instant IAP Receipt
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseFacebookInstant : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientValidatePurchaseFacebookInstant : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3496,7 +3494,7 @@ private:
 * Write a record to a leaderboard.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientWriteLeaderboardRecord : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientWriteLeaderboardRecord : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3537,7 +3535,7 @@ private:
 * Write objects into the storage engine.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientWriteStorageObjects : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientWriteStorageObjects : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 
@@ -3576,7 +3574,7 @@ private:
 * Write a record to a tournament.
 */
 UCLASS(Transient)
-class NAKAMABLUEPRINTS_API UNakamaClientWriteTournamentRecord : public UBlueprintAsyncActionBase
+class NAKAMA_API UNakamaClientWriteTournamentRecord : public UBlueprintAsyncActionBase
 {
   GENERATED_BODY()
 

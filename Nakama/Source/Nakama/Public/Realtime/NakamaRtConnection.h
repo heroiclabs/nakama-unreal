@@ -22,6 +22,7 @@
 #include "IWebSocket.h"
 #include "NakamaFuture.h"
 #include "Containers/Ticker.h"
+#include "Realtime/NakamaRtTypes.gen.h"
 #include "NakamaRtConnection.generated.h"
 
 UENUM(BlueprintType)

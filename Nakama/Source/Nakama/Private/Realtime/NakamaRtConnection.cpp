@@ -16,7 +16,6 @@
 
 #include "Realtime/NakamaRtConnection.h"
 #include "WebSocketsModule.h"
-#include "Realtime/NakamaRtTypes.gen.h"
 #include "Async/Async.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Serialization/JsonSerializer.h"

@@ -41,7 +41,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamData, const FNakama
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&, Data);
 
 UCLASS(BlueprintType)
-class NAKAMABLUEPRINTS_API UNakamaRtHandle : public UObject
+class NAKAMA_API UNakamaRtHandle : public UObject
 {
   GENERATED_BODY()
 
