@@ -20,7 +20,7 @@
 #include "SatoriOptionals.generated.h"
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriOptionalBool
+struct SATORI_API FSatoriOptionalBool
 {
 	GENERATED_BODY()
 
@@ -39,7 +39,7 @@ struct SATORIAPI_API FSatoriOptionalBool
 };
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriOptionalInt32
+struct SATORI_API FSatoriOptionalInt32
 {
 	GENERATED_BODY()
 
@@ -59,7 +59,7 @@ struct SATORIAPI_API FSatoriOptionalInt32
 };
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriOptionalInt64
+struct SATORI_API FSatoriOptionalInt64
 {
 	GENERATED_BODY()
 
@@ -80,7 +80,7 @@ struct SATORIAPI_API FSatoriOptionalInt64
 };
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriOptionalFloat
+struct SATORI_API FSatoriOptionalFloat
 {
 	GENERATED_BODY()
 
@@ -100,7 +100,7 @@ struct SATORIAPI_API FSatoriOptionalFloat
 };
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriOptionalDouble
+struct SATORI_API FSatoriOptionalDouble
 {
 	GENERATED_BODY()
 

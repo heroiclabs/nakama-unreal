@@ -15,7 +15,7 @@
  */
 
 #include "SatoriModule.h"
-#include "SatoriApi.h"
+#include "SatoriLog.h"
 
 void FSatoriModule::StartupModule()
 {

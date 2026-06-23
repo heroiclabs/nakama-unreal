@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
-
 #include "SatoriClient.h"
+#include "SatoriHttpHelper.h"
 #include "Containers/Ticker.h"
 
 bool Satori::IsTransientError(const FSatoriError& Error)
@@ -68,11 +67,19 @@ void MaybeRefreshThenCall(
 
   auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
   auto OnSessionRefreshedOwner = RetryConfig.OnSessionRefreshedOwner;
-  SatoriApi::AuthenticateRefresh(
+  FSatoriAuthenticateRefreshRequest Params{ SessionState->RefreshToken };
+  FSatoriApiRequestModel Request = SatoriInternal::BuildAuthenticateRefreshRequest(Params);
+
+  SatoriHttpInternal::DoHttpRequest(
     ClientConfig,
-    SessionState->RefreshToken,
-    [SessionState, OnSessionRefreshed, OnSessionRefreshedOwner, OnReady = MoveTemp(OnReady)](const FSatoriSession& RefreshedSession) mutable
+    Request.Url,
+    Request.Verb,
+    Request.Body,
+    ESatoriRequestAuth::Basic,
+    TEXT(""),
+    [SessionState, OnSessionRefreshed, OnSessionRefreshedOwner, OnReady = MoveTemp(OnReady)](const TSharedPtr<FJsonObject>& Json) mutable
     {
+      const FSatoriSession RefreshedSession = FSatoriSession::FromJson(Json);
       SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
       if (OnSessionRefreshed && (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.IsValid()))
       {
@@ -135,18 +142,21 @@ TSatoriFuture<FSatoriSessionResult> Satori::Authenticate(
     , Custom
   ]()
   {
+    FSatoriAuthenticateRequest Params{ Id, NoSession, Default, Custom };
+    FSatoriApiRequestModel Request = SatoriInternal::BuildAuthenticateRequest(Params);
 
-    SatoriApi::Authenticate(
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
-      Id,
-      NoSession,
-      Default,
-      Custom,
-      [FutureState, DoRequest, OnError](const FSatoriSession& Result)
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::Basic,
+      TEXT(""),
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
-        FutureState->Resolve(FSatoriSessionResult{ Result, {}, false });
+        FutureState->Resolve(FSatoriSessionResult{ FSatoriSession::FromJson(Json), {}, false });
       },
       *OnError,
       RetryConfig.Timeout,
@@ -200,11 +210,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::AuthenticateLogout(
   ]()
   {
 
-    SatoriApi::AuthenticateLogout(
+    FSatoriAuthenticateLogoutRequest Params{ Token, RefreshToken };
+    FSatoriApiRequestModel Request = SatoriInternal::BuildAuthenticateLogoutRequest(Params);
+
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::Bearer,
       Token,
-      RefreshToken,
-      [FutureState, DoRequest, OnError]()
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
@@ -260,14 +276,21 @@ TSatoriFuture<FSatoriSessionResult> Satori::AuthenticateRefresh(
   ]()
   {
 
-    SatoriApi::AuthenticateRefresh(
+    FSatoriAuthenticateRefreshRequest Params{ RefreshToken };
+    FSatoriApiRequestModel Request = SatoriInternal::BuildAuthenticateRefreshRequest(Params);
+
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
-      RefreshToken,
-      [FutureState, DoRequest, OnError](const FSatoriSession& Result)
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::Basic,
+      TEXT(""),
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
-        FutureState->Resolve(FSatoriSessionResult{ Result, {}, false });
+        FutureState->Resolve(FSatoriSessionResult{ FSatoriSession::FromJson(Json), {}, false });
       },
       *OnError,
       RetryConfig.Timeout,
@@ -339,10 +362,16 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
         ]()
         {
 
-          SatoriApi::DeleteIdentity(
+          FSatoriApiRequestModel Request = SatoriInternal::BuildDeleteIdentityRequest();
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
@@ -423,11 +452,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
         ]()
         {
 
-          SatoriApi::Event(
+          FSatoriEventRequest Params{ Events };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildEventRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Events,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
@@ -487,11 +522,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
   ]()
   {
 
-    SatoriApi::ServerEvent(
+    FSatoriEventRequest Params{ Events };
+    FSatoriApiRequestModel Request = SatoriInternal::BuildServerEventRequest(Params);
+
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::HttpKey,
       HttpKey,
-      Events,
-      [FutureState, DoRequest, OnError]()
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
@@ -573,16 +614,21 @@ TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
         ]()
         {
 
-          SatoriApi::GetExperiments(
+          FSatoriGetExperimentsRequest Params{ Names, Labels };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildGetExperimentsRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Names,
-            Labels,
-            [FutureState, DoRequest, OnError](const FSatoriExperimentList& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriExperimentListResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriExperimentListResult{ FSatoriExperimentList::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -662,16 +708,21 @@ TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
         ]()
         {
 
-          SatoriApi::GetFlagOverrides(
+          FSatoriGetFlagsRequest Params{ Names, Labels };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildGetFlagOverridesRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Names,
-            Labels,
-            [FutureState, DoRequest, OnError](const FSatoriFlagOverrideList& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriFlagOverrideListResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriFlagOverrideListResult{ FSatoriFlagOverrideList::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -751,16 +802,21 @@ TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
         ]()
         {
 
-          SatoriApi::GetFlags(
+          FSatoriGetFlagsRequest Params{ Names, Labels };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildGetFlagsRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Names,
-            Labels,
-            [FutureState, DoRequest, OnError](const FSatoriFlagList& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriFlagListResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriFlagListResult{ FSatoriFlagList::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -852,20 +908,21 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
         ]()
         {
 
-          SatoriApi::GetLiveEvents(
+          FSatoriGetLiveEventsRequest Params{ Names, Labels, PastRunCount, FutureRunCount, StartTimeSec, EndTimeSec };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildGetLiveEventsRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Names,
-            Labels,
-            PastRunCount,
-            FutureRunCount,
-            StartTimeSec,
-            EndTimeSec,
-            [FutureState, DoRequest, OnError](const FSatoriLiveEventList& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriLiveEventListResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriLiveEventListResult{ FSatoriLiveEventList::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -942,11 +999,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
         ]()
         {
 
-          SatoriApi::JoinLiveEvent(
+          FSatoriJoinLiveEventRequest Params{ Id };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildJoinLiveEventRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Id,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
@@ -966,7 +1029,6 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
 
 TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
   const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 )
@@ -1001,14 +1063,19 @@ TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
     , ClientConfig
     , RetryConfig
     , CancellationToken
-    , HttpKey
   ]()
   {
 
-    SatoriApi::Healthcheck(
+    FSatoriApiRequestModel Request = SatoriInternal::BuildHealthcheckRequest();
+
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
-      HttpKey,
-      [FutureState, DoRequest, OnError]()
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::None,
+      "",
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
@@ -1093,17 +1160,21 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
         ]()
         {
 
-          SatoriApi::Identify(
+          FSatoriIdentifyRequest Params{ Id, Default, Custom };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildIdentifyRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Id,
-            Default,
-            Custom,
-            [FutureState, DoRequest, OnError](const FSatoriSession& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriSessionResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriSessionResult{ FSatoriSession::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -1177,14 +1248,20 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
         ]()
         {
 
-          SatoriApi::ListProperties(
+          FSatoriApiRequestModel Request = SatoriInternal::BuildListPropertiesRequest();
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            [FutureState, DoRequest, OnError](const FSatoriProperties& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriPropertiesResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriPropertiesResult{ FSatoriProperties::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -1200,7 +1277,6 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
 
 TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
   const FSatoriClientConfig& ClientConfig,
-  const FString& HttpKey,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 )
@@ -1235,14 +1311,19 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
     , ClientConfig
     , RetryConfig
     , CancellationToken
-    , HttpKey
   ]()
   {
 
-    SatoriApi::Readycheck(
+    FSatoriApiRequestModel Request = SatoriInternal::BuildReadycheckRequest();
+
+    SatoriHttpInternal::DoHttpRequest(
       ClientConfig,
-      HttpKey,
-      [FutureState, DoRequest, OnError]()
+      Request.Url,
+      Request.Verb,
+      Request.Body,
+      ESatoriRequestAuth::None,
+      "",
+      [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
       {
         *DoRequest = nullptr;
         *OnError = nullptr;
@@ -1327,13 +1408,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
         ]()
         {
 
-          SatoriApi::UpdateProperties(
+          FSatoriUpdatePropertiesRequest Params{ Recompute, Default, Custom };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildUpdatePropertiesRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Recompute,
-            Default,
-            Custom,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
@@ -1423,18 +1508,21 @@ TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
         ]()
         {
 
-          SatoriApi::GetMessageList(
+          FSatoriGetMessageListRequest Params{ Limit, Forward, Cursor, MessageIds };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildGetMessageListRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Limit,
-            Forward,
-            Cursor,
-            MessageIds,
-            [FutureState, DoRequest, OnError](const FSatoriGetMessageListResponse& Result)
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
-              FutureState->Resolve(FSatoriGetMessageListResponseResult{ Result, {}, false });
+              FutureState->Resolve(FSatoriGetMessageListResponseResult{ FSatoriGetMessageListResponse::FromJson(Json), {}, false });
             },
             *OnError,
             RetryConfig.Timeout,
@@ -1517,13 +1605,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
         ]()
         {
 
-          SatoriApi::UpdateMessage(
+          FSatoriUpdateMessageRequest Params{ Id, ReadTime, ConsumeTime };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildUpdateMessageRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Id,
-            ReadTime,
-            ConsumeTime,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;
@@ -1604,11 +1696,17 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
         ]()
         {
 
-          SatoriApi::DeleteMessage(
+          FSatoriDeleteMessageRequest Params{ Id };
+          FSatoriApiRequestModel Request = SatoriInternal::BuildDeleteMessageRequest(Params);
+
+          SatoriHttpInternal::DoHttpRequest(
             ClientConfig,
-            *SessionState,
-            Id,
-            [FutureState, DoRequest, OnError]()
+            Request.Url,
+            Request.Verb,
+            Request.Body,
+            ESatoriRequestAuth::Bearer,
+            SessionState->Token,
+            [FutureState, DoRequest, OnError](const TSharedPtr<FJsonObject>& Json)
             {
               *DoRequest = nullptr;
               *OnError = nullptr;

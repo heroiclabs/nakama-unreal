@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-#include "SatoriApiModule.h"
-#include "SatoriApi.h"
+#include "SatoriLog.h"
 
-void FSatoriApiModule::StartupModule()
-{
-	UE_LOG(LogSatori, Log, TEXT("SatoriApi module starting"));
-}
-
-void FSatoriApiModule::ShutdownModule()
-{
-	UE_LOG(LogSatori, Log, TEXT("SatoriApi module shutting down"));
-}
-
-IMPLEMENT_MODULE(FSatoriApiModule, SatoriApi)
+DEFINE_LOG_CATEGORY(LogSatori);

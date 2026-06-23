@@ -19,7 +19,7 @@
 #include "SatoriError.generated.h"
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriError
+struct SATORI_API FSatoriError
 {
 	GENERATED_BODY()
 

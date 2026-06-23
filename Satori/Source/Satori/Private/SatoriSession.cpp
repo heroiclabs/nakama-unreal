@@ -20,6 +20,8 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
+class FString;
+
 bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;

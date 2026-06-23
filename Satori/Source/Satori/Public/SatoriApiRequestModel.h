@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
+#include "CoreMinimal.h"
 
-class FSatoriApiModule : public IModuleInterface
+struct SATORI_API FSatoriApiRequestModel
 {
-public:
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+  FString Url;
+  FString Verb;
+  FString Body;
 };

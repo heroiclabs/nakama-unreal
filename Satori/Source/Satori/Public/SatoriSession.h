@@ -21,7 +21,7 @@
 #include "SatoriSession.generated.h"
 
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriSession
+struct SATORI_API FSatoriSession
 {
 	GENERATED_BODY()
 
@@ -79,7 +79,7 @@ private:
 };
 
 UCLASS()
-class SATORIAPI_API USatoriSessionFunctions : public UBlueprintFunctionLibrary
+class SATORI_API USatoriSessionFunctions : public UBlueprintFunctionLibrary
 {
   GENERATED_BODY()
 

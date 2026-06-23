@@ -22,7 +22,6 @@
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/Base64.h"
-#include "Misc/DateTime.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
@@ -31,7 +30,17 @@
 #include "Templates/SharedPointer.h"
 #include "SatoriError.h"
 #include "SatoriClientConfig.h"
-#include "SatoriApi.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+#include "Policies/CondensedJsonPrintPolicy.h"
+
+/** Authentication scheme applied to an outgoing HTTP request. */
+enum class ESatoriRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer,
+	HttpKey,
+};
 
 /**
  * Internal HTTP helpers for SatoriApi.

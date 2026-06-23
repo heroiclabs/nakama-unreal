@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-/* This code is auto-generated. DO NOT EDIT. */
+#include "Blueprints/SatoriClientBlueprintLibrary.h"
 
-#include "SatoriClientBlueprintLibrary.h"
+#include "UObject/Package.h"
 
 USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
   UObject* WorldContextObject
@@ -45,29 +45,27 @@ void USatoriClientAuthenticate::Activate()
 
   TWeakObjectPtr<USatoriClientAuthenticate> WeakThis(this);
 
-  SatoriApi::Authenticate(
+  Satori::Authenticate(
     StoredClientConfig,
     StoredId,
     StoredNoSession,
     StoredDefault,
-    StoredCustom,
-    [WeakThis](const FSatoriSession& Result)
+    StoredCustom
+  ).Next([WeakThis](const FSatoriSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLogout(
@@ -93,27 +91,25 @@ void USatoriClientAuthenticateLogout::Activate()
 
   TWeakObjectPtr<USatoriClientAuthenticateLogout> WeakThis(this);
 
-  SatoriApi::AuthenticateLogout(
+  Satori::AuthenticateLogout(
     StoredClientConfig,
     StoredToken,
-    StoredRefreshToken,
-    [WeakThis]()
+    StoredRefreshToken
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::AuthenticateRefresh(
@@ -137,26 +133,24 @@ void USatoriClientAuthenticateRefresh::Activate()
 
   TWeakObjectPtr<USatoriClientAuthenticateRefresh> WeakThis(this);
 
-  SatoriApi::AuthenticateRefresh(
+  Satori::AuthenticateRefresh(
     StoredClientConfig,
-    StoredRefreshToken,
-    [WeakThis](const FSatoriSession& Result)
+    StoredRefreshToken
+  ).Next([WeakThis](const FSatoriSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(
@@ -180,26 +174,24 @@ void USatoriClientDeleteIdentity::Activate()
 
   TWeakObjectPtr<USatoriClientDeleteIdentity> WeakThis(this);
 
-  SatoriApi::DeleteIdentity(
+  Satori::DeleteIdentity(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis]()
+    StoredSession
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientEvent* USatoriClientEvent::Event(
@@ -225,39 +217,37 @@ void USatoriClientEvent::Activate()
 
   TWeakObjectPtr<USatoriClientEvent> WeakThis(this);
 
-  SatoriApi::Event(
+  Satori::Event(
     StoredClientConfig,
     StoredSession,
-    StoredEvents,
-    [WeakThis]()
+    StoredEvents
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientServerEvent* USatoriClientServerEvent::ServerEvent(
   UObject* WorldContextObject
   , FSatoriClientConfig ClientConfig
-  , const FSatoriSession& Session
+  , const FString& HttpKey
   , const TArray<FSatoriEvent>& Events
 )
 {
   USatoriClientServerEvent* Action = NewObject<USatoriClientServerEvent>(GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
-  Action->StoredSession = Session;
+  Action->StoredHttpKey = HttpKey;
   Action->StoredEvents = Events;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -271,27 +261,25 @@ void USatoriClientServerEvent::Activate()
 
   TWeakObjectPtr<USatoriClientServerEvent> WeakThis(this);
 
-  SatoriApi::ServerEvent(
+  Satori::ServerEvent(
     StoredClientConfig,
-    StoredSession,
-    StoredEvents,
-    [WeakThis]()
+    StoredHttpKey,
+    StoredEvents
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(
@@ -319,28 +307,26 @@ void USatoriClientGetExperiments::Activate()
 
   TWeakObjectPtr<USatoriClientGetExperiments> WeakThis(this);
 
-  SatoriApi::GetExperiments(
+  Satori::GetExperiments(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels,
-    [WeakThis](const FSatoriExperimentList& Result)
+    StoredLabels
+  ).Next([WeakThis](const FSatoriExperimentListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(
@@ -368,28 +354,26 @@ void USatoriClientGetFlagOverrides::Activate()
 
   TWeakObjectPtr<USatoriClientGetFlagOverrides> WeakThis(this);
 
-  SatoriApi::GetFlagOverrides(
+  Satori::GetFlagOverrides(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels,
-    [WeakThis](const FSatoriFlagOverrideList& Result)
+    StoredLabels
+  ).Next([WeakThis](const FSatoriFlagOverrideListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(
@@ -417,28 +401,26 @@ void USatoriClientGetFlags::Activate()
 
   TWeakObjectPtr<USatoriClientGetFlags> WeakThis(this);
 
-  SatoriApi::GetFlags(
+  Satori::GetFlags(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels,
-    [WeakThis](const FSatoriFlagList& Result)
+    StoredLabels
+  ).Next([WeakThis](const FSatoriFlagListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(
@@ -474,7 +456,7 @@ void USatoriClientGetLiveEvents::Activate()
 
   TWeakObjectPtr<USatoriClientGetLiveEvents> WeakThis(this);
 
-  SatoriApi::GetLiveEvents(
+  Satori::GetLiveEvents(
     StoredClientConfig,
     StoredSession,
     StoredNames,
@@ -482,24 +464,22 @@ void USatoriClientGetLiveEvents::Activate()
     StoredPastRunCount,
     StoredFutureRunCount,
     StoredStartTimeSec,
-    StoredEndTimeSec,
-    [WeakThis](const FSatoriLiveEventList& Result)
+    StoredEndTimeSec
+  ).Next([WeakThis](const FSatoriLiveEventListResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientJoinLiveEvent* USatoriClientJoinLiveEvent::JoinLiveEvent(
@@ -525,27 +505,25 @@ void USatoriClientJoinLiveEvent::Activate()
 
   TWeakObjectPtr<USatoriClientJoinLiveEvent> WeakThis(this);
 
-  SatoriApi::JoinLiveEvent(
+  Satori::JoinLiveEvent(
     StoredClientConfig,
     StoredSession,
-    StoredId,
-    [WeakThis]()
+    StoredId
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientHealthcheck* USatoriClientHealthcheck::Healthcheck(
@@ -569,26 +547,23 @@ void USatoriClientHealthcheck::Activate()
 
   TWeakObjectPtr<USatoriClientHealthcheck> WeakThis(this);
 
-  SatoriApi::Healthcheck(
-    StoredClientConfig,
-    StoredSession,
-    [WeakThis]()
+  Satori::Healthcheck(
+    StoredClientConfig
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientIdentify* USatoriClientIdentify::Identify(
@@ -618,29 +593,27 @@ void USatoriClientIdentify::Activate()
 
   TWeakObjectPtr<USatoriClientIdentify> WeakThis(this);
 
-  SatoriApi::Identify(
+  Satori::Identify(
     StoredClientConfig,
     StoredSession,
     StoredId,
     StoredDefault,
-    StoredCustom,
-    [WeakThis](const FSatoriSession& Result)
+    StoredCustom
+  ).Next([WeakThis](const FSatoriSessionResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientListProperties* USatoriClientListProperties::ListProperties(
@@ -664,26 +637,24 @@ void USatoriClientListProperties::Activate()
 
   TWeakObjectPtr<USatoriClientListProperties> WeakThis(this);
 
-  SatoriApi::ListProperties(
+  Satori::ListProperties(
     StoredClientConfig,
-    StoredSession,
-    [WeakThis](const FSatoriProperties& Result)
+    StoredSession
+  ).Next([WeakThis](const FSatoriPropertiesResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientReadycheck* USatoriClientReadycheck::Readycheck(
@@ -707,26 +678,23 @@ void USatoriClientReadycheck::Activate()
 
   TWeakObjectPtr<USatoriClientReadycheck> WeakThis(this);
 
-  SatoriApi::Readycheck(
-    StoredClientConfig,
-    StoredSession,
-    [WeakThis]()
+  Satori::Readycheck(
+    StoredClientConfig
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
@@ -756,29 +724,27 @@ void USatoriClientUpdateProperties::Activate()
 
   TWeakObjectPtr<USatoriClientUpdateProperties> WeakThis(this);
 
-  SatoriApi::UpdateProperties(
+  Satori::UpdateProperties(
     StoredClientConfig,
     StoredSession,
     StoredRecompute,
     StoredDefault,
-    StoredCustom,
-    [WeakThis]()
+    StoredCustom
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientGetMessageList* USatoriClientGetMessageList::GetMessageList(
@@ -810,30 +776,28 @@ void USatoriClientGetMessageList::Activate()
 
   TWeakObjectPtr<USatoriClientGetMessageList> WeakThis(this);
 
-  SatoriApi::GetMessageList(
+  Satori::GetMessageList(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
     StoredForward,
     StoredCursor,
-    StoredMessageIds,
-    [WeakThis](const FSatoriGetMessageListResponse& Result)
+    StoredMessageIds
+  ).Next([WeakThis](const FSatoriGetMessageListResponseResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
       {
-        Self->OnSuccess.Broadcast({}, Result);
-        Self->SetReadyToDestroy();
+        Self->OnError.Broadcast(Result.Error, {});
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
+      else
       {
-        Self->OnError.Broadcast(Error, {});
-        Self->SetReadyToDestroy();
+        Self->OnSuccess.Broadcast({}, Result.Value);
       }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientUpdateMessage* USatoriClientUpdateMessage::UpdateMessage(
@@ -863,29 +827,27 @@ void USatoriClientUpdateMessage::Activate()
 
   TWeakObjectPtr<USatoriClientUpdateMessage> WeakThis(this);
 
-  SatoriApi::UpdateMessage(
+  Satori::UpdateMessage(
     StoredClientConfig,
     StoredSession,
     StoredId,
     StoredReadTime,
-    StoredConsumeTime,
-    [WeakThis]()
+    StoredConsumeTime
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }
 
 USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(
@@ -911,25 +873,23 @@ void USatoriClientDeleteMessage::Activate()
 
   TWeakObjectPtr<USatoriClientDeleteMessage> WeakThis(this);
 
-  SatoriApi::DeleteMessage(
+  Satori::DeleteMessage(
     StoredClientConfig,
     StoredSession,
-    StoredId,
-    [WeakThis]()
+    StoredId
+  ).Next([WeakThis](const FSatoriVoidResult& Result)
+  {
+    if (auto* Self = WeakThis.Get())
     {
-      if (auto* Self = WeakThis.Get())
+      if (Result.bIsError)
+      {
+        Self->OnError.Broadcast(Result.Error);
+      }
+      else
       {
         Self->OnSuccess.Broadcast({});
-        Self->SetReadyToDestroy();
       }
-    },
-  	[WeakThis](const FSatoriError& Error)
-    {
-      if (auto* Self = WeakThis.Get())
-      {
-        Self->OnError.Broadcast(Error);
-        Self->SetReadyToDestroy();
-      }
+      Self->SetReadyToDestroy();
     }
-  );
+  });
 }

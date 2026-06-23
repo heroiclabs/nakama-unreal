@@ -22,7 +22,7 @@
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriClientConfig
+struct SATORI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 
@@ -42,7 +42,7 @@ struct SATORIAPI_API FSatoriClientConfig
 };
 
 UCLASS()
-class SATORIAPI_API USatoriClientConfigFunctions : public UBlueprintFunctionLibrary
+class SATORI_API USatoriClientConfigFunctions : public UBlueprintFunctionLibrary
 {
   GENERATED_BODY()
 

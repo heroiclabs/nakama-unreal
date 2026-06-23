@@ -17,70 +17,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SatoriApi.h"
+#include "Satori.gen.h"
 #include "AsyncFuture.h"
-
-/** Tag type used as the value type for RPCs that return no data. */
-struct SATORI_API FSatoriVoid {};
-struct SATORI_API FSatoriVoidResult
-{
-	using ValueType = FSatoriVoid;
-	FSatoriVoid Value{};
-	FSatoriError Error;
-	bool bIsError = true;
-};
-struct SATORI_API FSatoriSessionResult
-{
-  using ValueType = FSatoriSession;
-  FSatoriSession Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriExperimentListResult
-{
-  using ValueType = FSatoriExperimentList;
-  FSatoriExperimentList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriFlagOverrideListResult
-{
-  using ValueType = FSatoriFlagOverrideList;
-  FSatoriFlagOverrideList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriFlagListResult
-{
-  using ValueType = FSatoriFlagList;
-  FSatoriFlagList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriLiveEventListResult
-{
-  using ValueType = FSatoriLiveEventList;
-  FSatoriLiveEventList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriPropertiesResult
-{
-  using ValueType = FSatoriProperties;
-  FSatoriProperties Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriGetMessageListResponseResult
-{
-  using ValueType = FSatoriGetMessageListResponse;
-  FSatoriGetMessageListResponse Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
+#include "SatoriClientConfig.h"
 
 /**
- * Satori-flavoured alias for TAsyncFuture.
+ * Satori-flavored alias for TAsyncFuture.
  * All three .Next() overloads are inherited from TAsyncFuture and dispatch
  * user callbacks to the game thread, making it safe to touch UObject*,
  * fire delegates, or update UI from any .Next() callback.
@@ -139,7 +81,7 @@ namespace Satori
   /**
   * Authenticate against the server.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Id	 Identity ID. Must be between eight and 128 characters (inclusive).
   * @param NoSession	 Optional no_session modifies the request to only create/update
   * @param Default	 Optional default properties to update with this call.
@@ -160,7 +102,7 @@ namespace Satori
   /**
   * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Token	 Session token to log out.
   * @param RefreshToken	 Refresh token to invalidate.
   * @param RetryConfig Retry configuration.
@@ -177,7 +119,7 @@ namespace Satori
   /**
   * Refresh a user's session using a refresh token retrieved from a previous authentication request.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param RefreshToken	 Refresh token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -192,7 +134,7 @@ namespace Satori
   /**
   * Delete the caller's identity and associated data.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -207,7 +149,7 @@ namespace Satori
   /**
   * Publish an event for this session.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
@@ -224,7 +166,7 @@ namespace Satori
   /**
   * Publish server events for multiple distinct identities.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
@@ -241,7 +183,7 @@ namespace Satori
   /**
   * Get or list all available experiments for this identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Names	 Experiment names; if empty string, all experiments are returned based on the remaining filters.
   * @param Labels	 Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters.
@@ -260,7 +202,7 @@ namespace Satori
   /**
   * List all available flags and their value overrides for this identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Names	 Flag names; if empty string, all flags are returned based on the remaining filters.
   * @param Labels	 Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
@@ -279,7 +221,7 @@ namespace Satori
   /**
   * List all available flags for this identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Names	 Flag names; if empty string, all flags are returned based on the remaining filters.
   * @param Labels	 Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
@@ -298,7 +240,7 @@ namespace Satori
   /**
   * List available live events.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Names	 Live event names; if empty string, all live events are returned based on the remaining filters.
   * @param Labels	 Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters.
@@ -325,7 +267,7 @@ namespace Satori
   /**
   * Join an 'explicit join' live event.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 Live event id to join.
   * @param RetryConfig Retry configuration.
@@ -340,16 +282,14 @@ namespace Satori
   );
 
   /**
-  * A healthcheck which load balancers can use to check the service.
+  * A health check which load balancers can use to check the service.
   *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
+  * @param ClientConfig	The client configuration.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> Healthcheck(
     const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -357,7 +297,7 @@ namespace Satori
   /**
   * Enrich/replace the current session with new identifier.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
   * @param Default	 Optional default properties to update with this call.
@@ -378,7 +318,7 @@ namespace Satori
   /**
   * List properties associated with this identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
@@ -391,16 +331,14 @@ namespace Satori
   );
 
   /**
-  * A readycheck which load balancers can use to check the service.
+  * A ready check which load balancers can use to check the service.
   *
-  * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
+  * @param ClientConfig	The client configuration.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> Readycheck(
     const FSatoriClientConfig& ClientConfig,
-    const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );
@@ -408,7 +346,7 @@ namespace Satori
   /**
   * Update identity properties.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Recompute	 Informs the server to recompute the audience membership of the identity.
   * @param Default	 Event default properties.
@@ -429,7 +367,7 @@ namespace Satori
   /**
   * Get the list of messages for the identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Limit	 Max number of messages to return. Between 1 and 100.
   * @param Forward	 True if listing should be older messages to newer, false if reverse.
@@ -452,7 +390,7 @@ namespace Satori
   /**
   * Updates a message for an identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 The identifier of the messages.
   * @param ReadTime	 The time the message was read at the client.
@@ -473,7 +411,7 @@ namespace Satori
   /**
   * Deletes a message for an identity.
   *
-  * @param Config	The client configuration.
+  * @param ClientConfig	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 The identifier of the message.
   * @param RetryConfig Retry configuration.
