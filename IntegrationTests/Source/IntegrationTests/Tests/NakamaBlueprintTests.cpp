@@ -3,16 +3,17 @@
  *
  * Tests for NakamaBlueprints module UBlueprintAsyncActionBase subclasses.
  * Each test fires a BP async action, then verifies the server-side effect
- * through the C++ client (which supports lambda callbacks natively).
+ * through the C++ client (the TFuture-based Nakama:: free-function API).
  *
  * This avoids creating any UObject helpers for delegate binding.
  */
 
 #include "Misc/AutomationTest.h"
-#include "NakamaApi.h"
-#include "NakamaClientBlueprintLibrary.h"
+#include "NakamaClient.h"
+#include "Blueprints/NakamaClientBlueprintLibrary.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
+#include "UObject/Package.h"
 
 // Helper: keep the BP action alive for the duration of the async call. Tests pass
 // GetTransientPackage() as WorldContextObject — this satisfies UE 5.7's requirement
@@ -71,29 +72,23 @@ void FNakamaBPHealthcheckSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Healthcheck", [this]()
@@ -105,14 +100,14 @@ void FNakamaBPHealthcheckSpec::Define()
 
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::Healthcheck(Client, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FNakamaError& Error)
+				Nakama::Healthcheck(Client, Session).Next([this, Done](FNakamaVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -156,10 +151,7 @@ void FNakamaBPAuthSpec::Define()
 			Done.Execute();
 			return;
 		}
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("AuthenticateCustom", [this]()
@@ -167,7 +159,7 @@ void FNakamaBPAuthSpec::Define()
 		LatentIt("should authenticate with custom ID", [this](const FDoneDelegate& Done)
 		{
 			FString CustomId = GenerateId();
-			
+
 			FNakamaAccountCustom Account;
 			Account.Id = CustomId;
 			auto* Action = UNakamaClientAuthenticateCustom::AuthenticateCustom(
@@ -177,21 +169,19 @@ void FNakamaBPAuthSpec::Define()
 			// Verify: re-auth with create=false should succeed (account was created)
 			VerifyWhenComplete(Action, [this, Done, CustomId]()
 			{
-				FNakamaAccountCustom Account;
-				Account.Id = CustomId;
-				NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateCustom(Client, false, TEXT(""), CustomId).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Session = Result;
-						TestTrue("Session has token", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						Session = Result.Value;
+						TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -213,22 +203,19 @@ void FNakamaBPAuthSpec::Define()
 			// Verify: re-auth with create=false should succeed
 			VerifyWhenComplete(Action, [this, Done, Email, Password]()
 			{
-				FNakamaAccountEmail Account;
-				Account.Email = Email;
-				Account.Password = Password;
-				NakamaApi::AuthenticateEmail(Client, Account, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateEmail(Client, false, TEXT(""), Email, Password).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Session = Result;
-						TestTrue("Session has token", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						Session = Result.Value;
+						TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -247,21 +234,19 @@ void FNakamaBPAuthSpec::Define()
 			// Verify: re-auth with create=false should succeed
 			VerifyWhenComplete(Action, [this, Done, DeviceId]()
 			{
-				FNakamaAccountDevice Account;
-				Account.Id = DeviceId;
-				NakamaApi::AuthenticateDevice(Client, Account, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateDevice(Client, false, TEXT(""), DeviceId).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Session = Result;
-						TestTrue("Session has token", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						Session = Result.Value;
+						TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -298,29 +283,23 @@ void FNakamaBPSessionSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("SessionRefresh", [this]()
@@ -334,18 +313,18 @@ void FNakamaBPSessionSpec::Define()
 			// Verify: original session token still works for API call
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& Result)
+				Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Account retrieved", !Result.User.Id.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Account retrieved", !Result.Value.User.Id.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -358,17 +337,21 @@ void FNakamaBPSessionSpec::Define()
 				GetTransientPackage(), Client, Session, Session.Token, Session.RefreshToken);
 			Action->Activate();
 
-			// Verify: action completed without crash; server is still responsive
+			// Verify: action completed without crash; server is still responsive.
+			// Use an empty session — the logout invalidated this session's tokens,
+			// and passing it would trigger an auto-refresh against the now-invalid
+			// refresh token. The healthcheck endpoint is unauthenticated, so an
+			// empty session reaches it without attempting a refresh.
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::Healthcheck(Client, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FNakamaError& Error)
+				Nakama::Healthcheck(Client, FNakamaSession{}).Next([this, Done](FNakamaVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -406,40 +389,33 @@ void FNakamaBPAccountSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& AccResult)
-					{
-						UserId = AccResult.User.Id;
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
-					}
-				);
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 				Done.Execute();
+				return;
 			}
-		);
+			Session = Result.Value;
+			Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult AccResult)
+			{
+				if (AccResult.bIsError)
+				{
+					AddError(FString::Printf(TEXT("GetAccount failed: %s"), *AccResult.Error.Message));
+				}
+				else
+				{
+					UserId = AccResult.Value.User.Id;
+				}
+				Done.Execute();
+			});
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetAccount", [this]()
@@ -452,18 +428,18 @@ void FNakamaBPAccountSpec::Define()
 			// Verify via C++ GetAccount
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& Result)
+				Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestEqual("User ID matches", Result.User.Id, UserId);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestEqual("User ID matches", Result.Value.User.Id, UserId);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -482,18 +458,18 @@ void FNakamaBPAccountSpec::Define()
 			// Verify via C++ GetAccount
 			VerifyWhenComplete(Action, [this, Done, NewDisplayName]()
 			{
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done, NewDisplayName](const FNakamaAccount& Result)
+				Nakama::GetAccount(Client, Session).Next([this, Done, NewDisplayName](FNakamaAccountResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestEqual("Display name updated", Result.User.DisplayName, NewDisplayName);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestEqual("Display name updated", Result.Value.User.DisplayName, NewDisplayName);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -513,22 +489,22 @@ void FNakamaBPAccountSpec::Define()
 			// Verify via C++ GetUsers
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::GetUsers(Client, Session, { UserId }, {}, {},
-					[this, Done](const FNakamaUsers& Result)
+				Nakama::GetUsers(Client, Session, { UserId }, {}, {}).Next([this, Done](FNakamaUsersResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Got at least one user", Result.Users.Num() > 0);
-						if (Result.Users.Num() > 0)
-						{
-							TestEqual("User ID matches", Result.Users[0].Id, UserId);
-						}
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetUsers failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetUsers failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Got at least one user", Result.Value.Users.Num() > 0);
+						if (Result.Value.Users.Num() > 0)
+						{
+							TestEqual("User ID matches", Result.Value.Users[0].Id, UserId);
+						}
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -572,78 +548,57 @@ void FNakamaBPFriendsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& AccResult)
-					{
-						UserId = AccResult.User.Id;
-
-						FNakamaAccountCustom FriendAccount;
-						FriendAccount.Id = GenerateId();
-
-						NakamaApi::AuthenticateCustom(FriendClient, FriendAccount, true, TEXT(""),
-							[this, Done](const FNakamaSession& FResult)
-							{
-								FriendSession = FResult;
-								NakamaApi::GetAccount(FriendClient, FriendSession,
-									[this, Done](const FNakamaAccount& FAccResult)
-									{
-										FriendUserId = FAccResult.User.Id;
-										Done.Execute();
-									},
-									[this, Done](const FNakamaError& Error)
-									{
-										AddError(FString::Printf(TEXT("Friend GetAccount failed: %s"), *Error.Message));
-										Done.Execute();
-									}
-								);
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("Friend auth failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
-					}
-				);
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 				Done.Execute();
+				return;
 			}
-		);
+			Session = Result.Value;
+			Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult AccResult)
+			{
+				if (AccResult.bIsError)
+				{
+					AddError(FString::Printf(TEXT("GetAccount failed: %s"), *AccResult.Error.Message));
+					Done.Execute();
+					return;
+				}
+				UserId = AccResult.Value.User.Id;
+
+				Nakama::AuthenticateCustom(FriendClient, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult FResult)
+				{
+					if (FResult.bIsError)
+					{
+						AddError(FString::Printf(TEXT("Friend auth failed: %s"), *FResult.Error.Message));
+						Done.Execute();
+						return;
+					}
+					FriendSession = FResult.Value;
+					Nakama::GetAccount(FriendClient, FriendSession).Next([this, Done](FNakamaAccountResult FAccResult)
+					{
+						if (FAccResult.bIsError)
+						{
+							AddError(FString::Printf(TEXT("Friend GetAccount failed: %s"), *FAccResult.Error.Message));
+						}
+						else
+						{
+							FriendUserId = FAccResult.Value.User.Id;
+						}
+						Done.Execute();
+					});
+				});
+			});
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[this, Done]()
-			{
-				NakamaApi::DeleteAccount(Client, FriendSession,
-					[Done]() { Done.Execute(); },
-					[Done](const FNakamaError&) { Done.Execute(); }
-				);
-			},
-			[this, Done](const FNakamaError&)
-			{
-				NakamaApi::DeleteAccount(Client, FriendSession,
-					[Done]() { Done.Execute(); },
-					[Done](const FNakamaError&) { Done.Execute(); }
-				);
-			}
-		);
+		Nakama::DeleteAccount(Client, Session).Next([this, Done](FNakamaVoidResult)
+		{
+			Nakama::DeleteAccount(Client, FriendSession).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		});
 	});
 
 	Describe("AddFriends", [this]()
@@ -660,18 +615,18 @@ void FNakamaBPFriendsSpec::Define()
 			// Verify via C++ ListFriends
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListFriends(Client, Session, 10, {}, TEXT(""),
-					[this, Done](const FNakamaFriendList& Result)
+				Nakama::ListFriends(Client, Session, 10, {}, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Friend list is not empty", Result.Friends.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Friend list is not empty", Result.Value.Friends.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -681,37 +636,36 @@ void FNakamaBPFriendsSpec::Define()
 		LatentIt("should list friends after adding one", [this](const FDoneDelegate& Done)
 		{
 			// Setup: add friend via C++
-			NakamaApi::AddFriends(Client, Session, { FriendUserId }, {}, TEXT(""),
-				[this, Done]()
+			Nakama::AddFriends(Client, Session, { FriendUserId }, {}, TEXT("")).Next([this, Done](FNakamaVoidResult AddResult)
+			{
+				if (AddResult.bIsError)
 				{
-					// Fire BP ListFriends
-					auto* Action = UNakamaClientListFriends::ListFriends(
-						GetTransientPackage(), Client, Session, 10, {}, TEXT(""));
-					Action->Activate();
-
-					// Verify via C++
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListFriends(Client, Session, 10, {}, TEXT(""),
-							[this, Done](const FNakamaFriendList& Result)
-							{
-								TestTrue("Friend list has entries", Result.Friends.Num() > 0);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("AddFriends setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("AddFriends setup failed: %s"), *AddResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP ListFriends
+				auto* Action = UNakamaClientListFriends::ListFriends(
+					GetTransientPackage(), Client, Session, 10, {}, TEXT(""));
+				Action->Activate();
+
+				// Verify via C++
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListFriends(Client, Session, 10, {}, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Result.Error.Message));
+						}
+						else
+						{
+							TestTrue("Friend list has entries", Result.Value.Friends.Num() > 0);
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -729,18 +683,18 @@ void FNakamaBPFriendsSpec::Define()
 			// Verify: blocked friend appears in friend list with state=3 (blocked)
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListFriends(Client, Session, 10, 3, TEXT(""),
-					[this, Done](const FNakamaFriendList& Result)
+				Nakama::ListFriends(Client, Session, 10, 3, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Blocked friend list has entries", Result.Friends.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Blocked friend list has entries", Result.Value.Friends.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -750,40 +704,39 @@ void FNakamaBPFriendsSpec::Define()
 		LatentIt("should delete a friend", [this](const FDoneDelegate& Done)
 		{
 			// Setup: add friend via C++
-			NakamaApi::AddFriends(Client, Session, { FriendUserId }, {}, TEXT(""),
-				[this, Done]()
+			Nakama::AddFriends(Client, Session, { FriendUserId }, {}, TEXT("")).Next([this, Done](FNakamaVoidResult AddResult)
+			{
+				if (AddResult.bIsError)
 				{
-					// Fire BP DeleteFriends
-					TArray<FString> Ids = { FriendUserId };
-					TArray<FString> Usernames;
-
-					auto* Action = UNakamaClientDeleteFriends::DeleteFriends(
-						GetTransientPackage(), Client, Session, Ids, Usernames);
-					Action->Activate();
-
-					// Verify: friend list is now empty
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
-							[this, Done](const FNakamaFriendList& Result)
-							{
-								TestEqual("Friend list is empty", Result.Friends.Num(), 0);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("AddFriends setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("AddFriends setup failed: %s"), *AddResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP DeleteFriends
+				TArray<FString> Ids = { FriendUserId };
+				TArray<FString> Usernames;
+
+				auto* Action = UNakamaClientDeleteFriends::DeleteFriends(
+					GetTransientPackage(), Client, Session, Ids, Usernames);
+				Action->Activate();
+
+				// Verify: friend list is now empty
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListFriends(Client, Session, 10, 0, TEXT("")).Next([this, Done](FNakamaFriendListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListFriends failed: %s"), *Result.Error.Message));
+						}
+						else
+						{
+							TestEqual("Friend list is empty", Result.Value.Friends.Num(), 0);
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 }
@@ -828,117 +781,74 @@ void FNakamaBPGroupsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account1;
-		Account1.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account1, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& AccResult)
-					{
-						UserId = AccResult.User.Id;
-
-						FNakamaAccountCustom Account2;
-						Account2.Id = GenerateId();
-
-						NakamaApi::AuthenticateCustom(Client, Account2, true, TEXT(""),
-							[this, Done](const FNakamaSession& Result2)
-							{
-								Session2 = Result2;
-								NakamaApi::GetAccount(Client, Session2,
-									[this, Done](const FNakamaAccount& AccResult2)
-									{
-										UserId2 = AccResult2.User.Id;
-
-										// Create a group as user1
-										GroupName = FString::Printf(TEXT("bp_grp_%s"), *GenerateShortId());
-										NakamaApi::CreateGroup(Client, Session, GroupName, TEXT("Test group"),
-											TEXT("en"), TEXT(""), true, 100,
-											[this, Done](const FNakamaGroup& Group)
-											{
-												GroupId = Group.Id;
-												Done.Execute();
-											},
-											[this, Done](const FNakamaError& Error)
-											{
-												AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
-												Done.Execute();
-											}
-										);
-									},
-									[this, Done](const FNakamaError& Error)
-									{
-										AddError(FString::Printf(TEXT("GetAccount2 failed: %s"), *Error.Message));
-										Done.Execute();
-									}
-								);
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
-					}
-				);
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Result.Error.Message));
 				Done.Execute();
+				return;
 			}
-		);
+			Session = Result.Value;
+			Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult AccResult)
+			{
+				if (AccResult.bIsError)
+				{
+					AddError(FString::Printf(TEXT("GetAccount failed: %s"), *AccResult.Error.Message));
+					Done.Execute();
+					return;
+				}
+				UserId = AccResult.Value.User.Id;
+
+				Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result2)
+				{
+					if (Result2.bIsError)
+					{
+						AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Result2.Error.Message));
+						Done.Execute();
+						return;
+					}
+					Session2 = Result2.Value;
+					Nakama::GetAccount(Client, Session2).Next([this, Done](FNakamaAccountResult AccResult2)
+					{
+						if (AccResult2.bIsError)
+						{
+							AddError(FString::Printf(TEXT("GetAccount2 failed: %s"), *AccResult2.Error.Message));
+							Done.Execute();
+							return;
+						}
+						UserId2 = AccResult2.Value.User.Id;
+
+						// Create a group as user1
+						GroupName = FString::Printf(TEXT("bp_grp_%s"), *GenerateShortId());
+						Nakama::CreateGroup(Client, Session, GroupName, TEXT("Test group"),
+							TEXT("en"), TEXT(""), true, 100).Next([this, Done](FNakamaGroupResult Group)
+						{
+							if (Group.bIsError)
+							{
+								AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Group.Error.Message));
+							}
+							else
+							{
+								GroupId = Group.Value.Id;
+							}
+							Done.Execute();
+						});
+					});
+				});
+			});
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteGroup(Client, Session, GroupId,
-			[this, Done]()
+		Nakama::DeleteGroup(Client, Session, GroupId).Next([this, Done](FNakamaVoidResult)
+		{
+			Nakama::DeleteAccount(Client, Session).Next([this, Done](FNakamaVoidResult)
 			{
-				NakamaApi::DeleteAccount(Client, Session,
-					[this, Done]()
-					{
-						NakamaApi::DeleteAccount(Client, Session2,
-							[Done]() { Done.Execute(); },
-							[Done](const FNakamaError&) { Done.Execute(); }
-						);
-					},
-					[this, Done](const FNakamaError&)
-					{
-						NakamaApi::DeleteAccount(Client, Session2,
-							[Done]() { Done.Execute(); },
-							[Done](const FNakamaError&) { Done.Execute(); }
-						);
-					}
-				);
-			},
-			[this, Done](const FNakamaError&)
-			{
-				NakamaApi::DeleteAccount(Client, Session,
-					[this, Done]()
-					{
-						NakamaApi::DeleteAccount(Client, Session2,
-							[Done]() { Done.Execute(); },
-							[Done](const FNakamaError&) { Done.Execute(); }
-						);
-					},
-					[this, Done](const FNakamaError&)
-					{
-						NakamaApi::DeleteAccount(Client, Session2,
-							[Done]() { Done.Execute(); },
-							[Done](const FNakamaError&) { Done.Execute(); }
-						);
-					}
-				);
-			}
-		);
+				Nakama::DeleteAccount(Client, Session2).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+			});
+		});
 	});
 
 	Describe("CreateGroup", [this]()
@@ -955,39 +865,35 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListUserGroups (ListGroups always sends open filter which conflicts with name)
 			VerifyWhenComplete(Action, [this, Done, NewGroupName]()
 			{
-				NakamaApi::ListUserGroups(Client, Session, UserId, 100, 0, TEXT(""),
-					[this, Done, NewGroupName](const FNakamaUserGroupList& Result)
+				Nakama::ListUserGroups(Client, Session, UserId, 100, 0, TEXT("")).Next([this, Done, NewGroupName](FNakamaUserGroupListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						FString NewGroupId;
-						bool Found = false;
-						for (const auto& UG : Result.UserGroups)
-						{
-							if (UG.Group.Name == NewGroupName)
-							{
-								Found = true;
-								NewGroupId = UG.Group.Id;
-								break;
-							}
-						}
-						TestTrue("Created group found in user groups", Found);
-						if (!NewGroupId.IsEmpty())
-						{
-							NakamaApi::DeleteGroup(Client, Session, NewGroupId,
-								[Done]() { Done.Execute(); },
-								[Done](const FNakamaError&) { Done.Execute(); }
-							);
-						}
-						else
-						{
-							Done.Execute();
-						}
-					},
-					[this, Done](const FNakamaError& Error)
+						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Result.Error.Message));
+						Done.Execute();
+						return;
+					}
+					FString NewGroupId;
+					bool Found = false;
+					for (const auto& UG : Result.Value.UserGroups)
 					{
-						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Error.Message));
+						if (UG.Group.Name == NewGroupName)
+						{
+							Found = true;
+							NewGroupId = UG.Group.Id;
+							break;
+						}
+					}
+					TestTrue("Created group found in user groups", Found);
+					if (!NewGroupId.IsEmpty())
+					{
+						Nakama::DeleteGroup(Client, Session, NewGroupId).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+					}
+					else
+					{
 						Done.Execute();
 					}
-				);
+				});
 			});
 		});
 	});
@@ -1006,18 +912,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify: group still exists and is accessible
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-					[this, Done](const FNakamaGroupUserList& Result)
+				Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Group still has users after update", Result.GroupUsers.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Group still has users after update", Result.Value.GroupUsers.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1033,27 +939,26 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify: group no longer in user's groups
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListUserGroups(Client, Session, UserId, 100, 0, TEXT(""),
-					[this, Done](const FNakamaUserGroupList& Result)
+				Nakama::ListUserGroups(Client, Session, UserId, 100, 0, TEXT("")).Next([this, Done](FNakamaUserGroupListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						bool Found = false;
-						for (const auto& UG : Result.UserGroups)
-						{
-							if (UG.Group.Id == GroupId)
-							{
-								Found = true;
-								break;
-							}
-						}
-						TestFalse("Deleted group not in user groups", Found);
+						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Result.Error.Message));
 						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Error.Message));
-						Done.Execute();
+						return;
 					}
-				);
+					bool Found = false;
+					for (const auto& UG : Result.Value.UserGroups)
+					{
+						if (UG.Group.Id == GroupId)
+						{
+							Found = true;
+							break;
+						}
+					}
+					TestFalse("Deleted group not in user groups", Found);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1070,18 +975,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListGroups
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroups(Client, Session, TEXT(""), TEXT(""), 100, TEXT(""), {}, true,
-					[this, Done](const FNakamaGroupList& Result)
+				Nakama::ListGroups(Client, Session, TEXT(""), TEXT(""), 100, TEXT(""), {}, true).Next([this, Done](FNakamaGroupListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Group list has entries", Result.Groups.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListGroups failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListGroups failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Group list has entries", Result.Value.Groups.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1098,18 +1003,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListGroupUsers
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-					[this, Done](const FNakamaGroupUserList& Result)
+				Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Group has at least 2 users", Result.GroupUsers.Num() >= 2);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Group has at least 2 users", Result.Value.GroupUsers.Num() >= 2);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1127,18 +1032,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++ ListGroupUsers
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-					[this, Done](const FNakamaGroupUserList& Result)
+				Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Group has at least 2 users", Result.GroupUsers.Num() >= 2);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Group has at least 2 users", Result.Value.GroupUsers.Num() >= 2);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1148,48 +1053,46 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should kick users from a group", [this](const FDoneDelegate& Done)
 		{
 			// Setup: add user2 to group via C++
-			NakamaApi::AddGroupUsers(Client, Session, GroupId, { UserId2 },
-				[this, Done]()
+			Nakama::AddGroupUsers(Client, Session, GroupId, { UserId2 }).Next([this, Done](FNakamaVoidResult AddResult)
+			{
+				if (AddResult.bIsError)
 				{
-					// Fire BP KickGroupUsers
-					TArray<FString> UserIds = { UserId2 };
-
-					auto* Action = UNakamaClientKickGroupUsers::KickGroupUsers(
-						GetTransientPackage(), Client, Session, GroupId, UserIds);
-					Action->Activate();
-
-					// Verify user2 is no longer in group
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-							[this, Done](const FNakamaGroupUserList& Result)
-							{
-								bool Found = false;
-								for (const auto& GU : Result.GroupUsers)
-								{
-									if (GU.User.Id == UserId2)
-									{
-										Found = true;
-										break;
-									}
-								}
-								TestFalse("Kicked user not in group", Found);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("AddGroupUsers setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("AddGroupUsers setup failed: %s"), *AddResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP KickGroupUsers
+				TArray<FString> UserIds = { UserId2 };
+
+				auto* Action = UNakamaClientKickGroupUsers::KickGroupUsers(
+					GetTransientPackage(), Client, Session, GroupId, UserIds);
+				Action->Activate();
+
+				// Verify user2 is no longer in group
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
+							Done.Execute();
+							return;
+						}
+						bool Found = false;
+						for (const auto& GU : Result.Value.GroupUsers)
+						{
+							if (GU.User.Id == UserId2)
+							{
+								Found = true;
+								break;
+							}
+						}
+						TestFalse("Kicked user not in group", Found);
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1198,48 +1101,46 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should promote users in a group", [this](const FDoneDelegate& Done)
 		{
 			// Setup: add user2 to group via C++
-			NakamaApi::AddGroupUsers(Client, Session, GroupId, { UserId2 },
-				[this, Done]()
+			Nakama::AddGroupUsers(Client, Session, GroupId, { UserId2 }).Next([this, Done](FNakamaVoidResult AddResult)
+			{
+				if (AddResult.bIsError)
 				{
-					// Fire BP PromoteGroupUsers
-					TArray<FString> UserIds = { UserId2 };
-
-					auto* Action = UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
-						GetTransientPackage(), Client, Session, GroupId, UserIds);
-					Action->Activate();
-
-					// Verify: user2 is still in group (promotion doesn't remove)
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-							[this, Done](const FNakamaGroupUserList& Result)
-							{
-								bool Found = false;
-								for (const auto& GU : Result.GroupUsers)
-								{
-									if (GU.User.Id == UserId2)
-									{
-										Found = true;
-										break;
-									}
-								}
-								TestTrue("Promoted user still in group", Found);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("AddGroupUsers setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("AddGroupUsers setup failed: %s"), *AddResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP PromoteGroupUsers
+				TArray<FString> UserIds = { UserId2 };
+
+				auto* Action = UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
+					GetTransientPackage(), Client, Session, GroupId, UserIds);
+				Action->Activate();
+
+				// Verify: user2 is still in group (promotion doesn't remove)
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
+							Done.Execute();
+							return;
+						}
+						bool Found = false;
+						for (const auto& GU : Result.Value.GroupUsers)
+						{
+							if (GU.User.Id == UserId2)
+							{
+								Found = true;
+								break;
+							}
+						}
+						TestTrue("Promoted user still in group", Found);
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1248,46 +1149,44 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should leave a group", [this](const FDoneDelegate& Done)
 		{
 			// Setup: user2 joins group via C++
-			NakamaApi::JoinGroup(Client, Session2, GroupId,
-				[this, Done]()
+			Nakama::JoinGroup(Client, Session2, GroupId).Next([this, Done](FNakamaVoidResult JoinResult)
+			{
+				if (JoinResult.bIsError)
 				{
-					// Fire BP LeaveGroup as user2
-					auto* Action = UNakamaClientLeaveGroup::LeaveGroup(
-						GetTransientPackage(), Client, Session2, GroupId);
-					Action->Activate();
-
-					// Verify user2 no longer in group
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-							[this, Done](const FNakamaGroupUserList& Result)
-							{
-								bool Found = false;
-								for (const auto& GU : Result.GroupUsers)
-								{
-									if (GU.User.Id == UserId2)
-									{
-										Found = true;
-										break;
-									}
-								}
-								TestFalse("User2 left the group", Found);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("JoinGroup setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("JoinGroup setup failed: %s"), *JoinResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP LeaveGroup as user2
+				auto* Action = UNakamaClientLeaveGroup::LeaveGroup(
+					GetTransientPackage(), Client, Session2, GroupId);
+				Action->Activate();
+
+				// Verify user2 no longer in group
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
+							Done.Execute();
+							return;
+						}
+						bool Found = false;
+						for (const auto& GU : Result.Value.GroupUsers)
+						{
+							if (GU.User.Id == UserId2)
+							{
+								Found = true;
+								break;
+							}
+						}
+						TestFalse("User2 left the group", Found);
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1302,18 +1201,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT(""),
-					[this, Done](const FNakamaGroupUserList& Result)
+				Nakama::ListGroupUsers(Client, Session, GroupId, 10, {}, TEXT("")).Next([this, Done](FNakamaGroupUserListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Group has at least one user (owner)", Result.GroupUsers.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Group has at least one user (owner)", Result.Value.GroupUsers.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1329,18 +1228,18 @@ void FNakamaBPGroupsSpec::Define()
 			// Verify via C++
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListUserGroups(Client, Session, UserId, 10, 0, TEXT(""),
-					[this, Done](const FNakamaUserGroupList& Result)
+				Nakama::ListUserGroups(Client, Session, UserId, 10, 0, TEXT("")).Next([this, Done](FNakamaUserGroupListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("User has at least one group", Result.UserGroups.Num() > 0);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("User has at least one group", Result.Value.UserGroups.Num() > 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1378,40 +1277,33 @@ void FNakamaBPStorageSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				NakamaApi::GetAccount(Client, Session,
-					[this, Done](const FNakamaAccount& AccResult)
-					{
-						UserId = AccResult.User.Id;
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
-						Done.Execute();
-					}
-				);
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 				Done.Execute();
+				return;
 			}
-		);
+			Session = Result.Value;
+			Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult AccResult)
+			{
+				if (AccResult.bIsError)
+				{
+					AddError(FString::Printf(TEXT("GetAccount failed: %s"), *AccResult.Error.Message));
+				}
+				else
+				{
+					UserId = AccResult.Value.User.Id;
+				}
+				Done.Execute();
+			});
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("WriteStorageObjects", [this]()
@@ -1441,22 +1333,22 @@ void FNakamaBPStorageSpec::Define()
 				ReadId.Key = Key;
 				ReadId.UserId = UserId;
 
-				NakamaApi::ReadStorageObjects(Client, Session, { ReadId },
-					[this, Done](const FNakamaStorageObjects& Result)
+				Nakama::ReadStorageObjects(Client, Session, { ReadId }).Next([this, Done](FNakamaStorageObjectsResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Got at least one object", Result.Objects.Num() > 0);
-						if (Result.Objects.Num() > 0)
-						{
-							TestTrue("Value contains score", Result.Objects[0].Value.Contains(TEXT("42")));
-						}
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Got at least one object", Result.Value.Objects.Num() > 0);
+						if (Result.Value.Objects.Num() > 0)
+						{
+							TestTrue("Value contains score", Result.Value.Objects[0].Value.Contains(TEXT("42")));
+						}
+					}
+					Done.Execute();
+				});
 			});
 		});
 
@@ -1485,23 +1377,23 @@ void FNakamaBPStorageSpec::Define()
 				ReadId.Key = Key;
 				ReadId.UserId = UserId;
 
-				NakamaApi::ReadStorageObjects(Client, Session, { ReadId },
-					[this, Done](const FNakamaStorageObjects& Result)
+				Nakama::ReadStorageObjects(Client, Session, { ReadId }).Next([this, Done](FNakamaStorageObjectsResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Got at least one object", Result.Objects.Num() > 0);
-						if (Result.Objects.Num() > 0)
-						{
-							TestTrue("Value contains level", Result.Objects[0].Value.Contains(TEXT("99")));
-							TestTrue("Value contains name", Result.Objects[0].Value.Contains(TEXT("hero")));
-						}
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Got at least one object", Result.Value.Objects.Num() > 0);
+						if (Result.Value.Objects.Num() > 0)
+						{
+							TestTrue("Value contains level", Result.Value.Objects[0].Value.Contains(TEXT("99")));
+							TestTrue("Value contains name", Result.Value.Objects[0].Value.Contains(TEXT("hero")));
+						}
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1520,47 +1412,46 @@ void FNakamaBPStorageSpec::Define()
 			Obj.PermissionRead = 1;
 			Obj.PermissionWrite = 1;
 
-			NakamaApi::WriteStorageObjects(Client, Session, { Obj },
-				[this, Done, Key](const FNakamaStorageObjectAcks& Acks)
+			Nakama::WriteStorageObjects(Client, Session, { Obj }).Next([this, Done, Key](FNakamaStorageObjectAcksResult WriteResult)
+			{
+				if (WriteResult.bIsError)
 				{
-					// Fire BP ReadStorageObjects
-					FNakamaReadStorageObjectId ReadId;
-					ReadId.Collection = TEXT("bp_test");
-					ReadId.Key = Key;
-					ReadId.UserId = UserId;
-
-					auto* Action = UNakamaClientReadStorageObjects::ReadStorageObjects(
-						GetTransientPackage(), Client, Session, { ReadId });
-					Action->Activate();
-
-					// Verify via C++ that object exists
-					VerifyWhenComplete(Action, [this, Done, Key]()
-					{
-						FNakamaReadStorageObjectId VerifyId;
-						VerifyId.Collection = TEXT("bp_test");
-						VerifyId.Key = Key;
-						VerifyId.UserId = UserId;
-
-						NakamaApi::ReadStorageObjects(Client, Session, { VerifyId },
-							[this, Done](const FNakamaStorageObjects& Result)
-							{
-								TestTrue("Object still readable", Result.Objects.Num() > 0);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *WriteResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP ReadStorageObjects
+				FNakamaReadStorageObjectId ReadId;
+				ReadId.Collection = TEXT("bp_test");
+				ReadId.Key = Key;
+				ReadId.UserId = UserId;
+
+				auto* Action = UNakamaClientReadStorageObjects::ReadStorageObjects(
+					GetTransientPackage(), Client, Session, { ReadId });
+				Action->Activate();
+
+				// Verify via C++ that object exists
+				VerifyWhenComplete(Action, [this, Done, Key]()
+				{
+					FNakamaReadStorageObjectId VerifyId;
+					VerifyId.Collection = TEXT("bp_test");
+					VerifyId.Key = Key;
+					VerifyId.UserId = UserId;
+
+					Nakama::ReadStorageObjects(Client, Session, { VerifyId }).Next([this, Done](FNakamaStorageObjectsResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Result.Error.Message));
+						}
+						else
+						{
+							TestTrue("Object still readable", Result.Value.Objects.Num() > 0);
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1576,37 +1467,36 @@ void FNakamaBPStorageSpec::Define()
 			Obj.PermissionRead = 1;
 			Obj.PermissionWrite = 1;
 
-			NakamaApi::WriteStorageObjects(Client, Session, { Obj },
-				[this, Done](const FNakamaStorageObjectAcks& Acks)
+			Nakama::WriteStorageObjects(Client, Session, { Obj }).Next([this, Done](FNakamaStorageObjectAcksResult WriteResult)
+			{
+				if (WriteResult.bIsError)
 				{
-					// Fire BP ListStorageObjects
-					auto* Action = UNakamaClientListStorageObjects::ListStorageObjects(
-						GetTransientPackage(), Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""));
-					Action->Activate();
-
-					// Verify via C++
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						NakamaApi::ListStorageObjects(Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""),
-							[this, Done](const FNakamaStorageObjectList& Result)
-							{
-								TestTrue("Listed at least one object", Result.Objects.Num() > 0);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ListStorage failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *WriteResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP ListStorageObjects
+				auto* Action = UNakamaClientListStorageObjects::ListStorageObjects(
+					GetTransientPackage(), Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""));
+				Action->Activate();
+
+				// Verify via C++
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Nakama::ListStorageObjects(Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT("")).Next([this, Done](FNakamaStorageObjectListResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ListStorage failed: %s"), *Result.Error.Message));
+						}
+						else
+						{
+							TestTrue("Listed at least one object", Result.Value.Objects.Num() > 0);
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1624,47 +1514,46 @@ void FNakamaBPStorageSpec::Define()
 			Obj.PermissionRead = 1;
 			Obj.PermissionWrite = 1;
 
-			NakamaApi::WriteStorageObjects(Client, Session, { Obj },
-				[this, Done, Key](const FNakamaStorageObjectAcks& Acks)
+			Nakama::WriteStorageObjects(Client, Session, { Obj }).Next([this, Done, Key](FNakamaStorageObjectAcksResult WriteResult)
+			{
+				if (WriteResult.bIsError)
 				{
-					// Fire BP DeleteStorageObjects
-					FNakamaDeleteStorageObjectId DelId;
-					DelId.Collection = TEXT("bp_del_test");
-					DelId.Key = Key;
-					DelId.Version = Acks.Acks.Num() > 0 ? Acks.Acks[0].Version : TEXT("");
-
-					auto* Action = UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
-						GetTransientPackage(), Client, Session, { DelId });
-					Action->Activate();
-
-					// Verify: object is gone
-					VerifyWhenComplete(Action, [this, Done, Key]()
-					{
-						FNakamaReadStorageObjectId ReadId;
-						ReadId.Collection = TEXT("bp_del_test");
-						ReadId.Key = Key;
-						ReadId.UserId = UserId;
-
-						NakamaApi::ReadStorageObjects(Client, Session, { ReadId },
-							[this, Done](const FNakamaStorageObjects& Result)
-							{
-								TestEqual("Object deleted", Result.Objects.Num(), 0);
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("WriteStorage setup failed: %s"), *WriteResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP DeleteStorageObjects
+				FNakamaDeleteStorageObjectId DelId;
+				DelId.Collection = TEXT("bp_del_test");
+				DelId.Key = Key;
+				DelId.Version = WriteResult.Value.Acks.Num() > 0 ? WriteResult.Value.Acks[0].Version : TEXT("");
+
+				auto* Action = UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
+					GetTransientPackage(), Client, Session, { DelId });
+				Action->Activate();
+
+				// Verify: object is gone
+				VerifyWhenComplete(Action, [this, Done, Key]()
+				{
+					FNakamaReadStorageObjectId ReadId;
+					ReadId.Collection = TEXT("bp_del_test");
+					ReadId.Key = Key;
+					ReadId.UserId = UserId;
+
+					Nakama::ReadStorageObjects(Client, Session, { ReadId }).Next([this, Done](FNakamaStorageObjectsResult Result)
+					{
+						if (Result.bIsError)
+						{
+							AddError(FString::Printf(TEXT("ReadStorage failed: %s"), *Result.Error.Message));
+						}
+						else
+						{
+							TestEqual("Object deleted", Result.Value.Objects.Num(), 0);
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 }
@@ -1701,29 +1590,23 @@ void FNakamaBPLinkSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("LinkCustom", [this]()
@@ -1739,21 +1622,18 @@ void FNakamaBPLinkSpec::Define()
 			// Verify: can authenticate with the linked ID
 			VerifyWhenComplete(Action, [this, Done, NewId]()
 			{
-				FNakamaAccountCustom LinkedAccount;
-				LinkedAccount.Id = NewId;
-
-				NakamaApi::AuthenticateCustom(Client, LinkedAccount, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateCustom(Client, false, TEXT(""), NewId).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Linked custom auth succeeded", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Linked auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Linked auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Linked custom auth succeeded", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1767,51 +1647,46 @@ void FNakamaBPLinkSpec::Define()
 
 			// Setup: link a device first (so there's a fallback auth method),
 			// then link an extra custom ID (replaces original)
-			NakamaApi::LinkDevice(Client, Session, DeviceId, TMap<FString, FString>(),
-				[this, Done, ExtraId]()
+			Nakama::LinkDevice(Client, Session, DeviceId, TMap<FString, FString>()).Next([this, Done, ExtraId](FNakamaVoidResult LinkDeviceResult)
+			{
+				if (LinkDeviceResult.bIsError)
 				{
-					NakamaApi::LinkCustom(Client, Session, ExtraId, TMap<FString, FString>(),
-						[this, Done, ExtraId]()
-						{
-							// Fire BP UnlinkCustom
-							auto* Action = UNakamaClientUnlinkCustom::UnlinkCustom(
-								GetTransientPackage(), Client, Session, ExtraId, TMap<FString, FString>());
-							Action->Activate();
-
-							// Verify: can no longer auth with the unlinked ID
-							VerifyWhenComplete(Action, [this, Done, ExtraId]()
-							{
-								FNakamaAccountCustom UnlinkedAccount;
-								UnlinkedAccount.Id = ExtraId;
-
-								NakamaApi::AuthenticateCustom(Client, UnlinkedAccount, false, TEXT(""),
-									[this, Done](const FNakamaSession& Result)
-									{
-										AddError(TEXT("Auth should have failed for unlinked ID"));
-										Done.Execute();
-									},
-									[this, Done](const FNakamaError& Error)
-									{
-										// Expected: auth fails because ID is unlinked
-										TestTrue("Unlinked ID auth rejected", true);
-										Done.Execute();
-									}
-								);
-							});
-						},
-						[this, Done](const FNakamaError& Error)
-						{
-							AddError(FString::Printf(TEXT("LinkCustom setup failed: %s"), *Error.Message));
-							Done.Execute();
-						}
-					);
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("LinkDevice setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("LinkDevice setup failed: %s"), *LinkDeviceResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				Nakama::LinkCustom(Client, Session, ExtraId, TMap<FString, FString>()).Next([this, Done, ExtraId](FNakamaVoidResult LinkCustomResult)
+				{
+					if (LinkCustomResult.bIsError)
+					{
+						AddError(FString::Printf(TEXT("LinkCustom setup failed: %s"), *LinkCustomResult.Error.Message));
+						Done.Execute();
+						return;
+					}
+					// Fire BP UnlinkCustom
+					auto* Action = UNakamaClientUnlinkCustom::UnlinkCustom(
+						GetTransientPackage(), Client, Session, ExtraId, TMap<FString, FString>());
+					Action->Activate();
+
+					// Verify: can no longer auth with the unlinked ID
+					VerifyWhenComplete(Action, [this, Done, ExtraId]()
+					{
+						Nakama::AuthenticateCustom(Client, false, TEXT(""), ExtraId).Next([this, Done](FNakamaSessionResult Result)
+						{
+							if (Result.bIsError)
+							{
+								// Expected: auth fails because ID is unlinked
+								TestTrue("Unlinked ID auth rejected", true);
+							}
+							else
+							{
+								AddError(TEXT("Auth should have failed for unlinked ID"));
+							}
+							Done.Execute();
+						});
+					});
+				});
+			});
 		});
 	});
 
@@ -1828,21 +1703,18 @@ void FNakamaBPLinkSpec::Define()
 			// Verify: can authenticate with the linked device ID
 			VerifyWhenComplete(Action, [this, Done, DeviceId]()
 			{
-				FNakamaAccountDevice LinkedDevice;
-				LinkedDevice.Id = DeviceId;
-
-				NakamaApi::AuthenticateDevice(Client, LinkedDevice, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateDevice(Client, false, TEXT(""), DeviceId).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Linked device auth succeeded", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Linked device auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Linked device auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Linked device auth succeeded", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1854,40 +1726,36 @@ void FNakamaBPLinkSpec::Define()
 			FString DeviceId = GenerateId();
 
 			// Setup: link device via C++
-			NakamaApi::LinkDevice(Client, Session, DeviceId, TMap<FString, FString>(),
-				[this, Done, DeviceId]()
+			Nakama::LinkDevice(Client, Session, DeviceId, TMap<FString, FString>()).Next([this, Done, DeviceId](FNakamaVoidResult LinkResult)
+			{
+				if (LinkResult.bIsError)
 				{
-					// Fire BP UnlinkDevice
-					auto* Action = UNakamaClientUnlinkDevice::UnlinkDevice(
-						GetTransientPackage(), Client, Session, DeviceId, TMap<FString, FString>());
-					Action->Activate();
-
-					// Verify: can no longer auth with the unlinked device
-					VerifyWhenComplete(Action, [this, Done, DeviceId]()
-					{
-						FNakamaAccountDevice UnlinkedDevice;
-						UnlinkedDevice.Id = DeviceId;
-
-						NakamaApi::AuthenticateDevice(Client, UnlinkedDevice, false, TEXT(""),
-							[this, Done](const FNakamaSession& Result)
-							{
-								AddError(TEXT("Auth should have failed for unlinked device"));
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								TestTrue("Unlinked device auth rejected", true);
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("LinkDevice setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("LinkDevice setup failed: %s"), *LinkResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP UnlinkDevice
+				auto* Action = UNakamaClientUnlinkDevice::UnlinkDevice(
+					GetTransientPackage(), Client, Session, DeviceId, TMap<FString, FString>());
+				Action->Activate();
+
+				// Verify: can no longer auth with the unlinked device
+				VerifyWhenComplete(Action, [this, Done, DeviceId]()
+				{
+					Nakama::AuthenticateDevice(Client, false, TEXT(""), DeviceId).Next([this, Done](FNakamaSessionResult Result)
+					{
+						if (Result.bIsError)
+						{
+							TestTrue("Unlinked device auth rejected", true);
+						}
+						else
+						{
+							AddError(TEXT("Auth should have failed for unlinked device"));
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -1905,22 +1773,18 @@ void FNakamaBPLinkSpec::Define()
 			// Verify: can authenticate with the linked email
 			VerifyWhenComplete(Action, [this, Done, Email, Password]()
 			{
-				FNakamaAccountEmail LinkedEmail;
-				LinkedEmail.Email = Email;
-				LinkedEmail.Password = Password;
-
-				NakamaApi::AuthenticateEmail(Client, LinkedEmail, false, TEXT(""),
-					[this, Done](const FNakamaSession& Result)
+				Nakama::AuthenticateEmail(Client, false, TEXT(""), Email, Password).Next([this, Done](FNakamaSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestTrue("Linked email auth succeeded", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("Linked email auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Linked email auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestTrue("Linked email auth succeeded", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -1933,41 +1797,36 @@ void FNakamaBPLinkSpec::Define()
 			FString Password = TEXT("password123!");
 
 			// Setup: link email via C++
-			NakamaApi::LinkEmail(Client, Session, Email, Password, TMap<FString, FString>(),
-				[this, Done, Email, Password]()
+			Nakama::LinkEmail(Client, Session, Email, Password, TMap<FString, FString>()).Next([this, Done, Email, Password](FNakamaVoidResult LinkResult)
+			{
+				if (LinkResult.bIsError)
 				{
-					// Fire BP UnlinkEmail
-					auto* Action = UNakamaClientUnlinkEmail::UnlinkEmail(
-						GetTransientPackage(), Client, Session, Email, Password, TMap<FString, FString>());
-					Action->Activate();
-
-					// Verify: can no longer auth with the unlinked email
-					VerifyWhenComplete(Action, [this, Done, Email, Password]()
-					{
-						FNakamaAccountEmail UnlinkedEmail;
-						UnlinkedEmail.Email = Email;
-						UnlinkedEmail.Password = Password;
-
-						NakamaApi::AuthenticateEmail(Client, UnlinkedEmail, false, TEXT(""),
-							[this, Done](const FNakamaSession& Result)
-							{
-								AddError(TEXT("Auth should have failed for unlinked email"));
-								Done.Execute();
-							},
-							[this, Done](const FNakamaError& Error)
-							{
-								TestTrue("Unlinked email auth rejected", true);
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FNakamaError& Error)
-				{
-					AddError(FString::Printf(TEXT("LinkEmail setup failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("LinkEmail setup failed: %s"), *LinkResult.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				// Fire BP UnlinkEmail
+				auto* Action = UNakamaClientUnlinkEmail::UnlinkEmail(
+					GetTransientPackage(), Client, Session, Email, Password, TMap<FString, FString>());
+				Action->Activate();
+
+				// Verify: can no longer auth with the unlinked email
+				VerifyWhenComplete(Action, [this, Done, Email, Password]()
+				{
+					Nakama::AuthenticateEmail(Client, false, TEXT(""), Email, Password).Next([this, Done](FNakamaSessionResult Result)
+					{
+						if (Result.bIsError)
+						{
+							TestTrue("Unlinked email auth rejected", true);
+						}
+						else
+						{
+							AddError(TEXT("Auth should have failed for unlinked email"));
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 }
@@ -2003,29 +1862,23 @@ void FNakamaBPNotificationsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("ListNotifications", [this]()
@@ -2039,19 +1892,19 @@ void FNakamaBPNotificationsSpec::Define()
 			// Verify via C++
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListNotifications(Client, Session, 100, TEXT(""),
-					[this, Done](const FNakamaNotificationList& Result)
+				Nakama::ListNotifications(Client, Session, 100, TEXT("")).Next([this, Done](FNakamaNotificationListResult Result)
+				{
+					if (Result.bIsError)
+					{
+						AddError(FString::Printf(TEXT("ListNotifications failed: %s"), *Result.Error.Message));
+					}
+					else
 					{
 						// Fresh account has no notifications; just verify no error
 						TestTrue("Notification list call succeeded", true);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListNotifications failed: %s"), *Error.Message));
-						Done.Execute();
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -2088,29 +1941,23 @@ void FNakamaBPMatchesSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("ListMatches", [this]()
@@ -2124,18 +1971,18 @@ void FNakamaBPMatchesSpec::Define()
 			// Verify via C++
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::ListMatches(Client, Session, 10, false, TEXT(""), 0, 100, TEXT(""),
-					[this, Done](const FNakamaMatchList& Result)
+				Nakama::ListMatches(Client, Session, 10, false, TEXT(""), 0, 100, TEXT("")).Next([this, Done](FNakamaMatchListResult Result)
+				{
+					if (Result.bIsError)
+					{
+						AddError(FString::Printf(TEXT("ListMatches failed: %s"), *Result.Error.Message));
+					}
+					else
 					{
 						TestTrue("ListMatches call succeeded", true);
-						Done.Execute();
-					},
-					[this, Done](const FNakamaError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListMatches failed: %s"), *Error.Message));
-						Done.Execute();
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -2172,29 +2019,23 @@ void FNakamaBPEventsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		FNakamaAccountCustom Account;
-		Account.Id = GenerateId();
-
-		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-			[this, Done](const FNakamaSession& Result)
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FNakamaError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		NakamaApi::DeleteAccount(Client, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FNakamaError&) { Done.Execute(); }
-		);
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Event", [this]()
@@ -2211,14 +2052,14 @@ void FNakamaBPEventsSpec::Define()
 			// Verify: server is still healthy after event
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				NakamaApi::Healthcheck(Client, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FNakamaError& Error)
+				Nakama::Healthcheck(Client, Session).Next([this, Done](FNakamaVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});

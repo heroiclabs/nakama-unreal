@@ -14,11 +14,14 @@
  *   -ExecCmds="Automation RunTests IntegrationTests.NakamaRt"
  */
 
+#include "NakamaClient.h"
+#include "NakamaClientConfig.h"
+#include "NakamaSession.h"
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
-#include "Nakama.h"
-#include "NakamaRt.h"
-#include "NakamaRtConnection.h"
+#include "Modules/ModuleManager.h"
+#include "Realtime/NakamaRt.h"
+#include "Realtime/NakamaRtConnection.h"
 
 using namespace Nakama;
 using namespace NakamaRt;

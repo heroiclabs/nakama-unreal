@@ -6,8 +6,9 @@
  * individual endpoints.
  */
 
-#include "Satori.h"
+#include "SatoriClient.h"
 #include "Misc/Guid.h"
+#include "Misc/AutomationTest.h"
 #include "SatoriConsoleHelper.h"
 
 /**
@@ -233,7 +234,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("should return healthy", [this](const FDoneDelegate& Done)
 	{
-		Satori::Healthcheck(ClientConfig, FSatoriSession{}).Next([this, Done](FSatoriVoidResult Result)
+		Satori::Healthcheck(ClientConfig).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();
@@ -242,7 +243,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("readycheck should return ready", [this](const FDoneDelegate& Done)
 	{
-		Satori::Readycheck(ClientConfig, FSatoriSession{}).Next([this, Done](FSatoriVoidResult Result)
+		Satori::Readycheck(ClientConfig).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();

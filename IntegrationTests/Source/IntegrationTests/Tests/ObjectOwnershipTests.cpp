@@ -10,9 +10,10 @@
  * Fix: change NewObject<T>() -> NewObject<T>(WorldContextObject) in each factory.
  */
 
+#include "SatoriClientConfig.h"
 #include "Misc/AutomationTest.h"
-#include "NakamaClientBlueprintLibrary.h"
-#include "SatoriClientBlueprintLibrary.h"
+#include "Blueprints/NakamaClientBlueprintLibrary.h"
+#include "Blueprints/SatoriClientBlueprintLibrary.h"
 #include "UObject/Package.h"
 #include "Engine/Engine.h"
 

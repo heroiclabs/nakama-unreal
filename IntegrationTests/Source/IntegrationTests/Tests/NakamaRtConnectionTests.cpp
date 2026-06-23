@@ -11,11 +11,14 @@
  */
 
 #include <atomic>
+
+#include "Nakama.gen.h"
+#include "NakamaClient.h"
+#include "NakamaSession.h"
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
 #include "Dom/JsonObject.h"
-#include "Nakama.h"
-#include "NakamaRtConnection.h"
+#include "Realtime/NakamaRtConnection.h"
 
 // ---------------------------------------------------------------------------
 // Shared constants (file-local)

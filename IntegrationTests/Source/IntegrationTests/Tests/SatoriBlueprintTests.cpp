@@ -3,14 +3,14 @@
  *
  * Tests for SatoriBlueprints module UBlueprintAsyncActionBase subclasses.
  * Each test fires a BP async action, then verifies the server-side effect
- * through the C++ client (which supports lambda callbacks natively).
+ * through the C++ client (the TFuture-based Satori:: free-function API).
  *
  * Mirrors the Nakama BP test pattern from NakamaBlueprintTests.cpp.
  */
 
 #include "Misc/AutomationTest.h"
-#include "SatoriApi.h"
-#include "SatoriClientBlueprintLibrary.h"
+#include "Blueprints/SatoriClientBlueprintLibrary.h"
+#include "SatoriClient.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 #include "SatoriConsoleHelper.h"
@@ -75,26 +75,23 @@ void FSatoriBPHealthcheckSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Healthcheck", [this]()
@@ -106,14 +103,14 @@ void FSatoriBPHealthcheckSpec::Define()
 
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::Healthcheck(ClientConfig, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FSatoriError& Error)
+				Satori::Healthcheck(ClientConfig).Next([this, Done](FSatoriVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -127,14 +124,14 @@ void FSatoriBPHealthcheckSpec::Define()
 
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::Readycheck(ClientConfig, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FSatoriError& Error)
+				Satori::Readycheck(ClientConfig).Next([this, Done](FSatoriVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Readycheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Readycheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -181,10 +178,7 @@ void FSatoriBPAuthSpec::Define()
 			Done.Execute();
 			return;
 		}
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Authenticate", [this]()
@@ -200,19 +194,19 @@ void FSatoriBPAuthSpec::Define()
 			// Verify: re-auth with the same ID should succeed
 			VerifyWhenComplete(Action, [this, Done, Id]()
 			{
-				SatoriApi::Authenticate(ClientConfig, Id, false, {}, {},
-					[this, Done](const FSatoriSession& Result)
+				Satori::Authenticate(ClientConfig, Id, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Session = Result;
-						TestTrue("Session has token", !Result.Token.IsEmpty());
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Re-auth failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						Session = Result.Value;
+						TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -222,33 +216,32 @@ void FSatoriBPAuthSpec::Define()
 		LatentIt("should refresh a session via BP action", [this](const FDoneDelegate& Done)
 		{
 			// Setup: authenticate via C++ to get a refresh token
-			SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-				[this, Done](const FSatoriSession& Result)
+			Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+			{
+				if (Result.bIsError)
 				{
-					Session = Result;
-					auto* Action = USatoriClientAuthenticateRefresh::AuthenticateRefresh(
-						nullptr, ClientConfig, Result.RefreshToken);
-					Action->Activate();
-
-					// Verify: server still responds to healthcheck
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						SatoriApi::Healthcheck(ClientConfig, FSatoriSession{},
-							[Done]() { Done.Execute(); },
-							[this, Done](const FSatoriError& Error)
-							{
-								AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FSatoriError& Error)
-				{
-					AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				Session = Result.Value;
+				auto* Action = USatoriClientAuthenticateRefresh::AuthenticateRefresh(
+					nullptr, ClientConfig, Result.Value.RefreshToken);
+				Action->Activate();
+
+				// Verify: server still responds to healthcheck
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Satori::Healthcheck(ClientConfig).Next([this, Done](FSatoriVoidResult HcResult)
+					{
+						if (HcResult.bIsError)
+						{
+							AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *HcResult.Error.Message));
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 
@@ -257,33 +250,32 @@ void FSatoriBPAuthSpec::Define()
 		LatentIt("should logout a session via BP action", [this](const FDoneDelegate& Done)
 		{
 			// Setup: authenticate via C++ to get tokens
-			SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-				[this, Done](const FSatoriSession& Result)
+			Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+			{
+				if (Result.bIsError)
 				{
-					Session = Result;
-					auto* Action = USatoriClientAuthenticateLogout::AuthenticateLogout(
-						nullptr, ClientConfig, Result.Token, Result.RefreshToken);
-					Action->Activate();
-
-					// Verify: action completed; server still responds
-					VerifyWhenComplete(Action, [this, Done]()
-					{
-						SatoriApi::Healthcheck(ClientConfig, FSatoriSession{},
-							[Done]() { Done.Execute(); },
-							[this, Done](const FSatoriError& Error)
-							{
-								AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-								Done.Execute();
-							}
-						);
-					});
-				},
-				[this, Done](const FSatoriError& Error)
-				{
-					AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
+					AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 					Done.Execute();
+					return;
 				}
-			);
+				Session = Result.Value;
+				auto* Action = USatoriClientAuthenticateLogout::AuthenticateLogout(
+					nullptr, ClientConfig, Result.Value.Token, Result.Value.RefreshToken);
+				Action->Activate();
+
+				// Verify: action completed; server still responds
+				VerifyWhenComplete(Action, [this, Done]()
+				{
+					Satori::Healthcheck(ClientConfig).Next([this, Done](FSatoriVoidResult HcResult)
+					{
+						if (HcResult.bIsError)
+						{
+							AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *HcResult.Error.Message));
+						}
+						Done.Execute();
+					});
+				});
+			});
 		});
 	});
 }
@@ -323,26 +315,23 @@ void FSatoriBPIdentitySpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Identify", [this]()
@@ -415,26 +404,23 @@ void FSatoriBPPropertiesSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("ListProperties", [this]()
@@ -448,17 +434,14 @@ void FSatoriBPPropertiesSpec::Define()
 			// Verify via C++ ListProperties
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::ListProperties(ClientConfig, Session,
-					[this, Done](const FSatoriProperties&)
+				Satori::ListProperties(ClientConfig, Session).Next([this, Done](FSatoriPropertiesResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListProperties failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListProperties failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -477,18 +460,18 @@ void FSatoriBPPropertiesSpec::Define()
 			// Verify: property was persisted
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::ListProperties(ClientConfig, Session,
-					[this, Done](const FSatoriProperties& Props)
+				Satori::ListProperties(ClientConfig, Session).Next([this, Done](FSatoriPropertiesResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestEqual("Custom level", Props.Custom.FindRef(TEXT("level")), TEXT("5"));
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("ListProperties failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("ListProperties failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestEqual("Custom level", Result.Value.Custom.FindRef(TEXT("level")), TEXT("5"));
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -529,26 +512,23 @@ void FSatoriBPEventSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Event", [this]()
@@ -566,14 +546,14 @@ void FSatoriBPEventSpec::Define()
 			// Verify: action completed; server still responds
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::Healthcheck(ClientConfig, Session,
-					[Done]() { Done.Execute(); },
-					[this, Done](const FSatoriError& Error)
+				Satori::Healthcheck(ClientConfig).Next([this, Done](FSatoriVoidResult Result)
+				{
+					if (Result.bIsError)
 					{
-						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -614,26 +594,23 @@ void FSatoriBPFlagsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetFlags", [this]()
@@ -647,17 +624,14 @@ void FSatoriBPFlagsSpec::Define()
 			// Verify via C++ GetFlags
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::GetFlags(ClientConfig, Session, {}, {},
-					[this, Done](const FSatoriFlagList&)
+				Satori::GetFlags(ClientConfig, Session, {}, {}).Next([this, Done](FSatoriFlagListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetFlags failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetFlags failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -673,17 +647,14 @@ void FSatoriBPFlagsSpec::Define()
 			// Verify via C++ GetFlagOverrides
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::GetFlagOverrides(ClientConfig, Session, {}, {},
-					[this, Done](const FSatoriFlagOverrideList&)
+				Satori::GetFlagOverrides(ClientConfig, Session, {}, {}).Next([this, Done](FSatoriFlagOverrideListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetFlagOverrides failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetFlagOverrides failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -724,26 +695,23 @@ void FSatoriBPExperimentsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetExperiments", [this]()
@@ -757,17 +725,14 @@ void FSatoriBPExperimentsSpec::Define()
 			// Verify via C++ GetExperiments
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::GetExperiments(ClientConfig, Session, {}, {},
-					[this, Done](const FSatoriExperimentList&)
+				Satori::GetExperiments(ClientConfig, Session, {}, {}).Next([this, Done](FSatoriExperimentListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetExperiments failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetExperiments failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -808,26 +773,23 @@ void FSatoriBPLiveEventsSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetLiveEvents", [this]()
@@ -841,17 +803,14 @@ void FSatoriBPLiveEventsSpec::Define()
 			// Verify via C++ GetLiveEvents
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::GetLiveEvents(ClientConfig, Session, {}, {}, 0, 0, 0, 0,
-					[this, Done](const FSatoriLiveEventList&)
+				Satori::GetLiveEvents(ClientConfig, Session, {}, {}, 0, 0, 0, 0).Next([this, Done](FSatoriLiveEventListResult Result)
+				{
+					if (Result.bIsError)
 					{
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetLiveEvents failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetLiveEvents failed: %s"), *Result.Error.Message));
 					}
-				);
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -892,26 +851,23 @@ void FSatoriBPMessagesSpec::Define()
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
-			[this, Done](const FSatoriSession& Result)
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError)
 			{
-				Session = Result;
-				Done.Execute();
-			},
-			[this, Done](const FSatoriError& Error)
-			{
-				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
-				Done.Execute();
+				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Result.Error.Message));
 			}
-		);
+			else
+			{
+				Session = Result.Value;
+			}
+			Done.Execute();
+		});
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		SatoriApi::DeleteIdentity(ClientConfig, Session,
-			[Done]() { Done.Execute(); },
-			[Done](const FSatoriError&) { Done.Execute(); }
-		);
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetMessageList", [this]()
@@ -925,18 +881,18 @@ void FSatoriBPMessagesSpec::Define()
 			// Verify via C++ GetMessageList
 			VerifyWhenComplete(Action, [this, Done]()
 			{
-				SatoriApi::GetMessageList(ClientConfig, Session, 10, true, TEXT(""), {},
-					[this, Done](const FSatoriGetMessageListResponse& Result)
+				Satori::GetMessageList(ClientConfig, Session, 10, true, TEXT(""), {}).Next([this, Done](FSatoriGetMessageListResponseResult Result)
+				{
+					if (Result.bIsError)
 					{
-						TestEqual("No messages for fresh identity", Result.Messages.Num(), 0);
-						Done.Execute();
-					},
-					[this, Done](const FSatoriError& Error)
-					{
-						AddError(FString::Printf(TEXT("GetMessageList failed: %s"), *Error.Message));
-						Done.Execute();
+						AddError(FString::Printf(TEXT("GetMessageList failed: %s"), *Result.Error.Message));
 					}
-				);
+					else
+					{
+						TestEqual("No messages for fresh identity", Result.Value.Messages.Num(), 0);
+					}
+					Done.Execute();
+				});
 			});
 		});
 	});

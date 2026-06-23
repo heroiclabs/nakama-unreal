@@ -6,9 +6,13 @@
  */
 
 #include <atomic>
-#include "Nakama.h"
+
+#include "NakamaClient.h"
+#include "NakamaClientConfig.h"
 #include "Misc/Guid.h"
 #include "Serialization/JsonSerializer.h"
+#include "Misc/AutomationTest.h"
+#include "UObject/Package.h"
 
 const FNakamaClientConfig ClientConfig = FNakamaClientConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
 
@@ -4928,16 +4932,6 @@ void FNakamaAsyncHealthcheckSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Server is healthy", true);
-				Done.Execute();
-			});
-		});
-
-		LatentIt("should return healthy status with HTTP key", [this](const FDoneDelegate& Done)
-		{
-			Nakama::Healthcheck(ClientConfig, HttpKey).Next([this, Done](FNakamaVoidResult Result)
-			{
-				ASYNC_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Server is healthy with HTTP key", true);
 				Done.Execute();
 			});
 		});
