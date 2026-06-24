@@ -22,10 +22,11 @@ bool Satori::IsTransientError(const FSatoriError& Error)
 {
 	switch (Error.Code)
 	{
-	case 0:  // Connection failed (TCP refused, DNS timeout, etc.)
-	case 4:  // DEADLINE_EXCEEDED
-	case 13: // INTERNAL
-	case 14: // UNAVAILABLE
+	case 0:    // Connection failed (TCP refused, DNS timeout, etc.)
+	case 4:    // DEADLINE_EXCEEDED
+	case 13:   // INTERNAL
+	case 14:   // UNAVAILABLE
+	case 500:  // HTTP: Server error
 		return true;
 	default:
 		return false;
