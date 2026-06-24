@@ -303,47 +303,31 @@ func buildQualifiedPath(name string, parent *ProtoMessage) []string {
 }
 
 func (api *Api) sortMessagesByDependencies() {
-	const (
-		unvisited = iota
-		visiting
-		done
-	)
-
-	state := make(map[*ProtoMessage]int, len(api.Messages))
+	visited := make(map[*ProtoMessage]bool, len(api.Messages))
 	ordered := make([]*ProtoMessage, 0, len(api.Messages))
 
-	dependencies := func(m *ProtoMessage) []*ProtoMessage {
-		seen := make(map[*ProtoMessage]bool)
-		deps := make([]*ProtoMessage, 0)
-		add := func(typeName string) {
-			dep, ok := api.MessagesByName[typeName]
-			if ok && dep != m && !seen[dep] {
-				seen[dep] = true
-				deps = append(deps, dep)
-			}
-		}
-		for _, f := range m.Fields {
-			add(f.Type)
-		}
-		for _, f := range m.MapFields {
-			add(f.Type)
-		}
-		for _, f := range m.OneofFields {
-			add(f.Type)
-		}
-		return deps
-	}
-
 	var visit func(m *ProtoMessage)
-	visit = func(m *ProtoMessage) {
-		if state[m] != unvisited {
-			return
-		}
-		state[m] = visiting
-		for _, dep := range dependencies(m) {
+	visitDep := func(typeName string, from *ProtoMessage) {
+		if dep, ok := api.MessagesByName[typeName]; ok && dep != from {
 			visit(dep)
 		}
-		state[m] = done
+	}
+	visit = func(m *ProtoMessage) {
+		if visited[m] {
+			return
+		}
+		visited[m] = true
+
+		for _, f := range m.Fields {
+			visitDep(f.Type, m)
+		}
+		for _, f := range m.MapFields {
+			visitDep(f.Type, m)
+		}
+		for _, f := range m.OneofFields {
+			visitDep(f.Type, m)
+		}
+
 		ordered = append(ordered, m)
 	}
 
