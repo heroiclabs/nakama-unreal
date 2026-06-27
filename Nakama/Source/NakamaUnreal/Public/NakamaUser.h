@@ -90,7 +90,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 	
 	// Indicates whether the user is currently online.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	bool Online;
+	bool Online = false;
 
 	FNakamaUser(const FString& JsonString);
     FNakamaUser(const TSharedPtr<class FJsonObject> JsonObject);
