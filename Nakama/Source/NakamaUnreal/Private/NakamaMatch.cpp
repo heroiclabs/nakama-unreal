@@ -85,7 +85,7 @@ FNakamaMatchData::FNakamaMatchData(const FString& JsonString)
 	}
 }
 
-FNakamaMatchData::FNakamaMatchData(): OpCode(0)
+FNakamaMatchData::FNakamaMatchData()
 {
 }
 

@@ -42,10 +42,9 @@ struct NAKAMAUNREAL_API FNakamaChatMessage
 
 	// The Message Type.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
-	ENakamaChannelType MessageType;
+	ENakamaChannelType MessageType = ENakamaChannelType::DIRECT_MESSAGE;
 
-	FNakamaChatMessage() : MessageType(ENakamaChannelType::DIRECT_MESSAGE)
-	{ }
+	FNakamaChatMessage() { }
 };
 
 

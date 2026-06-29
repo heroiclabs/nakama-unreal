@@ -31,7 +31,7 @@ FNakamaStream::FNakamaStream(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaStream::FNakamaStream() : Mode(0)
+FNakamaStream::FNakamaStream()
 {
 	
 }

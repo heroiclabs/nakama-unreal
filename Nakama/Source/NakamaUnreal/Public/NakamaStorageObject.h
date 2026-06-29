@@ -48,19 +48,19 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	
 	// The UNIX time when the object was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// The UNIX time when the object was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	// The read access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionRead PermissionRead; //NO_READ
+	ENakamaStoragePermissionRead PermissionRead = ENakamaStoragePermissionRead::NO_READ;
 
 	// The write access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionWrite PermissionWrite; //NO_WRITE
+	ENakamaStoragePermissionWrite PermissionWrite = ENakamaStoragePermissionWrite::NO_WRITE;
 
 	FNakamaStoreObjectData(const FString& JsonString);
 	FNakamaStoreObjectData(const TSharedPtr<class FJsonObject> JsonObject);
@@ -91,11 +91,11 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectWrite
 
 	// The read access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionRead PermissionRead; // NO_READ
+	ENakamaStoragePermissionRead PermissionRead = ENakamaStoragePermissionRead::NO_READ;
 
 	// The write access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionWrite PermissionWrite; // NO_WRITE
+	ENakamaStoragePermissionWrite PermissionWrite = ENakamaStoragePermissionWrite::NO_WRITE;
 	
 	FNakamaStoreObjectWrite(const FString& JsonString);
 	FNakamaStoreObjectWrite();

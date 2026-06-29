@@ -70,7 +70,7 @@ FNakamaParty::FNakamaParty(const TSharedPtr<FJsonObject> JsonObject)
 
 }
 
-FNakamaParty::FNakamaParty() : MaxSize(0), Open(false), Hidden(true)
+FNakamaParty::FNakamaParty()
 {
 }
 
@@ -174,7 +174,7 @@ FNakamaPartyData::FNakamaPartyData(const FString& JsonString)
 	}
 }
 
-FNakamaPartyData::FNakamaPartyData(): OpCode(0)
+FNakamaPartyData::FNakamaPartyData()
 {
 }
 
