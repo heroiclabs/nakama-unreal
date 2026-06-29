@@ -17,7 +17,8 @@
 #include "NakamaStorageObject.h"
 #include "NakamaUtils.h"
 
-FNakamaStoreObjectData::FNakamaStoreObjectData(const FString& JsonString) : FNakamaStoreObjectData(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaStoreObjectData::FNakamaStoreObjectData(const FString& JsonString) : FNakamaStoreObjectData(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaStoreObjectData::FNakamaStoreObjectData(const TSharedPtr<FJsonObject> JsonObject)
@@ -127,7 +128,8 @@ FNakamaDeleteStorageObjectId::FNakamaDeleteStorageObjectId()
 	
 }
 
-FNakamaStoreObjectAck::FNakamaStoreObjectAck(const FString& JsonString) : FNakamaStoreObjectAck(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaStoreObjectAck::FNakamaStoreObjectAck(const FString& JsonString) : FNakamaStoreObjectAck(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaStoreObjectAck::FNakamaStoreObjectAck(const TSharedPtr<FJsonObject> JsonObject)
