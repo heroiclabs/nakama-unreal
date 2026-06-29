@@ -52,7 +52,7 @@ struct SATORIUNREAL_API FSatoriMessage
 
 	// The send time for the message.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	int64 SendTime;
+	int64 SendTime = 0;
 
 	// The time the message was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
