@@ -43,15 +43,15 @@ struct NAKAMAUNREAL_API FNakamaMatch
 
 	// True if it's an server-managed authoritative match, false otherwise.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	bool Authoritative;
+	bool Authoritative = false;
 
 	// Current number of users in the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	int32 Size;
+	int32 Size = 0;
 
 	FNakamaMatch(const FString& JsonString);
     FNakamaMatch(const TSharedPtr<class FJsonObject> JsonObject);
-	FNakamaMatch() : Authoritative(false), Size(0) { }
+	FNakamaMatch() { }
 
 };
 
@@ -74,7 +74,7 @@ struct NAKAMAUNREAL_API FNakamaMatchData
 	
 	// Op code value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	int64 OpCode;
+	int64 OpCode = 0;
 
 	FNakamaMatchData(const FString& JsonString);
 	FNakamaMatchData();

@@ -49,15 +49,15 @@ struct NAKAMAUNREAL_API FNakamaParty
 
 	// The maximum number of party members.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	int32 MaxSize;
+	int32 MaxSize = 0;
 	
 	// True if the party is open to join.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	bool Open;
+	bool Open = false;
 
 	// True if the party is hidden from public listings and searches.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	bool Hidden;
+	bool Hidden = true;
 
 	FNakamaParty(const FString& JsonString);
     FNakamaParty(const TSharedPtr<class FJsonObject> JsonObject);
@@ -134,7 +134,7 @@ struct NAKAMAUNREAL_API FNakamaPartyData
 
 	// Op code value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	int64 OpCode;
+	int64 OpCode = 0;
 
 	FNakamaPartyData(const FString& JsonString);
 	FNakamaPartyData();

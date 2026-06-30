@@ -18,7 +18,8 @@
 
 #include "SatoriUtils.h"
 
-FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent(FSatoriUtils::DeserializeJsonObject(JsonString)) {
+FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent(FSatoriUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
@@ -50,6 +51,6 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriEvent::FSatoriEvent() : Timestamp(FDateTime::MinValue()), SessionIssuedAt(0), SessionExpiresAt(0)
+FSatoriEvent::FSatoriEvent()
 {
 }

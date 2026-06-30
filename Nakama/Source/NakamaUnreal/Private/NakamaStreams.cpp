@@ -17,7 +17,8 @@
 #include "NakamaStreams.h"
 #include "NakamaUtils.h"
 
-FNakamaStream::FNakamaStream(const FString& JsonString) : FNakamaStream(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaStream::FNakamaStream(const FString& JsonString) : FNakamaStream(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaStream::FNakamaStream(const TSharedPtr<FJsonObject> JsonObject)
@@ -31,9 +32,8 @@ FNakamaStream::FNakamaStream(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaStream::FNakamaStream() : Mode(0)
+FNakamaStream::FNakamaStream()
 {
-	
 }
 
 FNakamaStreamData::FNakamaStreamData(const FString& JsonString)

@@ -17,7 +17,8 @@
 #include "NakamaPresence.h"
 #include "NakamaUtils.h"
 
-FNakamaUserPresence::FNakamaUserPresence(const FString& JsonString) : FNakamaUserPresence(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaUserPresence::FNakamaUserPresence(const FString& JsonString) : FNakamaUserPresence(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaUserPresence::FNakamaUserPresence(const TSharedPtr<FJsonObject> JsonObject)
@@ -33,7 +34,7 @@ FNakamaUserPresence::FNakamaUserPresence(const TSharedPtr<FJsonObject> JsonObjec
 }
 
 
-FNakamaUserPresence::FNakamaUserPresence() : Persistence(false)
+FNakamaUserPresence::FNakamaUserPresence()
 {
 	
 }

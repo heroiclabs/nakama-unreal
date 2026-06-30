@@ -18,7 +18,8 @@
 
 #include "NakamaUtils.h"
 
-FNakamaAccountDevice::FNakamaAccountDevice(const FString& JsonString) : FNakamaAccountDevice(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaAccountDevice::FNakamaAccountDevice(const FString& JsonString) : FNakamaAccountDevice(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaAccountDevice::FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObject)
@@ -48,5 +49,4 @@ FNakamaAccountDevice::FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObj
 
 FNakamaAccountDevice::FNakamaAccountDevice()
 {
-	
 }

@@ -54,15 +54,15 @@ struct SATORIUNREAL_API FSatoriEvent
 	
 	// The time when the event was triggered on the producer side.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
-	FDateTime Timestamp;
+	FDateTime Timestamp = FDateTime::MinValue();
 	
 	// Optional session issued timestamp for this event. (Ignored if published within a session)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
-	int64 SessionIssuedAt;
+	int64 SessionIssuedAt = 0;
 	
 	// Optional session expiry timestamp for this event. (Ignored if published within a session)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
-	int64 SessionExpiresAt;
+	int64 SessionExpiresAt = 0;
 
 	FSatoriEvent(const FString& JsonString);
 	FSatoriEvent(const TSharedPtr<class FJsonObject> JsonObject);

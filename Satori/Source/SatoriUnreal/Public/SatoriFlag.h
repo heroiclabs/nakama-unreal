@@ -45,7 +45,7 @@ struct SATORIUNREAL_API FSatoriFlagValueChangeReason
 
 	// The type of the configuration that declared the override.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	FSatoriFlagValueChangeReasonType Type;
+	FSatoriFlagValueChangeReasonType Type = FSatoriFlagValueChangeReasonType::UNKNOWN;
 
 	FSatoriFlagValueChangeReason(const FString& JsonString);
 	FSatoriFlagValueChangeReason(const TSharedPtr<class FJsonObject> JsonObject);
@@ -56,6 +56,10 @@ USTRUCT(BlueprintType)
 struct SATORIUNREAL_API FSatoriFlag
 {
 	GENERATED_BODY()
+	
+	// The origin of change on the flag value returned.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FSatoriFlagValueChangeReason ChangeReason;
 
 	// Flag name.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
@@ -67,11 +71,7 @@ struct SATORIUNREAL_API FSatoriFlag
 
 	// Whether the value for this flag has conditionally changed from the default state.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	bool bConditionChanged;
-
-	// The origin of change on the flag value returned.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	FSatoriFlagValueChangeReason ChangeReason;
+	bool bConditionChanged = false;
 
 	FSatoriFlag(const FString& JsonString);
 	FSatoriFlag(const TSharedPtr<class FJsonObject> JsonObject);
@@ -123,11 +123,11 @@ struct SATORIUNREAL_API FSatoriFlagOverrideValue
 
 	// The create time of the configuration that overrides the flag.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	int64 CreateTimeSec;
+	int64 CreateTimeSec = 0;
 
 	// The type of the configuration that declared the override.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	FSatoriFlagOverrideType Type;
+	FSatoriFlagOverrideType Type = FSatoriFlagOverrideType::FLAG;
 
 	FSatoriFlagOverrideValue(const FString& JsonString);
 	FSatoriFlagOverrideValue(const TSharedPtr<class FJsonObject> JsonObject);

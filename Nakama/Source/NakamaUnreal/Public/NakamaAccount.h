@@ -53,11 +53,11 @@ struct NAKAMAUNREAL_API FNakamaAccount
 
 	// The UNIX time when the user's email was verified.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "verify_time"))
-	FDateTime VerifyTime;
+	FDateTime VerifyTime = FDateTime::MinValue();
 
 	// The UNIX time when the user's account was disabled/banned.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "disable_time"))
-	FDateTime DisableTime;
+	FDateTime DisableTime = FDateTime::MinValue();
 	
 	FNakamaAccount();
 

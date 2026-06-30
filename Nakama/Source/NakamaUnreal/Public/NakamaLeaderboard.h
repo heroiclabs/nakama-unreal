@@ -43,35 +43,35 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 
 	// The UNIX time when the leaderboard record was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	//The UNIX time when the leaderboard record was updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	//The UNIX time when the leaderboard record expires.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime ExpiryTime;
+	FDateTime ExpiryTime = FDateTime::MinValue();
 
 	// The score value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 Score;
+	int64 Score = 0;
 
 	// An optional subscore value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 SubScore;
+	int64 SubScore = 0;
 
 	// The number of submissions to this score record.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 NumScore;
+	int64 NumScore = 0;
 	
 	//The rank of this record.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 Rank;
+	int64 Rank = 0;
 
 	// The maximum number of score updates allowed by the owner.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int32 MaxNumScore;
+	int32 MaxNumScore = 0;
 
 	FNakamaLeaderboardRecord(const FString& JsonString);
     FNakamaLeaderboardRecord(const TSharedPtr<class FJsonObject> JsonObject);

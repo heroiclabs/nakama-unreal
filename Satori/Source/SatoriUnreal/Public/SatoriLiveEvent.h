@@ -48,23 +48,23 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 
 	// Start time of current event run.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
-	int64 ActiveStartTimeSec;
+	int64 ActiveStartTimeSec = 0;
 
 	// End time of current event run.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
-	int64 ActiveEndTimeSec;
+	int64 ActiveEndTimeSec = 0;
 
 	// Start time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
-	int64 StartTimeSec;
+	int64 StartTimeSec = 0;
 
 	// End time, 0 if it repeats forever.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
-	int64 EndTimeSec;
+	int64 EndTimeSec = 0;
 
 	// Duration in seconds.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
-	int64 DurationSec;
+	int64 DurationSec = 0;
 
 	FSatoriLiveEvent(const FString& JsonString);
 	FSatoriLiveEvent(const TSharedPtr<class FJsonObject> JsonObject);

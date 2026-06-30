@@ -17,7 +17,8 @@
 #include "NakamaNotification.h"
 #include "NakamaUtils.h"
 
-FNakamaNotification::FNakamaNotification(const FString& JsonString) : FNakamaNotification(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaNotification::FNakamaNotification(const FString& JsonString) : FNakamaNotification(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaNotification::FNakamaNotification(const TSharedPtr<FJsonObject> JsonObject)
@@ -40,7 +41,7 @@ FNakamaNotification::FNakamaNotification(const TSharedPtr<FJsonObject> JsonObjec
 	}
 }
 
-FNakamaNotification::FNakamaNotification() : CreateTime(FDateTime::MinValue()), Code(0), Persistent(false)
+FNakamaNotification::FNakamaNotification()
 {
 }
 

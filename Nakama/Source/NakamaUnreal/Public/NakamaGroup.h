@@ -70,23 +70,23 @@ struct NAKAMAUNREAL_API FNakamaGroup
 	
 	// The UNIX time when the group was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 	
 	// The UNIX time when the group was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	// The current count of all members in the group.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	int32 EdgeCount;
+	int32 EdgeCount = 0;
 
 	// The maximum number of members allowed.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	int32 MaxCount;
+	int32 MaxCount = 0;
 	
 	// Anyone can join open groups, otherwise only admins can accept members.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	bool open;
+	bool open = false;
 
 	FNakamaGroup(const FString& JsonString);
     FNakamaGroup(const TSharedPtr<FJsonObject> JsonObject);
@@ -116,7 +116,7 @@ struct NAKAMAUNREAL_API FNakamaGroupUser
 
 	// Their relationship to the group.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	ENakamaGroupState State;
+	ENakamaGroupState State = ENakamaGroupState::SUPERADMIN;
 
 	FNakamaGroupUser(const FString& JsonString);
 	FNakamaGroupUser(const TSharedPtr<FJsonObject> JsonObject);
@@ -173,7 +173,7 @@ struct NAKAMAUNREAL_API FNakamaUserGroup
 
 	// The user's relationship to the group.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Groups") //BlueprintReadOnly
-	ENakamaGroupState State;
+	ENakamaGroupState State = ENakamaGroupState::SUPERADMIN;
 
 	FNakamaUserGroup(const FString& JsonString);
 	FNakamaUserGroup(const TSharedPtr<FJsonObject> JsonObject);

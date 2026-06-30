@@ -40,7 +40,7 @@ struct NAKAMAUNREAL_API FNakamaStream
 	
 	// Mode identifies the type of stream.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
-	int32 Mode;
+	int32 Mode = 0;
 
 	FNakamaStream(const FString& JsonString);
     FNakamaStream(const TSharedPtr<class FJsonObject> JsonObject);

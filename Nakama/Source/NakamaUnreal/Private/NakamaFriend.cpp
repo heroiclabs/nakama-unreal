@@ -45,7 +45,7 @@ FNakamaFriend::FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaFriend::FNakamaFriend() : UpdateTime(FDateTime::MinValue()), UserState(ENakamaFriendState::FRIEND)
+FNakamaFriend::FNakamaFriend()
 {
 	
 }

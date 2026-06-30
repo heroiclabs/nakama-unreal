@@ -79,22 +79,22 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 
 	// The UNIX time when the message was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// The UNIX time when the message was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	// The code representing a message type or category.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	int32 code;
+	int32 code = 0;
 
 	// True if the message was persisted to the channel's history, false otherwise.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	bool Persistent;
+	bool Persistent = false;
 
 	FNakamaChannelMessage(const FString& JsonString);
-    FNakamaChannelMessage(const TSharedPtr<class FJsonObject> JsonObject);
+	FNakamaChannelMessage(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaChannelMessage(); // Default Constructor
 };
 
@@ -131,22 +131,22 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageAck
 	// The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
-	
+
 	// The UNIX time when the message was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// The UNIX time when the message was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	// The code representing a message type or category.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	int32 code;
+	int32 code = 0;
 
 	// True if the message was persisted to the channel's history, false otherwise.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	bool Persistent;
+	bool Persistent = false;
 
 	FNakamaChannelMessageAck(const FString& JsonString);
 	FNakamaChannelMessageAck(); // Default Constructor
@@ -172,7 +172,6 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageList
 
 	FNakamaChannelMessageList(const FString& JsonString);
 	FNakamaChannelMessageList();
-
 };
 
 USTRUCT(BlueprintType)
