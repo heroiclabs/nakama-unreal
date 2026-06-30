@@ -23,6 +23,10 @@ For more information on the current version and the differences to previous vers
 please refer to [documentation](https://heroiclabs.com/docs/nakama/client-libraries/unreal/index.html) 
 and the [migration guide](https://heroiclabs.com/docs/nakama/client-libraries/unreal/migration-guide).
 
+### [2.11.4] - 2026-06-30
+### Fixed
+- Provide inline initialization values to guarantee fallback values for structure fields across Nakama and Satori (#179).
+
 ### [2.11.3] - 2026-06-17
 ### Added
 - HTTP clients now pre-emptively refresh an expiring session token before each authenticated request, controlled by `bAutoRefreshSession` (default `true`) on `UNakamaClient` and `USatoriClient`. Refresh fires when the token expires within 5 minutes and a refresh token is present; the caller's session is updated in place. `USatoriSession` now parses token expiry. Session logout is intentionally excluded.
