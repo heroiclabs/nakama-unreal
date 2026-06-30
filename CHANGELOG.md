@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.11.4] - 2026-06-30
+### Fixed
+- Provide inline initialization values to guarantee fallback values for structure fields across Nakama and Satori (#179).
+
 ### [2.11.3] - 2026-06-17
 ### Added
 - HTTP clients now pre-emptively refresh an expiring session token before each authenticated request, controlled by `bAutoRefreshSession` (default `true`) on `UNakamaClient` and `USatoriClient`. Refresh fires when the token expires within 5 minutes and a refresh token is present; the caller's session is updated in place. `USatoriSession` now parses token expiry. Session logout is intentionally excluded.
