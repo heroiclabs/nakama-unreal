@@ -21,6 +21,11 @@ public class SatoriUnreal : ModuleRules
 {
 	public SatoriUnreal(ReadOnlyTargetRules Target) : base(Target)
 	{
+		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
+		{
+			CppStandard = CppStandardVersion.Cpp20;
+			PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+		}
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicIncludePaths.AddRange(
