@@ -11,11 +11,10 @@ public class IntegrationTestsEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V6;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "IntegrationTests" } );
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
+		#if UE_5_8_OR_LATER
 			bOverrideBuildEnvironment = true;
 			CppStandard = CppStandardVersion.Cpp20;
 			GlobalDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
+		#endif
 	}
 }

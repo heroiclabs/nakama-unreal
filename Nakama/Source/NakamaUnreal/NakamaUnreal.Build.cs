@@ -21,11 +21,10 @@ public class NakamaUnreal : ModuleRules
 {
 	public NakamaUnreal(ReadOnlyTargetRules Target) : base(Target)
 	{
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-			CppStandard = CppStandardVersion.Cpp20;
-			PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
+#if UE_5_8_OR_LATER
+		CppStandard = CppStandardVersion.Cpp20;
+		PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+#endif
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicIncludePaths.AddRange(

@@ -20,6 +20,10 @@ public class NakamaTests : ModuleRules
 {
 	public NakamaTests(ReadOnlyTargetRules Target) : base(Target)
 	{
+#if UE_5_8_OR_LATER
+		CppStandard = CppStandardVersion.Cpp20;
+		PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+#endif
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicIncludePaths.AddRange(

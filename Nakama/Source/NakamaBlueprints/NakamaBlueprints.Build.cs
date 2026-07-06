@@ -21,11 +21,10 @@ public class NakamaBlueprints : ModuleRules
 	public NakamaBlueprints(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-			CppStandard = CppStandardVersion.Cpp20;
-			PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
+#if UE_5_8_OR_LATER
+		CppStandard = CppStandardVersion.Cpp20;
+		PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+#endif
 
 		PublicIncludePaths.AddRange(
 			new string[] {

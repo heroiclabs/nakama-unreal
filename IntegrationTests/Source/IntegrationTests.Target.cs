@@ -11,11 +11,10 @@ public class IntegrationTestsTarget : TargetRules
 		ExtraModuleNames.AddRange( new string[] { "IntegrationTests" } );
 		bUseLoggingInShipping = true;
 		
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-			bOverrideBuildEnvironment = true;
-			CppStandard = CppStandardVersion.Cpp20;
-			GlobalDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
+#if UE_5_8_OR_LATER
+		bOverrideBuildEnvironment = true;
+		CppStandard = CppStandardVersion.Cpp20;
+		GlobalDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
+#endif
 	}
 }
