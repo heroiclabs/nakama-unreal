@@ -62,7 +62,7 @@ UNakamaSession* UNakamaSession::SetupSession(const FString& AuthResponse)
                 const TSharedPtr<FJsonObject>& VarsJson = PayloadJson->GetObjectField(TEXT("vrs"));
                 for (const auto& Entry : VarsJson->Values)
                 {
-                    FString Key = Entry.Key;
+                    FString Key{Entry.Key};
                     FString Value = Entry.Value->AsString();
 					ResultSession->SessionData.Variables.Add(Key, Value);
 					ResultSession->_Variables.Add(Key, Value);

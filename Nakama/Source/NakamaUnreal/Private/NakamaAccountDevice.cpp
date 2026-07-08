@@ -38,7 +38,7 @@ FNakamaAccountDevice::FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObj
 
 			for (const auto& Entry : (*VarsJsonObject)->Values)
 			{
-				FString Key = Entry.Key;
+				FString Key{Entry.Key};
 				FString Value = Entry.Value->AsString();
 
 				Vars.Add(Key, Value);
