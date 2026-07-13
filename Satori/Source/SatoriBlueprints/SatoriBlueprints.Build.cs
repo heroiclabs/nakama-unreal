@@ -21,6 +21,7 @@ public class SatoriBlueprints : ModuleRules
 	public SatoriBlueprints(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		CppStandard = CppStandardVersion.Cpp20;
 
 		PublicIncludePaths.AddRange(
 			new string[] {

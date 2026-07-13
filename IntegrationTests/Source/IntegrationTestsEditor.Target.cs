@@ -8,7 +8,8 @@ public class IntegrationTestsEditorTarget : TargetRules
 	public IntegrationTestsEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V6;
+		CppStandard = CppStandardVersion.Cpp20;
+		DefaultBuildSettings = BuildSettingsVersion.V8;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "IntegrationTests" } );
 	}
