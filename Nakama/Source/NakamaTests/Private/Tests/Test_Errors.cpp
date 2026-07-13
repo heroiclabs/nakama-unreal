@@ -78,7 +78,7 @@ inline bool ErrorInvalidArgument::RunTest(const FString& Parameters)
 	// Define error callback
 	auto errorCallback = [&](const FNakamaError& Error)
 	{
-		UE_LOG( LogTemp, Warning, TEXT("Error Code: %d"), Error.Code );
+		UE_LOG( LogTemp, Warning, TEXT("Error Code: %d"), static_cast<int>(Error.Code));
 		TestTrue("Invalid Argument Test Passed", Error.Code == ENakamaErrorCode::InvalidArgument); 
 		StopTest();
 	};
@@ -115,7 +115,7 @@ inline bool ErrorInvalidArgument2::RunTest(const FString& Parameters)
 	// Define error callback
 	auto errorCallback = [&](const FNakamaError& Error)
 	{
-		UE_LOG( LogTemp, Warning, TEXT("Error Code: %d"), Error.Code );
+		UE_LOG( LogTemp, Warning, TEXT("Error Code: %d"), static_cast<int>(Error.Code));
 		TestTrue("Invalid Argument 2 Test Passed", Error.Code == ENakamaErrorCode::InvalidArgument); 
 		StopTest();
 	};
