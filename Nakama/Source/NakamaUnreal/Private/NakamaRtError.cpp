@@ -41,7 +41,7 @@ FNakamaRtError::FNakamaRtError(const FString& JsonString)
 		{
 			for (auto& Pair : (*ContextJsonObject)->Values)
 			{
-				Context.Add(Pair.Key, Pair.Value->AsString());
+				Context.Emplace(Pair.Key, Pair.Value->AsString());
 			}
 		}
 	}
