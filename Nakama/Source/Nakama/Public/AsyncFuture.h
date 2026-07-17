@@ -41,8 +41,11 @@ template<typename T> struct TIsTAsyncFuture<TAsyncFuture<T>> : std::true_type {}
  * Three .Next() overloads are provided:
  *
  * 1. Chaining with auto-propagation:
- *       Next(callback(const ValueType&) -> TAsyncFuture<Other>)
+ *       Next(callback(const ValueType& | ValueType | ValueType&&) -> TAsyncFuture<Other>)
  *    Available only when ResultT defines ::ValueType.
+ *    The value is passed to the callback as an rvalue, so callbacks taking
+ *    ValueType&& (or ValueType by value) can move the response out instead of
+ *    copying it; const ValueType& callbacks keep working unchanged.
  *    On error the error is forwarded to the outer future and the callback is
  *    skipped entirely (error propagation runs on the background thread because
  *    no user code is involved).
@@ -86,13 +89,16 @@ struct TAsyncFuture
 
 	/**
 	 * Overload 1 — Chaining with auto-propagation.
-	 * callback(const ValueType&) -> TAsyncFuture<OtherResult>
+	 * callback(const ValueType& | ValueType | ValueType&&) -> TAsyncFuture<OtherResult>
 	 * Only enabled when ResultT has ::ValueType.
+	 * The value is passed as an rvalue so the callback can move the response
+	 * out instead of copying it.
 	 * On error, propagates to OtherResult without calling the callback.
 	 */
 	template<typename Func,
-		typename VT = typename ResultT::ValueType,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const VT&>,
+		typename R = ResultT,
+		typename VT = typename R::ValueType,
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, VT&&>,
 		std::enable_if_t<TIsTAsyncFuture<Ret>::value, int> = 0>
 	Ret Next(Func&& Callback) && noexcept
 	{
@@ -105,14 +111,14 @@ struct TAsyncFuture
 				if (CapturedState->Result.bIsError)
 				{
 					// Error propagation: no user code involved, safe on any thread.
-					OuterState->Resolve(InnerResultT{{}, CapturedState->Result.Error, true});
+					OuterState->Resolve(InnerResultT{{}, MoveTemp(CapturedState->Result.Error), true});
 					return;
 				}
 				// User callback may touch UObject* or fire delegates — dispatch to game thread.
 				AsyncTask(ENamedThreads::GameThread,
 					[Cb = MoveTemp(Cb), CapturedState, OuterState]() mutable
 					{
-						Ret Inner = Cb(CapturedState->Result.Value);
+						Ret Inner = Cb(MoveTemp(CapturedState->Result.Value));
 						auto InnerState = Inner.State;
 						UE::Tasks::Launch(UE_SOURCE_LOCATION,
 							[InnerState, OuterState]()
