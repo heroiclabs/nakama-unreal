@@ -1,7 +1,7 @@
 {
 	"FileVersion": 1,
-	"Version": 7,
-	"VersionName": "2.11.4",
+	"Version": 8,
+	"VersionName": "2.11.5",
 	"FriendlyName": "Satori client",
 	"Description": "A UE4 and UE5 client for the Satori server.",
 	"Category": "HeroicLabs.Satori",
