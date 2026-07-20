@@ -1595,7 +1595,7 @@ struct NAKAMA_API FNakamaLeaderboard
 
   //  ASC(0) or DESC(1) sort mode of scores in the leaderboard.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sort_order"))
-  int32 SortOrder = 0;
+  int64 SortOrder = 0;
 
   //  BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
@@ -1603,11 +1603,11 @@ struct NAKAMA_API FNakamaLeaderboard
 
   //  The UNIX time when the leaderboard was previously reset. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_reset"))
-  int32 PrevReset = 0;
+  int64 PrevReset = 0;
 
   //  The UNIX time when the leaderboard is next playable. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_reset"))
-  int32 NextReset = 0;
+  int64 NextReset = 0;
 
   //  Additional information stored as a JSON object.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
@@ -1705,7 +1705,7 @@ struct NAKAMA_API FNakamaLeaderboardRecord
 
   //  The maximum number of score updates allowed by the owner.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_num_score"))
-  int32 MaxNumScore = 0;
+  int64 MaxNumScore = 0;
 
   // Creates a LeaderboardRecord from the given FJsonObject.
   static FNakamaLeaderboardRecord FromJson(const TSharedPtr<FJsonObject>& Json);
@@ -2757,23 +2757,23 @@ struct NAKAMA_API FNakamaTournament
 
   //  The category of the tournament. e.g. "vip" could be category 1.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "category"))
-  int32 Category = 0;
+  int64 Category = 0;
 
   //  ASC (0) or DESC (1) sort mode of scores in the tournament.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "sort_order"))
-  int32 SortOrder = 0;
+  int64 SortOrder = 0;
 
   //  The current number of players in the tournament.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "size"))
-  int32 Size = 0;
+  int64 Size = 0;
 
   //  The maximum number of players for the tournament.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_size"))
-  int32 MaxSize = 0;
+  int64 MaxSize = 0;
 
   //  The maximum score updates allowed per player for the current tournament.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "max_num_score"))
-  int32 MaxNumScore = 0;
+  int64 MaxNumScore = 0;
 
   //  True if the tournament is active and can enter. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "can_enter"))
@@ -2781,11 +2781,11 @@ struct NAKAMA_API FNakamaTournament
 
   //  The UNIX time when the tournament stops being active until next reset. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "end_active"))
-  int32 EndActive = 0;
+  int64 EndActive = 0;
 
   //  The UNIX time when the tournament is next playable. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "next_reset"))
-  int32 NextReset = 0;
+  int64 NextReset = 0;
 
   //  Additional information stored as a JSON object.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "metadata"))
@@ -2805,15 +2805,15 @@ struct NAKAMA_API FNakamaTournament
 
   //  Duration of the tournament in seconds.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "duration"))
-  int32 Duration = 0;
+  int64 Duration = 0;
 
   //  The UNIX time when the tournament start being active. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "start_active"))
-  int32 StartActive = 0;
+  int64 StartActive = 0;
 
   //  The UNIX time when the tournament was last reset. A computed value.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "prev_reset"))
-  int32 PrevReset = 0;
+  int64 PrevReset = 0;
 
   //  Operator.
   UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "operator"))
