@@ -22,6 +22,9 @@ public class Nakama : ModuleRules
 	public Nakama(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+#if UE_5_8_OR_LATER	
+		CppStandard = CppStandardVersion.Cpp20;
+#endif
 
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -63,10 +66,6 @@ public class Nakama : ModuleRules
 
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
         
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-        	PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
 		RuntimeDependencies.Add(Path.Combine(PluginDirectory, "Resources", "nakama.version"), StagedFileType.NonUFS);
 		RuntimeDependencies.Add(Path.Combine(
 			EngineDirectory,

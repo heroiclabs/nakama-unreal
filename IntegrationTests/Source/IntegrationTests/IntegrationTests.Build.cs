@@ -10,10 +10,5 @@ public class IntegrationTests : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "FieldNotification", "InputCore", "Json", "HTTP", "Nakama", "Satori", "WebSockets", "Slate", "SlateCore", "UMG", "ModelViewViewModel" });
-		
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-        	PublicDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
 	}
 }

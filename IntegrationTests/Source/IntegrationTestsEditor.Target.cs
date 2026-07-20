@@ -8,14 +8,8 @@ public class IntegrationTestsEditorTarget : TargetRules
 	public IntegrationTestsEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V8;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "IntegrationTests" } );
-		
-		bOverrideBuildEnvironment = true;
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 8)
-		{
-			GlobalDefinitions.Add("UE_JSONOBJECT_LEGACY_STRING_KEYS=1");
-		}
 	}
 }
