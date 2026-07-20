@@ -103,20 +103,20 @@ F{{ $prefix }}{{ $qname }} F{{ $prefix }}{{ $qname }}::FromJson(const TSharedPtr
         {
           TArray<uint8> Bytes;
           FBase64::Decode(Pair.Value->AsString(), Bytes);
-          Result.{{ $var }}.Add(Pair.Key, Bytes);
+          Result.{{ $var }}.Emplace(Pair.Key, Bytes);
         }
         {{- else if eq $member.Type "string" "StringValue" "BytesValue" }}
-        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsString());
+        Result.{{ $var }}.Emplace(Pair.Key, Pair.Value->AsString());
         {{- else if eq $member.Type "bool" }}
-        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsBool());
+        Result.{{ $var }}.Emplace(Pair.Key, Pair.Value->AsBool());
         {{- else if containsMessage $member.Type }}
         const TSharedPtr<FJsonObject>* ItemObj = nullptr;
         if (Pair.Value->TryGetObject(ItemObj) && ItemObj)
         {
-          Result.{{ $var }}.Add(Pair.Key, F{{ $prefix }}{{ $member.Type }}::FromJson(*ItemObj));
+          Result.{{ $var }}.Emplace(Pair.Key, F{{ $prefix }}{{ $member.Type }}::FromJson(*ItemObj));
         }
         {{- else }}
-        Result.{{ $var }}.Add(Pair.Key, Pair.Value->AsNumber());
+        Result.{{ $var }}.Emplace(Pair.Key, Pair.Value->AsNumber());
         {{- end }}
       }
     }
