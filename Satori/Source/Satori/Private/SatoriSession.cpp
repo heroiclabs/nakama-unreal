@@ -91,7 +91,7 @@ void FSatoriSession::ParseTokens() noexcept
 			{
 				for (const auto& Pair : (*VrsObj)->Values)
 				{
-					Vars.Add(Pair.Key, Pair.Value->AsString());
+					Vars.Emplace(Pair.Key, Pair.Value->AsString());
 				}
 			}
 		}

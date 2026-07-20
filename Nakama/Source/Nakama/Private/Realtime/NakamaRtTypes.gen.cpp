@@ -716,7 +716,7 @@ FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json)
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Context.Add(Pair.Key, Pair.Value->AsString());
+        Result.Context.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -902,7 +902,7 @@ FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& J
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
+        Result.Metadata.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1055,7 +1055,7 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        Result.StringProperties.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1066,7 +1066,7 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        Result.NumericProperties.Emplace(Pair.Key, Pair.Value->AsNumber());
       }
     }
   }
@@ -1132,7 +1132,7 @@ FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUse
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        Result.StringProperties.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1143,7 +1143,7 @@ FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUse
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        Result.NumericProperties.Emplace(Pair.Key, Pair.Value->AsNumber());
       }
     }
   }
@@ -2081,7 +2081,7 @@ FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedP
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        Result.StringProperties.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -2092,7 +2092,7 @@ FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedP
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        Result.NumericProperties.Emplace(Pair.Key, Pair.Value->AsNumber());
       }
     }
   }

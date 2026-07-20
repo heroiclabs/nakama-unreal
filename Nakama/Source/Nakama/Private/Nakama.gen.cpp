@@ -191,7 +191,7 @@ FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObje
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -234,7 +234,7 @@ FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>&
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -277,7 +277,7 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -320,7 +320,7 @@ FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -367,7 +367,7 @@ FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>&
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -414,7 +414,7 @@ FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonOb
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -457,7 +457,7 @@ FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(co
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -520,7 +520,7 @@ FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJs
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -580,7 +580,7 @@ FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -623,7 +623,7 @@ FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>&
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -854,7 +854,7 @@ FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TShare
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1880,7 +1880,7 @@ FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Properties.Add(Pair.Key, Pair.Value->AsString());
+        Result.Properties.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }

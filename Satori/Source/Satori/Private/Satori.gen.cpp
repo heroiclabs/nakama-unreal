@@ -102,7 +102,7 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Default.Add(Pair.Key, Pair.Value->AsString());
+        Result.Default.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -113,7 +113,7 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Custom.Add(Pair.Key, Pair.Value->AsString());
+        Result.Custom.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -194,7 +194,7 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
+        Result.Metadata.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -924,7 +924,7 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Default.Add(Pair.Key, Pair.Value->AsString());
+        Result.Default.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -935,7 +935,7 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Custom.Add(Pair.Key, Pair.Value->AsString());
+        Result.Custom.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1171,7 +1171,7 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Default.Add(Pair.Key, Pair.Value->AsString());
+        Result.Default.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1182,7 +1182,7 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Computed.Add(Pair.Key, Pair.Value->AsString());
+        Result.Computed.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1193,7 +1193,7 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Custom.Add(Pair.Key, Pair.Value->AsString());
+        Result.Custom.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1250,7 +1250,7 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Default.Add(Pair.Key, Pair.Value->AsString());
+        Result.Default.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1261,7 +1261,7 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Custom.Add(Pair.Key, Pair.Value->AsString());
+        Result.Custom.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
@@ -1402,7 +1402,7 @@ FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
     {
       for (const auto& Pair : (*MapObj)->Values)
       {
-        Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
+        Result.Metadata.Emplace(Pair.Key, Pair.Value->AsString());
       }
     }
   }
