@@ -3,7 +3,7 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-### [3.0.0] - 2026-06-24
+### [3.0.0] - 2026-07-22
 ### Added 
 - Async Future-based API.
 - Missing Server-to-server methods.
@@ -22,6 +22,10 @@ This is a major release with a larger list of changes.
 For more information on the current version and the differences to previous versions, 
 please refer to [documentation](https://heroiclabs.com/docs/nakama/client-libraries/unreal/index.html) 
 and the [migration guide](https://heroiclabs.com/docs/nakama/client-libraries/unreal/migration-guide).
+
+### [2.11.5] - 2026-07-20
+### Fixed
+- Fix compatibility issues with Unreal Engine 5.8+ (#182).
 
 ### [2.11.4] - 2026-06-30
 ### Fixed
