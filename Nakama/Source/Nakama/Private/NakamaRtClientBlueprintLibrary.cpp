@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Blueprints/NakamaRtClientBlueprintLibrary.h"
+#include "NakamaRtClientBlueprintLibrary.h"
 
 #include "UObject/Package.h"
 

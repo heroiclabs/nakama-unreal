@@ -17,7 +17,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Realtime/NakamaRt.h"
+#include "NakamaRt.h"
 #include "NakamaRtHandle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateOnWebSocketConnectCompleted, const FNakamaWebSocketConnectionResult&, Result);

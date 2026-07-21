@@ -18,7 +18,7 @@
 
 
 
-#include "Realtime/NakamaRtTypes.gen.h"
+#include "NakamaRtTypes.gen.h"
 #include "Dom/JsonObject.h"
 #include "Misc/Base64.h"
 

@@ -18,8 +18,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "Realtime/NakamaRtTypes.gen.h"
-#include "Realtime/NakamaRtConnection.h"
+#include "NakamaRtTypes.gen.h"
+#include "NakamaRtConnection.h"
 #include "NakamaRtHandle.h"
 
 #include "NakamaRtClientBlueprintLibrary.generated.h"

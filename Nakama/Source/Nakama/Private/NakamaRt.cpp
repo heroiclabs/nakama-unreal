@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "Realtime/NakamaRt.h"
+#include "NakamaRt.h"
 
-#include "Realtime/NakamaRtTypes.gen.h"
+#include "NakamaRtTypes.gen.h"
 
 namespace NakamaRt
 {

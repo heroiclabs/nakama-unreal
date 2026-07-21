@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Blueprints/NakamaRtHandle.h"
+#include "NakamaRtHandle.h"
 
 #include "Async/Async.h"
 

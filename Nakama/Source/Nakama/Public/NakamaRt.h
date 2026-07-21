@@ -17,8 +17,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Realtime/NakamaRtConnection.h"
-#include "Realtime/NakamaRtTypes.gen.h"
+#include "NakamaRtConnection.h"
+#include "NakamaRtTypes.gen.h"
 
 namespace NakamaRt
 {

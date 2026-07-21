@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Realtime/NakamaRtConnection.h"
+#include "NakamaRtConnection.h"
 #include "WebSocketsModule.h"
 #include "Async/Async.h"
 #include "GenericPlatform/GenericPlatformHttp.h"

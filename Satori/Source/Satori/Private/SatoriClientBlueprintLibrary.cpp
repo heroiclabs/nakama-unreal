@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Blueprints/SatoriClientBlueprintLibrary.h"
+#include "SatoriClientBlueprintLibrary.h"
 
 #include "UObject/Package.h"
 
