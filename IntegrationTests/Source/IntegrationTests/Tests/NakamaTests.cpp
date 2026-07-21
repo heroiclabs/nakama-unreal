@@ -4631,7 +4631,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 			Payload->SetStringField(TEXT("message"), TEXT("world"));
 			FString PayloadStr;
 			FJsonSerializer::Serialize(Payload.ToSharedRef(), TJsonWriterFactory<>::Create(&PayloadStr));
-			Nakama::RpcFunc(ClientConfig, TEXT("transform"), PayloadStr, HttpKey).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, HttpKey, TEXT("transform"), PayloadStr).Next([this, Done](FNakamaRpcResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TSharedPtr<FJsonObject> Response;
