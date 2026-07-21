@@ -9,7 +9,7 @@
  */
 
 #include "Misc/AutomationTest.h"
-#include "Blueprints/SatoriClientBlueprintLibrary.h"
+#include "SatoriClientBlueprintLibrary.h"
 #include "SatoriClient.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"

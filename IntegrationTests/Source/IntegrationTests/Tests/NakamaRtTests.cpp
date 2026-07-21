@@ -20,8 +20,8 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
 #include "Modules/ModuleManager.h"
-#include "Realtime/NakamaRt.h"
-#include "Realtime/NakamaRtConnection.h"
+#include "NakamaRt.h"
+#include "NakamaRtConnection.h"
 
 using namespace Nakama;
 using namespace NakamaRt;

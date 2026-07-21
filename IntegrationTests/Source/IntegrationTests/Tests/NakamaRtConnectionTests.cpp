@@ -18,7 +18,7 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
 #include "Dom/JsonObject.h"
-#include "Realtime/NakamaRtConnection.h"
+#include "NakamaRtConnection.h"
 
 // ---------------------------------------------------------------------------
 // Shared constants (file-local)

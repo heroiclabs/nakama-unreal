@@ -12,8 +12,8 @@
 
 #include "SatoriClientConfig.h"
 #include "Misc/AutomationTest.h"
-#include "Blueprints/NakamaClientBlueprintLibrary.h"
-#include "Blueprints/SatoriClientBlueprintLibrary.h"
+#include "NakamaClientBlueprintLibrary.h"
+#include "SatoriClientBlueprintLibrary.h"
 #include "UObject/Package.h"
 #include "Engine/Engine.h"
 

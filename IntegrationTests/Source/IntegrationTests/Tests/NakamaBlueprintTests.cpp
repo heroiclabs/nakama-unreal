@@ -10,7 +10,7 @@
 
 #include "Misc/AutomationTest.h"
 #include "NakamaClient.h"
-#include "Blueprints/NakamaClientBlueprintLibrary.h"
+#include "NakamaClientBlueprintLibrary.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 #include "UObject/Package.h"
