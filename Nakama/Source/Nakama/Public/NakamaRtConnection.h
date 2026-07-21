@@ -1,0 +1,196 @@
+/*
+ * Copyright 2026 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#pragma once
+
+#include <atomic>
+#include "CoreMinimal.h"
+#include "Templates/SharedPointer.h"
+#include "IWebSocket.h"
+#include "NakamaFuture.h"
+#include "Containers/Ticker.h"
+#include "NakamaRtTypes.gen.h"
+#include "NakamaRtConnection.generated.h"
+
+UENUM(BlueprintType)
+enum class ENakamaWebSocketError : uint8
+{
+  None = 0,
+  ConnectionAlreadyInProgress = 1,
+  ConnectionFailed = 2,
+  ConnectionAborted = 3,
+  NotConnected = 4,
+  ConnectionClosed = 5,
+  ServerError = 6,
+};
+
+UENUM(BlueprintType)
+enum class EWebSocketMessageError : uint8
+{
+  WS_ERROR_NONE = 0,
+  WS_ERROR_MESSAGE_MALFORMED = 1,
+  WS_ERROR_MESSAGE_HASERROR = 2,
+  WS_ERROR_RESPONSE_NOCID = 3,
+};
+
+USTRUCT(BlueprintType)
+struct FNakamaWebSocketConnectionResult
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
+  bool bSuccess = false;
+
+  UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
+  ENakamaWebSocketError ErrorCode = ENakamaWebSocketError::None;
+};
+
+/** Result of a realtime send operation. Check ErrorCode before accessing Data —
+ *  Data is nullptr when ErrorCode != ENakamaWebSocketError::None. */
+USTRUCT(BlueprintType)
+struct FNakamaWebSocketResponse
+{
+  GENERATED_BODY()
+
+  TSharedPtr<FJsonObject> Data;
+  
+  UPROPERTY(BlueprintReadOnly, Category = "Nakama|Realtime")
+  ENakamaWebSocketError ErrorCode = ENakamaWebSocketError::None;
+};
+
+USTRUCT(BlueprintType)
+struct FNakamaWebSocketConnectionParams
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Realtime")
+  FString Host;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Realtime")
+  FString Token;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Realtime")
+  float PingIntervalSeconds = 2.0f;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Realtime")
+  int32 Port = 0;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Realtime")
+  bool bUseSSL = false;
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateServerResponseReceived, const FString&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateServerEventReceived, const TSharedPtr<FJsonObject>&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMessageSent, const FString&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateMessageError, EWebSocketMessageError, const FString&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateClosed, int32, const FString&, bool);
+
+//
+// Delegates for event callbacks
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelMessage, const FNakamaChannelMessage&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateChannelPresenceEvent, const FNakamaRtChannelPresenceEvent&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMatchData, const FNakamaRtMatchData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMatchPresenceEvent, const FNakamaRtMatchPresenceEvent&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMatchmakerMatched, const FNakamaRtMatchmakerMatched&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateNotifications, const FNakamaRtNotifications&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegatePartyLeader, const FNakamaRtPartyLeader&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegatePartyJoinRequest, const FNakamaRtPartyJoinRequest&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegatePartyData, const FNakamaRtPartyData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegatePartyPresenceEvent, const FNakamaRtPartyPresenceEvent&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateStatusPresenceEvent, const FNakamaRtStatusPresenceEvent&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateStreamData, const FNakamaRtStreamData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateStreamPresenceEvent, const FNakamaRtStreamPresenceEvent&);
+
+enum class ENakamaRtConnectionState : uint8
+{
+  Disconnected,
+  ConnectionInProgress,
+  Connected,
+};
+  
+class NAKAMA_API FNakamaRtConnection : public TSharedFromThis<FNakamaRtConnection>
+{
+private:
+  // Current ongoing requests
+  TMap<FString, TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState>> Requests;
+  FCriticalSection RequestsLock;
+  
+  // Params for current connection
+  FNakamaWebSocketConnectionParams ConnectionParams;
+  
+  TSharedPtr<IWebSocket> WebSocket;
+  
+  FTSTicker::FDelegateHandle PingTimerHandle;
+  
+  TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> ConnectionPromise;
+  std::atomic<ENakamaRtConnectionState> ConnectionState { ENakamaRtConnectionState::Disconnected };
+
+public:
+  FNakamaRtConnection();
+  virtual ~FNakamaRtConnection();
+  
+  FNakamaRtConnection(const FNakamaRtConnection& Connection) = delete;
+  FNakamaRtConnection(FNakamaRtConnection&& Connection) = delete;
+  FNakamaRtConnection& operator=(const FNakamaRtConnection& Connection) = delete;
+  FNakamaRtConnection& operator=(FNakamaRtConnection&& Connection) = delete;
+  
+  TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(const FNakamaWebSocketConnectionParams& Params);
+  void Close();
+  
+  TNakamaFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
+  
+  int32 GetPendingRequestCount();
+
+  //
+  // Public Delegates
+  FDelegateServerResponseReceived ServerResponseReceived;
+  FDelegateServerEventReceived ServerEventReceived;
+  FDelegateMessageSent MessageSent;
+  FDelegateMessageError MessageError;
+  FDelegateClosed Closed;
+  
+  FDelegateChannelMessage ChannelMessage;
+  FDelegateChannelPresenceEvent ChannelPresenceEvent;
+  FDelegateMatchData MatchData;
+  FDelegateMatchPresenceEvent MatchPresenceEvent;
+  FDelegateMatchmakerMatched MatchmakerMatched;
+  FDelegateNotifications Notifications;
+  FDelegatePartyLeader PartyLeader;
+  FDelegatePartyJoinRequest PartyJoinRequest;
+  FDelegatePartyData PartyData;
+  FDelegatePartyPresenceEvent PartyPresenceEvent;
+  FDelegateStatusPresenceEvent StatusPresenceEvent;
+  FDelegateStreamData StreamData;
+  FDelegateStreamPresenceEvent StreamPresenceEvent;
+
+private:
+  //
+  // Server Ping-Ponging
+  void StartPingLoop();
+  bool SendPing();
+  void StopPingLoop();
+
+  //
+  // Web socket callbacks
+  void OnConnected();
+  void OnConnectionError(const FString& Error);
+  void OnMessage(const FString& Message);
+  void OnMessageSent(const FString& Message);
+  void OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean);
+
+  void HandleServerEvent(const TSharedPtr<FJsonObject>& Envelope);
+};
+
