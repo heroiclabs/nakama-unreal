@@ -1282,7 +1282,7 @@ void FNakamaRtPartySpec::Define()
 }
 
 // ============================================================================
-// SUBSYSTEM LIFETIME TESTS (no server required)
+// SUBSYSTEM LIFETIME TESTS
 // ============================================================================
 
 BEGIN_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec, "IntegrationTests.NakamaRtTests.SubsystemLifetime",
@@ -1312,6 +1312,347 @@ void FNakamaRtSubsystemLifetimeSpec::Define()
                     TestFalse(
                         TEXT("Stale-subsystem call must return an error, not success"),
                         Resp.bIsSuccess);
+                    Done.Execute();
+                });
+        });
+    });
+}
+
+// ============================================================================
+// PARTY (two-client)
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRtPartyExtSpec, "IntegrationTests.NakamaRtTests.PartyExt",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    FNakamaClientConfig ClientConfig;
+    FNakamaSession      Session;
+    FNakamaSession      Session2;
+    TSharedPtr<FNakamaRtConnection> Connection;
+    TSharedPtr<FNakamaRtConnection> Connection2;
+    FString PendingPartyId;
+
+    FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaRtPartyExtSpec)
+
+void FNakamaRtPartyExtSpec::Define()
+{
+    BeforeEach([this]()
+    {
+        ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
+    });
+
+    LatentBeforeEach([this](const FDoneDelegate& Done)
+    {
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
+            .Next([this, Done](FNakamaSessionResult R)
+            {
+                if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
+                Session = R.Value;
+                Done.Execute();
+            });
+    });
+
+    LatentAfterEach([this](const FDoneDelegate& Done)
+    {
+        if (Connection)  { Connection->Close();  Connection.Reset(); }
+        if (Connection2) { Connection2->Close(); Connection2.Reset(); }
+
+        auto DeleteMain = [this, Done]()
+        {
+            if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+            Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+        };
+        if (Session2.Token.IsEmpty()) { DeleteMain(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session2).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
+    });
+
+    Describe("PartyData", [this]()
+    {
+        LatentIt("should deliver party data sent by a second member", [this](const FDoneDelegate& Done)
+        {
+            static constexpr int64 TestOpCode = 7;
+            static const TArray<uint8> TestPayload = {0xAA, 0xBB, 0xCC};
+
+            Connection->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtParty>>
+                {
+                    TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return NakamaRt::PartyCreate(Connection, true /*open*/, 4, TEXT(""), false);
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtParty> CreateResult) -> TNakamaFuture<FNakamaSessionResult>
+                {
+                    if (!CreateResult.bIsSuccess) { AddError(TEXT("PartyCreate failed")); Done.Execute(); return MakeCompletedFuture<FNakamaSessionResult>(FNakamaSessionResult{}); }
+                    PendingPartyId = CreateResult.Data->PartyId;
+
+                    Connection->PartyData.AddLambda([this, Done](const FNakamaRtPartyData& PartyData)
+                    {
+                        TestEqual("PartyData party_id", PartyData.PartyId, PendingPartyId);
+                        TestEqual("PartyData opcode", PartyData.OpCode, TestOpCode);
+                        TestEqual("PartyData bytes", PartyData.Data, TestPayload);
+                        Done.Execute();
+                    });
+
+                    return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
+                })
+                .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
+                    Session2 = R2.Value;
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>>
+                {
+                    TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
+                    return NakamaRt::PartyJoin(Connection2, PendingPartyId);
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtEmptyResponse> JoinResult)
+                {
+                    if (!JoinResult.bIsSuccess) { AddError(TEXT("Client B PartyJoin failed")); Done.Execute(); return; }
+                    // Client B sends party data; Client A receives it via the PartyData delegate.
+                    NakamaRt::PartyDataSend(Connection2, PendingPartyId, TestOpCode, TestPayload);
+                });
+        });
+    });
+
+    Describe("JoinRequest", [this]()
+    {
+        LatentIt("should surface a join request when a client joins a closed party", [this](const FDoneDelegate& Done)
+        {
+            Connection->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtParty>>
+                {
+                    TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return NakamaRt::PartyCreate(Connection, false /*closed*/, 4, TEXT(""), false);
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtParty> CreateResult) -> TNakamaFuture<FNakamaSessionResult>
+                {
+                    if (!CreateResult.bIsSuccess) { AddError(TEXT("PartyCreate failed")); Done.Execute(); return MakeCompletedFuture<FNakamaSessionResult>(FNakamaSessionResult{}); }
+                    PendingPartyId = CreateResult.Data->PartyId;
+
+                    Connection->PartyJoinRequest.AddLambda([this, Done](const FNakamaRtPartyJoinRequest& Request)
+                    {
+                        TestEqual("JoinRequest party_id", Request.PartyId, PendingPartyId);
+                        TestTrue("JoinRequest carries the requesting presence", Request.Presences.Num() > 0);
+                        Done.Execute();
+                    });
+
+                    return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
+                })
+                .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
+                    Session2 = R2.Value;
+                    Connection2 = MakeShared<FNakamaRtConnection>();
+                    return Connection2->Connect(MakeConnParams(Session2));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR2)
+                {
+                    TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
+                    // Joining a closed party raises a join request Client A receives.
+                    NakamaRt::PartyJoin(Connection2, PendingPartyId);
+                });
+        });
+    });
+}
+
+// ============================================================================
+// NOTIFICATIONS: socket delivery + list/delete round-trip
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRtNotificationsExtSpec, "IntegrationTests.NakamaRtTests.NotificationsExt",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    FNakamaClientConfig ClientConfig;
+    FNakamaSession      Session;   // recipient (B)
+    FNakamaSession      Sender;    // requester (A)
+    TSharedPtr<FNakamaRtConnection> Connection;
+    TArray<FString>     DeletedIds;
+
+    FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaRtNotificationsExtSpec)
+
+void FNakamaRtNotificationsExtSpec::Define()
+{
+    BeforeEach([this]()
+    {
+        ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
+    });
+
+    LatentBeforeEach([this](const FDoneDelegate& Done)
+    {
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
+            .Next([this](FNakamaSessionResult R) -> TNakamaFuture<FNakamaSessionResult>
+            {
+                Session = R.Value;
+                return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId());
+            })
+            .Next([this, Done](FNakamaSessionResult R)
+            {
+                if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
+                Sender = R.Value;
+                Done.Execute();
+            });
+    });
+
+    LatentAfterEach([this](const FDoneDelegate& Done)
+    {
+        if (Connection) { Connection->Close(); Connection.Reset(); }
+
+        auto DeleteRecipient = [this, Done]()
+        {
+            if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+            Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+        };
+        if (Sender.Token.IsEmpty()) { DeleteRecipient(); return; }
+        Nakama::DeleteAccount(ClientConfig, Sender).Next([DeleteRecipient](FNakamaVoidResult) { DeleteRecipient(); });
+    });
+
+    Describe("SocketDelivery", [this]()
+    {
+        LatentIt("should deliver a friend-request notification over the socket", [this](const FDoneDelegate& Done)
+        {
+            Connection->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaVoidResult>
+                {
+                    TestFalse("Connect recipient", CR.ErrorCode != ENakamaWebSocketError::None);
+
+                    Connection->Notifications.AddLambda([this, Done](const FNakamaRtNotifications& Notifs)
+                    {
+                        TestTrue("Received at least one notification", Notifs.Notifications.Num() > 0);
+                        Done.Execute();
+                    });
+
+                    // Sender (A) invites recipient (B); Nakama pushes a notification to B.
+                    return Nakama::AddFriends(ClientConfig, Sender, {Session.UserId}, {}, TEXT(""));
+                })
+                .Next([this, Done](FNakamaVoidResult AddResult)
+                {
+                    if (AddResult.bIsError) { AddError(FString::Printf(TEXT("AddFriends failed: %s"), *AddResult.Error.Message)); Done.Execute(); }
+                    // Otherwise wait for the Notifications delegate to fire.
+                });
+        });
+    });
+
+    Describe("ListAndDelete", [this]()
+    {
+        LatentIt("should list a received notification and then delete it", [this](const FDoneDelegate& Done)
+        {
+            DeletedIds.Empty();
+
+            // A invites B, then B lists, deletes, and re-lists its notifications.
+            Nakama::AddFriends(ClientConfig, Sender, {Session.UserId}, {}, TEXT(""))
+                .Next([this](const FNakamaVoid&) -> TNakamaFuture<FNakamaNotificationListResult>
+                {
+                    return Nakama::ListNotifications(ClientConfig, Session, 100, TEXT(""));
+                })
+                .Next([this, Done](FNakamaNotificationListResult ListResult) -> TNakamaFuture<FNakamaVoidResult>
+                {
+                    if (ListResult.bIsError) { AddError(FString::Printf(TEXT("List failed: %s"), *ListResult.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaVoidResult>(FNakamaVoidResult{}); }
+
+                    TestTrue("Recipient has at least one notification", ListResult.Value.Notifications.Num() > 0);
+                    for (const FNakamaNotification& Notif : ListResult.Value.Notifications)
+                    {
+                        DeletedIds.Add(Notif.Id);
+                    }
+                    return Nakama::DeleteNotifications(ClientConfig, Session, DeletedIds);
+                })
+                .Next([this](FNakamaVoidResult DeleteResult) -> TNakamaFuture<FNakamaNotificationListResult>
+                {
+                    return Nakama::ListNotifications(ClientConfig, Session, 100, TEXT(""));
+                })
+                .Next([this, Done](FNakamaNotificationListResult AfterResult)
+                {
+                    if (AfterResult.bIsError) { AddError(FString::Printf(TEXT("Re-list failed: %s"), *AfterResult.Error.Message)); Done.Execute(); return; }
+
+                    bool bAnyDeletedStillPresent = false;
+                    for (const FNakamaNotification& Notif : AfterResult.Value.Notifications)
+                    {
+                        if (DeletedIds.Contains(Notif.Id)) { bAnyDeletedStillPresent = true; break; }
+                    }
+                    TestFalse("Deleted notifications no longer listed", bAnyDeletedStillPresent);
+                    Done.Execute();
+                });
+        });
+    });
+}
+
+// ============================================================================
+// CHAT: group channel join
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRtGroupChatSpec, "IntegrationTests.NakamaRtTests.GroupChat",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    FNakamaClientConfig ClientConfig;
+    FNakamaSession      Session;
+    TSharedPtr<FNakamaRtConnection> Connection;
+    FString PendingGroupId;
+
+    FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+    FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaRtGroupChatSpec)
+
+void FNakamaRtGroupChatSpec::Define()
+{
+    // Nakama chat channel types: 1 = Room, 2 = DirectMessage, 3 = Group.
+    static constexpr int32 ChannelTypeGroup = 3;
+
+    BeforeEach([this]()
+    {
+        ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
+        EnsureWebSocketsLoaded();
+        Connection = MakeShared<FNakamaRtConnection>();
+    });
+
+    LatentBeforeEach([this](const FDoneDelegate& Done)
+    {
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
+            .Next([this, Done](FNakamaSessionResult R)
+            {
+                if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
+                Session = R.Value;
+                Done.Execute();
+            });
+    });
+
+    LatentAfterEach([this](const FDoneDelegate& Done)
+    {
+        if (Connection) { Connection->Close(); Connection.Reset(); }
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+    });
+
+    Describe("Join", [this]()
+    {
+        LatentIt("should join the chat channel of a group the user owns", [this](const FDoneDelegate& Done)
+        {
+            const FString GroupName = FString::Printf(TEXT("chat_group_%s"), *GenerateShortId());
+
+            Nakama::CreateGroup(ClientConfig, Session, GroupName, TEXT("group chat test"), TEXT(""), TEXT("en"), true, 10)
+                .Next([this, Done](FNakamaGroupResult GroupResult) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (GroupResult.bIsError) { AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *GroupResult.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
+                    PendingGroupId = GroupResult.Value.Id;
+                    return Connection->Connect(MakeConnParams(Session));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtChannel>>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return NakamaRt::ChannelJoin(Connection, PendingGroupId, ChannelTypeGroup, false, false);
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtChannel> Resp)
+                {
+                    RT_FAIL_ON_ERROR(Resp, Done);
+                    TestFalse("Group channel has a non-empty ID", Resp.Data->Id.IsEmpty());
                     Done.Execute();
                 });
         });
