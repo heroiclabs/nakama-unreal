@@ -1389,17 +1389,17 @@ namespace Nakama
   * Execute a Lua function on the server. (S2S Variant)
   *
   * @param ClientConfig	The client configuration.
+  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
-  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
     const FNakamaClientConfig& ClientConfig,
+    const FString& HttpKey,
     const FString& Id,
     const FString& Payload,
-    const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   );

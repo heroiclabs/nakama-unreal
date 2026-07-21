@@ -6269,9 +6269,9 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 
 TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	const FNakamaClientConfig& ClientConfig,
+	const FString& HttpKey,
 	const FString& Id,
 	const FString& Payload,
-	const FString& HttpKey,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<TAtomic<bool>> CancellationToken
 )
