@@ -8,11 +8,7 @@ public class IntegrationTestsEditorTarget : TargetRules
 	public IntegrationTestsEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-#if UE_5_8_OR_LATER
-		DefaultBuildSettings = BuildSettingsVersion.V8;
-#else
-		DefaultBuildSettings = BuildSettingsVersion.V6;
-#endif
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "IntegrationTests" } );
 	}

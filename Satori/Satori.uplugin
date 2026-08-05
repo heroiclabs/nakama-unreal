@@ -1,12 +1,12 @@
 {
-	"FileVersion": 1,
-	"Version": 8,
-	"VersionName": "2.11.5",
+	"FileVersion": 3,
+	"Version": 3000,
+	"VersionName": "3.0.0",
 	"FriendlyName": "Satori client",
 	"Description": "A UE4 and UE5 client for the Satori server.",
 	"Category": "HeroicLabs.Satori",
 	"CreatedBy": "Heroic Labs",
-	"CreatedByURL": "http://heroiclabs.com/",
+	"CreatedByURL": "https://heroiclabs.com/",
 	"DocsURL": "https://heroiclabs.com/docs/",
 	"MarketplaceURL": "",
 	"SupportURL": "",
@@ -16,19 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "SatoriUnreal",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Linux",
-				"IOS",
-				"Mac",
-				"Android"
-			]
-		},
-		{
-			"Name": "SatoriBlueprints",
+			"Name": "Satori",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [
