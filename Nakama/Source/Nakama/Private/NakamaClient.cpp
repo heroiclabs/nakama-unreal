@@ -17,6 +17,7 @@
 #include "NakamaClient.h"
 #include "NakamaHttpHelper.h"
 #include "Containers/Ticker.h"
+#include "HAL/PlatformTime.h"
 
 bool Nakama::IsTransientError(const FNakamaError& Error)
 {
@@ -42,6 +43,8 @@ float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config)
 
 namespace
 {
+	constexpr double MaxTotalRetryTimeSeconds = 1.5;
+
 	/** Optionally refresh the session before calling the RPC. */
 	void MaybeRefreshThenCall(
 		const TSharedRef<FNakamaSession>& SessionState,
@@ -111,12 +114,15 @@ namespace
 	{
 		auto FutureState = MakeShared<typename TNakamaFuture<TResult>::FState>();
 		auto RetryCount = MakeShared<int32>(0);
+		auto RetryDeadline = MakeShared<double>(FPlatformTime::Seconds() + MaxTotalRetryTimeSeconds);
 		auto DoRequest = MakeShared<TFunction<void()>>();
 
 		auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
-		*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
+		*OnError = [FutureState, RetryCount, RetryDeadline, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
 		{
-			if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+			if (Nakama::IsTransientError(Error)
+				&& *RetryCount < RetryConfig.MaxRetries
+				&& FPlatformTime::Seconds() < *RetryDeadline)
 			{
 				(*RetryCount)++;
 				float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
