@@ -26,6 +26,26 @@ FSatoriExperiment::FSatoriExperiment(const TSharedPtr<FJsonObject> JsonObject)
 	{
 		JsonObject->TryGetStringField(TEXT("name"), Name);
 		JsonObject->TryGetStringField(TEXT("value"), Value);
+		JsonObject->TryGetStringField(TEXT("phase_variant_name"), PhaseVariantName);
+		JsonObject->TryGetStringField(TEXT("phase_name"), PhaseName);
+		
+		const TArray<TSharedPtr<FJsonValue>>* LabelsJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("labels"), LabelsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& LabelsJsonValue : *LabelsJsonArray)
+			{
+				Labels.Add(LabelsJsonValue->AsString());
+			}
+		}
+		
+		const TArray<TSharedPtr<FJsonValue>>* FlagNamesJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("flag_names"), FlagNamesJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& FlagNamesJsonValue : *FlagNamesJsonArray)
+			{
+				FlagNames.Add(FlagNamesJsonValue->AsString());
+			}
+		}
 	}
 }
 

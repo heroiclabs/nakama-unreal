@@ -42,6 +42,8 @@ FNakamaFriend::FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject)
 		{
 			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 		}
+		
+		JsonObject->TryGetStringField(TEXT("metadata"), Metadata);
 	}
 }
 

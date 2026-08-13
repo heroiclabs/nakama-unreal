@@ -54,10 +54,15 @@ FNakamaTournament::FNakamaTournament(const TSharedPtr<FJsonObject> JsonObject)
 
 		JsonObject->TryGetNumberField(TEXT("end_active"), EndActive);
 		JsonObject->TryGetNumberField(TEXT("next_reset"), NextReset);
+		JsonObject->TryGetNumberField(TEXT("prev_reset"), PrevReset);
 		JsonObject->TryGetNumberField(TEXT("duration"), Duration);
 		JsonObject->TryGetNumberField(TEXT("start_active"), StartActive);
 
 		JsonObject->TryGetStringField(TEXT("metadata"), Metadata);
+		JsonObject->TryGetStringField(TEXT("operator"), Operator);
+		
+		JsonObject->TryGetBoolField(TEXT("authoritative"), Authoritative);
+		JsonObject->TryGetBoolField(TEXT("join_required"), JoinRequired);
 	}
 }
 
@@ -98,6 +103,7 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
 
         JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
         JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+        JsonObject->TryGetNumberField(TEXT("rank_count"), RankCount);
     }
 	
 }

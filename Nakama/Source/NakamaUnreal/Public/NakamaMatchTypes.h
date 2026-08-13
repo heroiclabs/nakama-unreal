@@ -28,6 +28,10 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerUser
 	// User info.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
 	FNakamaUserPresence Presence;
+	
+	// Party identifier, if this user was matched as a party member.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
+	FString PartyId;
 
 	// String properties.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")

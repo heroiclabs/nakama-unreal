@@ -55,6 +55,7 @@ FNakamaUser::FNakamaUser(const TSharedPtr<FJsonObject> JsonObject)
 		JsonObject->TryGetStringField(TEXT("timezone"), TimeZone);
 		JsonObject->TryGetStringField(TEXT("metadata"), MetaData);
 		JsonObject->TryGetStringField(TEXT("facebook_id"), FacebookId);
+		JsonObject->TryGetStringField(TEXT("facebook_instant_game_id"), FacebookInstantGameId);
 		JsonObject->TryGetStringField(TEXT("google_id"), GoogleId);
 		JsonObject->TryGetStringField(TEXT("gamecenter_id"), GameCenterId);
 		JsonObject->TryGetStringField(TEXT("apple_id"), AppleId);

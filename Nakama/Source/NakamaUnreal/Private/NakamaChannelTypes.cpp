@@ -85,6 +85,9 @@ FNakamaChannelMessageAck::FNakamaChannelMessageAck(const FString& JsonString)
 
 			(*ChannelMessageObject)->TryGetBoolField(TEXT("persistent"), Persistent);
 			(*ChannelMessageObject)->TryGetStringField(TEXT("room_name"), RoomName);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("group_id"), GroupId);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("user_id_one"), UserIdOne);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("user_id_two"), UserIdTwo);
 		}
 	}
 	
@@ -116,6 +119,7 @@ FNakamaChannelMessageList::FNakamaChannelMessageList(const FString& JsonString)
 
 		JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
 		JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+		JsonObject->TryGetStringField(TEXT("cacheable_cursor"), CacheableCursor);
 	}
 }
 

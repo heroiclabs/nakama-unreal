@@ -64,6 +64,10 @@ struct NAKAMAUNREAL_API FNakamaStreamData
 	// Arbitrary contents of the data message.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Data;
+	
+	// True if this data was delivered reliably, false otherwise.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
+	bool Reliable = false;
 
 	FNakamaStreamData(const FString& JsonString);
 	FNakamaStreamData();

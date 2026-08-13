@@ -76,6 +76,10 @@ struct NAKAMAUNREAL_API FNakamaMatchData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	int64 OpCode = 0;
 
+	// True if this data was delivered reliably, false otherwise.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	bool Reliable = false;
+	
 	FNakamaMatchData(const FString& JsonString);
 	FNakamaMatchData();
 };
