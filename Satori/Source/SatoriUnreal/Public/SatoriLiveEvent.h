@@ -34,11 +34,11 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 {
 	GENERATED_BODY()
 
-	// The labels associated with this experiment.
+	// The labels associated with this live event.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	TArray<FString> Labels;
 	
-	// The names of the feature flags this experiment overrides.
+	// The names of the feature flags this live event overrides.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	TArray<FString> FlagNames;
 	

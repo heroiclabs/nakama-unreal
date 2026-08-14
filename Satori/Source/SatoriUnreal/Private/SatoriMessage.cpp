@@ -60,7 +60,7 @@ FSatoriMessageList::FSatoriMessageList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& MessageJsonValue : *MessagesJsonArray)
 			{
-				if(TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
+				if (TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
 				{
 					FSatoriMessage Message(MessageJsonObject);
 					if (!Message.ID.IsEmpty())
