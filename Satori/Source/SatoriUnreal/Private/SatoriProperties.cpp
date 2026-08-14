@@ -27,7 +27,7 @@ FSatoriProperties::FSatoriProperties(const TSharedPtr<FJsonObject> JsonObject)
 		const TSharedPtr<FJsonObject>* MetadataObject = nullptr;
 		if (JsonObject->TryGetObjectField(TEXT("default"), MetadataObject))
 		{
-			for (const TPair<UE::FSharedString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
 				DefaultProperties.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
@@ -36,7 +36,7 @@ FSatoriProperties::FSatoriProperties(const TSharedPtr<FJsonObject> JsonObject)
 		MetadataObject = nullptr;
 		if (JsonObject->TryGetObjectField(TEXT("computed"), MetadataObject))
 		{
-			for (const TPair<UE::FSharedString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
 				ComputedProperties.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
@@ -45,7 +45,7 @@ FSatoriProperties::FSatoriProperties(const TSharedPtr<FJsonObject> JsonObject)
 		MetadataObject = nullptr;
 		if (JsonObject->TryGetObjectField(TEXT("custom"), MetadataObject))
 		{
-			for (const TPair<UE::FSharedString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
 				CustomProperties.Emplace(*Pair.Key, Pair.Value->AsString());
 			}

@@ -39,7 +39,7 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 		const TSharedPtr<FJsonObject>* MetadataObject = nullptr;
 		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject))
 		{
-			for (const TPair<UE::FSharedString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
 				Metadata.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
