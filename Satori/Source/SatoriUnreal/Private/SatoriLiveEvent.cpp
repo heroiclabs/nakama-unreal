@@ -34,6 +34,35 @@ FSatoriLiveEvent::FSatoriLiveEvent(const TSharedPtr<FJsonObject> JsonObject)
 		JsonObject->TryGetNumberField(TEXT("end_time_sec"), EndTimeSec);
 		JsonObject->TryGetNumberField(TEXT("duration_sec"), DurationSec);
 		JsonObject->TryGetStringField(TEXT("reset_cron"), ResetCron);
+		JsonObject->TryGetNumberField(TEXT("active_participation_end_time_sec"), ActiveParticipationEndTimeSec);
+		
+		const TArray<TSharedPtr<FJsonValue>>* LabelsJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("labels"), LabelsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& LabelsJsonValue : *LabelsJsonArray)
+			{
+				Labels.Add(LabelsJsonValue->AsString());
+			}
+		}
+		
+		const TArray<TSharedPtr<FJsonValue>>* FlagNamesJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("flag_names"), FlagNamesJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& FlagNamesJsonValue : *FlagNamesJsonArray)
+			{
+				FlagNames.Add(FlagNamesJsonValue->AsString());
+			}
+		}
+		
+		int32 StatusNum;
+		if (JsonObject->TryGetNumberField(TEXT("status"), StatusNum))
+		{
+			if (StatusNum >= static_cast<int>(ESatoriLiveEventStatus::UNKNOWN) && 
+				StatusNum <= static_cast<int>(ESatoriLiveEventStatus::TERMINATED))
+			{
+				Status = static_cast<ESatoriLiveEventStatus>(StatusNum);
+			}
+		}
 	}
 }
 
@@ -58,6 +87,22 @@ FSatoriLiveEventList::FSatoriLiveEventList(const FString& JsonString)
 					if (!LiveEvent.Name.IsEmpty())
 					{
 						LiveEvents.Add(LiveEvent);
+					}
+				}
+			}
+		}
+		
+		const TArray<TSharedPtr<FJsonValue>>* ExplicitJoinLiveEventsJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("explicit_join_live_events"), ExplicitJoinLiveEventsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& ExplicitJoinLiveEventJsonValue : *ExplicitJoinLiveEventsJsonArray)
+			{
+				if(TSharedPtr<FJsonObject> ExplicitJoinLiveEventJsonObject = ExplicitJoinLiveEventJsonValue->AsObject())
+				{
+					FSatoriLiveEvent ExplicitJoinLiveEvent(ExplicitJoinLiveEventJsonObject);
+					if (!ExplicitJoinLiveEvent.Name.IsEmpty())
+					{
+						ExplicitJoinLiveEvents.Add(ExplicitJoinLiveEvent);
 					}
 				}
 			}

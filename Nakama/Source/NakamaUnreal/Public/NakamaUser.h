@@ -60,6 +60,10 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString FacebookId;
 
+	// The Facebook Instant Game ID in the user's account.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
+	FString FacebookInstantGameId;
+	
 	// The Google id in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString GoogleId;

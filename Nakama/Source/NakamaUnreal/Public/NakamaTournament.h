@@ -42,6 +42,10 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Metadata;
 	
+	// Operator.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	FString Operator;
+	
 	// The UNIX time when the tournament was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FDateTime CreateTime = FDateTime::MinValue();
@@ -81,6 +85,10 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	// The UNIX time when the tournament is next playable. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	int32 NextReset = 0;
+	
+	// The UNIX time when the tournament was last reset. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 PrevReset = 0;
 
 	// Duration of the tournament in seconds.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
@@ -93,6 +101,14 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	// True if the tournament is active and can enter. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	bool CanEnter = false;
+	
+	// Whether the leaderboard was created authoritatively or not.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	bool Authoritative = false;
+	
+	// Whether the user must join the tournament before being able to submit scores.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	bool JoinRequired = false;
 
 	FNakamaTournament(const FString& JsonString);
 	FNakamaTournament(const TSharedPtr<class FJsonObject> JsonObject);
@@ -120,7 +136,11 @@ struct NAKAMAUNREAL_API FNakamaTournamentRecordList
 	// The cursor to send when retrieving the previous page, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString PrevCursor;
-
+	
+	// The total number of ranks available.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int64 RankCount = 0;
+	
 	FNakamaTournamentRecordList(const FString& JsonString);
 	FNakamaTournamentRecordList();
 

@@ -27,18 +27,10 @@ FNakamaParty::FNakamaParty(const TSharedPtr<FJsonObject> JsonObject)
         // Get the appropriate object based on whether "party" is present or not
         TSharedPtr<FJsonObject> PartyObject = JsonObject->HasField(TEXT("party")) ? JsonObject->GetObjectField(TEXT("party")) : JsonObject;
 
-        if (!PartyObject->TryGetStringField(TEXT("party_id"), PartyId))
-        {
-        	// TODO: Check which is the one actually sent by the server
-			PartyObject->TryGetStringField(TEXT("partyId"), PartyId);
-        }
+        PartyObject->TryGetStringField(TEXT("party_id"), PartyId);
         PartyObject->TryGetBoolField(TEXT("open"), Open);
         PartyObject->TryGetBoolField(TEXT("hidden"), Hidden);
-		if (!PartyObject->TryGetNumberField(TEXT("max_size"), MaxSize))
-		{
-			// TODO: Check which is the one actually sent by the server
-			PartyObject->TryGetNumberField(TEXT("maxSize"), MaxSize);
-		}
+		PartyObject->TryGetNumberField(TEXT("max_size"), MaxSize);
         PartyObject->TryGetStringField(TEXT("label"), Label);
 		
         FString SelfJsonString;
@@ -137,7 +129,7 @@ FNakamaPartyClose::FNakamaPartyClose(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		Id = JsonObject->GetStringField(TEXT("id"));
+		Id = JsonObject->GetStringField(TEXT("party_id"));
 	}
 }
 

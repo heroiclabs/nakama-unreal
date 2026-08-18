@@ -126,6 +126,10 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecordList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
 	FString PrevCursor;
 
+	//The total number of ranks available.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
+	int64 RankCount = 0;
+	
 	FNakamaLeaderboardRecordList(const FString& JsonString);
 	FNakamaLeaderboardRecordList();
 

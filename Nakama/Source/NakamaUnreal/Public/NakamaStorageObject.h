@@ -172,6 +172,14 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectAck
 	// The owner of the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
 	FString UserId;
+	
+	// The UNIX time when the object was created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
+	FDateTime CreateTime = FDateTime::MinValue();
+
+	// The UNIX time when the object was last updated.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
+	FDateTime UpdateTime = FDateTime::MinValue();
 
 	FNakamaStoreObjectAck(const FString& JsonString);
     FNakamaStoreObjectAck(const TSharedPtr<class FJsonObject> JsonObject);

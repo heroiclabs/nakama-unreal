@@ -56,6 +56,7 @@ FNakamaStreamData::FNakamaStreamData(const FString& JsonString)
 		}
 
 		JsonObject->TryGetStringField(TEXT("data"), Data);
+		JsonObject->TryGetBoolField(TEXT("reliable"), Reliable);
 	}
 }
 

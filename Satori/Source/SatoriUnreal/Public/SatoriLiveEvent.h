@@ -19,6 +19,14 @@
 #include "CoreMinimal.h"
 #include "SatoriLiveEvent.generated.h"
 
+UENUM(BlueprintType)
+enum class ESatoriLiveEventStatus : uint8
+{
+	UNKNOWN = 0,
+	ACTIVE = 1,
+	UPCOMING = 2,
+	TERMINATED = 3
+};
 
 // LiveEvents
 USTRUCT(BlueprintType)
@@ -26,6 +34,14 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 {
 	GENERATED_BODY()
 
+	// The labels associated with this live event.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
+	TArray<FString> Labels;
+	
+	// The names of the feature flags this live event overrides.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
+	TArray<FString> FlagNames;
+	
 	// The live event identifier.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	FString ID;
@@ -53,6 +69,10 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 	// End time of current event run.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	int64 ActiveEndTimeSec = 0;
+	
+	// End time of the caller's participation, if participation_duration_sec is set on the event. 0 means no limit.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
+	int64 ActiveParticipationEndTimeSec = 0;
 
 	// Start time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
@@ -65,6 +85,10 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 	// Duration in seconds.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	int64 DurationSec = 0;
+	
+	// The status of this live event run.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
+	ESatoriLiveEventStatus Status = ESatoriLiveEventStatus::UNKNOWN;
 
 	FSatoriLiveEvent(const FString& JsonString);
 	FSatoriLiveEvent(const TSharedPtr<class FJsonObject> JsonObject);
@@ -76,9 +100,13 @@ struct SATORIUNREAL_API FSatoriLiveEventList
 {
 	GENERATED_BODY()
 
-	// Flags.
+	// Live events.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
 	TArray<FSatoriLiveEvent> LiveEvents;
+	
+	// Live events that require explicit joins.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|LiveEvents")
+	TArray<FSatoriLiveEvent> ExplicitJoinLiveEvents;
 
 	FSatoriLiveEventList(const FString& JsonString);
 	FSatoriLiveEventList(); // Default Constructor

@@ -29,6 +29,8 @@ FNakamaMatchmakerUser::FNakamaMatchmakerUser(const TSharedPtr<FJsonObject> JsonO
 		{
 			Presence = FNakamaUserPresence(*PresenceObject);
 		}
+		
+		JsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
 		const TSharedPtr<FJsonObject>* StringPropertiesObject;
 		if (JsonObject->TryGetObjectField(TEXT("string_properties"), StringPropertiesObject))

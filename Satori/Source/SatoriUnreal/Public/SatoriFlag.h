@@ -57,6 +57,10 @@ struct SATORIUNREAL_API FSatoriFlag
 {
 	GENERATED_BODY()
 	
+	// The labels associated with this flag.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	TArray<FString> Labels;
+	
 	// The origin of change on the flag value returned.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
 	FSatoriFlagValueChangeReason ChangeReason;
@@ -139,6 +143,10 @@ struct SATORIUNREAL_API FSatoriFlagOverride
 {
 	GENERATED_BODY()
 
+	// The labels associated with this flag.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	TArray<FString> Labels;
+	
 	// The list of configuration that affect the value of the flag.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
 	TArray<FSatoriFlagOverrideValue> Overrides;

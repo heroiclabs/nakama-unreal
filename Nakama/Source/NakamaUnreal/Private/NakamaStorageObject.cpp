@@ -140,6 +140,18 @@ FNakamaStoreObjectAck::FNakamaStoreObjectAck(const TSharedPtr<FJsonObject> JsonO
 		JsonObject->TryGetStringField(TEXT("key"), Key);
 		JsonObject->TryGetStringField(TEXT("version"), Version);
 		JsonObject->TryGetStringField(TEXT("user_id"), UserId);
+		
+		FString CreateTimeString;
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString))
+		{
+			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
+		}
+		
+		FString UpdateTimeString;
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString))
+		{
+			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
+		}
 	}
 }
 

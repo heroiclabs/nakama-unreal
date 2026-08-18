@@ -37,10 +37,11 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 		}
 
 		const TSharedPtr<FJsonObject>* MetadataObject = nullptr;
-		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject)) {
-			for (const TPair<FString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject))
+		{
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
-				Metadata.Add(*Pair.Key, Pair.Value->AsString());
+				Metadata.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
 		}
 		

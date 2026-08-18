@@ -53,8 +53,18 @@ FSatoriFlag::FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject)
 		JsonObject->TryGetStringField(TEXT("value"), Value);
 		JsonObject->TryGetBoolField(TEXT("condition_changed"), bConditionChanged);
 		const TSharedPtr<FJsonObject>* ChangeReasonObject = nullptr;
-		if (JsonObject->TryGetObjectField(TEXT("change_reason"), ChangeReasonObject)) {
+		if (JsonObject->TryGetObjectField(TEXT("change_reason"), ChangeReasonObject))
+		{
 			ChangeReason = FSatoriFlagValueChangeReason(*ChangeReasonObject);
+		}
+		
+		const TArray<TSharedPtr<FJsonValue>>* LabelsJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("labels"), LabelsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& LabelsJsonValue : *LabelsJsonArray)
+			{
+				Labels.Add(LabelsJsonValue->AsString());
+			}
 		}
 	}
 }
@@ -136,6 +146,15 @@ FSatoriFlagOverride::FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObjec
 					FSatoriFlagOverrideValue Override(OverrideJsonObject);
 					Overrides.Add(Override);
 				}
+			}
+		}
+		
+		const TArray<TSharedPtr<FJsonValue>>* LabelsJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("labels"), LabelsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& LabelsJsonValue : *LabelsJsonArray)
+			{
+				Labels.Add(LabelsJsonValue->AsString());
 			}
 		}
 	}

@@ -162,13 +162,17 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	TArray<FNakamaChannelMessage> Messages;
 
-	// The cursor to send when retireving the next page, if any.
+	// The cursor to send when retrieving the next page, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString NextCursor;
 
 	// The cursor to send when retrieving the previous page, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString PrevCursor;
+	
+	// Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FString CacheableCursor;
 
 	FNakamaChannelMessageList(const FString& JsonString);
 	FNakamaChannelMessageList();

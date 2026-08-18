@@ -92,6 +92,7 @@ FNakamaLeaderboardRecordList::FNakamaLeaderboardRecordList(const FString& JsonSt
 
         JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
         JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+        JsonObject->TryGetNumberField(TEXT("rank_count"), RankCount);
     }
 }
 

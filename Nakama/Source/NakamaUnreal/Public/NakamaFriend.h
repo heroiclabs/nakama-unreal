@@ -49,6 +49,10 @@ struct NAKAMAUNREAL_API FNakamaFriend
 	// The friend status.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
 	ENakamaFriendState UserState = ENakamaFriendState::FRIEND;
+	
+	// Metadata.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
+	FString Metadata;
 
 	FNakamaFriend(const FString& JsonString);
     FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject);

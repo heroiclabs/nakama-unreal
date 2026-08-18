@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -buildmode=plugin -trimpath -o /backend/backend.so
+RUN go mod tidy && go build -buildmode=plugin -trimpath -o /backend/backend.so
 
 FROM docker.io/heroiclabs/nakama:${NAKAMA_VERSION}
 
