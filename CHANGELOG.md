@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.11.6] - 2026-08-24
+### Fixed
+- Fix invalid/missing field names (#184).
+
 ### [2.11.5] - 2026-07-20
 ### Fixed
 - Fix compatibility issues with Unreal Engine 5.8+ (#182).
