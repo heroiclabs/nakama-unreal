@@ -17,6 +17,7 @@
 #pragma once
 
 #include "SatoriClient.h"
+#include "SatoriErrorOutputDevice.h"
 #include "Engine/World.h"
 #include "Modules/ModuleInterface.h"
 
@@ -32,6 +33,8 @@ public:
 	// TODO: Configuration option whether or not to use this
 	USatoriClient* Client = nullptr;
 	USatoriSession* Session = nullptr;
+	
+	TUniquePtr<FSatoriErrorOutputDevice> SatoriErrorLogDevice;
 
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;

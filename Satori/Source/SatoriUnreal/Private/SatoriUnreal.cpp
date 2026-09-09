@@ -21,6 +21,7 @@
 #include "SatoriLogger.h"
 #include "SatoriLoggingMacros.h"
 #include "Engine/World.h"
+#include "HAL/IConsoleManager.h"
 #include "Misc/CoreDelegates.h"
 #include "Modules/ModuleManager.h"
 
@@ -67,6 +68,22 @@ void FSatoriUnrealModule::HandleAppLaunched()
 			Session = InSession;
 			Session->AddToRoot();
 			SATORI_LOG_INFO("Authenticated with Satori");
+			
+			SatoriErrorLogDevice = MakeUnique<FSatoriErrorOutputDevice>(Client, Session);
+			if (GLog)
+			{
+				GLog->AddOutputDevice(SatoriErrorLogDevice.Get());
+				SATORI_LOG_INFO("Satori error forwarder registered.");
+			}
+
+			// TODO: remove before shipping
+			IConsoleManager::Get().RegisterConsoleCommand(
+				TEXT("Satori.TestError"),
+				TEXT("Emit a test error to verify Satori error forwarding"),
+				FConsoleCommandDelegate::CreateLambda([]()
+				{
+					UE_LOG(LogTemp, Error, TEXT("Satori test error"));
+				}));
 			
 			FSatoriEvent Event;
 			Event.Name = TEXT("appLaunched");
@@ -122,8 +139,23 @@ void FSatoriUnrealModule::HandleAppBackground()
 
 void FSatoriUnrealModule::HandleAppShutdown()
 {
-	if (Client) { Client->Disconnect(); Client->RemoveFromRoot(); Client = nullptr; }
-	if (Session) { Session->RemoveFromRoot(); Session = nullptr; }
+	if (SatoriErrorLogDevice && GLog)
+	{
+		GLog->RemoveOutputDevice(SatoriErrorLogDevice.Get());
+		SATORI_LOG_INFO("Satori error forwarder unregistered.");
+		SatoriErrorLogDevice.Reset();
+	}	
+	if (Client)
+	{
+		Client->Disconnect();
+		Client->RemoveFromRoot();
+		Client = nullptr;
+	}
+	if (Session)
+	{
+		Session->RemoveFromRoot();
+		Session = nullptr;
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
