@@ -15,14 +15,14 @@
  */
 
 #include "NakamaUnreal.h"
+
+#include "NakamaLogger.h"
 #include "Modules/ModuleManager.h"
 
 void FNakamaUnrealModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-
-	//NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
-
+	UNakamaLogger::EnableLogging(true);
 }
 
 void FNakamaUnrealModule::ShutdownModule()
