@@ -16,12 +16,30 @@
 
 #pragma once
 
+#include "SatoriClient.h"
+#include "Engine/World.h"
 #include "Modules/ModuleInterface.h"
 
 class FSatoriUnrealModule : public IModuleInterface
 {
 public:
+	FDelegateHandle PostEngineInitHandle;
+	FDelegateHandle AppForegroundHandle;
+	FDelegateHandle AppBackgroundHandle;
+	FDelegateHandle PostWorldInitHandle;
+	FDelegateHandle EnginePreExitHandle;
+	
+	// TODO: Configuration option whether or not to use this
+	USatoriClient* Client = nullptr;
+	USatoriSession* Session = nullptr;
+
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+	
+	void HandleAppLaunched();
+	void HandleWorldInitialized(UWorld* World, UWorld::InitializationValues Values);
+	void HandleAppForeground();
+	void HandleAppBackground();
+	void HandleAppShutdown();
 };
