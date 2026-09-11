@@ -416,7 +416,7 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
   TSharedRef<TAtomic<bool>> CancellationToken
 )
 {
-	FSatoriGetLiveEventsRequest Params{ Names, Labels, PastRunCount, FutureRunCount, StartTimeSec, EndTimeSec };
+	FSatoriGetLiveEventsRequest Params{ PastRunCount, FutureRunCount, StartTimeSec, EndTimeSec, Names, Labels, };
 	return SendWithRetry<FSatoriLiveEventListResult>(
 		ClientConfig,
 		SatoriInternal::BuildGetLiveEventsRequest(Params),

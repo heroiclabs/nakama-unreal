@@ -19,6 +19,13 @@
 
 
 
+
+
+
+
+
+
+
 #include "Satori.gen.h"
 #include "SatoriHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
@@ -245,18 +252,15 @@ FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>&
   {
     return Result;
   }
-  if (Json->HasField(TEXT("events")))
+  const TArray<TSharedPtr<FJsonValue>>* EventsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("events"), EventsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("events"), ArrayPtr))
+    for (const auto& Item : *EventsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Events.Add(FSatoriEvent::FromJson(*ItemObj));
-        }
+        Result.Events.Add(FSatoriEvent::FromJson(*ItemObj));
       }
     }
   }
@@ -292,17 +296,6 @@ FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Jso
   {
     Result.Value = Json->GetStringField(TEXT("value"));
   }
-  if (Json->HasField(TEXT("labels")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
-    }
-  }
   if (Json->HasField(TEXT("phase_name")))
   {
     Result.PhaseName = Json->GetStringField(TEXT("phase_name"));
@@ -311,15 +304,20 @@ FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Jso
   {
     Result.PhaseVariantName = Json->GetStringField(TEXT("phase_variant_name"));
   }
-  if (Json->HasField(TEXT("flag_names")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("flag_names"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.FlagNames.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* FlagNamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("flag_names"), FlagNamesArrayPtr))
+  {
+    for (const auto& Item : *FlagNamesArrayPtr)
+    {
+      Result.FlagNames.Add(Item->AsString());
     }
   }
   return Result;
@@ -336,6 +334,14 @@ TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const
   {
     Json->SetStringField(TEXT("value"), Value);
   }
+  if (PhaseName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("phase_name"), PhaseName);
+  }
+  if (PhaseVariantName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("phase_variant_name"), PhaseVariantName);
+  }
   if (Labels.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -344,14 +350,6 @@ TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const
       Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
-  }
-  if (PhaseName.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("phase_name"), PhaseName);
-  }
-  if (PhaseVariantName.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("phase_variant_name"), PhaseVariantName);
   }
   if (FlagNames.Num() > 0)
   {
@@ -371,18 +369,15 @@ FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (Json->HasField(TEXT("experiments")))
+  const TArray<TSharedPtr<FJsonValue>>* ExperimentsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("experiments"), ExperimentsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("experiments"), ArrayPtr))
+    for (const auto& Item : *ExperimentsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Experiments.Add(FSatoriExperiment::FromJson(*ItemObj));
-        }
+        Result.Experiments.Add(FSatoriExperiment::FromJson(*ItemObj));
       }
     }
   }
@@ -466,15 +461,12 @@ FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json)
       Result.ChangeReason = FSatoriFlagValueChangeReason::FromJson(*NestedObj);
     }
   }
-  if (Json->HasField(TEXT("labels")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
     }
   }
   return Result;
@@ -511,18 +503,15 @@ FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (Json->HasField(TEXT("flags")))
+  const TArray<TSharedPtr<FJsonValue>>* FlagsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("flags"), FlagsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("flags"), ArrayPtr))
+    for (const auto& Item : *FlagsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Flags.Add(FSatoriFlag::FromJson(*ItemObj));
-        }
+        Result.Flags.Add(FSatoriFlag::FromJson(*ItemObj));
       }
     }
   }
@@ -603,30 +592,24 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
   {
     Result.FlagName = Json->GetStringField(TEXT("flag_name"));
   }
-  if (Json->HasField(TEXT("overrides")))
+  const TArray<TSharedPtr<FJsonValue>>* OverridesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("overrides"), OverridesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("overrides"), ArrayPtr))
+    for (const auto& Item : *OverridesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Overrides.Add(FSatoriFlagOverrideValue::FromJson(*ItemObj));
-        }
+        Result.Overrides.Add(FSatoriFlagOverrideValue::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("labels")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
     }
   }
   return Result;
@@ -666,18 +649,15 @@ FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (Json->HasField(TEXT("flags")))
+  const TArray<TSharedPtr<FJsonValue>>* FlagsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("flags"), FlagsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("flags"), ArrayPtr))
+    for (const auto& Item : *FlagsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Flags.Add(FSatoriFlagOverride::FromJson(*ItemObj));
-        }
+        Result.Flags.Add(FSatoriFlagOverride::FromJson(*ItemObj));
       }
     }
   }
@@ -705,26 +685,20 @@ FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TShare
   {
     return Result;
   }
-  if (Json->HasField(TEXT("names")))
+  const TArray<TSharedPtr<FJsonValue>>* NamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("names"), NamesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("names"), ArrayPtr))
+    for (const auto& Item : *NamesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Names.Add(Item->AsString());
-      }
+      Result.Names.Add(Item->AsString());
     }
   }
-  if (Json->HasField(TEXT("labels")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
     }
   }
   return Result;
@@ -760,26 +734,20 @@ FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (Json->HasField(TEXT("names")))
+  const TArray<TSharedPtr<FJsonValue>>* NamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("names"), NamesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("names"), ArrayPtr))
+    for (const auto& Item : *NamesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Names.Add(Item->AsString());
-      }
+      Result.Names.Add(Item->AsString());
     }
   }
-  if (Json->HasField(TEXT("labels")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
     }
   }
   return Result;
@@ -815,28 +783,6 @@ FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedP
   {
     return Result;
   }
-  if (Json->HasField(TEXT("names")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("names"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Names.Add(Item->AsString());
-      }
-    }
-  }
-  if (Json->HasField(TEXT("labels")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
-    }
-  }
   if (Json->HasField(TEXT("past_run_count")))
   {
     Result.PastRunCount = Json->GetNumberField(TEXT("past_run_count"));
@@ -853,12 +799,32 @@ FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedP
   {
     Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"));
   }
+  const TArray<TSharedPtr<FJsonValue>>* NamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("names"), NamesArrayPtr))
+  {
+    for (const auto& Item : *NamesArrayPtr)
+    {
+      Result.Names.Add(Item->AsString());
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
+  {
+    for (const auto& Item : *LabelsArrayPtr)
+    {
+      Result.Labels.Add(Item->AsString());
+    }
+  }
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetNumberField(TEXT("past_run_count"), PastRunCount);
+  Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
+  Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
+  Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
   if (Names.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -877,10 +843,6 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
-  Json->SetNumberField(TEXT("past_run_count"), PastRunCount);
-  Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
-  Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
-  Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
   return Json;
 }
 FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1020,26 +982,20 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     Result.Status = static_cast<ESatoriLiveEventStatus>(Json->GetNumberField(TEXT("status")));
   }
-  if (Json->HasField(TEXT("labels")))
+  const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("labels"), ArrayPtr))
+    for (const auto& Item : *LabelsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Labels.Add(Item->AsString());
-      }
+      Result.Labels.Add(Item->AsString());
     }
   }
-  if (Json->HasField(TEXT("flag_names")))
+  const TArray<TSharedPtr<FJsonValue>>* FlagNamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("flag_names"), FlagNamesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("flag_names"), ArrayPtr))
+    for (const auto& Item : *FlagNamesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.FlagNames.Add(Item->AsString());
-      }
+      Result.FlagNames.Add(Item->AsString());
     }
   }
   return Result;
@@ -1101,33 +1057,27 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
   {
     return Result;
   }
-  if (Json->HasField(TEXT("live_events")))
+  const TArray<TSharedPtr<FJsonValue>>* LiveEventsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("live_events"), LiveEventsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("live_events"), ArrayPtr))
+    for (const auto& Item : *LiveEventsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.LiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
-        }
+        Result.LiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("explicit_join_live_events")))
+  const TArray<TSharedPtr<FJsonValue>>* ExplicitJoinLiveEventsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("explicit_join_live_events"), ExplicitJoinLiveEventsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("explicit_join_live_events"), ArrayPtr))
+    for (const auto& Item : *ExplicitJoinLiveEventsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.ExplicitJoinLiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
-        }
+        Result.ExplicitJoinLiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
       }
     }
   }
@@ -1314,15 +1264,12 @@ FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TShare
   {
     Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
-  if (Json->HasField(TEXT("message_ids")))
+  const TArray<TSharedPtr<FJsonValue>>* MessageIdsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("message_ids"), MessageIdsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("message_ids"), ArrayPtr))
+    for (const auto& Item : *MessageIdsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.MessageIds.Add(Item->AsString());
-      }
+      Result.MessageIds.Add(Item->AsString());
     }
   }
   return Result;
@@ -1455,21 +1402,6 @@ FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSha
   {
     return Result;
   }
-  if (Json->HasField(TEXT("messages")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("messages"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Messages.Add(FSatoriMessage::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("next_cursor")))
   {
     Result.NextCursor = Json->GetStringField(TEXT("next_cursor"));
@@ -1482,21 +1414,24 @@ FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSha
   {
     Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"));
   }
+  const TArray<TSharedPtr<FJsonValue>>* MessagesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("messages"), MessagesArrayPtr))
+  {
+    for (const auto& Item : *MessagesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Messages.Add(FSatoriMessage::FromJson(*ItemObj));
+      }
+    }
+  }
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Messages.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : Messages)
-    {
-      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-    }
-    Json->SetArrayField(TEXT("messages"), Array);
-  }
   if (NextCursor.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("next_cursor"), NextCursor);
@@ -1508,6 +1443,15 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const
   if (CacheableCursor.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
+  }
+  if (Messages.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Messages)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("messages"), Array);
   }
   return Json;
 }
@@ -1569,8 +1513,9 @@ TSharedPtr<FJsonObject> FSatoriDeleteMessageRequest::ToJson() const
 }
 
 
-
-FSatoriApiRequestModel SatoriInternal::BuildAuthenticateRequest (
+namespace SatoriInternal
+{
+FSatoriApiRequestModel SATORI_API BuildAuthenticateRequest (
   const FSatoriAuthenticateRequest& Params
 )
 {
@@ -1579,44 +1524,20 @@ FSatoriApiRequestModel SatoriInternal::BuildAuthenticateRequest (
   //
   // URL
   FString Url = TEXT("/v1/authenticate");
-  Request.Url = Url;
 
   //
   // Verb
   Request.Verb = TEXT("POST");
 
   //
-  // Body (whole message, minus path params)
+  // Query/Body Params
   TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
   Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
 
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildAuthenticateLogoutRequest (
-  const FSatoriAuthenticateLogoutRequest& Params
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/authenticate/logout");
   Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("POST");
-
-  //
-  // Body (whole message, minus path params)
-  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
-
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildAuthenticateRefreshRequest (
+FSatoriApiRequestModel SATORI_API BuildAuthenticateRefreshRequest (
   const FSatoriAuthenticateRefreshRequest& Params
 )
 {
@@ -1625,84 +1546,20 @@ FSatoriApiRequestModel SatoriInternal::BuildAuthenticateRefreshRequest (
   //
   // URL
   FString Url = TEXT("/v1/authenticate/refresh");
-  Request.Url = Url;
 
   //
   // Verb
   Request.Verb = TEXT("POST");
 
   //
-  // Body (whole message, minus path params)
+  // Query/Body Params
   TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
   Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
 
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildDeleteIdentityRequest (
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/identity");
   Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("DELETE");
-
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildEventRequest (
-  const FSatoriEventRequest& Params
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/event");
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("POST");
-
-  //
-  // Body (whole message, minus path params)
-  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
-
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildServerEventRequest (
-  const FSatoriEventRequest& Params
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/server-event");
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("POST");
-
-  //
-  // Body (whole message, minus path params)
-  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
-
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildGetExperimentsRequest (
+FSatoriApiRequestModel SATORI_API BuildGetExperimentsRequest (
   const FSatoriGetExperimentsRequest& Params
 )
 {
@@ -1713,27 +1570,26 @@ FSatoriApiRequestModel SatoriInternal::BuildGetExperimentsRequest (
   FString Url = TEXT("/v1/experiment");
 
   //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  for (const FString& Item : Params.Names)
-  {
-    QueryParams.Add({TEXT("names"), Item});
-  }
-  for (const FString& Item : Params.Labels)
-  {
-    QueryParams.Add({TEXT("labels"), Item});
-  }
-  Url += SatoriHttpInternal::BuildQueryString(QueryParams);
-  Request.Url = Url;
-
-  //
   // Verb
   Request.Verb = TEXT("GET");
 
+  //
+  // Query/Body Params
+  TArray<TPair<FString, FString>> QueryArgs;
+  for (const auto& Item : Params.Names)
+  {
+    QueryArgs.Add({TEXT("names"), Item});
+  }
+  for (const auto& Item : Params.Labels)
+  {
+    QueryArgs.Add({TEXT("labels"), Item});
+  }
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+
+  Request.Url = Url;
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildGetFlagOverridesRequest (
+FSatoriApiRequestModel SATORI_API BuildGetFlagOverridesRequest (
   const FSatoriGetFlagsRequest& Params
 )
 {
@@ -1744,27 +1600,26 @@ FSatoriApiRequestModel SatoriInternal::BuildGetFlagOverridesRequest (
   FString Url = TEXT("/v1/flag/override");
 
   //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  for (const FString& Item : Params.Names)
-  {
-    QueryParams.Add({TEXT("names"), Item});
-  }
-  for (const FString& Item : Params.Labels)
-  {
-    QueryParams.Add({TEXT("labels"), Item});
-  }
-  Url += SatoriHttpInternal::BuildQueryString(QueryParams);
-  Request.Url = Url;
-
-  //
   // Verb
   Request.Verb = TEXT("GET");
 
+  //
+  // Query/Body Params
+  TArray<TPair<FString, FString>> QueryArgs;
+  for (const auto& Item : Params.Names)
+  {
+    QueryArgs.Add({TEXT("names"), Item});
+  }
+  for (const auto& Item : Params.Labels)
+  {
+    QueryArgs.Add({TEXT("labels"), Item});
+  }
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+
+  Request.Url = Url;
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildGetFlagsRequest (
+FSatoriApiRequestModel SATORI_API BuildGetFlagsRequest (
   const FSatoriGetFlagsRequest& Params
 )
 {
@@ -1775,27 +1630,26 @@ FSatoriApiRequestModel SatoriInternal::BuildGetFlagsRequest (
   FString Url = TEXT("/v1/flag");
 
   //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  for (const FString& Item : Params.Names)
-  {
-    QueryParams.Add({TEXT("names"), Item});
-  }
-  for (const FString& Item : Params.Labels)
-  {
-    QueryParams.Add({TEXT("labels"), Item});
-  }
-  Url += SatoriHttpInternal::BuildQueryString(QueryParams);
-  Request.Url = Url;
-
-  //
   // Verb
   Request.Verb = TEXT("GET");
 
+  //
+  // Query/Body Params
+  TArray<TPair<FString, FString>> QueryArgs;
+  for (const auto& Item : Params.Names)
+  {
+    QueryArgs.Add({TEXT("names"), Item});
+  }
+  for (const auto& Item : Params.Labels)
+  {
+    QueryArgs.Add({TEXT("labels"), Item});
+  }
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+
+  Request.Url = Url;
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildGetLiveEventsRequest (
+FSatoriApiRequestModel SATORI_API BuildGetLiveEventsRequest (
   const FSatoriGetLiveEventsRequest& Params
 )
 {
@@ -1806,63 +1660,30 @@ FSatoriApiRequestModel SatoriInternal::BuildGetLiveEventsRequest (
   FString Url = TEXT("/v1/live-event");
 
   //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  for (const FString& Item : Params.Names)
-  {
-    QueryParams.Add({TEXT("names"), Item});
-  }
-  for (const FString& Item : Params.Labels)
-  {
-    QueryParams.Add({TEXT("labels"), Item});
-  }
-  Url += SatoriHttpInternal::BuildQueryString(QueryParams);
-  Request.Url = Url;
-
-  //
   // Verb
   Request.Verb = TEXT("GET");
 
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildJoinLiveEventRequest (
-  const FSatoriJoinLiveEventRequest& Params
-)
-{
-  FSatoriApiRequestModel Request;
-
   //
-  // URL
-  FString Url = TEXT("/v1/live-event/{id}/participation");
-  Url = Url.Replace(TEXT("{id}"), *FGenericPlatformHttp::UrlEncode(Params.Id));
+  // Query/Body Params
+  TArray<TPair<FString, FString>> QueryArgs;
+  QueryArgs.Add({TEXT("past_run_count"), FString::Printf(TEXT("%d"), Params.PastRunCount)});
+  QueryArgs.Add({TEXT("future_run_count"), FString::Printf(TEXT("%d"), Params.FutureRunCount)});
+  QueryArgs.Add({TEXT("start_time_sec"), FString::Printf(TEXT("%lld"), Params.StartTimeSec)});
+  QueryArgs.Add({TEXT("end_time_sec"), FString::Printf(TEXT("%lld"), Params.EndTimeSec)});
+  for (const auto& Item : Params.Names)
+  {
+    QueryArgs.Add({TEXT("names"), Item});
+  }
+  for (const auto& Item : Params.Labels)
+  {
+    QueryArgs.Add({TEXT("labels"), Item});
+  }
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+
   Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("POST");
-
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildHealthcheckRequest (
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/healthcheck");
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("GET");
-
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildIdentifyRequest (
+FSatoriApiRequestModel SATORI_API BuildIdentifyRequest (
   const FSatoriIdentifyRequest& Params
 )
 {
@@ -1871,78 +1692,20 @@ FSatoriApiRequestModel SatoriInternal::BuildIdentifyRequest (
   //
   // URL
   FString Url = TEXT("/v1/identify");
-  Request.Url = Url;
 
   //
   // Verb
   Request.Verb = TEXT("PUT");
 
   //
-  // Body (whole message, minus path params)
+  // Query/Body Params
   TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
   Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
 
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildListPropertiesRequest (
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/properties");
   Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("GET");
-
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildReadycheckRequest (
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/readycheck");
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("GET");
-
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildUpdatePropertiesRequest (
-  const FSatoriUpdatePropertiesRequest& Params
-)
-{
-  FSatoriApiRequestModel Request;
-
-  //
-  // URL
-  FString Url = TEXT("/v1/properties");
-  Request.Url = Url;
-
-  //
-  // Verb
-  Request.Verb = TEXT("PUT");
-
-  //
-  // Body (whole message, minus path params)
-  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
-
-  return Request;
-}
-
-FSatoriApiRequestModel SatoriInternal::BuildGetMessageListRequest (
+FSatoriApiRequestModel SATORI_API BuildGetMessageListRequest (
   const FSatoriGetMessageListRequest& Params
 )
 {
@@ -1953,69 +1716,138 @@ FSatoriApiRequestModel SatoriInternal::BuildGetMessageListRequest (
   FString Url = TEXT("/v1/message");
 
   //
-  // Query params
-  TArray<TPair<FString, FString>> QueryParams;
-  if (Params.Cursor.IsEmpty() == false)
-  {
-    QueryParams.Add({TEXT("cursor"), Params.Cursor});
-  }
-  for (const FString& Item : Params.MessageIds)
-  {
-    QueryParams.Add({TEXT("message_ids"), Item});
-  }
-  Url += SatoriHttpInternal::BuildQueryString(QueryParams);
-  Request.Url = Url;
-
-  //
   // Verb
   Request.Verb = TEXT("GET");
 
+  //
+  // Query/Body Params
+  TArray<TPair<FString, FString>> QueryArgs;
+  QueryArgs.Add({TEXT("limit"), FString::Printf(TEXT("%d"), Params.Limit)});
+  QueryArgs.Add({TEXT("forward"), LexToString(Params.Forward)});
+  if (Params.Cursor.IsEmpty() == false) { QueryArgs.Add({TEXT("cursor"), Params.Cursor}); }
+  for (const auto& Item : Params.MessageIds)
+  {
+    QueryArgs.Add({TEXT("message_ids"), Item});
+  }
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+
+  Request.Url = Url;
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildUpdateMessageRequest (
+FSatoriApiRequestModel SATORI_API BuildAuthenticateLogoutRequest (
+  const FSatoriAuthenticateLogoutRequest& Params
+)
+{
+  FSatoriApiRequestModel Request;
+  FString Url = TEXT("/v1/authenticate/logout");
+  Request.Verb = TEXT("POST");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildEventRequest (
+  const FSatoriEventRequest& Params
+)
+{
+  FSatoriApiRequestModel Request;
+  FString Url = TEXT("/v1/event");
+  Request.Verb = TEXT("POST");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildServerEventRequest (
+  const FSatoriEventRequest& Params
+)
+{
+  FSatoriApiRequestModel Request;
+  FString Url = TEXT("/v1/server-event");
+  Request.Verb = TEXT("POST");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildJoinLiveEventRequest (
+  const FSatoriJoinLiveEventRequest& Params
+)
+{
+  FSatoriApiRequestModel Request;
+  FString Url = TEXT("/v1/live-event/{id}/participation");
+  Url = Url.Replace(TEXT("{id}"), *FGenericPlatformHttp::UrlEncode(Params.Id));
+  Request.Verb = TEXT("POST");
+  TArray<TPair<FString, FString>> QueryArgs;
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+  Request.Url = Url;
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildUpdatePropertiesRequest (
+  const FSatoriUpdatePropertiesRequest& Params
+)
+{
+  FSatoriApiRequestModel Request;
+  FString Url = TEXT("/v1/properties");
+  Request.Verb = TEXT("PUT");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildUpdateMessageRequest (
   const FSatoriUpdateMessageRequest& Params
 )
 {
   FSatoriApiRequestModel Request;
-
-  //
-  // URL
   FString Url = TEXT("/v1/message/{id}");
   Url = Url.Replace(TEXT("{id}"), *FGenericPlatformHttp::UrlEncode(Params.Id));
-  Request.Url = Url;
-
-  //
-  // Verb
   Request.Verb = TEXT("PUT");
-
-  //
-  // Body (whole message, minus path params)
   TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
-  if (BodyJson.IsValid())
-  {
-    BodyJson->RemoveField(TEXT("id"));
-  }
   Request.Body = SatoriHttpInternal::SerializeJsonToString(BodyJson);
-
+  Request.Url = Url;
   return Request;
 }
-
-FSatoriApiRequestModel SatoriInternal::BuildDeleteMessageRequest (
+FSatoriApiRequestModel SATORI_API BuildDeleteMessageRequest (
   const FSatoriDeleteMessageRequest& Params
 )
 {
   FSatoriApiRequestModel Request;
-
-  //
-  // URL
   FString Url = TEXT("/v1/message/{id}");
   Url = Url.Replace(TEXT("{id}"), *FGenericPlatformHttp::UrlEncode(Params.Id));
-  Request.Url = Url;
-
-  //
-  // Verb
   Request.Verb = TEXT("DELETE");
-
+  TArray<TPair<FString, FString>> QueryArgs;
+  Url += SatoriHttpInternal::BuildQueryString(QueryArgs);
+  Request.Url = Url;
   return Request;
 }
+FSatoriApiRequestModel SATORI_API BuildListPropertiesRequest ()
+{
+  FSatoriApiRequestModel Request;
+  Request.Url = TEXT("/v1/properties");
+  Request.Verb = TEXT("GET");
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildDeleteIdentityRequest ()
+{
+  FSatoriApiRequestModel Request;
+  Request.Url = TEXT("/v1/identity");
+  Request.Verb = TEXT("DELETE");
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildHealthcheckRequest ()
+{
+  FSatoriApiRequestModel Request;
+  Request.Url = TEXT("/healthcheck");
+  Request.Verb = TEXT("GET");
+  return Request;
+}
+FSatoriApiRequestModel SATORI_API BuildReadycheckRequest ()
+{
+  FSatoriApiRequestModel Request;
+  Request.Url = TEXT("/readycheck");
+  Request.Verb = TEXT("GET");
+  return Request;
+}
+} // namespace SatoriInternal
+

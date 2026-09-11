@@ -16,16 +16,25 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-
-
-
 #pragma once
 
 #include "CoreMinimal.h"
+
+
+
+
+
+
+
+
+
+
+
+
 #include "SatoriOptionals.h"
-#include "SatoriError.h"
 #include "SatoriApiRequestModel.h"
 #include "SatoriSession.h"
+#include "SatoriError.h"
 #include "Satori.gen.generated.h"
 
 
@@ -79,11 +88,11 @@ struct SATORI_API FSatoriAuthenticateLogoutRequest
 {
   GENERATED_BODY()
 
-  //  Session token to log out.
+  // Session token to log out.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "token"))
   FString Token;
 
-  //  Refresh token to invalidate.
+  // Refresh token to invalidate.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "refresh_token"))
   FString RefreshToken;
 
@@ -92,6 +101,7 @@ struct SATORI_API FSatoriAuthenticateLogoutRequest
 
   // Converts this AuthenticateLogoutRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -102,7 +112,7 @@ struct SATORI_API FSatoriAuthenticateRefreshRequest
 {
   GENERATED_BODY()
 
-  //  Refresh token.
+  // Refresh token.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "refresh_token"))
   FString RefreshToken;
 
@@ -111,6 +121,7 @@ struct SATORI_API FSatoriAuthenticateRefreshRequest
 
   // Converts this AuthenticateRefreshRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -121,19 +132,19 @@ struct SATORI_API FSatoriAuthenticateRequest
 {
   GENERATED_BODY()
 
-  //  Identity ID. Must be between eight and 128 characters (inclusive).
+  // Identity ID. Must be between eight and 128 characters (inclusive).
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  Optional no_session modifies the request to only create/update
+  // Optional no_session modifies the request to only create/update
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "no_session"))
   bool NoSession = false;
 
-  //  Optional default properties to update with this call.
+  // Optional default properties to update with this call.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "default"))
   TMap<FString, FString> Default;
 
-  //  Optional custom properties to update with this call.
+  // Optional custom properties to update with this call.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "custom"))
   TMap<FString, FString> Custom;
 
@@ -142,6 +153,7 @@ struct SATORI_API FSatoriAuthenticateRequest
 
   // Converts this AuthenticateRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -152,39 +164,39 @@ struct SATORI_API FSatoriEvent
 {
   GENERATED_BODY()
 
-  //  Event name.
+  // Event name.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios.
+  // Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  Optional value.
+  // Optional value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "value"))
   FString Value;
 
-  //  The time when the event was triggered on the producer side.
+  // The time when the event was triggered on the producer side.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "timestamp"))
   FDateTime Timestamp = FDateTime(0);
 
-  //  The identity id associated with the event. Ignored if the event is published as part of a session.
+  // The identity id associated with the event. Ignored if the event is published as part of a session.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "identity_id"))
   FString IdentityId;
 
-  //  The session id associated with the event. Ignored if the event is published as part of a session.
+  // The session id associated with the event. Ignored if the event is published as part of a session.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "session_id"))
   FString SessionId;
 
-  //  The session issued at associated with the event. Ignored if the event is published as part of a session.
+  // The session issued at associated with the event. Ignored if the event is published as part of a session.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "session_issued_at"))
   int64 SessionIssuedAt = 0;
 
-  //  The session expires at associated with the event. Ignored if the event is published as part of a session.
+  // The session expires at associated with the event. Ignored if the event is published as part of a session.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "session_expires_at"))
   int64 SessionExpiresAt = 0;
 
-  //  Event metadata, if any.
+  // Event metadata, if any.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "metadata"))
   TMap<FString, FString> Metadata;
 
@@ -193,6 +205,7 @@ struct SATORI_API FSatoriEvent
 
   // Converts this Event to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -203,7 +216,7 @@ struct SATORI_API FSatoriEventRequest
 {
   GENERATED_BODY()
 
-  //  Some number of events produced by a client.
+  // Some number of events produced by a client.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "events"))
   TArray<FSatoriEvent> Events;
 
@@ -212,6 +225,7 @@ struct SATORI_API FSatoriEventRequest
 
   // Converts this EventRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -222,27 +236,27 @@ struct SATORI_API FSatoriExperiment
 {
   GENERATED_BODY()
 
-  //  Experiment name
+  // Experiment name
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  Value associated with this Experiment.
+  // Value associated with this Experiment.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "value"))
   FString Value;
 
-  //  The labels associated with this experiment.
-  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
-  TArray<FString> Labels;
-
-  //  Experiment Phase name
+  // Experiment Phase name
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "phase_name"))
   FString PhaseName;
 
-  //  Experiment Phase Variant name
+  // Experiment Phase Variant name
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "phase_variant_name"))
   FString PhaseVariantName;
 
-  //  The names of the feature flags this experiment overrides.
+  // The labels associated with this experiment.
+  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
+  TArray<FString> Labels;
+
+  // The names of the feature flags this experiment overrides.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "flag_names"))
   TArray<FString> FlagNames;
 
@@ -251,6 +265,7 @@ struct SATORI_API FSatoriExperiment
 
   // Converts this Experiment to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -261,7 +276,7 @@ struct SATORI_API FSatoriExperimentList
 {
   GENERATED_BODY()
 
-  //  All experiments for this identity.
+  // All experiments for this identity.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "experiments"))
   TArray<FSatoriExperiment> Experiments;
 
@@ -270,6 +285,7 @@ struct SATORI_API FSatoriExperimentList
 
   // Converts this ExperimentList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -280,15 +296,15 @@ struct SATORI_API FSatoriFlagValueChangeReason
 {
   GENERATED_BODY()
 
-  //  The type of the configuration that declared the override.
+  // The type of the configuration that declared the override.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "type"))
-  ESatoriFlagValueChangeReasonType Type = ESatoriFlagValueChangeReasonType::UNKNOWN;
+  ESatoriFlagValueChangeReasonType Type = ESatoriFlagValueChangeReasonType(0);
 
-  //  The name of the configuration that overrides the flag value.
+  // The name of the configuration that overrides the flag value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  The variant name of the configuration that overrides the flag value.
+  // The variant name of the configuration that overrides the flag value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "variant_name"))
   FString VariantName;
 
@@ -297,6 +313,7 @@ struct SATORI_API FSatoriFlagValueChangeReason
 
   // Converts this ValueChangeReason to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -307,23 +324,23 @@ struct SATORI_API FSatoriFlag
 {
   GENERATED_BODY()
 
-  //  Flag name
+  // Flag name
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  Value associated with this flag.
+  // Value associated with this flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "value"))
   FString Value;
 
-  //  Whether the value for this flag has conditionally changed from the default state.
+  // Whether the value for this flag has conditionally changed from the default state.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "condition_changed"))
   bool ConditionChanged = false;
 
-  //  The origin of change on the flag value returned.
+  // The origin of change on the flag value returned.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "change_reason"))
   FSatoriFlagValueChangeReason ChangeReason;
 
-  //  The labels associated with this flag.
+  // The labels associated with this flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;
 
@@ -332,6 +349,7 @@ struct SATORI_API FSatoriFlag
 
   // Converts this Flag to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -342,7 +360,7 @@ struct SATORI_API FSatoriFlagList
 {
   GENERATED_BODY()
 
-  //  All flags
+  // All flags
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "flags"))
   TArray<FSatoriFlag> Flags;
 
@@ -351,6 +369,7 @@ struct SATORI_API FSatoriFlagList
 
   // Converts this FlagList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -361,23 +380,23 @@ struct SATORI_API FSatoriFlagOverrideValue
 {
   GENERATED_BODY()
 
-  //  The type of the configuration that declared the override.
+  // The type of the configuration that declared the override.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "type"))
-  ESatoriFlagOverrideType Type = ESatoriFlagOverrideType::FLAG;
+  ESatoriFlagOverrideType Type = ESatoriFlagOverrideType(0);
 
-  //  The name of the configuration that overrides the flag value.
+  // The name of the configuration that overrides the flag value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  The variant name of the configuration that overrides the flag value.
+  // The variant name of the configuration that overrides the flag value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "variant_name"))
   FString VariantName;
 
-  //  The value of the configuration that overrides the flag.
+  // The value of the configuration that overrides the flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "value"))
   FString Value;
 
-  //  The create time of the configuration that overrides the flag.
+  // The create time of the configuration that overrides the flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "create_time_sec"))
   int64 CreateTimeSec = 0;
 
@@ -386,6 +405,7 @@ struct SATORI_API FSatoriFlagOverrideValue
 
   // Converts this Value to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -396,15 +416,15 @@ struct SATORI_API FSatoriFlagOverride
 {
   GENERATED_BODY()
 
-  //  Flag name
+  // Flag name
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "flag_name"))
   FString FlagName;
 
-  //  The list of configuration that affect the value of the flag.
+  // The list of configuration that affect the value of the flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "overrides"))
   TArray<FSatoriFlagOverrideValue> Overrides;
 
-  //  The labels associated with this flag.
+  // The labels associated with this flag.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;
 
@@ -413,6 +433,7 @@ struct SATORI_API FSatoriFlagOverride
 
   // Converts this FlagOverride to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -423,7 +444,7 @@ struct SATORI_API FSatoriFlagOverrideList
 {
   GENERATED_BODY()
 
-  //  All flags
+  // All flags
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "flags"))
   TArray<FSatoriFlagOverride> Flags;
 
@@ -432,6 +453,7 @@ struct SATORI_API FSatoriFlagOverrideList
 
   // Converts this FlagOverrideList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -442,11 +464,11 @@ struct SATORI_API FSatoriGetExperimentsRequest
 {
   GENERATED_BODY()
 
-  //  Experiment names; if empty string, all experiments are returned based on the remaining filters.
+  // Experiment names; if empty string, all experiments are returned based on the remaining filters.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "names"))
   TArray<FString> Names;
 
-  //  Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters.
+  // Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;
 
@@ -455,6 +477,7 @@ struct SATORI_API FSatoriGetExperimentsRequest
 
   // Converts this GetExperimentsRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -465,11 +488,11 @@ struct SATORI_API FSatoriGetFlagsRequest
 {
   GENERATED_BODY()
 
-  //  Flag names; if empty string, all flags are returned based on the remaining filters.
+  // Flag names; if empty string, all flags are returned based on the remaining filters.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "names"))
   TArray<FString> Names;
 
-  //  Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
+  // Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;
 
@@ -478,6 +501,7 @@ struct SATORI_API FSatoriGetFlagsRequest
 
   // Converts this GetFlagsRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -488,35 +512,36 @@ struct SATORI_API FSatoriGetLiveEventsRequest
 {
   GENERATED_BODY()
 
-  //  Live event names; if empty string, all live events are returned based on the remaining filters.
-  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "names"))
-  TArray<FString> Names;
-
-  //  Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters.
-  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
-  TArray<FString> Labels;
-
-  //  The maximum number of past event runs to return for each live event.
+  // The maximum number of past event runs to return for each live event.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "past_run_count"))
   int32 PastRunCount = 0;
 
-  //  The maximum number of future event runs to return for each live event.
+  // The maximum number of future event runs to return for each live event.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "future_run_count"))
   int32 FutureRunCount = 0;
 
-  //  Start time of the time window filter to apply.
+  // Start time of the time window filter to apply.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "start_time_sec"))
   int64 StartTimeSec = 0;
 
-  //  End time of the time window filter to apply.
+  // End time of the time window filter to apply.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "end_time_sec"))
   int64 EndTimeSec = 0;
+
+  // Live event names; if empty string, all live events are returned based on the remaining filters.
+  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "names"))
+  TArray<FString> Names;
+
+  // Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters.
+  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
+  TArray<FString> Labels;
 
   // Creates a GetLiveEventsRequest from the given FJsonObject.
   static FSatoriGetLiveEventsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this GetLiveEventsRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -527,7 +552,7 @@ struct SATORI_API FSatoriJoinLiveEventRequest
 {
   GENERATED_BODY()
 
-  //  Live event id to join.
+  // Live event id to join.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
@@ -536,6 +561,7 @@ struct SATORI_API FSatoriJoinLiveEventRequest
 
   // Converts this JoinLiveEventRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -546,15 +572,15 @@ struct SATORI_API FSatoriIdentifyRequest
 {
   GENERATED_BODY()
 
-  //  Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
+  // Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  Optional default properties to update with this call.
+  // Optional default properties to update with this call.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "default"))
   TMap<FString, FString> Default;
 
-  //  Optional custom properties to update with this call.
+  // Optional custom properties to update with this call.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "custom"))
   TMap<FString, FString> Custom;
 
@@ -563,6 +589,7 @@ struct SATORI_API FSatoriIdentifyRequest
 
   // Converts this IdentifyRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -573,55 +600,55 @@ struct SATORI_API FSatoriLiveEvent
 {
   GENERATED_BODY()
 
-  //  Name.
+  // Name.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "name"))
   FString Name;
 
-  //  Description.
+  // Description.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "description"))
   FString Description;
 
-  //  Event value.
+  // Event value.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "value"))
   FString Value;
 
-  //  Start time of current event run.
+  // Start time of current event run.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "active_start_time_sec"))
   int64 ActiveStartTimeSec = 0;
 
-  //  End time of current event run.
+  // End time of current event run.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "active_end_time_sec"))
   int64 ActiveEndTimeSec = 0;
 
-  //  The live event identifier.
+  // The live event identifier.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  Start time.
+  // Start time.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "start_time_sec"))
   int64 StartTimeSec = 0;
 
-  //  End time, 0 if it repeats forever.
+  // End time, 0 if it repeats forever.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "end_time_sec"))
   int64 EndTimeSec = 0;
 
-  //  Duration in seconds.
+  // Duration in seconds.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "duration_sec"))
   int64 DurationSec = 0;
 
-  //  Reset CRON schedule, if configured.
+  // Reset CRON schedule, if configured.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "reset_cron"))
   FString ResetCron;
 
-  //  The status of this live event run.
+  // The status of this live event run.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "status"))
-  ESatoriLiveEventStatus Status = ESatoriLiveEventStatus::UNKNOWN;
+  ESatoriLiveEventStatus Status = ESatoriLiveEventStatus(0);
 
-  //  The labels associated with this live event.
+  // The labels associated with this live event.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;
 
-  //  The names of the feature flags this live event overrides.
+  // The names of the feature flags this live event overrides.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "flag_names"))
   TArray<FString> FlagNames;
 
@@ -630,6 +657,7 @@ struct SATORI_API FSatoriLiveEvent
 
   // Converts this LiveEvent to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -640,11 +668,11 @@ struct SATORI_API FSatoriLiveEventList
 {
   GENERATED_BODY()
 
-  //  Live events.
+  // Live events.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "live_events"))
   TArray<FSatoriLiveEvent> LiveEvents;
 
-  //  Live events that require explicit join.
+  // Live events that require explicit join.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "explicit_join_live_events"))
   TArray<FSatoriLiveEvent> ExplicitJoinLiveEvents;
 
@@ -653,6 +681,7 @@ struct SATORI_API FSatoriLiveEventList
 
   // Converts this LiveEventList to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -663,15 +692,15 @@ struct SATORI_API FSatoriProperties
 {
   GENERATED_BODY()
 
-  //  Event default properties.
+  // Event default properties.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "default"))
   TMap<FString, FString> Default;
 
-  //  Event computed properties.
+  // Event computed properties.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "computed"))
   TMap<FString, FString> Computed;
 
-  //  Event custom properties.
+  // Event custom properties.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "custom"))
   TMap<FString, FString> Custom;
 
@@ -680,6 +709,7 @@ struct SATORI_API FSatoriProperties
 
   // Converts this Properties to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -690,15 +720,15 @@ struct SATORI_API FSatoriUpdatePropertiesRequest
 {
   GENERATED_BODY()
 
-  //  Informs the server to recompute the audience membership of the identity.
+  // Informs the server to recompute the audience membership of the identity.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "recompute"))
   FSatoriOptionalBool Recompute = {};
 
-  //  Event default properties.
+  // Event default properties.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "default"))
   TMap<FString, FString> Default;
 
-  //  Event custom properties.
+  // Event custom properties.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "custom"))
   TMap<FString, FString> Custom;
 
@@ -707,6 +737,7 @@ struct SATORI_API FSatoriUpdatePropertiesRequest
 
   // Converts this UpdatePropertiesRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -717,19 +748,19 @@ struct SATORI_API FSatoriGetMessageListRequest
 {
   GENERATED_BODY()
 
-  //  Max number of messages to return. Between 1 and 100.
+  // Max number of messages to return. Between 1 and 100.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "limit"))
   int32 Limit = 0;
 
-  //  True if listing should be older messages to newer, false if reverse.
+  // True if listing should be older messages to newer, false if reverse.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "forward"))
   bool Forward = false;
 
-  //  A pagination cursor, if any.
+  // A pagination cursor, if any.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "cursor"))
   FString Cursor;
 
-  //  A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled.
+  // A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "message_ids"))
   TArray<FString> MessageIds;
 
@@ -738,6 +769,7 @@ struct SATORI_API FSatoriGetMessageListRequest
 
   // Converts this GetMessageListRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -748,47 +780,47 @@ struct SATORI_API FSatoriMessage
 {
   GENERATED_BODY()
 
-  //  The identifier of the schedule.
+  // The identifier of the schedule.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "schedule_id"))
   FString ScheduleId;
 
-  //  The send time for the message.
+  // The send time for the message.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "send_time"))
   int64 SendTime = 0;
 
-  //  The time the message was created.
+  // The time the message was created.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "create_time"))
   int64 CreateTime = 0;
 
-  //  The time the message was updated.
+  // The time the message was updated.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "update_time"))
   int64 UpdateTime = 0;
 
-  //  The time the message was read by the client.
+  // The time the message was read by the client.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "read_time"))
   int64 ReadTime = 0;
 
-  //  The time the message was consumed by the identity.
+  // The time the message was consumed by the identity.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "consume_time"))
   int64 ConsumeTime = 0;
 
-  //  The message's text.
+  // The message's text.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "text"))
   FString Text;
 
-  //  The message's unique identifier.
+  // The message's unique identifier.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  The message's title.
+  // The message's title.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "title"))
   FString Title;
 
-  //  The message's image url.
+  // The message's image url.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "image_url"))
   FString ImageUrl;
 
-  //  A key-value pairs of metadata.
+  // A key-value pairs of metadata.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "metadata"))
   TMap<FString, FString> Metadata;
 
@@ -797,6 +829,7 @@ struct SATORI_API FSatoriMessage
 
   // Converts this Message to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -807,27 +840,28 @@ struct SATORI_API FSatoriGetMessageListResponse
 {
   GENERATED_BODY()
 
-  //  The list of messages.
-  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "messages"))
-  TArray<FSatoriMessage> Messages;
-
-  //  The cursor to send when retrieving the next page, if any.
+  // The cursor to send when retrieving the next page, if any.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "next_cursor"))
   FString NextCursor;
 
-  //  The cursor to send when retrieving the previous page, if any.
+  // The cursor to send when retrieving the previous page, if any.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "prev_cursor"))
   FString PrevCursor;
 
-  //  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  // Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "cacheable_cursor"))
   FString CacheableCursor;
+
+  // The list of messages.
+  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "messages"))
+  TArray<FSatoriMessage> Messages;
 
   // Creates a GetMessageListResponse from the given FJsonObject.
   static FSatoriGetMessageListResponse FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this GetMessageListResponse to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -838,15 +872,15 @@ struct SATORI_API FSatoriUpdateMessageRequest
 {
   GENERATED_BODY()
 
-  //  The identifier of the messages.
+  // The identifier of the messages.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
-  //  The time the message was read at the client.
+  // The time the message was read at the client.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "read_time"))
   int64 ReadTime = 0;
 
-  //  The time the message was consumed by the identity.
+  // The time the message was consumed by the identity.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "consume_time"))
   int64 ConsumeTime = 0;
 
@@ -855,6 +889,7 @@ struct SATORI_API FSatoriUpdateMessageRequest
 
   // Converts this UpdateMessageRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 /*
@@ -865,7 +900,7 @@ struct SATORI_API FSatoriDeleteMessageRequest
 {
   GENERATED_BODY()
 
-  //  The identifier of the message.
+  // The identifier of the message.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "id"))
   FString Id;
 
@@ -874,70 +909,10 @@ struct SATORI_API FSatoriDeleteMessageRequest
 
   // Converts this DeleteMessageRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
+
 };
 
 
-
-/** Tag type used as the value type for RPCs that return no data. */
-struct SATORI_API FSatoriVoid {};
-struct SATORI_API FSatoriVoidResult
-{
-	using ValueType = FSatoriVoid;
-	FSatoriVoid Value{};
-	FSatoriError Error;
-	bool bIsError = true;
-};
-
-
-struct SATORI_API FSatoriSessionResult
-{
-  using ValueType = FSatoriSession;
-  FSatoriSession Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriExperimentListResult
-{
-  using ValueType = FSatoriExperimentList;
-  FSatoriExperimentList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriFlagOverrideListResult
-{
-  using ValueType = FSatoriFlagOverrideList;
-  FSatoriFlagOverrideList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriFlagListResult
-{
-  using ValueType = FSatoriFlagList;
-  FSatoriFlagList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriLiveEventListResult
-{
-  using ValueType = FSatoriLiveEventList;
-  FSatoriLiveEventList Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriPropertiesResult
-{
-  using ValueType = FSatoriProperties;
-  FSatoriProperties Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
-struct SATORI_API FSatoriGetMessageListResponseResult
-{
-  using ValueType = FSatoriGetMessageListResponse;
-  FSatoriGetMessageListResponse Value {};
-  FSatoriError Error;
-  bool bIsError = true;
-};
 
 
 namespace SatoriInternal
@@ -947,23 +922,8 @@ FSatoriApiRequestModel SATORI_API BuildAuthenticateRequest (
   const FSatoriAuthenticateRequest& Params
 );
 
-FSatoriApiRequestModel SATORI_API BuildAuthenticateLogoutRequest (
-  const FSatoriAuthenticateLogoutRequest& Params
-);
-
 FSatoriApiRequestModel SATORI_API BuildAuthenticateRefreshRequest (
   const FSatoriAuthenticateRefreshRequest& Params
-);
-
-FSatoriApiRequestModel SATORI_API BuildDeleteIdentityRequest (
-);
-
-FSatoriApiRequestModel SATORI_API BuildEventRequest (
-  const FSatoriEventRequest& Params
-);
-
-FSatoriApiRequestModel SATORI_API BuildServerEventRequest (
-  const FSatoriEventRequest& Params
 );
 
 FSatoriApiRequestModel SATORI_API BuildGetExperimentsRequest (
@@ -982,29 +942,32 @@ FSatoriApiRequestModel SATORI_API BuildGetLiveEventsRequest (
   const FSatoriGetLiveEventsRequest& Params
 );
 
-FSatoriApiRequestModel SATORI_API BuildJoinLiveEventRequest (
-  const FSatoriJoinLiveEventRequest& Params
-);
-
-FSatoriApiRequestModel SATORI_API BuildHealthcheckRequest (
-);
-
 FSatoriApiRequestModel SATORI_API BuildIdentifyRequest (
   const FSatoriIdentifyRequest& Params
 );
 
-FSatoriApiRequestModel SATORI_API BuildListPropertiesRequest (
+FSatoriApiRequestModel SATORI_API BuildGetMessageListRequest (
+  const FSatoriGetMessageListRequest& Params
 );
 
-FSatoriApiRequestModel SATORI_API BuildReadycheckRequest (
+FSatoriApiRequestModel SATORI_API BuildAuthenticateLogoutRequest (
+  const FSatoriAuthenticateLogoutRequest& Params
+);
+
+FSatoriApiRequestModel SATORI_API BuildEventRequest (
+  const FSatoriEventRequest& Params
+);
+
+FSatoriApiRequestModel SATORI_API BuildServerEventRequest (
+  const FSatoriEventRequest& Params
+);
+
+FSatoriApiRequestModel SATORI_API BuildJoinLiveEventRequest (
+  const FSatoriJoinLiveEventRequest& Params
 );
 
 FSatoriApiRequestModel SATORI_API BuildUpdatePropertiesRequest (
   const FSatoriUpdatePropertiesRequest& Params
-);
-
-FSatoriApiRequestModel SATORI_API BuildGetMessageListRequest (
-  const FSatoriGetMessageListRequest& Params
 );
 
 FSatoriApiRequestModel SATORI_API BuildUpdateMessageRequest (
@@ -1014,5 +977,13 @@ FSatoriApiRequestModel SATORI_API BuildUpdateMessageRequest (
 FSatoriApiRequestModel SATORI_API BuildDeleteMessageRequest (
   const FSatoriDeleteMessageRequest& Params
 );
+
+FSatoriApiRequestModel SATORI_API BuildListPropertiesRequest ();
+
+FSatoriApiRequestModel SATORI_API BuildDeleteIdentityRequest ();
+
+FSatoriApiRequestModel SATORI_API BuildHealthcheckRequest ();
+
+FSatoriApiRequestModel SATORI_API BuildReadycheckRequest ();
 }
 

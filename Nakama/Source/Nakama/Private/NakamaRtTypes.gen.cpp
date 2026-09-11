@@ -18,8 +18,17 @@
 
 
 
+
+
+
+
+
+
+
+
 #include "NakamaRtTypes.gen.h"
-#include "Dom/JsonObject.h"
+#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 #include "Misc/Base64.h"
 
 
@@ -99,27 +108,24 @@ FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     Result.Size = Json->GetNumberField(TEXT("size"));
   }
-  if (Json->HasField(TEXT("presences")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("self")))
   {
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("self"), NestedObj))
     {
-      Result.Self_ = FNakamaRtUserPresence::FromJson(*NestedObj);
+      Result.Self = FNakamaRtUserPresence::FromJson(*NestedObj);
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
+  {
+    for (const auto& Item : *PresencesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
     }
   }
   return Result;
@@ -138,6 +144,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const
     Json->SetStringField(TEXT("label"), Label);
   }
   Json->SetNumberField(TEXT("size"), Size);
+  Json->SetObjectField(TEXT("self"), Self.ToJson());
   if (Presences.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -147,7 +154,6 @@ TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const
     }
     Json->SetArrayField(TEXT("presences"), Array);
   }
-  Json->SetObjectField(TEXT("self"), Self_.ToJson());
   return Json;
 }
 FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -178,7 +184,7 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json)
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("self"), NestedObj))
     {
-      Result.Self_ = FNakamaRtUserPresence::FromJson(*NestedObj);
+      Result.Self = FNakamaRtUserPresence::FromJson(*NestedObj);
     }
   }
   if (Json->HasField(TEXT("leader")))
@@ -189,24 +195,21 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json)
       Result.Leader = FNakamaRtUserPresence::FromJson(*NestedObj);
     }
   }
-  if (Json->HasField(TEXT("presences")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("label")))
   {
     Result.Label = Json->GetStringField(TEXT("label"));
+  }
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
+  {
+    for (const auto& Item : *PresencesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
+    }
   }
   return Result;
 }
@@ -221,8 +224,12 @@ TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const
   Json->SetBoolField(TEXT("open"), Open);
   Json->SetBoolField(TEXT("hidden"), Hidden);
   Json->SetNumberField(TEXT("max_size"), MaxSize);
-  Json->SetObjectField(TEXT("self"), Self_.ToJson());
+  Json->SetObjectField(TEXT("self"), Self.ToJson());
   Json->SetObjectField(TEXT("leader"), Leader.ToJson());
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
   if (Presences.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -231,10 +238,6 @@ TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const
       Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("presences"), Array);
-  }
-  if (Label.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("label"), Label);
   }
   return Json;
 }
@@ -249,27 +252,12 @@ FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     Result.Id = Json->GetStringField(TEXT("id"));
   }
-  if (Json->HasField(TEXT("presences")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("self")))
   {
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("self"), NestedObj))
     {
-      Result.Self_ = FNakamaRtUserPresence::FromJson(*NestedObj);
+      Result.Self = FNakamaRtUserPresence::FromJson(*NestedObj);
     }
   }
   if (Json->HasField(TEXT("room_name")))
@@ -288,6 +276,18 @@ FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     Result.UserIdTwo = Json->GetStringField(TEXT("user_id_two"));
   }
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
+  {
+    for (const auto& Item : *PresencesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
+    }
+  }
   return Result;
 }
 
@@ -298,16 +298,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (Presences.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : Presences)
-    {
-      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-    }
-    Json->SetArrayField(TEXT("presences"), Array);
-  }
-  Json->SetObjectField(TEXT("self"), Self_.ToJson());
+  Json->SetObjectField(TEXT("self"), Self.ToJson());
   if (RoomName.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("room_name"), RoomName);
@@ -323,6 +314,15 @@ TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const
   if (UserIdTwo.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
+  }
+  if (Presences.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Presences)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("presences"), Array);
   }
   return Json;
 }
@@ -602,36 +602,6 @@ FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSha
   {
     Result.ChannelId = Json->GetStringField(TEXT("channel_id"));
   }
-  if (Json->HasField(TEXT("joins")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("joins"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
-  if (Json->HasField(TEXT("leaves")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("leaves"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("room_name")))
   {
     Result.RoomName = Json->GetStringField(TEXT("room_name"));
@@ -648,6 +618,30 @@ FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSha
   {
     Result.UserIdTwo = Json->GetStringField(TEXT("user_id_two"));
   }
+  const TArray<TSharedPtr<FJsonValue>>* JoinsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("joins"), JoinsArrayPtr))
+  {
+    for (const auto& Item : *JoinsArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* LeavesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("leaves"), LeavesArrayPtr))
+  {
+    for (const auto& Item : *LeavesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
+    }
+  }
   return Result;
 }
 
@@ -657,6 +651,22 @@ TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const
   if (ChannelId.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("channel_id"), ChannelId);
+  }
+  if (RoomName.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("room_name"), RoomName);
+  }
+  if (GroupId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("group_id"), GroupId);
+  }
+  if (UserIdOne.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id_one"), UserIdOne);
+  }
+  if (UserIdTwo.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
   }
   if (Joins.Num() > 0)
   {
@@ -675,22 +685,6 @@ TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const
       Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("leaves"), Array);
-  }
-  if (RoomName.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("room_name"), RoomName);
-  }
-  if (GroupId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("group_id"), GroupId);
-  }
-  if (UserIdOne.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("user_id_one"), UserIdOne);
-  }
-  if (UserIdTwo.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
   }
   return Json;
 }
@@ -834,24 +828,21 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
   {
     FBase64::Decode(Json->GetStringField(TEXT("data")), Result.Data);
   }
-  if (Json->HasField(TEXT("presences")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
   if (Json->HasField(TEXT("reliable")))
   {
     Result.Reliable = Json->GetBoolField(TEXT("reliable"));
+  }
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
+  {
+    for (const auto& Item : *PresencesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
+      }
+    }
   }
   return Result;
 }
@@ -868,6 +859,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const
   {
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
   }
+  Json->SetBoolField(TEXT("reliable"), Reliable);
   if (Presences.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -877,7 +869,6 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const
     }
     Json->SetArrayField(TEXT("presences"), Array);
   }
-  Json->SetBoolField(TEXT("reliable"), Reliable);
   return Json;
 }
 FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -886,14 +877,6 @@ FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& J
   if (!Json.IsValid())
   {
     return Result;
-  }
-  if (Json->HasField(TEXT("match_id")))
-  {
-    Result.MatchId = Json->GetStringField(TEXT("match_id"));
-  }
-  if (Json->HasField(TEXT("token")))
-  {
-    Result.Token = Json->GetStringField(TEXT("token"));
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -906,20 +889,20 @@ FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& J
       }
     }
   }
+  if (Json->HasField(TEXT("match_id")))
+  {
+    Result.MatchId = Json->GetStringField(TEXT("match_id"));
+  }
+  if (Json->HasField(TEXT("token")))
+  {
+    Result.Token = Json->GetStringField(TEXT("token"));
+  }
   return Result;
 }
 
 TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (MatchId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("match_id"), MatchId);
-  }
-  if (Token.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), Token);
-  }
   if (Metadata.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -928,6 +911,14 @@ TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("metadata"), MapObj);
+  }
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
+  if (Token.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("token"), Token);
   }
   return Json;
 }
@@ -965,33 +956,27 @@ FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedP
   {
     Result.MatchId = Json->GetStringField(TEXT("match_id"));
   }
-  if (Json->HasField(TEXT("joins")))
+  const TArray<TSharedPtr<FJsonValue>>* JoinsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("joins"), JoinsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("joins"), ArrayPtr))
+    for (const auto& Item : *JoinsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("leaves")))
+  const TArray<TSharedPtr<FJsonValue>>* LeavesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("leaves"), LeavesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("leaves"), ArrayPtr))
+    for (const auto& Item : *LeavesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -1189,6 +1174,26 @@ FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr
   {
     Result.Ticket = Json->GetStringField(TEXT("ticket"));
   }
+  if (Json->HasField(TEXT("self")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("self"), NestedObj))
+    {
+      Result.Self = FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(*NestedObj);
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* UsersArrayPtr;
+  if (Json->TryGetArrayField(TEXT("users"), UsersArrayPtr))
+  {
+    for (const auto& Item : *UsersArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Users.Add(FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(*ItemObj));
+      }
+    }
+  }
   if (Json->HasField(TEXT("match_id")))
   {
     Result.MatchId = Json->GetStringField(TEXT("match_id"));
@@ -1196,29 +1201,6 @@ FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr
   if (Json->HasField(TEXT("token")))
   {
     Result.Token = Json->GetStringField(TEXT("token"));
-  }
-  if (Json->HasField(TEXT("users")))
-  {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("users"), ArrayPtr))
-    {
-      for (const auto& Item : *ArrayPtr)
-      {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Users.Add(FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(*ItemObj));
-        }
-      }
-    }
-  }
-  if (Json->HasField(TEXT("self")))
-  {
-    const TSharedPtr<FJsonObject>* NestedObj;
-    if (Json->TryGetObjectField(TEXT("self"), NestedObj))
-    {
-      Result.Self_ = FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(*NestedObj);
-    }
   }
   return Result;
 }
@@ -1230,14 +1212,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const
   {
     Json->SetStringField(TEXT("ticket"), Ticket);
   }
-  if (MatchId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("match_id"), MatchId);
-  }
-  if (Token.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), Token);
-  }
+  Json->SetObjectField(TEXT("self"), Self.ToJson());
   if (Users.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -1247,7 +1222,14 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const
     }
     Json->SetArrayField(TEXT("users"), Array);
   }
-  Json->SetObjectField(TEXT("self"), Self_.ToJson());
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
+  if (Token.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("token"), Token);
+  }
   return Json;
 }
 FNakamaRtMatchmakerRemove FNakamaRtMatchmakerRemove::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -1303,18 +1285,15 @@ FNakamaRtNotifications FNakamaRtNotifications::FromJson(const TSharedPtr<FJsonOb
   {
     return Result;
   }
-  if (Json->HasField(TEXT("notifications")))
+  const TArray<TSharedPtr<FJsonValue>>* NotificationsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("notifications"), NotificationsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("notifications"), ArrayPtr))
+    for (const auto& Item : *NotificationsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Notifications.Add(FNakamaNotification::FromJson(*ItemObj));
-        }
+        Result.Notifications.Add(FNakamaRtNotification::FromJson(*ItemObj));
       }
     }
   }
@@ -1342,18 +1321,15 @@ FNakamaRtStatus FNakamaRtStatus::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     return Result;
   }
-  if (Json->HasField(TEXT("presences")))
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
+    for (const auto& Item : *PresencesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -1381,26 +1357,20 @@ FNakamaRtStatusFollow FNakamaRtStatusFollow::FromJson(const TSharedPtr<FJsonObje
   {
     return Result;
   }
-  if (Json->HasField(TEXT("user_ids")))
+  const TArray<TSharedPtr<FJsonValue>>* UserIdsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("user_ids"), UserIdsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    for (const auto& Item : *UserIdsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.UserIds.Add(Item->AsString());
-      }
+      Result.UserIds.Add(Item->AsString());
     }
   }
-  if (Json->HasField(TEXT("usernames")))
+  const TArray<TSharedPtr<FJsonValue>>* UsernamesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("usernames"), UsernamesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("usernames"), ArrayPtr))
+    for (const auto& Item : *UsernamesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.Usernames.Add(Item->AsString());
-      }
+      Result.Usernames.Add(Item->AsString());
     }
   }
   return Result;
@@ -1436,33 +1406,27 @@ FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TShare
   {
     return Result;
   }
-  if (Json->HasField(TEXT("joins")))
+  const TArray<TSharedPtr<FJsonValue>>* JoinsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("joins"), JoinsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("joins"), ArrayPtr))
+    for (const auto& Item : *JoinsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("leaves")))
+  const TArray<TSharedPtr<FJsonValue>>* LeavesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("leaves"), LeavesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("leaves"), ArrayPtr))
+    for (const auto& Item : *LeavesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -1499,15 +1463,12 @@ FNakamaRtStatusUnfollow FNakamaRtStatusUnfollow::FromJson(const TSharedPtr<FJson
   {
     return Result;
   }
-  if (Json->HasField(TEXT("user_ids")))
+  const TArray<TSharedPtr<FJsonValue>>* UserIdsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("user_ids"), UserIdsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("user_ids"), ArrayPtr))
+    for (const auto& Item : *UserIdsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
-      {
-        Result.UserIds.Add(Item->AsString());
-      }
+      Result.UserIds.Add(Item->AsString());
     }
   }
   return Result;
@@ -1655,33 +1616,27 @@ FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TShare
       Result.Stream = FNakamaRtStream::FromJson(*NestedObj);
     }
   }
-  if (Json->HasField(TEXT("joins")))
+  const TArray<TSharedPtr<FJsonValue>>* JoinsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("joins"), JoinsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("joins"), ArrayPtr))
+    for (const auto& Item : *JoinsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("leaves")))
+  const TArray<TSharedPtr<FJsonValue>>* LeavesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("leaves"), LeavesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("leaves"), ArrayPtr))
+    for (const auto& Item : *LeavesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -2011,18 +1966,15 @@ FNakamaRtPartyJoinRequest FNakamaRtPartyJoinRequest::FromJson(const TSharedPtr<F
   {
     Result.PartyId = Json->GetStringField(TEXT("party_id"));
   }
-  if (Json->HasField(TEXT("presences")))
+  const TArray<TSharedPtr<FJsonValue>>* PresencesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("presences"), PresencesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("presences"), ArrayPtr))
+    for (const auto& Item : *PresencesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Presences.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -2290,33 +2242,27 @@ FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedP
   {
     Result.PartyId = Json->GetStringField(TEXT("party_id"));
   }
-  if (Json->HasField(TEXT("joins")))
+  const TArray<TSharedPtr<FJsonValue>>* JoinsArrayPtr;
+  if (Json->TryGetArrayField(TEXT("joins"), JoinsArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("joins"), ArrayPtr))
+    for (const auto& Item : *JoinsArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Joins.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
-  if (Json->HasField(TEXT("leaves")))
+  const TArray<TSharedPtr<FJsonValue>>* LeavesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("leaves"), LeavesArrayPtr))
   {
-    const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-    if (Json->TryGetArrayField(TEXT("leaves"), ArrayPtr))
+    for (const auto& Item : *LeavesArrayPtr)
     {
-      for (const auto& Item : *ArrayPtr)
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
       {
-        const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-        if (Item->TryGetObject(ItemObj) && ItemObj)
-        {
-          Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
-        }
+        Result.Leaves.Add(FNakamaRtUserPresence::FromJson(*ItemObj));
       }
     }
   }
@@ -2431,7 +2377,7 @@ FNakamaRtEnvelope FNakamaRtEnvelope::FromJson(const TSharedPtr<FJsonObject>& Jso
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("channel_message"), NestedObj))
     {
-      Result.ChannelMessage = FNakamaChannelMessage::FromJson(*NestedObj);
+      Result.ChannelMessage = FNakamaRtChannelMessage::FromJson(*NestedObj);
     }
   }
   if (Json->HasField(TEXT("channel_message_ack")))
@@ -2583,7 +2529,7 @@ FNakamaRtEnvelope FNakamaRtEnvelope::FromJson(const TSharedPtr<FJsonObject>& Jso
     const TSharedPtr<FJsonObject>* NestedObj;
     if (Json->TryGetObjectField(TEXT("rpc"), NestedObj))
     {
-      Result.Rpc = FNakamaRpc::FromJson(*NestedObj);
+      Result.Rpc = FNakamaRtRpc::FromJson(*NestedObj);
     }
   }
   if (Json->HasField(TEXT("status")))
@@ -2864,3 +2810,9 @@ TSharedPtr<FJsonObject> FNakamaRtEnvelope::ToJson() const
   Json->SetObjectField(TEXT("party_update"), PartyUpdate.ToJson());
   return Json;
 }
+
+
+namespace NakamaRtInternal
+{
+} // namespace NakamaRtInternal
+

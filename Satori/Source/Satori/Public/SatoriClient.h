@@ -64,6 +64,65 @@ struct SATORI_API FSatoriRetryConfig
   TWeakObjectPtr<UObject> OnSessionRefreshedOwner;
 };
 
+/** Tag type used as the value type for RPCs that return no data. */
+struct SATORI_API FSatoriVoid {};
+struct SATORI_API FSatoriVoidResult
+{
+  using ValueType = FSatoriVoid;
+  FSatoriVoid Value{};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriSessionResult
+{
+  using ValueType = FSatoriSession;
+  FSatoriSession Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriExperimentListResult
+{
+  using ValueType = FSatoriExperimentList;
+  FSatoriExperimentList Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriFlagOverrideListResult
+{
+  using ValueType = FSatoriFlagOverrideList;
+  FSatoriFlagOverrideList Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriFlagListResult
+{
+  using ValueType = FSatoriFlagList;
+  FSatoriFlagList Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriLiveEventListResult
+{
+  using ValueType = FSatoriLiveEventList;
+  FSatoriLiveEventList Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriPropertiesResult
+{
+  using ValueType = FSatoriProperties;
+  FSatoriProperties Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+struct SATORI_API FSatoriGetMessageListResponseResult
+{
+  using ValueType = FSatoriGetMessageListResponse;
+  FSatoriGetMessageListResponse Value {};
+  FSatoriError Error;
+  bool bIsError = true;
+};
+
 /**
  * High-level Satori API: free functions with retry logic + session auto-refresh.
  *

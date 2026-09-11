@@ -242,7 +242,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 )
 {
 	FNakamaAddFriendsRequest Params{
-		Ids, Usernames, Metadata,
+		Metadata, Ids, Usernames
 	};
 	return SendWithRetry<FNakamaVoidResult>(
 		ClientConfig,
@@ -1308,7 +1308,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 )
 {
 	FNakamaListLeaderboardRecordsRequest Params{
-		LeaderboardId, OwnerIds, Limit, Cursor, Expiry,
+		LeaderboardId, Limit, Cursor, Expiry,
 	};
 	return SendWithRetry<FNakamaLeaderboardRecordListResult>(
 		ClientConfig,
@@ -1494,7 +1494,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 )
 {
 	FNakamaListTournamentRecordsRequest Params{
-		TournamentId, OwnerIds, Limit, Cursor, Expiry,
+		TournamentId, Limit, Cursor, Expiry, OwnerIds,
 	};
 	return SendWithRetry<FNakamaTournamentRecordListResult>(
 		ClientConfig,
