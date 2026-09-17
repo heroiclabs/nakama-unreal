@@ -2277,10 +2277,8 @@ void UNakamaClient::AuthenticateFacebook(
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-    const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
-    ContentJson->SetObjectField(TEXT("account"), AccountJson);
-    AccountJson->SetStringField(TEXT("token"), Token);
-    FNakamaUtils::AddVarsToJson(AccountJson, Vars);
+    ContentJson->SetStringField(TEXT("token"), Token);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
@@ -2841,9 +2839,7 @@ void UNakamaClient::LinkFacebook(
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-    const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
-    ContentJson->SetObjectField(TEXT("account"), AccountJson);
-    AccountJson->SetStringField(TEXT("token"), Token);
+    ContentJson->SetStringField(TEXT("token"), Token);
 
     // Serialize the request content
     FString Content;
@@ -3443,9 +3439,7 @@ void UNakamaClient::ImportFacebookFriends(
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-    const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
-    ContentJson->SetObjectField(TEXT("account"), AccountJson);
-    AccountJson->SetStringField(TEXT("token"), Token);
+    ContentJson->SetStringField(TEXT("token"), Token);
 
     // Serialize the request content
     FString Content;
