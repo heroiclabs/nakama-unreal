@@ -2973,7 +2973,8 @@ void UNakamaClient::LinkGameCenter(
 void UNakamaClient::LinkSteam(
     UNakamaSession* Session,
     const FString& Token,
-    //bool bImport,
+    // NB: Not re-adding to avoid breaking API, will re-introduce in the next major release.
+    // bool bImport,
     const TFunction<void()>& SuccessCallback,
     const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
@@ -2993,7 +2994,7 @@ void UNakamaClient::LinkSteam(
     const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
     ContentJson->SetObjectField(TEXT("account"), AccountJson);
     AccountJson->SetStringField(TEXT("token"), Token);
-    ContentJson->SetBoolField(TEXT("sync"), false);
+    // ContentJson->SetBoolField(TEXT("sync"), bImport);
 
     // Serialize the request content
     FString Content;
