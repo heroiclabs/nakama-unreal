@@ -2273,7 +2273,7 @@ void UNakamaClient::AuthenticateFacebook(
     TMultiMap<FString, FString> QueryParams;
     QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
     QueryParams.Add(TEXT("username"), EncodedUsername);
-    QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport));
+    QueryParams.Add(TEXT("sync"), FNakamaUtils::BoolToString(bImport));
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
@@ -2834,7 +2834,7 @@ void UNakamaClient::LinkFacebook(
     TMultiMap<FString, FString> QueryParams;
     if (bImport.IsSet())
     {
-        QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport.GetValue()));
+        QueryParams.Add(TEXT("sync"), FNakamaUtils::BoolToString(bImport.GetValue()));
     }
 
     // Setup the request content
@@ -2973,7 +2973,8 @@ void UNakamaClient::LinkGameCenter(
 void UNakamaClient::LinkSteam(
     UNakamaSession* Session,
     const FString& Token,
-    //bool bImport,
+    // NB: Not re-adding to avoid breaking API, will re-introduce in the next major release.
+    // bool bImport,
     const TFunction<void()>& SuccessCallback,
     const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
@@ -2990,8 +2991,10 @@ void UNakamaClient::LinkSteam(
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-    ContentJson->SetStringField(TEXT("token"), Token);
-    //ContentJson->SetBoolField(TEXT("import"), bImport);
+    const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
+    ContentJson->SetObjectField(TEXT("account"), AccountJson);
+    AccountJson->SetStringField(TEXT("token"), Token);
+    // ContentJson->SetBoolField(TEXT("sync"), bImport);
 
     // Serialize the request content
     FString Content;
@@ -3428,15 +3431,16 @@ void UNakamaClient::ImportFacebookFriends(
         return;
     }
 
-    // NOTE: Use Query Params for Reset? Docs say json but C++ SDK uses Body/json
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (bReset.IsSet())
+    {
+        QueryParams.Add(TEXT("reset"), FNakamaUtils::BoolToString(bReset.GetValue()));
+    }
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Token);
-    if (bReset.IsSet())
-    {
-        ContentJson->SetBoolField(TEXT("reset"), bReset.GetValue());
-    }
 
     // Serialize the request content
     FString Content;
@@ -3449,7 +3453,7 @@ void UNakamaClient::ImportFacebookFriends(
 
     // Refresh the session token first if it is about to expire, then send.
     EnsureValidSession(Session,
-        [WeakThis, Session, Endpoint, Content, SuccessCallback, ErrorCallback]()
+        [WeakThis, Session, Endpoint, Content, QueryParams, SuccessCallback, ErrorCallback]()
     {
         UNakamaClient* Self = WeakThis.Get();
         if (!Self)
@@ -3457,7 +3461,7 @@ void UNakamaClient::ImportFacebookFriends(
         	return;
         }
 
-        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken(),
+        Self->SendJsonRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken(),
             [SuccessCallback](const FString& /*Body*/) { if (SuccessCallback) { SuccessCallback(); } },
             ErrorCallback);
     },
