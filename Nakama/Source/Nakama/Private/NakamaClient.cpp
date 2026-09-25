@@ -1308,7 +1308,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 )
 {
 	FNakamaListLeaderboardRecordsRequest Params{
-		LeaderboardId, Limit, Cursor, Expiry,
+		LeaderboardId, Limit, Cursor, Expiry, OwnerIds
 	};
 	return SendWithRetry<FNakamaLeaderboardRecordListResult>(
 		ClientConfig,
