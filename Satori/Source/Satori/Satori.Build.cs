@@ -22,9 +22,7 @@ public class Satori : ModuleRules
 	public Satori(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-#if UE_5_8_OR_LATER	
 		CppStandard = CppStandardVersion.Cpp20;
-#endif
 
 		PublicIncludePaths.AddRange(
 			new string[] {
