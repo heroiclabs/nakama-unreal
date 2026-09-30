@@ -43,7 +43,7 @@ float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config)
 
 namespace
 {
-	constexpr double MaxTotalRetryTimeSeconds = 1.5;
+	constexpr double MaxTotalRetryTimeSeconds = 60.0;
 
 	/** Optionally refresh the session before calling the RPC. */
 	void MaybeRefreshThenCall(
