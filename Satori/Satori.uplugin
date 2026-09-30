@@ -4,7 +4,6 @@
 	"VersionName": "3.0.0",
 	"FriendlyName": "Satori client",
 	"Description": "A UE5 client for the Satori server.",
-	"EngineVersion": "5.3.0",
 	"Category": "HeroicLabs.Satori",
 	"CreatedBy": "Heroic Labs",
 	"CreatedByURL": "https://heroiclabs.com/",
