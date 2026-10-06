@@ -28,7 +28,10 @@ bool Nakama::IsTransientError(const FNakamaError& Error)
 	case 4:    // DEADLINE_EXCEEDED
 	case 13:   // INTERNAL
 	case 14:   // UNAVAILABLE
-	case 500:  // HTTP: Server error
+	case 500:  // HTTP: Internal Server Error
+	case 502:  // HTTP: Bad Gateway
+	case 503:  // HTTP: Service Unavailable
+	case 504:  // HTTP: Gateway Timeout
 		return true;
 	default:
 		return false;
