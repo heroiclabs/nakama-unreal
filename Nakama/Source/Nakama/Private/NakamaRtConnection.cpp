@@ -272,21 +272,24 @@ void FNakamaRtConnection::OnConnected()
   {
     return;
   }
-  ConnectionState = ENakamaRtConnectionState::Connected;
 
-  UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
-
-  TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
-  ServerEventReceived.AddLambda([WeakSelf](const TSharedPtr<FJsonObject>& Envelope)
+  if (!ServerEventReceived.IsBound())
   {
-    AsyncTask(ENamedThreads::GameThread, [WeakSelf, Envelope]()
+    TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
+    ServerEventReceived.AddLambda([WeakSelf](const TSharedPtr<FJsonObject>& Envelope)
     {
-      if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
+      AsyncTask(ENamedThreads::GameThread, [WeakSelf, Envelope]()
       {
-        StrongThis->HandleServerEvent(Envelope);  
-      }
+        if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
+        {
+          StrongThis->HandleServerEvent(Envelope);
+        }
+      });
     });
-  });
+  }
+  
+  UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
+  ConnectionState = ENakamaRtConnectionState::Connected;
 
   StartPingLoop();
 

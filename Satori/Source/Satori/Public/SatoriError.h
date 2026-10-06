@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
 #include "SatoriError.generated.h"
 
 USTRUCT(BlueprintType)

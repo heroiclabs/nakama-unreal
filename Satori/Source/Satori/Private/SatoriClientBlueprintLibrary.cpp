@@ -27,7 +27,7 @@ USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
   , const TMap<FString, FString>& Custom
 )
 {
-  USatoriClientAuthenticate* Action = NewObject<USatoriClientAuthenticate>(GetTransientPackage());
+  USatoriClientAuthenticate* Action = NewObject<USatoriClientAuthenticate>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredId = Id;
   Action->StoredNoSession = NoSession;
@@ -75,7 +75,7 @@ USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLo
   , const FString& RefreshToken
 )
 {
-  USatoriClientAuthenticateLogout* Action = NewObject<USatoriClientAuthenticateLogout>(GetTransientPackage());
+  USatoriClientAuthenticateLogout* Action = NewObject<USatoriClientAuthenticateLogout>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredToken = Token;
   Action->StoredRefreshToken = RefreshToken;
@@ -118,7 +118,7 @@ USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::Authenticate
   , const FString& RefreshToken
 )
 {
-  USatoriClientAuthenticateRefresh* Action = NewObject<USatoriClientAuthenticateRefresh>(GetTransientPackage());
+  USatoriClientAuthenticateRefresh* Action = NewObject<USatoriClientAuthenticateRefresh>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredRefreshToken = RefreshToken;
 
@@ -159,7 +159,7 @@ USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(
   , const FSatoriSession& Session
 )
 {
-  USatoriClientDeleteIdentity* Action = NewObject<USatoriClientDeleteIdentity>(GetTransientPackage());
+  USatoriClientDeleteIdentity* Action = NewObject<USatoriClientDeleteIdentity>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -201,7 +201,7 @@ USatoriClientEvent* USatoriClientEvent::Event(
   , const TArray<FSatoriEvent>& Events
 )
 {
-  USatoriClientEvent* Action = NewObject<USatoriClientEvent>(GetTransientPackage());
+  USatoriClientEvent* Action = NewObject<USatoriClientEvent>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredEvents = Events;
@@ -245,7 +245,7 @@ USatoriClientServerEvent* USatoriClientServerEvent::ServerEvent(
   , const TArray<FSatoriEvent>& Events
 )
 {
-  USatoriClientServerEvent* Action = NewObject<USatoriClientServerEvent>(GetTransientPackage());
+  USatoriClientServerEvent* Action = NewObject<USatoriClientServerEvent>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredHttpKey = HttpKey;
   Action->StoredEvents = Events;
@@ -290,7 +290,7 @@ USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(
   , const TArray<FString>& Labels
 )
 {
-  USatoriClientGetExperiments* Action = NewObject<USatoriClientGetExperiments>(GetTransientPackage());
+  USatoriClientGetExperiments* Action = NewObject<USatoriClientGetExperiments>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredNames = Names;
@@ -337,7 +337,7 @@ USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(
   , const TArray<FString>& Labels
 )
 {
-  USatoriClientGetFlagOverrides* Action = NewObject<USatoriClientGetFlagOverrides>(GetTransientPackage());
+  USatoriClientGetFlagOverrides* Action = NewObject<USatoriClientGetFlagOverrides>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredNames = Names;
@@ -384,7 +384,7 @@ USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(
   , const TArray<FString>& Labels
 )
 {
-  USatoriClientGetFlags* Action = NewObject<USatoriClientGetFlags>(GetTransientPackage());
+  USatoriClientGetFlags* Action = NewObject<USatoriClientGetFlags>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredNames = Names;
@@ -435,7 +435,7 @@ USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(
   , int64 EndTimeSec
 )
 {
-  USatoriClientGetLiveEvents* Action = NewObject<USatoriClientGetLiveEvents>(GetTransientPackage());
+  USatoriClientGetLiveEvents* Action = NewObject<USatoriClientGetLiveEvents>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredNames = Names;
@@ -489,7 +489,7 @@ USatoriClientJoinLiveEvent* USatoriClientJoinLiveEvent::JoinLiveEvent(
   , const FString& Id
 )
 {
-  USatoriClientJoinLiveEvent* Action = NewObject<USatoriClientJoinLiveEvent>(GetTransientPackage());
+  USatoriClientJoinLiveEvent* Action = NewObject<USatoriClientJoinLiveEvent>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -532,7 +532,7 @@ USatoriClientHealthcheck* USatoriClientHealthcheck::Healthcheck(
   , const FSatoriSession& Session
 )
 {
-  USatoriClientHealthcheck* Action = NewObject<USatoriClientHealthcheck>(GetTransientPackage());
+  USatoriClientHealthcheck* Action = NewObject<USatoriClientHealthcheck>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -575,7 +575,7 @@ USatoriClientIdentify* USatoriClientIdentify::Identify(
   , const TMap<FString, FString>& Custom
 )
 {
-  USatoriClientIdentify* Action = NewObject<USatoriClientIdentify>(GetTransientPackage());
+  USatoriClientIdentify* Action = NewObject<USatoriClientIdentify>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -622,7 +622,7 @@ USatoriClientListProperties* USatoriClientListProperties::ListProperties(
   , const FSatoriSession& Session
 )
 {
-  USatoriClientListProperties* Action = NewObject<USatoriClientListProperties>(GetTransientPackage());
+  USatoriClientListProperties* Action = NewObject<USatoriClientListProperties>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -663,7 +663,7 @@ USatoriClientReadycheck* USatoriClientReadycheck::Readycheck(
   , const FSatoriSession& Session
 )
 {
-  USatoriClientReadycheck* Action = NewObject<USatoriClientReadycheck>(GetTransientPackage());
+  USatoriClientReadycheck* Action = NewObject<USatoriClientReadycheck>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -706,7 +706,7 @@ USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
   , const TMap<FString, FString>& Custom
 )
 {
-  USatoriClientUpdateProperties* Action = NewObject<USatoriClientUpdateProperties>(GetTransientPackage());
+  USatoriClientUpdateProperties* Action = NewObject<USatoriClientUpdateProperties>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredRecompute = Recompute;
@@ -757,7 +757,7 @@ USatoriClientGetMessageList* USatoriClientGetMessageList::GetMessageList(
   , const TArray<FString>& MessageIds
 )
 {
-  USatoriClientGetMessageList* Action = NewObject<USatoriClientGetMessageList>(GetTransientPackage());
+  USatoriClientGetMessageList* Action = NewObject<USatoriClientGetMessageList>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -809,7 +809,7 @@ USatoriClientUpdateMessage* USatoriClientUpdateMessage::UpdateMessage(
   , int64 ConsumeTime
 )
 {
-  USatoriClientUpdateMessage* Action = NewObject<USatoriClientUpdateMessage>(GetTransientPackage());
+  USatoriClientUpdateMessage* Action = NewObject<USatoriClientUpdateMessage>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -857,7 +857,7 @@ USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(
   , const FString& Id
 )
 {
-  USatoriClientDeleteMessage* Action = NewObject<USatoriClientDeleteMessage>(GetTransientPackage());
+  USatoriClientDeleteMessage* Action = NewObject<USatoriClientDeleteMessage>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;

@@ -16,6 +16,7 @@
 
 #include "NakamaClient.h"
 #include "NakamaHttpHelper.h"
+#include "Async/Async.h"
 #include "Containers/Ticker.h"
 #include "HAL/PlatformTime.h"
 
@@ -85,10 +86,15 @@ namespace
 			{
 				const FNakamaSession RefreshedSession = FNakamaSession::FromJson(Json);
 				SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-				if (OnSessionRefreshed && (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.
-					IsValid()))
+				if (OnSessionRefreshed)
 				{
-					OnSessionRefreshed(*SessionState);
+					AsyncTask(ENamedThreads::GameThread, [SessionState, OnSessionRefreshed, OnSessionRefreshedOwner]()
+					{
+						if (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.IsValid())
+						{
+							OnSessionRefreshed(*SessionState);
+						}
+					});
 				}
 				OnReady();
 			},

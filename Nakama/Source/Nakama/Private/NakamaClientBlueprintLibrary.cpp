@@ -27,7 +27,7 @@ UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
   , const FString& Metadata
 )
 {
-  UNakamaClientAddFriends* Action = NewObject<UNakamaClientAddFriends>(GetTransientPackage());
+  UNakamaClientAddFriends* Action = NewObject<UNakamaClientAddFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredIds = Ids;
@@ -76,7 +76,7 @@ UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
   , const TArray<FString>& UserIds
 )
 {
-  UNakamaClientAddGroupUsers* Action = NewObject<UNakamaClientAddGroupUsers>(GetTransientPackage());
+  UNakamaClientAddGroupUsers* Action = NewObject<UNakamaClientAddGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -122,7 +122,7 @@ UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientSessionRefresh* Action = NewObject<UNakamaClientSessionRefresh>(GetTransientPackage());
+  UNakamaClientSessionRefresh* Action = NewObject<UNakamaClientSessionRefresh>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredToken = Token;
   Action->StoredVars = Vars;
@@ -167,7 +167,7 @@ UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
   , const FString& RefreshToken
 )
 {
-  UNakamaClientSessionLogout* Action = NewObject<UNakamaClientSessionLogout>(GetTransientPackage());
+  UNakamaClientSessionLogout* Action = NewObject<UNakamaClientSessionLogout>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -214,7 +214,7 @@ UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateAppl
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateApple* Action = NewObject<UNakamaClientAuthenticateApple>(GetTransientPackage());
+  UNakamaClientAuthenticateApple* Action = NewObject<UNakamaClientAuthenticateApple>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -262,7 +262,7 @@ UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCu
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateCustom* Action = NewObject<UNakamaClientAuthenticateCustom>(GetTransientPackage());
+  UNakamaClientAuthenticateCustom* Action = NewObject<UNakamaClientAuthenticateCustom>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -310,7 +310,7 @@ UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDe
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateDevice* Action = NewObject<UNakamaClientAuthenticateDevice>(GetTransientPackage());
+  UNakamaClientAuthenticateDevice* Action = NewObject<UNakamaClientAuthenticateDevice>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -358,7 +358,7 @@ UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmai
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateEmail* Action = NewObject<UNakamaClientAuthenticateEmail>(GetTransientPackage());
+  UNakamaClientAuthenticateEmail* Action = NewObject<UNakamaClientAuthenticateEmail>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -408,7 +408,7 @@ UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::Authentica
   , FNakamaOptionalBool Sync
 )
 {
-  UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(GetTransientPackage());
+  UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -458,7 +458,7 @@ UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookI
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateFacebookInstantGame* Action = NewObject<UNakamaClientAuthenticateFacebookInstantGame>(GetTransientPackage());
+  UNakamaClientAuthenticateFacebookInstantGame* Action = NewObject<UNakamaClientAuthenticateFacebookInstantGame>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -506,7 +506,7 @@ UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::Authen
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateGameCenter* Action = NewObject<UNakamaClientAuthenticateGameCenter>(GetTransientPackage());
+  UNakamaClientAuthenticateGameCenter* Action = NewObject<UNakamaClientAuthenticateGameCenter>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -559,7 +559,7 @@ UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGo
   , const FString& Username
 )
 {
-  UNakamaClientAuthenticateGoogle* Action = NewObject<UNakamaClientAuthenticateGoogle>(GetTransientPackage());
+  UNakamaClientAuthenticateGoogle* Action = NewObject<UNakamaClientAuthenticateGoogle>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -608,7 +608,7 @@ UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateStea
   , FNakamaOptionalBool Sync
 )
 {
-  UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(GetTransientPackage());
+  UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredAccount = Account;
   Action->StoredCreate = Create;
@@ -658,7 +658,7 @@ UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
   , const TArray<FString>& UserIds
 )
 {
-  UNakamaClientBanGroupUsers* Action = NewObject<UNakamaClientBanGroupUsers>(GetTransientPackage());
+  UNakamaClientBanGroupUsers* Action = NewObject<UNakamaClientBanGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -705,7 +705,7 @@ UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
   , const TArray<FString>& Usernames
 )
 {
-  UNakamaClientBlockFriends* Action = NewObject<UNakamaClientBlockFriends>(GetTransientPackage());
+  UNakamaClientBlockFriends* Action = NewObject<UNakamaClientBlockFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredIds = Ids;
@@ -756,7 +756,7 @@ UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
   , int32 MaxCount
 )
 {
-  UNakamaClientCreateGroup* Action = NewObject<UNakamaClientCreateGroup>(GetTransientPackage());
+  UNakamaClientCreateGroup* Action = NewObject<UNakamaClientCreateGroup>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredName = Name;
@@ -809,7 +809,7 @@ UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
   , const FNakamaSession& Session
 )
 {
-  UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>(GetTransientPackage());
+  UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -852,7 +852,7 @@ UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
   , const TArray<FString>& Usernames
 )
 {
-  UNakamaClientDeleteFriends* Action = NewObject<UNakamaClientDeleteFriends>(GetTransientPackage());
+  UNakamaClientDeleteFriends* Action = NewObject<UNakamaClientDeleteFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredIds = Ids;
@@ -898,7 +898,7 @@ UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
   , const FString& GroupId
 )
 {
-  UNakamaClientDeleteGroup* Action = NewObject<UNakamaClientDeleteGroup>(GetTransientPackage());
+  UNakamaClientDeleteGroup* Action = NewObject<UNakamaClientDeleteGroup>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -942,7 +942,7 @@ UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::Dele
   , const FString& LeaderboardId
 )
 {
-  UNakamaClientDeleteLeaderboardRecord* Action = NewObject<UNakamaClientDeleteLeaderboardRecord>(GetTransientPackage());
+  UNakamaClientDeleteLeaderboardRecord* Action = NewObject<UNakamaClientDeleteLeaderboardRecord>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLeaderboardId = LeaderboardId;
@@ -986,7 +986,7 @@ UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifi
   , const TArray<FString>& Ids
 )
 {
-  UNakamaClientDeleteNotifications* Action = NewObject<UNakamaClientDeleteNotifications>(GetTransientPackage());
+  UNakamaClientDeleteNotifications* Action = NewObject<UNakamaClientDeleteNotifications>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredIds = Ids;
@@ -1030,7 +1030,7 @@ UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::Delete
   , const FString& TournamentId
 )
 {
-  UNakamaClientDeleteTournamentRecord* Action = NewObject<UNakamaClientDeleteTournamentRecord>(GetTransientPackage());
+  UNakamaClientDeleteTournamentRecord* Action = NewObject<UNakamaClientDeleteTournamentRecord>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredTournamentId = TournamentId;
@@ -1074,7 +1074,7 @@ UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStor
   , const TArray<FNakamaDeleteStorageObjectId>& ObjectIds
 )
 {
-  UNakamaClientDeleteStorageObjects* Action = NewObject<UNakamaClientDeleteStorageObjects>(GetTransientPackage());
+  UNakamaClientDeleteStorageObjects* Action = NewObject<UNakamaClientDeleteStorageObjects>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredObjectIds = ObjectIds;
@@ -1121,7 +1121,7 @@ UNakamaClientEvent* UNakamaClientEvent::Event(
   , const TMap<FString, FString>& Properties
 )
 {
-  UNakamaClientEvent* Action = NewObject<UNakamaClientEvent>(GetTransientPackage());
+  UNakamaClientEvent* Action = NewObject<UNakamaClientEvent>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredName = Name;
@@ -1170,7 +1170,7 @@ UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
   , const FNakamaSession& Session
 )
 {
-  UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>(GetTransientPackage());
+  UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -1214,7 +1214,7 @@ UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
   , const TArray<FString>& FacebookIds
 )
 {
-  UNakamaClientGetUsers* Action = NewObject<UNakamaClientGetUsers>(GetTransientPackage());
+  UNakamaClientGetUsers* Action = NewObject<UNakamaClientGetUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredIds = Ids;
@@ -1262,7 +1262,7 @@ UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
   , const FString& ProductId
 )
 {
-  UNakamaClientGetSubscription* Action = NewObject<UNakamaClientGetSubscription>(GetTransientPackage());
+  UNakamaClientGetSubscription* Action = NewObject<UNakamaClientGetSubscription>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredProductId = ProductId;
@@ -1305,7 +1305,7 @@ UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerS
   , const FNakamaSession& Session
 )
 {
-  UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>(GetTransientPackage());
+  UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -1346,7 +1346,7 @@ UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
   , const FNakamaSession& Session
 )
 {
-  UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>(GetTransientPackage());
+  UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
 
@@ -1389,7 +1389,7 @@ UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFa
   , FNakamaOptionalBool Reset
 )
 {
-  UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(GetTransientPackage());
+  UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredAccount = Account;
@@ -1437,7 +1437,7 @@ UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFri
   , FNakamaOptionalBool Reset
 )
 {
-  UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(GetTransientPackage());
+  UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredAccount = Account;
@@ -1484,7 +1484,7 @@ UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
   , const FString& GroupId
 )
 {
-  UNakamaClientJoinGroup* Action = NewObject<UNakamaClientJoinGroup>(GetTransientPackage());
+  UNakamaClientJoinGroup* Action = NewObject<UNakamaClientJoinGroup>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -1528,7 +1528,7 @@ UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
   , const FString& TournamentId
 )
 {
-  UNakamaClientJoinTournament* Action = NewObject<UNakamaClientJoinTournament>(GetTransientPackage());
+  UNakamaClientJoinTournament* Action = NewObject<UNakamaClientJoinTournament>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredTournamentId = TournamentId;
@@ -1573,7 +1573,7 @@ UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
   , const TArray<FString>& UserIds
 )
 {
-  UNakamaClientKickGroupUsers* Action = NewObject<UNakamaClientKickGroupUsers>(GetTransientPackage());
+  UNakamaClientKickGroupUsers* Action = NewObject<UNakamaClientKickGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -1619,7 +1619,7 @@ UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
   , const FString& GroupId
 )
 {
-  UNakamaClientLeaveGroup* Action = NewObject<UNakamaClientLeaveGroup>(GetTransientPackage());
+  UNakamaClientLeaveGroup* Action = NewObject<UNakamaClientLeaveGroup>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -1664,7 +1664,7 @@ UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkApple* Action = NewObject<UNakamaClientLinkApple>(GetTransientPackage());
+  UNakamaClientLinkApple* Action = NewObject<UNakamaClientLinkApple>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -1711,7 +1711,7 @@ UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkCustom* Action = NewObject<UNakamaClientLinkCustom>(GetTransientPackage());
+  UNakamaClientLinkCustom* Action = NewObject<UNakamaClientLinkCustom>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -1758,7 +1758,7 @@ UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkDevice* Action = NewObject<UNakamaClientLinkDevice>(GetTransientPackage());
+  UNakamaClientLinkDevice* Action = NewObject<UNakamaClientLinkDevice>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -1806,7 +1806,7 @@ UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkEmail* Action = NewObject<UNakamaClientLinkEmail>(GetTransientPackage());
+  UNakamaClientLinkEmail* Action = NewObject<UNakamaClientLinkEmail>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredEmail = Email;
@@ -1855,7 +1855,7 @@ UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
   , FNakamaOptionalBool Sync
 )
 {
-  UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(GetTransientPackage());
+  UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredAccount = Account;
@@ -1903,7 +1903,7 @@ UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::Link
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkFacebookInstantGame* Action = NewObject<UNakamaClientLinkFacebookInstantGame>(GetTransientPackage());
+  UNakamaClientLinkFacebookInstantGame* Action = NewObject<UNakamaClientLinkFacebookInstantGame>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredSignedPlayerInfo = SignedPlayerInfo;
@@ -1955,7 +1955,7 @@ UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkGameCenter* Action = NewObject<UNakamaClientLinkGameCenter>(GetTransientPackage());
+  UNakamaClientLinkGameCenter* Action = NewObject<UNakamaClientLinkGameCenter>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredPlayerId = PlayerId;
@@ -2012,7 +2012,7 @@ UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientLinkGoogle* Action = NewObject<UNakamaClientLinkGoogle>(GetTransientPackage());
+  UNakamaClientLinkGoogle* Action = NewObject<UNakamaClientLinkGoogle>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -2059,7 +2059,7 @@ UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
   , FNakamaOptionalBool Sync
 )
 {
-  UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(GetTransientPackage());
+  UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredAccount = Account;
@@ -2109,7 +2109,7 @@ UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelM
   , const FString& Cursor
 )
 {
-  UNakamaClientListChannelMessages* Action = NewObject<UNakamaClientListChannelMessages>(GetTransientPackage());
+  UNakamaClientListChannelMessages* Action = NewObject<UNakamaClientListChannelMessages>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredChannelId = ChannelId;
@@ -2161,7 +2161,7 @@ UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
   , const FString& Cursor
 )
 {
-  UNakamaClientListFriends* Action = NewObject<UNakamaClientListFriends>(GetTransientPackage());
+  UNakamaClientListFriends* Action = NewObject<UNakamaClientListFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2210,7 +2210,7 @@ UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriend
   , const FString& Cursor
 )
 {
-  UNakamaClientListFriendsOfFriends* Action = NewObject<UNakamaClientListFriendsOfFriends>(GetTransientPackage());
+  UNakamaClientListFriendsOfFriends* Action = NewObject<UNakamaClientListFriendsOfFriends>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2261,7 +2261,7 @@ UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
   , FNakamaOptionalBool Open
 )
 {
-  UNakamaClientListGroups* Action = NewObject<UNakamaClientListGroups>(GetTransientPackage());
+  UNakamaClientListGroups* Action = NewObject<UNakamaClientListGroups>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredName = Name;
@@ -2318,7 +2318,7 @@ UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
   , const FString& Cursor
 )
 {
-  UNakamaClientListGroupUsers* Action = NewObject<UNakamaClientListGroupUsers>(GetTransientPackage());
+  UNakamaClientListGroupUsers* Action = NewObject<UNakamaClientListGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -2372,7 +2372,7 @@ UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLe
   , FNakamaOptionalInt64 Expiry
 )
 {
-  UNakamaClientListLeaderboardRecords* Action = NewObject<UNakamaClientListLeaderboardRecords>(GetTransientPackage());
+  UNakamaClientListLeaderboardRecords* Action = NewObject<UNakamaClientListLeaderboardRecords>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLeaderboardId = LeaderboardId;
@@ -2428,7 +2428,7 @@ UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardReco
   , const FString& Cursor
 )
 {
-  UNakamaClientListLeaderboardRecordsAroundOwner* Action = NewObject<UNakamaClientListLeaderboardRecordsAroundOwner>(GetTransientPackage());
+  UNakamaClientListLeaderboardRecordsAroundOwner* Action = NewObject<UNakamaClientListLeaderboardRecordsAroundOwner>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLeaderboardId = LeaderboardId;
@@ -2485,7 +2485,7 @@ UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
   , const FString& Query
 )
 {
-  UNakamaClientListMatches* Action = NewObject<UNakamaClientListMatches>(GetTransientPackage());
+  UNakamaClientListMatches* Action = NewObject<UNakamaClientListMatches>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2542,7 +2542,7 @@ UNakamaClientListParties* UNakamaClientListParties::ListParties(
   , const FString& Cursor
 )
 {
-  UNakamaClientListParties* Action = NewObject<UNakamaClientListParties>(GetTransientPackage());
+  UNakamaClientListParties* Action = NewObject<UNakamaClientListParties>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2593,7 +2593,7 @@ UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotification
   , const FString& CacheableCursor
 )
 {
-  UNakamaClientListNotifications* Action = NewObject<UNakamaClientListNotifications>(GetTransientPackage());
+  UNakamaClientListNotifications* Action = NewObject<UNakamaClientListNotifications>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2642,7 +2642,7 @@ UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObj
   , const FString& Cursor
 )
 {
-  UNakamaClientListStorageObjects* Action = NewObject<UNakamaClientListStorageObjects>(GetTransientPackage());
+  UNakamaClientListStorageObjects* Action = NewObject<UNakamaClientListStorageObjects>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredUserId = UserId;
@@ -2693,7 +2693,7 @@ UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscription
   , const FString& Cursor
 )
 {
-  UNakamaClientListSubscriptions* Action = NewObject<UNakamaClientListSubscriptions>(GetTransientPackage());
+  UNakamaClientListSubscriptions* Action = NewObject<UNakamaClientListSubscriptions>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLimit = Limit;
@@ -2744,7 +2744,7 @@ UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
   , const FString& Cursor
 )
 {
-  UNakamaClientListTournaments* Action = NewObject<UNakamaClientListTournaments>(GetTransientPackage());
+  UNakamaClientListTournaments* Action = NewObject<UNakamaClientListTournaments>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredCategoryStart = CategoryStart;
@@ -2802,7 +2802,7 @@ UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTour
   , FNakamaOptionalInt64 Expiry
 )
 {
-  UNakamaClientListTournamentRecords* Action = NewObject<UNakamaClientListTournamentRecords>(GetTransientPackage());
+  UNakamaClientListTournamentRecords* Action = NewObject<UNakamaClientListTournamentRecords>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredTournamentId = TournamentId;
@@ -2858,7 +2858,7 @@ UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecord
   , const FString& Cursor
 )
 {
-  UNakamaClientListTournamentRecordsAroundOwner* Action = NewObject<UNakamaClientListTournamentRecordsAroundOwner>(GetTransientPackage());
+  UNakamaClientListTournamentRecordsAroundOwner* Action = NewObject<UNakamaClientListTournamentRecordsAroundOwner>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredTournamentId = TournamentId;
@@ -2913,7 +2913,7 @@ UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
   , const FString& Cursor
 )
 {
-  UNakamaClientListUserGroups* Action = NewObject<UNakamaClientListUserGroups>(GetTransientPackage());
+  UNakamaClientListUserGroups* Action = NewObject<UNakamaClientListUserGroups>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredUserId = UserId;
@@ -2964,7 +2964,7 @@ UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUser
   , const TArray<FString>& UserIds
 )
 {
-  UNakamaClientPromoteGroupUsers* Action = NewObject<UNakamaClientPromoteGroupUsers>(GetTransientPackage());
+  UNakamaClientPromoteGroupUsers* Action = NewObject<UNakamaClientPromoteGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -3011,7 +3011,7 @@ UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
   , const TArray<FString>& UserIds
 )
 {
-  UNakamaClientDemoteGroupUsers* Action = NewObject<UNakamaClientDemoteGroupUsers>(GetTransientPackage());
+  UNakamaClientDemoteGroupUsers* Action = NewObject<UNakamaClientDemoteGroupUsers>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -3057,7 +3057,7 @@ UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObj
   , const TArray<FNakamaReadStorageObjectId>& ObjectIds
 )
 {
-  UNakamaClientReadStorageObjects* Action = NewObject<UNakamaClientReadStorageObjects>(GetTransientPackage());
+  UNakamaClientReadStorageObjects* Action = NewObject<UNakamaClientReadStorageObjects>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredObjectIds = ObjectIds;
@@ -3102,7 +3102,7 @@ UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
   , const FString& Payload
 )
 {
-  UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(GetTransientPackage());
+  UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -3149,7 +3149,7 @@ UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkApple* Action = NewObject<UNakamaClientUnlinkApple>(GetTransientPackage());
+  UNakamaClientUnlinkApple* Action = NewObject<UNakamaClientUnlinkApple>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -3196,7 +3196,7 @@ UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkCustom* Action = NewObject<UNakamaClientUnlinkCustom>(GetTransientPackage());
+  UNakamaClientUnlinkCustom* Action = NewObject<UNakamaClientUnlinkCustom>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -3243,7 +3243,7 @@ UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkDevice* Action = NewObject<UNakamaClientUnlinkDevice>(GetTransientPackage());
+  UNakamaClientUnlinkDevice* Action = NewObject<UNakamaClientUnlinkDevice>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
@@ -3291,7 +3291,7 @@ UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkEmail* Action = NewObject<UNakamaClientUnlinkEmail>(GetTransientPackage());
+  UNakamaClientUnlinkEmail* Action = NewObject<UNakamaClientUnlinkEmail>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredEmail = Email;
@@ -3340,7 +3340,7 @@ UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkFacebook* Action = NewObject<UNakamaClientUnlinkFacebook>(GetTransientPackage());
+  UNakamaClientUnlinkFacebook* Action = NewObject<UNakamaClientUnlinkFacebook>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -3387,7 +3387,7 @@ UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkFacebookInstantGame* Action = NewObject<UNakamaClientUnlinkFacebookInstantGame>(GetTransientPackage());
+  UNakamaClientUnlinkFacebookInstantGame* Action = NewObject<UNakamaClientUnlinkFacebookInstantGame>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredSignedPlayerInfo = SignedPlayerInfo;
@@ -3439,7 +3439,7 @@ UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkGameCenter* Action = NewObject<UNakamaClientUnlinkGameCenter>(GetTransientPackage());
+  UNakamaClientUnlinkGameCenter* Action = NewObject<UNakamaClientUnlinkGameCenter>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredPlayerId = PlayerId;
@@ -3496,7 +3496,7 @@ UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkGoogle* Action = NewObject<UNakamaClientUnlinkGoogle>(GetTransientPackage());
+  UNakamaClientUnlinkGoogle* Action = NewObject<UNakamaClientUnlinkGoogle>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -3543,7 +3543,7 @@ UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
   , const TMap<FString, FString>& Vars
 )
 {
-  UNakamaClientUnlinkSteam* Action = NewObject<UNakamaClientUnlinkSteam>(GetTransientPackage());
+  UNakamaClientUnlinkSteam* Action = NewObject<UNakamaClientUnlinkSteam>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredToken = Token;
@@ -3594,7 +3594,7 @@ UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
   , const FString& Timezone
 )
 {
-  UNakamaClientUpdateAccount* Action = NewObject<UNakamaClientUpdateAccount>(GetTransientPackage());
+  UNakamaClientUpdateAccount* Action = NewObject<UNakamaClientUpdateAccount>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredUsername = Username;
@@ -3653,7 +3653,7 @@ UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
   , FNakamaOptionalBool Open
 )
 {
-  UNakamaClientUpdateGroup* Action = NewObject<UNakamaClientUpdateGroup>(GetTransientPackage());
+  UNakamaClientUpdateGroup* Action = NewObject<UNakamaClientUpdateGroup>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredGroupId = GroupId;
@@ -3708,7 +3708,7 @@ UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::Validate
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidatePurchaseApple* Action = NewObject<UNakamaClientValidatePurchaseApple>(GetTransientPackage());
+  UNakamaClientValidatePurchaseApple* Action = NewObject<UNakamaClientValidatePurchaseApple>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredReceipt = Receipt;
@@ -3755,7 +3755,7 @@ UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidateSubscriptionApple* Action = NewObject<UNakamaClientValidateSubscriptionApple>(GetTransientPackage());
+  UNakamaClientValidateSubscriptionApple* Action = NewObject<UNakamaClientValidateSubscriptionApple>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredReceipt = Receipt;
@@ -3802,7 +3802,7 @@ UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::Valida
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidatePurchaseGoogle* Action = NewObject<UNakamaClientValidatePurchaseGoogle>(GetTransientPackage());
+  UNakamaClientValidatePurchaseGoogle* Action = NewObject<UNakamaClientValidatePurchaseGoogle>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredPurchase = Purchase;
@@ -3849,7 +3849,7 @@ UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidateSubscriptionGoogle* Action = NewObject<UNakamaClientValidateSubscriptionGoogle>(GetTransientPackage());
+  UNakamaClientValidateSubscriptionGoogle* Action = NewObject<UNakamaClientValidateSubscriptionGoogle>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredReceipt = Receipt;
@@ -3897,7 +3897,7 @@ UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::Valida
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidatePurchaseHuawei* Action = NewObject<UNakamaClientValidatePurchaseHuawei>(GetTransientPackage());
+  UNakamaClientValidatePurchaseHuawei* Action = NewObject<UNakamaClientValidatePurchaseHuawei>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredPurchase = Purchase;
@@ -3946,7 +3946,7 @@ UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFaceb
   , FNakamaOptionalBool Persist
 )
 {
-  UNakamaClientValidatePurchaseFacebookInstant* Action = NewObject<UNakamaClientValidatePurchaseFacebookInstant>(GetTransientPackage());
+  UNakamaClientValidatePurchaseFacebookInstant* Action = NewObject<UNakamaClientValidatePurchaseFacebookInstant>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredSignedRequest = SignedRequest;
@@ -3993,7 +3993,7 @@ UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteL
   , const FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite& Record
 )
 {
-  UNakamaClientWriteLeaderboardRecord* Action = NewObject<UNakamaClientWriteLeaderboardRecord>(GetTransientPackage());
+  UNakamaClientWriteLeaderboardRecord* Action = NewObject<UNakamaClientWriteLeaderboardRecord>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredLeaderboardId = LeaderboardId;
@@ -4042,7 +4042,7 @@ UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorage
   , const TArray<FNakamaWriteStorageObject>& Objects
 )
 {
-  UNakamaClientWriteStorageObjects* Action = NewObject<UNakamaClientWriteStorageObjects>(GetTransientPackage());
+  UNakamaClientWriteStorageObjects* Action = NewObject<UNakamaClientWriteStorageObjects>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredObjects = Objects;
@@ -4087,7 +4087,7 @@ UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTou
   , const FNakamaWriteTournamentRecordRequestTournamentRecordWrite& Record
 )
 {
-  UNakamaClientWriteTournamentRecord* Action = NewObject<UNakamaClientWriteTournamentRecord>(GetTransientPackage());
+  UNakamaClientWriteTournamentRecord* Action = NewObject<UNakamaClientWriteTournamentRecord>(WorldContextObject ? WorldContextObject : GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredTournamentId = TournamentId;

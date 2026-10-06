@@ -28,7 +28,7 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
 )
 {
   UNakamaRealtimeClientChannelJoin* Action = NewObject<UNakamaRealtimeClientChannelJoin>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredTarget = Target;
   Action->StoredType = Type;
   Action->StoredPersistence = Persistence;
@@ -87,7 +87,7 @@ UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLea
 )
 {
   UNakamaRealtimeClientChannelLeave* Action = NewObject<UNakamaRealtimeClientChannelLeave>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredChannelId = ChannelId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -141,7 +141,7 @@ UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend
 )
 {
   UNakamaRealtimeClientChannelMessageSend* Action = NewObject<UNakamaRealtimeClientChannelMessageSend>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredChannelId = ChannelId;
   Action->StoredContent = Content;
 
@@ -198,7 +198,7 @@ UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUp
 )
 {
   UNakamaRealtimeClientChannelMessageUpdate* Action = NewObject<UNakamaRealtimeClientChannelMessageUpdate>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredChannelId = ChannelId;
   Action->StoredMessageId = MessageId;
   Action->StoredContent = Content;
@@ -256,7 +256,7 @@ UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRe
 )
 {
   UNakamaRealtimeClientChannelMessageRemove* Action = NewObject<UNakamaRealtimeClientChannelMessageRemove>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredChannelId = ChannelId;
   Action->StoredMessageId = MessageId;
 
@@ -311,7 +311,7 @@ UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
 )
 {
   UNakamaRealtimeClientMatchCreate* Action = NewObject<UNakamaRealtimeClientMatchCreate>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredName = Name;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -368,7 +368,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
 )
 {
   UNakamaRealtimeClientMatchDataSend* Action = NewObject<UNakamaRealtimeClientMatchDataSend>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredMatchId = MatchId;
   Action->StoredOpCode = OpCode;
   Action->StoredData = Data;
@@ -431,7 +431,7 @@ UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
 )
 {
   UNakamaRealtimeClientMatchJoin* Action = NewObject<UNakamaRealtimeClientMatchJoin>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredMatchId = MatchId;
   Action->StoredToken = Token;
   Action->StoredMetadata = Metadata;
@@ -488,7 +488,7 @@ UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
 )
 {
   UNakamaRealtimeClientMatchLeave* Action = NewObject<UNakamaRealtimeClientMatchLeave>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredMatchId = MatchId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -546,7 +546,7 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
 )
 {
   UNakamaRealtimeClientMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientMatchmakerAdd>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredMinCount = MinCount;
   Action->StoredMaxCount = MaxCount;
   Action->StoredQuery = Query;
@@ -609,7 +609,7 @@ UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::Ma
 )
 {
   UNakamaRealtimeClientMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientMatchmakerRemove>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredTicket = Ticket;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -664,7 +664,7 @@ UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
 )
 {
   UNakamaRealtimeClientRpc* Action = NewObject<UNakamaRealtimeClientRpc>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredId = Id;
   Action->StoredPayload = Payload;
   Action->StoredHttpKey = HttpKey;
@@ -722,7 +722,7 @@ UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFoll
 )
 {
   UNakamaRealtimeClientStatusFollow* Action = NewObject<UNakamaRealtimeClientStatusFollow>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredUserIds = UserIds;
   Action->StoredUsernames = Usernames;
 
@@ -777,7 +777,7 @@ UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::Status
 )
 {
   UNakamaRealtimeClientStatusUnfollow* Action = NewObject<UNakamaRealtimeClientStatusUnfollow>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredUserIds = UserIds;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -830,7 +830,7 @@ UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpda
 )
 {
   UNakamaRealtimeClientStatusUpdate* Action = NewObject<UNakamaRealtimeClientStatusUpdate>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredStatus = Status;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -882,7 +882,7 @@ UNakamaRealtimeClientPing* UNakamaRealtimeClientPing::Ping(
 )
 {
   UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
 
   Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
@@ -936,7 +936,7 @@ UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
 )
 {
   UNakamaRealtimeClientPartyCreate* Action = NewObject<UNakamaRealtimeClientPartyCreate>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredOpen = Open;
   Action->StoredMaxSize = MaxSize;
   Action->StoredLabel = Label;
@@ -995,7 +995,7 @@ UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
 )
 {
   UNakamaRealtimeClientPartyJoin* Action = NewObject<UNakamaRealtimeClientPartyJoin>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -1048,7 +1048,7 @@ UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
 )
 {
   UNakamaRealtimeClientPartyLeave* Action = NewObject<UNakamaRealtimeClientPartyLeave>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -1102,7 +1102,7 @@ UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromo
 )
 {
   UNakamaRealtimeClientPartyPromote* Action = NewObject<UNakamaRealtimeClientPartyPromote>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
@@ -1158,7 +1158,7 @@ UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
 )
 {
   UNakamaRealtimeClientPartyAccept* Action = NewObject<UNakamaRealtimeClientPartyAccept>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
@@ -1214,7 +1214,7 @@ UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
 )
 {
   UNakamaRealtimeClientPartyRemove* Action = NewObject<UNakamaRealtimeClientPartyRemove>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredPresence = Presence;
 
@@ -1269,7 +1269,7 @@ UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
 )
 {
   UNakamaRealtimeClientPartyClose* Action = NewObject<UNakamaRealtimeClientPartyClose>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -1322,7 +1322,7 @@ UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequest
 )
 {
   UNakamaRealtimeClientPartyJoinRequestList* Action = NewObject<UNakamaRealtimeClientPartyJoinRequestList>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -1381,7 +1381,7 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
 )
 {
   UNakamaRealtimeClientPartyMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerAdd>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredMinCount = MinCount;
   Action->StoredMaxCount = MaxCount;
@@ -1447,7 +1447,7 @@ UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmaker
 )
 {
   UNakamaRealtimeClientPartyMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerRemove>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredTicket = Ticket;
 
@@ -1504,7 +1504,7 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
 )
 {
   UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredOpCode = OpCode;
   Action->StoredData = Data;
@@ -1564,7 +1564,7 @@ UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
 )
 {
   UNakamaRealtimeClientPartyUpdate* Action = NewObject<UNakamaRealtimeClientPartyUpdate>(GetTransientPackage());
-  Action->StoredConnection = ConnectionHandle->Connection;
+  Action->StoredConnection = ConnectionHandle ? ConnectionHandle->Connection : nullptr;
   Action->StoredPartyId = PartyId;
   Action->StoredLabel = Label;
   Action->StoredOpen = Open;
