@@ -914,7 +914,6 @@ struct SATORI_API FSatoriDeleteMessageRequest
 
 
 
-
 namespace SatoriInternal
 {
 

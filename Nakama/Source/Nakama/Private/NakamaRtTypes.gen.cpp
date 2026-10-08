@@ -916,7 +916,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const
   {
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  if (Token.IsEmpty() == false)
+  else if (Token.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("token"), Token);
   }
@@ -1226,7 +1226,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const
   {
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  if (Token.IsEmpty() == false)
+  else if (Token.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("token"), Token);
   }
@@ -2758,56 +2758,206 @@ TSharedPtr<FJsonObject> FNakamaRtEnvelope::ToJson() const
   {
     Json->SetStringField(TEXT("cid"), Cid);
   }
-  Json->SetObjectField(TEXT("channel"), Channel.ToJson());
-  Json->SetObjectField(TEXT("channel_join"), ChannelJoin.ToJson());
-  Json->SetObjectField(TEXT("channel_leave"), ChannelLeave.ToJson());
-  Json->SetObjectField(TEXT("channel_message"), ChannelMessage.ToJson());
-  Json->SetObjectField(TEXT("channel_message_ack"), ChannelMessageAck.ToJson());
-  Json->SetObjectField(TEXT("channel_message_send"), ChannelMessageSend.ToJson());
-  Json->SetObjectField(TEXT("channel_message_update"), ChannelMessageUpdate.ToJson());
-  Json->SetObjectField(TEXT("channel_message_remove"), ChannelMessageRemove.ToJson());
-  Json->SetObjectField(TEXT("channel_presence_event"), ChannelPresenceEvent.ToJson());
-  Json->SetObjectField(TEXT("error"), Error.ToJson());
-  Json->SetObjectField(TEXT("match"), Match.ToJson());
-  Json->SetObjectField(TEXT("match_create"), MatchCreate.ToJson());
-  Json->SetObjectField(TEXT("match_data"), MatchData.ToJson());
-  Json->SetObjectField(TEXT("match_data_send"), MatchDataSend.ToJson());
-  Json->SetObjectField(TEXT("match_join"), MatchJoin.ToJson());
-  Json->SetObjectField(TEXT("match_leave"), MatchLeave.ToJson());
-  Json->SetObjectField(TEXT("match_presence_event"), MatchPresenceEvent.ToJson());
-  Json->SetObjectField(TEXT("matchmaker_add"), MatchmakerAdd.ToJson());
-  Json->SetObjectField(TEXT("matchmaker_matched"), MatchmakerMatched.ToJson());
-  Json->SetObjectField(TEXT("matchmaker_remove"), MatchmakerRemove.ToJson());
-  Json->SetObjectField(TEXT("matchmaker_ticket"), MatchmakerTicket.ToJson());
-  Json->SetObjectField(TEXT("notifications"), Notifications.ToJson());
-  Json->SetObjectField(TEXT("rpc"), Rpc.ToJson());
-  Json->SetObjectField(TEXT("status"), Status.ToJson());
-  Json->SetObjectField(TEXT("status_follow"), StatusFollow.ToJson());
-  Json->SetObjectField(TEXT("status_presence_event"), StatusPresenceEvent.ToJson());
-  Json->SetObjectField(TEXT("status_unfollow"), StatusUnfollow.ToJson());
-  Json->SetObjectField(TEXT("status_update"), StatusUpdate.ToJson());
-  Json->SetObjectField(TEXT("stream_data"), StreamData.ToJson());
-  Json->SetObjectField(TEXT("stream_presence_event"), StreamPresenceEvent.ToJson());
-  Json->SetObjectField(TEXT("ping"), Ping.ToJson());
-  Json->SetObjectField(TEXT("pong"), Pong.ToJson());
-  Json->SetObjectField(TEXT("party"), Party.ToJson());
-  Json->SetObjectField(TEXT("party_create"), PartyCreate.ToJson());
-  Json->SetObjectField(TEXT("party_join"), PartyJoin.ToJson());
-  Json->SetObjectField(TEXT("party_leave"), PartyLeave.ToJson());
-  Json->SetObjectField(TEXT("party_promote"), PartyPromote.ToJson());
-  Json->SetObjectField(TEXT("party_leader"), PartyLeader.ToJson());
-  Json->SetObjectField(TEXT("party_accept"), PartyAccept.ToJson());
-  Json->SetObjectField(TEXT("party_remove"), PartyRemove.ToJson());
-  Json->SetObjectField(TEXT("party_close"), PartyClose.ToJson());
-  Json->SetObjectField(TEXT("party_join_request_list"), PartyJoinRequestList.ToJson());
-  Json->SetObjectField(TEXT("party_join_request"), PartyJoinRequest.ToJson());
-  Json->SetObjectField(TEXT("party_matchmaker_add"), PartyMatchmakerAdd.ToJson());
-  Json->SetObjectField(TEXT("party_matchmaker_remove"), PartyMatchmakerRemove.ToJson());
-  Json->SetObjectField(TEXT("party_matchmaker_ticket"), PartyMatchmakerTicket.ToJson());
-  Json->SetObjectField(TEXT("party_data"), PartyData.ToJson());
-  Json->SetObjectField(TEXT("party_data_send"), PartyDataSend.ToJson());
-  Json->SetObjectField(TEXT("party_presence_event"), PartyPresenceEvent.ToJson());
-  Json->SetObjectField(TEXT("party_update"), PartyUpdate.ToJson());
+  if (true)
+  {
+    Json->SetObjectField(TEXT("channel"), Channel.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_join"), ChannelJoin.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_leave"), ChannelLeave.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_message"), ChannelMessage.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_message_ack"), ChannelMessageAck.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_message_send"), ChannelMessageSend.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_message_update"), ChannelMessageUpdate.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_message_remove"), ChannelMessageRemove.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("channel_presence_event"), ChannelPresenceEvent.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("error"), Error.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match"), Match.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_create"), MatchCreate.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_data"), MatchData.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_data_send"), MatchDataSend.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_join"), MatchJoin.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_leave"), MatchLeave.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("match_presence_event"), MatchPresenceEvent.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("matchmaker_add"), MatchmakerAdd.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("matchmaker_matched"), MatchmakerMatched.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("matchmaker_remove"), MatchmakerRemove.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("matchmaker_ticket"), MatchmakerTicket.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("notifications"), Notifications.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("rpc"), Rpc.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("status"), Status.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("status_follow"), StatusFollow.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("status_presence_event"), StatusPresenceEvent.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("status_unfollow"), StatusUnfollow.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("status_update"), StatusUpdate.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("stream_data"), StreamData.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("stream_presence_event"), StreamPresenceEvent.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("ping"), Ping.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("pong"), Pong.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party"), Party.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_create"), PartyCreate.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_join"), PartyJoin.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_leave"), PartyLeave.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_promote"), PartyPromote.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_leader"), PartyLeader.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_accept"), PartyAccept.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_remove"), PartyRemove.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_close"), PartyClose.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_join_request_list"), PartyJoinRequestList.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_join_request"), PartyJoinRequest.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_matchmaker_add"), PartyMatchmakerAdd.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_matchmaker_remove"), PartyMatchmakerRemove.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_matchmaker_ticket"), PartyMatchmakerTicket.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_data"), PartyData.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_data_send"), PartyDataSend.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_presence_event"), PartyPresenceEvent.ToJson());
+  }
+  else if (true)
+  {
+    Json->SetObjectField(TEXT("party_update"), PartyUpdate.ToJson());
+  }
   return Json;
 }
 

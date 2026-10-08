@@ -1765,7 +1765,6 @@ struct NAKAMA_API FNakamaRtEnvelope
 
 
 
-
 namespace NakamaRtInternal
 {
 }
