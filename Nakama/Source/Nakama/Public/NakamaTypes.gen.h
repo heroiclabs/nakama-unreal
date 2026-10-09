@@ -36,6 +36,39 @@
 #include "NakamaSession.h"
 #include "NakamaError.h"
 #include "NakamaTypes.gen.generated.h"
+UENUM(BlueprintType)
+enum class ENakamaVariantType : uint8
+{
+  None,
+  Int,
+  Float,
+  Bool,
+  String
+};
+
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaVariant
+{
+  GENERATED_BODY()
+
+  FNakamaVariant();
+
+  ENakamaVariantType Type;
+
+  union
+  {
+    int32 IntValue;
+    float FloatValue;
+    bool BoolValue;
+  };
+
+  FString StringValue;
+
+  void SetInt(int32 Value);
+  void SetFloat(float Value);
+  void SetBool(bool Value);
+  void SetString(const FString& Value);
+};
 
 
 
@@ -64,19 +97,6 @@ enum class ENakamaGroupUserListGroupUserState : uint8
   JOIN_REQUEST = 3, // The user has requested to join the group
 };
 /*
-* Operator that can be used to override the one set in the leaderboard.
-*/
-UENUM(BlueprintType)
-enum class ENakamaOperator : uint8
-{
-  
-  NO_OVERRIDE = 0, // Do not override the leaderboard operator.
-  BEST = 1, // Override the leaderboard operator with BEST.
-  SET = 2, // Override the leaderboard operator with SET.
-  INCREMENT = 3, // Override the leaderboard operator with INCREMENT.
-  DECREMENT = 4, // Override the leaderboard operator with DECREMENT.
-};
-/*
 * The group role status.
 */
 UENUM(BlueprintType)
@@ -99,6 +119,7 @@ enum class ENakamaStoreProvider : uint8
   GOOGLE_PLAY_STORE = 1, // Google Play Store
   HUAWEI_APP_GALLERY = 2, // Huawei App Gallery
   FACEBOOK_INSTANT_STORE = 3, // Facebook Instant Store
+  SAMSUNG_GALAXY_STORE = 4, // Samsung Galaxy Store
 };
 /*
 * Environment where a purchase/subscription took place,
@@ -110,6 +131,19 @@ enum class ENakamaStoreEnvironment : uint8
   UNKNOWN = 0, // Unknown environment.
   SANDBOX = 1, // Sandbox/test environment.
   PRODUCTION = 2, // Production environment.
+};
+/*
+* Operator that can be used to override the one set in the leaderboard.
+*/
+UENUM(BlueprintType)
+enum class ENakamaOperator : uint8
+{
+  
+  NO_OVERRIDE = 0, // Do not override the leaderboard operator.
+  BEST = 1, // Override the leaderboard operator with BEST.
+  SET = 2, // Override the leaderboard operator with SET.
+  INCREMENT = 3, // Override the leaderboard operator with INCREMENT.
+  DECREMENT = 4, // Override the leaderboard operator with DECREMENT.
 };
 
 
@@ -204,6 +238,102 @@ struct NAKAMA_API FNakamaUser
 };
 
 /*
+* Send a device to the server. Used with authenticate/link/unlink and user.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAccountDevice
+{
+  GENERATED_BODY()
+
+  // A device identifier. Should be obtained by a platform-specific device API.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
+  FString Id;
+
+  // Extra information that will be bundled in the session token.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
+  TMap<FString, FString> Vars;
+
+  // Creates a AccountDevice from the given FJsonObject.
+  static FNakamaAccountDevice FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this AccountDevice to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
+* A provider identity linked to a user's account.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAccountProviderIdentity
+{
+  GENERATED_BODY()
+
+  // The name the provider was registered under during runtime initialization.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider"))
+  FString Provider;
+
+  // The user's ID with that provider.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider_user_id"))
+  FString ProviderUserId;
+
+  // Creates a AccountProviderIdentity from the given FJsonObject.
+  static FNakamaAccountProviderIdentity FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this AccountProviderIdentity to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
+* A user with additional account details. Always the current user.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAccount
+{
+  GENERATED_BODY()
+
+  // The user object.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
+  FNakamaUser User;
+
+  // The user's wallet data.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "wallet"))
+  FString Wallet;
+
+  // The email address of the user.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
+  FString Email;
+
+  // The custom id in the user's account.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "custom_id"))
+  FString CustomId;
+
+  // The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
+  FDateTime VerifyTime = FDateTime(0);
+
+  // The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
+  FDateTime DisableTime = FDateTime(0);
+
+  // The devices which belong to the user's account.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "devices"))
+  TArray<FNakamaAccountDevice> Devices;
+
+  // The authentication provider identities linked to the user's account.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "providers"))
+  TArray<FNakamaAccountProviderIdentity> Providers;
+
+  // Creates a Account from the given FJsonObject.
+  static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this Account to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
 * Obtain a new authentication token using a refresh token.
 */
 USTRUCT(BlueprintType)
@@ -271,30 +401,6 @@ struct NAKAMA_API FNakamaAccountCustom
   static FNakamaAccountCustom FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this AccountCustom to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-
-};
-
-/*
-* Send a device to the server. Used with authenticate/link/unlink and user.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAccountDevice
-{
-  GENERATED_BODY()
-
-  // A device identifier. Should be obtained by a platform-specific device API.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "id"))
-  FString Id;
-
-  // Extra information that will be bundled in the session token.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
-  TMap<FString, FString> Vars;
-
-  // Creates a AccountDevice from the given FJsonObject.
-  static FNakamaAccountDevice FromJson(const TSharedPtr<FJsonObject>& Json);
-
-  // Converts this AccountDevice to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 
 };
@@ -444,6 +550,34 @@ struct NAKAMA_API FNakamaAccountGoogle
 };
 
 /*
+* Send credentials for a runtime-registered authentication provider. Used with authenticate/link/unlink.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAccountProvider
+{
+  GENERATED_BODY()
+
+  // The name the provider was registered under during runtime initialization.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "provider"))
+  FString Provider;
+
+  // Opaque JSON passed through to the registered provider function.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "payload"))
+  TMap<FString, FNakamaVariant> Payload;
+
+  // Extra information that will be bundled in the session token.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "vars"))
+  TMap<FString, FString> Vars;
+
+  // Creates a AccountProvider from the given FJsonObject.
+  static FNakamaAccountProvider FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this AccountProvider to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
 * Send a Steam token to the server. Used with authenticate/link/unlink.
 */
 USTRUCT(BlueprintType)
@@ -463,50 +597,6 @@ struct NAKAMA_API FNakamaAccountSteam
   static FNakamaAccountSteam FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this AccountSteam to FJsonObject.
-  TSharedPtr<FJsonObject> ToJson() const;
-
-};
-
-/*
-* A user with additional account details. Always the current user.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMA_API FNakamaAccount
-{
-  GENERATED_BODY()
-
-  // The user object.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "user"))
-  FNakamaUser User;
-
-  // The user's wallet data.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "wallet"))
-  FString Wallet;
-
-  // The email address of the user.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "email"))
-  FString Email;
-
-  // The custom id in the user's account.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "custom_id"))
-  FString CustomId;
-
-  // The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "verify_time"))
-  FDateTime VerifyTime = FDateTime(0);
-
-  // The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "disable_time"))
-  FDateTime DisableTime = FDateTime(0);
-
-  // The devices which belong to the user's account.
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "devices"))
-  TArray<FNakamaAccountDevice> Devices;
-
-  // Creates a Account from the given FJsonObject.
-  static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
-
-  // Converts this Account to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 
 };
@@ -835,6 +925,34 @@ struct NAKAMA_API FNakamaAuthenticateGoogleRequest
   static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this AuthenticateGoogleRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
+* Authenticate against the server with a runtime-registered provider.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaAuthenticateRequest
+{
+  GENERATED_BODY()
+
+  // The provider account details.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "account"))
+  FNakamaAccountProvider Account;
+
+  // Register the account if the user does not already exist.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "create"))
+  FNakamaOptionalBool Create = {};
+
+  // Set the username on the account at register. Must be unique.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "username"))
+  FString Username;
+
+  // Creates a AuthenticateRequest from the given FJsonObject.
+  static FNakamaAuthenticateRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this AuthenticateRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 
 };
@@ -3287,6 +3405,30 @@ struct NAKAMA_API FNakamaValidatePurchaseFacebookInstantRequest
   static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 
   // Converts this ValidatePurchaseFacebookInstantRequest to FJsonObject.
+  TSharedPtr<FJsonObject> ToJson() const;
+
+};
+
+/*
+* Samsung IAP Purchase validation request.
+*/
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaValidatePurchaseSamsungRequest
+{
+  GENERATED_BODY()
+
+  // The purchase ID returned by the Samsung IAP SDK PurchaseVo.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "purchase_id"))
+  FString PurchaseId;
+
+  // Persist the purchase so that seenBefore can be computed to protect against replay attacks.
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama", meta = (JsonName = "persist"))
+  FNakamaOptionalBool Persist = {};
+
+  // Creates a ValidatePurchaseSamsungRequest from the given FJsonObject.
+  static FNakamaValidatePurchaseSamsungRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+
+  // Converts this ValidatePurchaseSamsungRequest to FJsonObject.
   TSharedPtr<FJsonObject> ToJson() const;
 
 };

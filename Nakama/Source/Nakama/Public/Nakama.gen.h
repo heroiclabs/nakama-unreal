@@ -84,6 +84,10 @@ FNakamaApiRequestModel NAKAMA_API BuildAuthenticateGoogleRequest (
   const FNakamaAuthenticateGoogleRequest& Params
 );
 
+FNakamaApiRequestModel NAKAMA_API BuildAuthenticateRequest (
+  const FNakamaAuthenticateRequest& Params
+);
+
 FNakamaApiRequestModel NAKAMA_API BuildAuthenticateSteamRequest (
   const FNakamaAuthenticateSteamRequest& Params
 );
@@ -196,6 +200,10 @@ FNakamaApiRequestModel NAKAMA_API BuildValidatePurchaseFacebookInstantRequest (
   const FNakamaValidatePurchaseFacebookInstantRequest& Params
 );
 
+FNakamaApiRequestModel NAKAMA_API BuildValidatePurchaseSamsungRequest (
+  const FNakamaValidatePurchaseSamsungRequest& Params
+);
+
 FNakamaApiRequestModel NAKAMA_API BuildWriteLeaderboardRecordRequest (
   const FNakamaWriteLeaderboardRecordRequest& Params
 );
@@ -288,6 +296,10 @@ FNakamaApiRequestModel NAKAMA_API BuildLinkCustomRequest (
   const FNakamaAccountCustom& Params
 );
 
+FNakamaApiRequestModel NAKAMA_API BuildLinkRequest (
+  const FNakamaAccountProvider& Params
+);
+
 FNakamaApiRequestModel NAKAMA_API BuildLinkDeviceRequest (
   const FNakamaAccountDevice& Params
 );
@@ -330,6 +342,10 @@ FNakamaApiRequestModel NAKAMA_API BuildUnlinkAppleRequest (
 
 FNakamaApiRequestModel NAKAMA_API BuildUnlinkCustomRequest (
   const FNakamaAccountCustom& Params
+);
+
+FNakamaApiRequestModel NAKAMA_API BuildUnlinkRequest (
+  const FNakamaAccountProvider& Params
 );
 
 FNakamaApiRequestModel NAKAMA_API BuildUnlinkDeviceRequest (

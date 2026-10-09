@@ -982,6 +982,10 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   {
     Result.Status = static_cast<ESatoriLiveEventStatus>(Json->GetNumberField(TEXT("status")));
   }
+  if (Json->HasField(TEXT("active_participation_end_time_sec")))
+  {
+    Result.ActiveParticipationEndTimeSec = Json->GetNumberField(TEXT("active_participation_end_time_sec"));
+  }
   const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
   if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
   {
@@ -1030,6 +1034,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const
     Json->SetStringField(TEXT("reset_cron"), ResetCron);
   }
   Json->SetNumberField(TEXT("status"), static_cast<int32>(Status));
+  Json->SetNumberField(TEXT("active_participation_end_time_sec"), ActiveParticipationEndTimeSec);
   if (Labels.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;

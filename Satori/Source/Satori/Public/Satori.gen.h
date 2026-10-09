@@ -644,6 +644,10 @@ struct SATORI_API FSatoriLiveEvent
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "status"))
   ESatoriLiveEventStatus Status = ESatoriLiveEventStatus(0);
 
+  // End time of the caller's participation, if participation_duration_sec is set on the event. 0 means no limit.
+  UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "active_participation_end_time_sec"))
+  int64 ActiveParticipationEndTimeSec = 0;
+
   // The labels associated with this live event.
   UPROPERTY(BlueprintReadWrite, Category = "Satori", meta = (JsonName = "labels"))
   TArray<FString> Labels;

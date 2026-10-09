@@ -30,6 +30,31 @@
 #include "NakamaHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Misc/Base64.h"
+FNakamaVariant::FNakamaVariant() : Type(ENakamaVariantType::None), IntValue(0) {}
+
+void FNakamaVariant::SetInt(int32 Value)
+{
+  Type = ENakamaVariantType::Int;
+  IntValue = Value;
+}
+
+void FNakamaVariant::SetFloat(float Value)
+{
+  Type = ENakamaVariantType::Float;
+  FloatValue = Value;
+}
+
+void FNakamaVariant::SetBool(bool Value)
+{
+  Type = ENakamaVariantType::Bool;
+  BoolValue = Value;
+}
+
+void FNakamaVariant::SetString(const FString& Value)
+{
+  Type = ENakamaVariantType::String;
+  StringValue = Value;
+}
 
 
 
@@ -180,6 +205,180 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
   }
   return Json;
 }
+FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAccountDevice Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("id")))
+  {
+    Result.Id = Json->GetStringField(TEXT("id"));
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
+      }
+    }
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("id"), Id);
+  }
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
+}
+FNakamaAccountProviderIdentity FNakamaAccountProviderIdentity::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAccountProviderIdentity Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("provider")))
+  {
+    Result.Provider = Json->GetStringField(TEXT("provider"));
+  }
+  if (Json->HasField(TEXT("provider_user_id")))
+  {
+    Result.ProviderUserId = Json->GetStringField(TEXT("provider_user_id"));
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccountProviderIdentity::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Provider.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider"), Provider);
+  }
+  if (ProviderUserId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider_user_id"), ProviderUserId);
+  }
+  return Json;
+}
+FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAccount Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("user")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+    {
+      Result.User = FNakamaUser::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("wallet")))
+  {
+    Result.Wallet = Json->GetStringField(TEXT("wallet"));
+  }
+  if (Json->HasField(TEXT("email")))
+  {
+    Result.Email = Json->GetStringField(TEXT("email"));
+  }
+  if (Json->HasField(TEXT("custom_id")))
+  {
+    Result.CustomId = Json->GetStringField(TEXT("custom_id"));
+  }
+  if (Json->HasField(TEXT("verify_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("verify_time")), Result.VerifyTime);
+  }
+  if (Json->HasField(TEXT("disable_time")))
+  {
+    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("disable_time")), Result.DisableTime);
+  }
+  const TArray<TSharedPtr<FJsonValue>>* DevicesArrayPtr;
+  if (Json->TryGetArrayField(TEXT("devices"), DevicesArrayPtr))
+  {
+    for (const auto& Item : *DevicesArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Devices.Add(FNakamaAccountDevice::FromJson(*ItemObj));
+      }
+    }
+  }
+  const TArray<TSharedPtr<FJsonValue>>* ProvidersArrayPtr;
+  if (Json->TryGetArrayField(TEXT("providers"), ProvidersArrayPtr))
+  {
+    for (const auto& Item : *ProvidersArrayPtr)
+    {
+      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+      if (Item->TryGetObject(ItemObj) && ItemObj)
+      {
+        Result.Providers.Add(FNakamaAccountProviderIdentity::FromJson(*ItemObj));
+      }
+    }
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("user"), User.ToJson());
+  if (Wallet.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("wallet"), Wallet);
+  }
+  if (Email.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("email"), Email);
+  }
+  if (CustomId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("custom_id"), CustomId);
+  }
+  Json->SetStringField(TEXT("verify_time"), VerifyTime.ToIso8601());
+  Json->SetStringField(TEXT("disable_time"), DisableTime.ToIso8601());
+  if (Devices.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Devices)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("devices"), Array);
+  }
+  if (Providers.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Providers)
+    {
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+    }
+    Json->SetArrayField(TEXT("providers"), Array);
+  }
+  return Json;
+}
 FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountRefresh Result;
@@ -292,49 +491,6 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
 }
 
 TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
-{
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Id.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("id"), Id);
-  }
-  if (Vars.Num() > 0)
-  {
-    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Vars)
-    {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
-    }
-    Json->SetObjectField(TEXT("vars"), MapObj);
-  }
-  return Json;
-}
-FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-  FNakamaAccountDevice Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (Json->HasField(TEXT("id")))
-  {
-    Result.Id = Json->GetStringField(TEXT("id"));
-  }
-  if (Json->HasField(TEXT("vars")))
-  {
-    const TSharedPtr<FJsonObject>* MapObj;
-    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
-    {
-      for (const auto& Pair : (*MapObj)->Values)
-      {
-        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
-      }
-    }
-  }
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
@@ -612,6 +768,82 @@ TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const
   }
   return Json;
 }
+FNakamaAccountProvider FNakamaAccountProvider::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAccountProvider Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("provider")))
+  {
+    Result.Provider = Json->GetStringField(TEXT("provider"));
+  }
+  if (Json->HasField(TEXT("payload")))
+  {
+    {
+      const TSharedPtr<FJsonObject>* StructObj;
+      if (Json->TryGetObjectField(TEXT("payload"), StructObj))
+      {
+        for (const auto& Pair : (*StructObj)->Values)
+        {
+          FNakamaVariant Variant;
+          if (Pair.Value->Type == EJson::String) { Variant.SetString(Pair.Value->AsString()); }
+          else if (Pair.Value->Type == EJson::Boolean) { Variant.SetBool(Pair.Value->AsBool()); }
+          else if (Pair.Value->Type == EJson::Number) { Variant.SetFloat(Pair.Value->AsNumber()); }
+          Result.Payload.Emplace(Pair.Key, Variant);
+        }
+      }
+    }
+  }
+  if (Json->HasField(TEXT("vars")))
+  {
+    const TSharedPtr<FJsonObject>* MapObj;
+    if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+    {
+      for (const auto& Pair : (*MapObj)->Values)
+      {
+        Result.Vars.Emplace(Pair.Key, Pair.Value->AsString());
+      }
+    }
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccountProvider::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Provider.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("provider"), Provider);
+  }
+  if (Payload.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> StructObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Payload)
+    {
+      switch (Pair.Value.Type)
+      {
+      case ENakamaVariantType::Int: StructObj->SetNumberField(Pair.Key, Pair.Value.IntValue); break;
+      case ENakamaVariantType::Float: StructObj->SetNumberField(Pair.Key, Pair.Value.FloatValue); break;
+      case ENakamaVariantType::Bool: StructObj->SetBoolField(Pair.Key, Pair.Value.BoolValue); break;
+      case ENakamaVariantType::String: StructObj->SetStringField(Pair.Key, Pair.Value.StringValue); break;
+      default: break;
+      }
+    }
+    Json->SetObjectField(TEXT("payload"), StructObj);
+  }
+  if (Vars.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Vars)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("vars"), MapObj);
+  }
+  return Json;
+}
 FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
   FNakamaAccountSteam Result;
@@ -652,85 +884,6 @@ TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("vars"), MapObj);
-  }
-  return Json;
-}
-FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-  FNakamaAccount Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (Json->HasField(TEXT("user")))
-  {
-    const TSharedPtr<FJsonObject>* NestedObj;
-    if (Json->TryGetObjectField(TEXT("user"), NestedObj))
-    {
-      Result.User = FNakamaUser::FromJson(*NestedObj);
-    }
-  }
-  if (Json->HasField(TEXT("wallet")))
-  {
-    Result.Wallet = Json->GetStringField(TEXT("wallet"));
-  }
-  if (Json->HasField(TEXT("email")))
-  {
-    Result.Email = Json->GetStringField(TEXT("email"));
-  }
-  if (Json->HasField(TEXT("custom_id")))
-  {
-    Result.CustomId = Json->GetStringField(TEXT("custom_id"));
-  }
-  if (Json->HasField(TEXT("verify_time")))
-  {
-    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("verify_time")), Result.VerifyTime);
-  }
-  if (Json->HasField(TEXT("disable_time")))
-  {
-    FDateTime::ParseIso8601(*Json->GetStringField(TEXT("disable_time")), Result.DisableTime);
-  }
-  const TArray<TSharedPtr<FJsonValue>>* DevicesArrayPtr;
-  if (Json->TryGetArrayField(TEXT("devices"), DevicesArrayPtr))
-  {
-    for (const auto& Item : *DevicesArrayPtr)
-    {
-      const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-      if (Item->TryGetObject(ItemObj) && ItemObj)
-      {
-        Result.Devices.Add(FNakamaAccountDevice::FromJson(*ItemObj));
-      }
-    }
-  }
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
-{
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  Json->SetObjectField(TEXT("user"), User.ToJson());
-  if (Wallet.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("wallet"), Wallet);
-  }
-  if (Email.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("email"), Email);
-  }
-  if (CustomId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("custom_id"), CustomId);
-  }
-  Json->SetStringField(TEXT("verify_time"), VerifyTime.ToIso8601());
-  Json->SetStringField(TEXT("disable_time"), DisableTime.ToIso8601());
-  if (Devices.Num() > 0)
-  {
-    TArray<TSharedPtr<FJsonValue>> Array;
-    for (const auto& Item : Devices)
-    {
-      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-    }
-    Json->SetArrayField(TEXT("devices"), Array);
   }
   return Json;
 }
@@ -1220,6 +1373,46 @@ FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(cons
 }
 
 TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  Json->SetObjectField(TEXT("account"), Account.ToJson());
+  if (Create.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("create"), Create.GetValue());
+  }
+  if (Username.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("username"), Username);
+  }
+  return Json;
+}
+FNakamaAuthenticateRequest FNakamaAuthenticateRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaAuthenticateRequest Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("account")))
+  {
+    const TSharedPtr<FJsonObject>* NestedObj;
+    if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+    {
+      Result.Account = FNakamaAccountProvider::FromJson(*NestedObj);
+    }
+  }
+  if (Json->HasField(TEXT("create")))
+  {
+    Result.Create = Json->GetBoolField(TEXT("create"));
+  }
+  if (Json->HasField(TEXT("username")))
+  {
+    Result.Username = Json->GetStringField(TEXT("username"));
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateRequest::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -4993,6 +5186,37 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() 
   if (SignedRequest.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("signed_request"), SignedRequest);
+  }
+  if (Persist.IsEmpty() == false)
+  {
+    Json->SetBoolField(TEXT("persist"), Persist.GetValue());
+  }
+  return Json;
+}
+FNakamaValidatePurchaseSamsungRequest FNakamaValidatePurchaseSamsungRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+  FNakamaValidatePurchaseSamsungRequest Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+  if (Json->HasField(TEXT("purchase_id")))
+  {
+    Result.PurchaseId = Json->GetStringField(TEXT("purchase_id"));
+  }
+  if (Json->HasField(TEXT("persist")))
+  {
+    Result.Persist = Json->GetBoolField(TEXT("persist"));
+  }
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseSamsungRequest::ToJson() const
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PurchaseId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("purchase_id"), PurchaseId);
   }
   if (Persist.IsEmpty() == false)
   {

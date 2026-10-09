@@ -268,6 +268,32 @@ FNakamaApiRequestModel NAKAMA_API BuildAuthenticateGoogleRequest (
   Request.Url = Url;
   return Request;
 }
+FNakamaApiRequestModel NAKAMA_API BuildAuthenticateRequest (
+  const FNakamaAuthenticateRequest& Params
+)
+{
+  FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/account/authenticate");
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
+  //
+  // Query/Body Params
+  TSharedPtr<FJsonObject> BodyJson = Params.Account.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+  TArray<TPair<FString, FString>> QueryArgs;
+  if (Params.Create.IsEmpty() == false) { QueryArgs.Add({TEXT("create"), LexToString(Params.Create.GetValue())}); }
+  if (Params.Username.IsEmpty() == false) { QueryArgs.Add({TEXT("username"), Params.Username}); }
+  Url += NakamaHttpInternal::BuildQueryString(QueryArgs);
+
+  Request.Url = Url;
+  return Request;
+}
 FNakamaApiRequestModel NAKAMA_API BuildAuthenticateSteamRequest (
   const FNakamaAuthenticateSteamRequest& Params
 )
@@ -984,6 +1010,28 @@ FNakamaApiRequestModel NAKAMA_API BuildValidatePurchaseFacebookInstantRequest (
   Request.Url = Url;
   return Request;
 }
+FNakamaApiRequestModel NAKAMA_API BuildValidatePurchaseSamsungRequest (
+  const FNakamaValidatePurchaseSamsungRequest& Params
+)
+{
+  FNakamaApiRequestModel Request;
+
+  //
+  // URL
+  FString Url = TEXT("/v2/iap/purchase/samsung");
+
+  //
+  // Verb
+  Request.Verb = TEXT("POST");
+
+  //
+  // Query/Body Params
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+
+  Request.Url = Url;
+  return Request;
+}
 FNakamaApiRequestModel NAKAMA_API BuildWriteLeaderboardRecordRequest (
   const FNakamaWriteLeaderboardRecordRequest& Params
 )
@@ -1352,6 +1400,18 @@ FNakamaApiRequestModel NAKAMA_API BuildLinkCustomRequest (
   Request.Url = Url;
   return Request;
 }
+FNakamaApiRequestModel NAKAMA_API BuildLinkRequest (
+  const FNakamaAccountProvider& Params
+)
+{
+  FNakamaApiRequestModel Request;
+  FString Url = TEXT("/v2/account/link");
+  Request.Verb = TEXT("POST");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
 FNakamaApiRequestModel NAKAMA_API BuildLinkDeviceRequest (
   const FNakamaAccountDevice& Params
 )
@@ -1491,6 +1551,18 @@ FNakamaApiRequestModel NAKAMA_API BuildUnlinkCustomRequest (
 {
   FNakamaApiRequestModel Request;
   FString Url = TEXT("/v2/account/unlink/custom");
+  Request.Verb = TEXT("POST");
+  TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
+  Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
+  Request.Url = Url;
+  return Request;
+}
+FNakamaApiRequestModel NAKAMA_API BuildUnlinkRequest (
+  const FNakamaAccountProvider& Params
+)
+{
+  FNakamaApiRequestModel Request;
+  FString Url = TEXT("/v2/account/unlink");
   Request.Verb = TEXT("POST");
   TSharedPtr<FJsonObject> BodyJson = Params.ToJson();
   Request.Body = NakamaHttpInternal::SerializeJsonToString(BodyJson);
