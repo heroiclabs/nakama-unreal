@@ -18,7 +18,8 @@
 
 #include "SatoriUtils.h"
 
-FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent(FSatoriUtils::DeserializeJsonObject(JsonString)) {
+FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent(FSatoriUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
@@ -36,10 +37,11 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 		}
 
 		const TSharedPtr<FJsonObject>* MetadataObject = nullptr;
-		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject)) {
-			for (const TPair<FString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject))
+		{
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
-				Metadata.Add(*Pair.Key, Pair.Value->AsString());
+				Metadata.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
 		}
 		
@@ -50,6 +52,6 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriEvent::FSatoriEvent() : Timestamp(FDateTime::MinValue()), SessionIssuedAt(0), SessionExpiresAt(0)
+FSatoriEvent::FSatoriEvent()
 {
 }

@@ -25,6 +25,14 @@ USTRUCT(BlueprintType)
 struct SATORIUNREAL_API FSatoriExperiment
 {
 	GENERATED_BODY()
+	
+	// The labels associated with this experiment.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
+	TArray<FString> Labels;
+	
+	// The names of the feature flags this experiment overrides.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
+	TArray<FString> FlagNames;
 
 	// Experiment name.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
@@ -33,7 +41,15 @@ struct SATORIUNREAL_API FSatoriExperiment
 	// Value associated with this Experiment.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
 	FString Value;
-
+	
+	// Experiment Phase name
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
+	FString PhaseName;
+	
+	// Experiment Phase Variant name
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Experiments")
+	FString PhaseVariantName;
+	
 	FSatoriExperiment(const FString& JsonString);
 	FSatoriExperiment(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriExperiment(); // Default Constructor

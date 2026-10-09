@@ -82,10 +82,11 @@ FNakamaMatchData::FNakamaMatchData(const FString& JsonString)
 			FNakamaUtils::Base64Decode(JsonObject->GetStringField(TEXT("data")), Data);
 		}
 		
+		JsonObject->TryGetBoolField(TEXT("reliable"), Reliable);
 	}
 }
 
-FNakamaMatchData::FNakamaMatchData(): OpCode(0)
+FNakamaMatchData::FNakamaMatchData()
 {
 }
 

@@ -36,9 +36,9 @@ struct FNakamaRealtimeEnvelope
 	FString Payload;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-	int32 CID;
+	int32 CID = -1;
 
-	FNakamaRealtimeEnvelope() : CID(-1)
+	FNakamaRealtimeEnvelope()
 	{
 	}
 
@@ -79,7 +79,7 @@ public:
 	FNakamaRealtimeErrorCallback ErrorCallback;
 
 	// The CID for the request
-	int32 CID;
+	int32 CID = -1;
 	
-	UNakamaRealtimeRequestContext() : CID(-1) {}
+	UNakamaRealtimeRequestContext() { }
 };

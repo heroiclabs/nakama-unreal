@@ -44,11 +44,15 @@ struct NAKAMAUNREAL_API FNakamaFriend
 
 	// Time of the latest relationship update.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	FDateTime UpdateTime;
+	FDateTime UpdateTime = FDateTime::MinValue();
 	
 	// The friend status.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
-	ENakamaFriendState UserState;
+	ENakamaFriendState UserState = ENakamaFriendState::FRIEND;
+	
+	// Metadata.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
+	FString Metadata;
 
 	FNakamaFriend(const FString& JsonString);
     FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject);

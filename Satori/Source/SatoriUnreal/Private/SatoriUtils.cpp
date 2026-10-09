@@ -22,53 +22,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogSatoriUtils, Log, Log);
 
-void FSatoriUtils::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
-{
-	if (bSuccess && Response.IsValid())
-	{
-		const int32 ResponseCode = Response->GetResponseCode();
-		const FString ResponseBody = Response->GetContentAsString();
-
-		if (ResponseCode == 200)
-		{
-			SATORI_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
-			if (SuccessCallback)
-			{
-				SuccessCallback(ResponseBody);
-			}
-		}
-		else
-		{
-			SATORI_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-			const FSatoriError Error(ResponseBody);
-			if (ErrorCallback)
-			{
-				ErrorCallback(Error);
-			}
-		}
-	}
-	else
-	{
-		// Handle request failure
-		SATORI_LOG_ERROR(TEXT("Failed to process request."));
-
-		if (Request.IsValid())
-		{
-			SATORI_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
-		}
-
-		FSatoriError Error;
-		Error.Code = ESatoriErrorCode::Unknown;
-		Error.Message = TEXT("Failed to proccess request. Request failed.");
-
-		if (ErrorCallback)
-		{
-			ErrorCallback(Error);
-		}
-	}
-}
-
-void FSatoriUtils::HandleJsonSerializationFailure(TFunction<void(const FSatoriError& Error)> ErrorCallback)
+void FSatoriUtils::HandleJsonSerializationFailure(const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
 	SATORI_LOG_ERROR(TEXT("Failed to generate request content."));
 	FSatoriError Error;
@@ -80,7 +34,7 @@ void FSatoriUtils::HandleJsonSerializationFailure(TFunction<void(const FSatoriEr
 	}
 }
 
-bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, TFunction<void(const FSatoriError& Error)> ErrorCallback)
+bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, const TFunction<void(const FSatoriError& Error)>& ErrorCallback)
 {
 	if (!Session || Session->SessionData.AuthToken.IsEmpty())
 	{
@@ -109,6 +63,17 @@ FSatoriError FSatoriUtils::CreateRequestFailureError()
 	FSatoriError Error;
 	Error.Code = ESatoriErrorCode::Unknown;
 	Error.Message = TEXT("Failed to process request. Request failed.");
+	return Error;
+}
+
+FSatoriError FSatoriUtils::CreateRequestCancelledError()
+{
+	// Expected outcome (request cancelled or owning client released), not a
+	// fault: log at Debug so it does not read as an error or fail automation.
+	SATORI_LOG_DEBUG(TEXT("Request cancelled or client released before completion."));
+	FSatoriError Error;
+	Error.Code = ESatoriErrorCode::Cancelled;
+	Error.Message = TEXT("Request cancelled or client released before completion.");
 	return Error;
 }
 

@@ -35,7 +35,7 @@ inline bool WriteStorageInvalidArgument::RunTest(const FString& Parameters)
 		auto errorCallback = [this](const FNakamaError& Error)
 		{
 			UE_LOG(LogTemp, Display, TEXT("WriteStorageInvalidArgument. ErrorMessage: %s"), *Error.Message);
-			UE_LOG(LogTemp, Display, TEXT("WriteStorageInvalidArgument. ErrorCode: %d"), Error.Code);
+			UE_LOG(LogTemp, Display, TEXT("WriteStorageInvalidArgument. ErrorCode: %d"), static_cast<int>(Error.Code));
 			TestTrue("Write Storage Invalid Argument Passed.", Error.Code == ENakamaErrorCode::InvalidArgument);
 			StopTest();
 		};

@@ -51,12 +51,10 @@ struct SATORIUNREAL_API FSatoriError
 	FString Message;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori Error")
-	ESatoriErrorCode Code;
+	ESatoriErrorCode Code = ESatoriErrorCode::Unknown;
 
 	FSatoriError(const FString& JsonString);
-	FSatoriError(): Code(ESatoriErrorCode::Unknown) { }
+	FSatoriError() { }
 
 	ESatoriErrorCode ConvertSatoriErrorCode(int32 CodeValue);
-
-
 };

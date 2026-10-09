@@ -17,7 +17,7 @@
 #include "NakamaAccount.h"
 #include "NakamaUtils.h"
 
-FNakamaAccount::FNakamaAccount() : VerifyTime(FDateTime::MinValue()), DisableTime(FDateTime::MinValue())
+FNakamaAccount::FNakamaAccount()
 {
 }
 
@@ -63,19 +63,10 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
 	{
 		FDateTime::ParseIso8601(*VerifyTimeString, VerifyTime);
 	}
-	else
-	{
-		VerifyTime = FDateTime(); // Set to default value when the field is not found
-	}
 
 	FString DisableTimeString;
 	if (JsonObject->TryGetStringField(TEXT("disable_time"), DisableTimeString))
 	{
 		FDateTime::ParseIso8601(*DisableTimeString, DisableTime);
 	}
-	else
-	{
-		DisableTime = FDateTime(); // Set to default value when the field is not found
-	}
-    
 }

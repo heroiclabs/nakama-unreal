@@ -35,16 +35,17 @@ FSatoriMessage::FSatoriMessage(const TSharedPtr<FJsonObject> JsonObject)
 		JsonObject->TryGetStringField(TEXT("title"), Title);
 		JsonObject->TryGetStringField(TEXT("image_url"), ImageURL);
 		const TSharedPtr<FJsonObject>* MetadataObject = nullptr;
-		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject)) {
-			for (const TPair<FString, TSharedPtr<FJsonValue>>& Pair : (*MetadataObject)->Values)
+		if (JsonObject->TryGetObjectField(TEXT("metadata"), MetadataObject))
+		{
+			for (const auto& Pair : (*MetadataObject)->Values)
 			{
-				Metadata.Add(*Pair.Key, Pair.Value->AsString());
+				Metadata.Emplace(*Pair.Key, Pair.Value->AsString());
 			}
 		}
 	}
 }
 
-FSatoriMessage::FSatoriMessage() : SendTime(0), CreateTime(0), UpdateTime(0), ReadTime(0), ConsumeTime(0)
+FSatoriMessage::FSatoriMessage()
 {
 }
 
@@ -59,7 +60,7 @@ FSatoriMessageList::FSatoriMessageList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& MessageJsonValue : *MessagesJsonArray)
 			{
-				if(TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
+				if (TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
 				{
 					FSatoriMessage Message(MessageJsonObject);
 					if (!Message.ID.IsEmpty())

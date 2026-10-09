@@ -42,57 +42,73 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Metadata;
 	
+	// Operator.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	FString Operator;
+	
 	// The UNIX time when the tournament was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// The UNIX time when the tournament will start.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime StartTime;
+	FDateTime StartTime = FDateTime::MinValue();
 
 	// The UNIX time when the tournament will be stopped.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime EndTime;
+	FDateTime EndTime = FDateTime::MinValue();
 
 	// The category of the tournament. e.g. "vip" could be category 1.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Category;
+	int32 Category = 0;
 
 	// ASC or DESC sort mode of scores in the tournament.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 SortOrder;
+	int32 SortOrder = 0;
 
 	// The current number of players in the tournament.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Size;
+	int32 Size = 0;
 
 	// The maximum number of players for the tournament.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 MaxSize;
+	int32 MaxSize = 0;
 
 	// The maximum score updates allowed per player for the current tournament.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 MaxNumScore;
+	int32 MaxNumScore = 0;
 
 	// The UNIX time when the tournament stops being active until next reset. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 EndActive;
+	int32 EndActive = 0;
 
 	// The UNIX time when the tournament is next playable. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 NextReset;
+	int32 NextReset = 0;
+	
+	// The UNIX time when the tournament was last reset. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 PrevReset = 0;
 
 	// Duration of the tournament in seconds.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Duration;
+	int32 Duration = 0;
 
 	// The UNIX time when the tournament start being active. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 StartActive;
+	int32 StartActive = 0;
 	
 	// True if the tournament is active and can enter. A computed value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	bool CanEnter;
+	bool CanEnter = false;
+	
+	// Whether the leaderboard was created authoritatively or not.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	bool Authoritative = false;
+	
+	// Whether the user must join the tournament before being able to submit scores.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	bool JoinRequired = false;
 
 	FNakamaTournament(const FString& JsonString);
 	FNakamaTournament(const TSharedPtr<class FJsonObject> JsonObject);
@@ -120,7 +136,11 @@ struct NAKAMAUNREAL_API FNakamaTournamentRecordList
 	// The cursor to send when retrieving the previous page, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString PrevCursor;
-
+	
+	// The total number of ranks available.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int64 RankCount = 0;
+	
 	FNakamaTournamentRecordList(const FString& JsonString);
 	FNakamaTournamentRecordList();
 

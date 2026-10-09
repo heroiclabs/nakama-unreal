@@ -56,8 +56,6 @@ FNakamaLeaderboardRecord::FNakamaLeaderboardRecord(const TSharedPtr<FJsonObject>
 }
 
 FNakamaLeaderboardRecord::FNakamaLeaderboardRecord()
-	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), ExpiryTime(FDateTime::MinValue()),
-	Score(0), SubScore(0), NumScore(0), Rank(0), MaxNumScore(0)
 {
 }
 
@@ -94,6 +92,7 @@ FNakamaLeaderboardRecordList::FNakamaLeaderboardRecordList(const FString& JsonSt
 
         JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
         JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+        JsonObject->TryGetNumberField(TEXT("rank_count"), RankCount);
     }
 }
 

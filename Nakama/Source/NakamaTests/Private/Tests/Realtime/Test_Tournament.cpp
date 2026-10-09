@@ -38,19 +38,19 @@ inline bool Tournament::RunTest(const FString& Parameters)
 			// Create a JSON object and add properties to it
 			TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
 
-			JsonObject->SetBoolField("authoritative", true);
-			JsonObject->SetStringField("sort_order", "desc");
-			JsonObject->SetStringField("operator", Operator);
-			JsonObject->SetNumberField("duration", Duration);
-			JsonObject->SetStringField("reset_schedule", ResetSchedule);
-			JsonObject->SetStringField("title", "Daily Dash");
-			JsonObject->SetStringField("description", "Dash past your opponents for high scores and big rewards!");
-			JsonObject->SetNumberField("category", 1);
-			JsonObject->SetNumberField("start_time", StartTime);
-			JsonObject->SetNumberField("end_time", EndTime);
-			JsonObject->SetNumberField("max_size", MaxSize);
-			JsonObject->SetNumberField("max_num_score", MaxNumScore);
-			JsonObject->SetBoolField("join_required", JoinRequired);
+			JsonObject->SetBoolField(TEXT("authoritative"), true);
+			JsonObject->SetStringField(TEXT("sort_order"), "desc");
+			JsonObject->SetStringField(TEXT("operator"), Operator);
+			JsonObject->SetNumberField(TEXT("duration"), Duration);
+			JsonObject->SetStringField(TEXT("reset_schedule"), ResetSchedule);
+			JsonObject->SetStringField(TEXT("title"), "Daily Dash");
+			JsonObject->SetStringField(TEXT("description"), "Dash past your opponents for high scores and big rewards!");
+			JsonObject->SetNumberField(TEXT("category"), 1);
+			JsonObject->SetNumberField(TEXT("start_time"), StartTime);
+			JsonObject->SetNumberField(TEXT("end_time"), EndTime);
+			JsonObject->SetNumberField(TEXT("max_size"), MaxSize);
+			JsonObject->SetNumberField(TEXT("max_num_score"), MaxNumScore);
+			JsonObject->SetBoolField(TEXT("join_required"), JoinRequired);
 
 			// Convert the JSON object to a string
 			FString JsonString;

@@ -101,10 +101,10 @@ struct NAKAMAUNREAL_API FNakamaRtError
 
 	// The error code
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
-	ENakamaRtErrorCode Code;
+	ENakamaRtErrorCode Code = ENakamaRtErrorCode::UNKNOWN;
 
 	FNakamaRtError(const FString& JsonString);
-	FNakamaRtError(): Code(ENakamaRtErrorCode::UNKNOWN) { }
+	FNakamaRtError() { }
 };
 
 USTRUCT(BlueprintType)
@@ -114,7 +114,7 @@ struct NAKAMAUNREAL_API FNakamaDisconnectInfo
 	
 	// Close Code - https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
-	ENakamaDisconnectCode Code;
+	ENakamaDisconnectCode Code = ENakamaDisconnectCode::NORMAL_CLOSURE;
 
 	// Close reason. Optional.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
@@ -122,9 +122,9 @@ struct NAKAMAUNREAL_API FNakamaDisconnectInfo
 
 	// true if close was initiated by server.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
-	bool Remote;
+	bool Remote = false;
 	
-	FNakamaDisconnectInfo(): Code(ENakamaDisconnectCode::NORMAL_CLOSURE), Remote(false) { }
+	FNakamaDisconnectInfo() { }
 
 	ENakamaDisconnectCode ConvertIntToDisconnectCode(int32 Value);
 };

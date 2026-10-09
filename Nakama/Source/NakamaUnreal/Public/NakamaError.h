@@ -51,12 +51,10 @@ struct NAKAMAUNREAL_API FNakamaError
 	FString Message;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Error")
-	ENakamaErrorCode Code;
+	ENakamaErrorCode Code = ENakamaErrorCode::Unknown;
 
 	FNakamaError(const FString& JsonString);
-	FNakamaError(): Code(ENakamaErrorCode::Unknown) { }
+	FNakamaError() { }
 
 	ENakamaErrorCode ConvertNakamaErrorCode(int32 CodeValue);
-
-
 };

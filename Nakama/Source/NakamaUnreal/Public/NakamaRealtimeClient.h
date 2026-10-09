@@ -203,8 +203,8 @@ public:
 	void Connect(
 		UNakamaSession* Session,
 		bool bCreateStatus,
-		TFunction<void()> Success = nullptr,
-		TFunction<void(const FNakamaRtError& Error)> ConnectionError = nullptr
+		const TFunction<void()>& Success = nullptr,
+		const TFunction<void(const FNakamaRtError& Error)>& ConnectionError = nullptr
 	);
 
 	// Events (bindable from blueprints or c++)
@@ -430,8 +430,8 @@ public:
 	void SendMessage(
 		const FString& ChannelId,
 		const FString& Content,
-		FOnWriteChatMessage Success,
-		FOnRtError Error
+		const FOnWriteChatMessage& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -446,8 +446,8 @@ public:
 	void WriteChatMessage(
 		const FString& ChannelId,
 		const FString& Content,
-		FOnWriteChatMessage Success,
-		FOnRtError Error
+		const FOnWriteChatMessage& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -462,8 +462,8 @@ public:
 	void SendDirectMessage(
 		const FString& UserID,
 		const FString& Content,
-		FOnWriteChatMessage Success,
-		FOnRtError Error
+		const FOnWriteChatMessage& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -480,8 +480,8 @@ public:
 		const FString& ChannelId,
 		const FString& MessageId,
 		const FString& Content,
-		FOnWriteChatMessage Success,
-		FOnRtError Error
+		const FOnWriteChatMessage& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -496,8 +496,8 @@ public:
 	void RemoveChatMessage(
 		const FString& ChannelId,
 		const FString& MessageId,
-		FOnWriteChatMessage Success,
-		FOnRtError Error
+		const FOnWriteChatMessage& Success,
+		const FOnRtError& Error
 	);
 
 	// --- Chat --- //
@@ -518,8 +518,8 @@ public:
 		ENakamaChannelType ChannelType,
 		bool Persistence,
 		bool Hidden,
-		FOnJoinChat Success,
-		FOnRtError Error
+		const FOnJoinChat& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -532,8 +532,8 @@ public:
 	UFUNCTION(Category = "Nakama|Chat")
 	void LeaveChat(
 		const FString& ChannelId,
-		FOnLeaveChat Success,
-		FOnRtError Error
+		const FOnLeaveChat& Success,
+		const FOnRtError& Error
 	);
 
 	// NOTE: List Chat Messages are done in normal client
@@ -562,8 +562,8 @@ public:
 		const TMap<FString, double>& NumericProperties,
 		int32 CountMultiple,
 		bool IgnoreCountMultiple,
-		FOnMatchmakerTicket Success,
-		FOnRtError Error
+		const FOnMatchmakerTicket& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -577,8 +577,8 @@ public:
 	UFUNCTION(Category = "Nakama|Matchmaker", meta=(DeprecatedFunction, DeprecationMessage="Use RemoveMatchmaker instead"))
 	void LeaveMatchmaker(
 		const FString& Ticket,
-		FOnRemovedMatchmakerTicket Success,
-		FOnRtError Error
+		const FOnRemovedMatchmakerTicket& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -591,8 +591,8 @@ public:
 	UFUNCTION(Category = "Nakama|Matchmaker")
 	void RemoveMatchmaker(
 		const FString& Ticket,
-		FOnRemovedMatchmakerTicket Success,
-		FOnRtError Error
+		const FOnRemovedMatchmakerTicket& Success,
+		const FOnRtError& Error
 	);
 
 	// --- Statuses --- //
@@ -607,8 +607,8 @@ public:
 	UFUNCTION(Category = "Nakama|Status")
 	void UpdateStatus(
 		const FString& StatusMessage,
-		FOnSetStatus Success,
-		FOnRtError Error
+		const FOnSetStatus& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -619,8 +619,8 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Status")
 	void SetAppearOffline(
-		FOnSetStatus Success,
-		FOnRtError Error
+		const FOnSetStatus& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -633,8 +633,8 @@ public:
 	UFUNCTION(Category = "Nakama|Status")
 	void FollowUsers(
 		const TArray<FString>& UserIds,
-		FOnFollowUsers Success,
-		FOnRtError Error
+		const FOnFollowUsers& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -647,8 +647,8 @@ public:
 	UFUNCTION(Category = "Nakama|Status")
 	void UnFollowUsers(
 		const TArray<FString>& UserIds,
-		FOnUnFollowUsers Success,
-		FOnRtError Error
+		const FOnUnFollowUsers& Success,
+		const FOnRtError& Error
 	);
 
 	// --- Realtime and Match (To send RPC, please use normal Client) --- //
@@ -660,8 +660,8 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Realtime|Match")
 	void CreateMatch(
-		FOnCreateMatch Success,
-		FOnRtError Error
+		const FOnCreateMatch& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -676,8 +676,8 @@ public:
 	void JoinMatch(
 		const FString& MatchId,
 		const TMap<FString, FString>& MetaData,
-		FOnCreateMatch Success,
-		FOnRtError Error
+		const FOnCreateMatch& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -690,8 +690,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Match")
 	void JoinMatchByToken(
 		const FString& Token,
-		FOnCreateMatch Success,
-		FOnRtError Error
+		const FOnCreateMatch& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -722,8 +722,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Match")
 	void LeaveMatch(
 		const FString& MatchId,
-		FOnLeaveMatch Success,
-		FOnRtError Error
+		const FOnLeaveMatch& Success,
+		const FOnRtError& Error
 	);
 
 	// --- Parties --- //
@@ -739,8 +739,8 @@ public:
 	void CreateParty(
 		bool Open,
 		int32 MaxSize,
-		FOnCreateParty Success,
-		FOnRtError Error
+		const FOnCreateParty& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -752,8 +752,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
 	void JoinParty(
 		const FString& PartyId,
-		FOnJoinParty Success,
-		FOnRtError Error
+		const FOnJoinParty& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -765,8 +765,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
     void LeaveParty(
     	const FString& PartyId,
-    	FOnLeaveParty Success,
-    	FOnRtError Error
+    	const FOnLeaveParty& Success,
+    	const FOnRtError& Error
     );
 
 	/**
@@ -778,8 +778,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
 	void ListPartyJoinRequests(
 		const FString& PartyId,
-		FOnListPartyJoinRequests Success,
-		FOnRtError Error
+		const FOnListPartyJoinRequests& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -793,8 +793,8 @@ public:
 	void PromotePartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& PartyMember,
-		FOnPromotePartyMember Success,
-		FOnRtError Error
+		const FOnPromotePartyMember& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -808,8 +808,8 @@ public:
 	void RemoveMatchMakerParty(
 		const FString& PartyId,
 		const FString& Ticket,
-		FOnRemoveMatchmakerParty Success,
-		FOnRtError Error
+		const FOnRemoveMatchmakerParty& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -823,8 +823,8 @@ public:
 	void RemovePartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& Presence,
-		FOnRemovePartyMember Success,
-		FOnRtError Error
+		const FOnRemovePartyMember& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -852,8 +852,8 @@ public:
 	void AcceptPartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& Presence,
-		FOnAcceptPartyMember Success,
-		FOnRtError Error
+		const FOnAcceptPartyMember& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -879,8 +879,8 @@ public:
 		const TMap<FString, double>& NumericProperties,
 		int32 CountMultiple,
 		bool IgnoreCountMultiple,
-		FOnAddMatchmakerParty Success,
-		FOnRtError Error
+		const FOnAddMatchmakerParty& Success,
+		const FOnRtError& Error
 	);
 
 	/**
@@ -892,8 +892,8 @@ public:
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
 	void CloseParty(
 		const FString& PartyId,
-		FOnCloseParty Success,
-		FOnRtError Error
+		const FOnCloseParty& Success,
+		const FOnRtError& Error
 	);
 
 	// --- RPC --- //
@@ -910,8 +910,8 @@ public:
 	void RPC(
 		const FString& FunctionId,
 		const FString& Payload,
-		FOnRtRPC Success,
-		FOnRtError Error
+		const FOnRtRPC& Success,
+		const FOnRtError& Error
 	);
 
 	// TFunctions
@@ -931,8 +931,8 @@ public:
 		ENakamaChannelType ChannelType,
 		TOptional<bool> Persistence,
 		TOptional<bool> Hidden,
-		TFunction<void(const FNakamaChannel& Channel)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaChannel& Channel)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -944,8 +944,8 @@ public:
 	*/
 	void LeaveChat(
 		const FString& ChannelId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -959,8 +959,8 @@ public:
 	void WriteChatMessage(
 		const FString& ChannelId,
 		const FString& Content,
-		TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -976,8 +976,8 @@ public:
 		const FString& ChannelId,
 		const FString& MessageId,
 		const FString& Content,
-		TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -991,8 +991,8 @@ public:
 	void RemoveChatMessage(
 		const FString& ChannelId,
 		const FString& MessageId,
-		TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1001,8 +1001,8 @@ public:
 	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
 	 */
 	void CreateMatch(
-		TFunction<void(const FNakamaMatch& Match)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaMatch& Match)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1016,8 +1016,8 @@ public:
 	void JoinMatch(
 		const FString& MatchId,
 		const TMap<FString,FString>& Metadata,
-		TFunction<void(const FNakamaMatch& Match)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaMatch& Match)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1029,8 +1029,8 @@ public:
 	*/
 	void JoinMatchByToken(
 		const FString& Token,
-		TFunction<void(const FNakamaMatch& Match)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaMatch& Match)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1042,8 +1042,8 @@ public:
 	*/
 	void LeaveMatch(
 		const FString& MatchId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1065,8 +1065,8 @@ public:
 		const TMap<FString,FString>& StringProperties,
 		const TMap<FString,double>& NumericProperties,
 		const TOptional<int32>& CountMultiple,
-		TFunction<void(const FNakamaMatchmakerTicket& MatchmakerTicket)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaMatchmakerTicket& MatchmakerTicket)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1077,8 +1077,8 @@ public:
 	 */
 	void RemoveMatchmaker(
 		const FString& Ticket,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1090,8 +1090,8 @@ public:
 	 */
 	void FollowUsers(
 		const TArray<FString>& UserIds,
-		TFunction<void(const FNakamaStatus& Status)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaStatus& Status)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1103,8 +1103,8 @@ public:
 	 */
 	void UnfollowUsers(
 		const TArray<FString>& UserIds,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1116,8 +1116,8 @@ public:
 	 */
 	void UpdateStatus(
 		const FString& Status,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1131,8 +1131,8 @@ public:
 	void RPC(
 		const FString& Id,
 		const TOptional<FString>& Payload,
-		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaRPC& Rpc)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	// Party System
@@ -1148,8 +1148,8 @@ public:
 	void AcceptPartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& Presence,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1172,8 +1172,8 @@ public:
 		const TMap<FString,FString>& StringProperties,
 		const TMap<FString,double>& NumericProperties,
 		const TOptional<int32>& CountMultiple,
-		TFunction<void(const FNakamaPartyMatchmakerTicket& MatchmakerTicket)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaPartyMatchmakerTicket& MatchmakerTicket)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1184,8 +1184,8 @@ public:
 	 */
 	void CloseParty(
 		const FString& PartyId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1198,8 +1198,8 @@ public:
 	void CreateParty(
 		bool bOpen,
 		int32 MaxSize,
-		TFunction<void(const FNakamaParty& Party)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaParty& Party)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1210,8 +1210,8 @@ public:
 	 */
 	void JoinParty(
 		const FString& PartyId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1222,8 +1222,8 @@ public:
 	 */
 	void LeaveParty(
 		const FString& PartyId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1234,8 +1234,8 @@ public:
 	 */
 	void ListPartyJoinRequests(
 		const FString& PartyId,
-		TFunction<void(const FNakamaPartyJoinRequest& PartyJoinRequest)> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void(const FNakamaPartyJoinRequest& PartyJoinRequest)>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1248,8 +1248,8 @@ public:
 	void PromotePartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& PartyMember,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1262,8 +1262,8 @@ public:
 	void RemoveMatchmakerParty(
 		const FString& PartyId,
 		const FString& Ticket,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	/**
@@ -1276,8 +1276,8 @@ public:
 	void RemovePartyMember(
 		const FString& PartyId,
 		const FNakamaUserPresence& Presence,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaRtError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback
 	);
 
 	// Helpers/Utilities
@@ -1311,8 +1311,8 @@ public:
 	TObjectPtr<UNakamaRealtimeRequestContext> CreateReqContext(FNakamaRealtimeEnvelope& envelope);
 
 	// Reusable functionality to handle Sending messages with Envelopes (with callbacks)
-	void SendMessageWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(const FNakamaRealtimeEnvelope& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
-	void SendMessageWithEnvelopeMove(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(FNakamaRealtimeEnvelope&& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
+	void SendMessageWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, const TFunction<void(const FNakamaRealtimeEnvelope& Envelope)>& SuccessCallback, const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback);
+	void SendMessageWithEnvelopeMove(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, const TFunction<void(FNakamaRealtimeEnvelope&& Envelope)>& SuccessCallback, const TFunction<void(const FNakamaRtError& Error)>& ErrorCallback);
 
 	// Reusable functionality to handle Sending messages with Envelopes (no callbacks)
 	void SendDataWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField);

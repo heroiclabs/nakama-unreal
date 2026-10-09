@@ -26,6 +26,7 @@
 #include "SatoriLiveEvent.h"
 #include "SatoriMessage.h"
 #include "SatoriFlag.h"
+#include "SatoriRetryConfiguration.h"
 #include "SatoriClient.generated.h"
 
 namespace Satori {}
@@ -92,6 +93,26 @@ public:
 
 	UPROPERTY()
 	bool bIsActive;
+
+	/**
+	 * When true (default), the client refreshes an expiring session token before
+	 * each authenticated request, using the session's refresh token. Set false to
+	 * manage token lifetime yourself.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori|Client")
+	bool bAutoRefreshSession = true;
+
+	/** When true (default), transient (5xx) request failures are retried with backoff. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori|Client")
+	bool bEnableRetries = true;
+
+	/** Base delay (ms) for retry backoff; doubles each attempt. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori|Client")
+	int32 RetryBaseDelayMs = 500;
+
+	/** Max retry attempts before giving up on a transient failure. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori|Client")
+	int32 RetryMaxAttempts = 4;
 
 	// Initialize System, this has to be called first, done via the Library Action instead (removed BlueprintCallable)
 	UFUNCTION(Category = "Satori|Initialize")
@@ -161,8 +182,8 @@ public:
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bNoSession,
-		FOnSatoriAuthUpdate Success,
-		FOnSatoriError Error
+		const FOnSatoriAuthUpdate& Success,
+		const FOnSatoriError& Error
 	);
 
 	void Authenticate(
@@ -170,34 +191,34 @@ public:
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bNoSession,
-		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void AuthenticateRefresh(
 		USatoriSession* Session,
-		FOnSatoriAuthUpdate Success,
-		FOnSatoriError Error
+		const FOnSatoriAuthUpdate& Success,
+		const FOnSatoriError& Error
 	);
 
 	void AuthenticateRefresh(
 		USatoriSession* Session,
-		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void AuthenticateLogout(
 		USatoriSession* Session,
-		FOnAuthLogoutSent Success,
-		FOnSatoriError Error
+		const FOnAuthLogoutSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void AuthenticateLogout(
 		USatoriSession* Session,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
@@ -206,8 +227,8 @@ public:
 		const FString& ID,
 		const TMap<FString, FString>& defaultProperties,
 		const TMap<FString, FString>& customProperties,
-		FOnSatoriAuthUpdate Success,
-		FOnSatoriError Error
+		const FOnSatoriAuthUpdate& Success,
+		const FOnSatoriError& Error
 	);
 
 	void Identify(
@@ -215,21 +236,21 @@ public:
 		const FString& ID,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
-		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(USatoriSession* UserSession)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void ListIdentityProperties(
 		USatoriSession* Session,
-		FOnGetProperties Success,
-		FOnSatoriError Error
+		const FOnGetProperties& Success,
+		const FOnSatoriError& Error
 	);
 
 	void ListIdentityProperties(
 		USatoriSession* Session,
-		TFunction<void(const FSatoriProperties& Properties)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriProperties& Properties)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
@@ -238,8 +259,8 @@ public:
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bRecompute,
-		FOnUpdatePropertiesSent Success,
-		FOnSatoriError Error
+		const FOnUpdatePropertiesSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void UpdateProperties(
@@ -247,112 +268,112 @@ public:
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bRecompute,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void DeleteIdentity(
 		USatoriSession* Session,
-		FOnDeleteIdentitySent Success,
-		FOnSatoriError Error
+		const FOnDeleteIdentitySent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void DeleteIdentity(
 		USatoriSession* Session,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 
 	// --- Interface --- //
-	
+
 	UFUNCTION(Category = "Satori|Events")
 	void PostServerEvent(
 		const TArray<FSatoriEvent>& Events,
-		FOnPostServerEventSent Success,
-		FOnSatoriError Error
+		const FOnPostServerEventSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void PostServerEvent(
 		const TArray<FSatoriEvent>& Events,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Events")
 	void PostEvent(
 		USatoriSession* Session,
 		const TArray<FSatoriEvent>& Events,
-		FOnPostEventSent Success,
-		FOnSatoriError Error
+		const FOnPostEventSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void PostEvent(
 		USatoriSession* Session,
 		const TArray<FSatoriEvent>& Events,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Experiments")
 	void GetExperiments(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		FOnGetExperiments Success,
-		FOnSatoriError Error
+		const FOnGetExperiments& Success,
+		const FOnSatoriError& Error
 	);
 
 	void GetExperiments(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		TFunction<void(const FSatoriExperimentList& Experiments)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriExperimentList& Experiments)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Flags")
 	void GetFlags(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		FOnGetFlags Success,
-		FOnSatoriError Error
+		const FOnGetFlags& Success,
+		const FOnSatoriError& Error
 	);
 
 	void GetFlags(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		TFunction<void(const FSatoriFlagList& Flags)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriFlagList& Flags)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Flags")
 	void GetFlagOverrides(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		FOnGetFlagOverrides Success,
-		FOnSatoriError Error
+		const FOnGetFlagOverrides& Success,
+		const FOnSatoriError& Error
 	);
 
 	void GetFlagOverrides(
 		USatoriSession* Session,
 		const TArray<FString>& Names,
-		TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriFlagOverrideList& Flags)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|LiveEvents")
 	void GetLiveEvents(
 		USatoriSession* Session,
 		const TArray<FString>& LiveEventNames,
-		FOnGetLiveEvents Success,
-		FOnSatoriError Error
+		const FOnGetLiveEvents& Success,
+		const FOnSatoriError& Error
 	);
 
 	void GetLiveEvents(
 		USatoriSession* Session,
 		const TArray<FString>& LiveEventNames,
-		TFunction<void(const FSatoriLiveEventList& LiveEvents)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriLiveEventList& LiveEvents)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
@@ -361,8 +382,8 @@ public:
 		int32 Limit,
 		bool Forward,
 		const FString& Cursor,
-		FOnGetMessages Success,
-		FOnSatoriError Error
+		const FOnGetMessages& Success,
+		const FOnSatoriError& Error
 	);
 
 	void GetMessages(
@@ -370,8 +391,8 @@ public:
 		int32 Limit,
 		bool Forward,
 		const FString& Cursor,
-		TFunction<void(const FSatoriMessageList& Messages)> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void(const FSatoriMessageList& Messages)>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
@@ -380,8 +401,8 @@ public:
 		const FString& MessageId,
 		const FDateTime ReadTime,
 		const FDateTime ConsumeTime,
-		FOnUpdateMessageSent Success,
-		FOnSatoriError Error
+		const FOnUpdateMessageSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void UpdateMessage(
@@ -389,23 +410,23 @@ public:
 		const FString& MessageId,
 		const FDateTime ReadTime,
 		const FDateTime ConsumeTime,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
 	void DeleteMessage(
 		USatoriSession* Session,
 		const FString& MessageId,
-		FOnDeleteMessageSent Success,
-		FOnSatoriError Error
+		const FOnDeleteMessageSent& Success,
+		const FOnSatoriError& Error
 	);
 
 	void DeleteMessage(
 		USatoriSession* Session,
 		const FString& MessageId,
-		TFunction<void()> SuccessCallback,
-		TFunction<void(const FSatoriError& Error)> ErrorCallback
+		const TFunction<void()>& SuccessCallback,
+		const TFunction<void(const FSatoriError& Error)>& ErrorCallback
 	);
 
 	// --- Utilities --- //
@@ -423,7 +444,43 @@ private:
 		const FString& SessionToken
 	);
 
+	// Build the retry configuration from the client's retry settings.
+	FSatoriRetryConfiguration BuildRetryConfiguration() const;
+
+	// Send a JSON request with transient-failure retry (backoff + jitter). The optional
+	// PrepareRequest hook runs on each fresh attempt (e.g. to set an auth header).
+	void SendJsonRequest(
+		const FString& Endpoint,
+		const FString& Content,
+		ESatoriRequestMethod Method,
+		const TMultiMap<FString, FString>& QueryParams,
+		const FString& SessionToken,
+		const TFunction<void(const FString& Body)>& OnSuccess,
+		const TFunction<void(const FSatoriError& Error)>& OnError,
+		const TFunction<void(TSharedRef<IHttpRequest, ESPMode::ThreadSafe>&)>& PrepareRequest = nullptr);
+
+	// Refresh leeway: refresh if the token expires within this many minutes.
+	static constexpr int32 SessionRefreshLeewayMinutes = 5;
+
+	// Run OnReady once the session token is valid, refreshing first if needed.
+	void EnsureValidSession(
+		USatoriSession* Session,
+		const TFunction<void()>& OnReady,
+		const TFunction<void(const FSatoriError& Error)>& OnError);
+
 private:
+	// Callbacks queued behind a single in-flight session refresh. A rotating
+	// refresh token can only be redeemed once, so concurrent requests on an
+	// expiring session share one refresh and are all resumed by its result.
+	struct FPendingRefresh
+	{
+		TArray<TFunction<void()>> OnReady;
+		TArray<TFunction<void(const FSatoriError& Error)>> OnError;
+	};
+
+	// Keyed by the session being refreshed. Game-thread only (see EnsureValidSession).
+	TMap<TWeakObjectPtr<USatoriSession>, TSharedPtr<FPendingRefresh>> InFlightRefreshes;
+
 	// Requests
 	TArray<FHttpRequestPtr> ActiveRequests;
 	FCriticalSection ActiveRequestsMutex;

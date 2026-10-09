@@ -3,6 +3,33 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.11.6] - 2026-08-24
+### Fixed
+- Fix invalid/missing field names (#184).
+
+### [2.11.5] - 2026-07-20
+### Fixed
+- Fix compatibility issues with Unreal Engine 5.8+ (#182).
+
+### [2.11.4] - 2026-06-30
+### Fixed
+- Provide inline initialization values to guarantee fallback values for structure fields across Nakama and Satori (#179).
+
+### [2.11.3] - 2026-06-17
+### Added
+- HTTP clients now pre-emptively refresh an expiring session token before each authenticated request, controlled by `bAutoRefreshSession` (default `true`) on `UNakamaClient` and `USatoriClient`. Refresh fires when the token expires within 5 minutes and a refresh token is present; the caller's session is updated in place. `USatoriSession` now parses token expiry. Session logout is intentionally excluded.
+- `UNakamaClient` and `USatoriClient` now automatically retry transient HTTP failures (status 500/502/503/504) with exponential backoff and decorrelated jitter. Configurable via `bEnableRetries` (default `true`), `RetryBaseDelayMs` (default `500`), and `RetryMaxAttempts` (default `4`). All HTTP requests route through a single retry path; connection failures, timeouts, and non-5xx errors are not retried.
+- `CancelAllRequests` on `USatoriClient`, mirroring `UNakamaClient` for parity.
+
+### Changed
+- Session-based `RPC` now returns `true` once the request is accepted, since the send may be deferred behind an automatic token refresh. The HTTP-key `RPC` overload still returns the synchronous send result.
+- Request completion is now modelled by an explicit outcome enum (`ENakamaRequestOutcome` / `ESatoriRequestOutcome`): a request cancelled or completing after its owning client was released is treated as `Cancelled`.
+
+### Fixed
+- Manual callback paths no longer silently drop `OnSuccess`/`OnError`; each request delivers exactly one terminal callback.
+- Realtime client `OnMessage` handler captures a weak reference, avoiding use of a released client.
+- `ParseJwtPayload` now checks the return value of `FBase64::Decode` instead of ignoring it.
+
 ### [2.11.2] - 2026-04-27
 ### Added
 - Server-side Satori events: #165

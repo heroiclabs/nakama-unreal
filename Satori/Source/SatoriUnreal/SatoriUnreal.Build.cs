@@ -22,6 +22,9 @@ public class SatoriUnreal : ModuleRules
 	public SatoriUnreal(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+#if UE_5_8_OR_LATER
+		CppStandard = CppStandardVersion.Cpp20;
+#endif
 
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -74,5 +77,13 @@ public class SatoriUnreal : ModuleRules
         PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        
+        RuntimeDependencies.Add(Path.Combine(
+	        EngineDirectory,
+	        "Content",
+	        "Certificates",
+	        "ThirdParty",
+	        "cacert.pem"
+        ), StagedFileType.NonUFS);
     }
 }

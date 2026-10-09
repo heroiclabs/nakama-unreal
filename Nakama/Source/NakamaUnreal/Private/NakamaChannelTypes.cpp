@@ -17,7 +17,8 @@
 #include "NakamaChannelTypes.h"
 #include "NakamaUtils.h"
 
-FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString) : FNakamaChannelMessage(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString) : FNakamaChannelMessage(FNakamaUtils::DeserializeJsonObject(JsonString))
+{
 }
 
 FNakamaChannelMessage::FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonObject)
@@ -32,12 +33,14 @@ FNakamaChannelMessage::FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonO
 		JsonObject->TryGetStringField(TEXT("content"), Content);
     
 		FString CreateTimeString;
-		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString)) {
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString))
+		{
 			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 		}
 
 		FString UpdateTimeString;
-		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString)) {
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString))
+		{
 			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 		}
     
@@ -50,9 +53,7 @@ FNakamaChannelMessage::FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonO
 }
 
 FNakamaChannelMessage::FNakamaChannelMessage()
-	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), code(0), Persistent(false)
 {
-	
 }
 
 FNakamaChannelMessageAck::FNakamaChannelMessageAck(const FString& JsonString)
@@ -63,32 +64,36 @@ FNakamaChannelMessageAck::FNakamaChannelMessageAck(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* ChannelMessageObject;
-		if (JsonObject->TryGetObjectField(TEXT("channel_message_ack"), ChannelMessageObject)) {
-
+		if (JsonObject->TryGetObjectField(TEXT("channel_message_ack"), ChannelMessageObject))
+		{
 			(*ChannelMessageObject)->TryGetStringField(TEXT("channel_id"), ChannelId);
 			(*ChannelMessageObject)->TryGetStringField(TEXT("message_id"), MessageId);
 			(*ChannelMessageObject)->TryGetStringField(TEXT("username"), Username);
 			(*ChannelMessageObject)->TryGetNumberField(TEXT("code"), code);
 
 			FString CreateTimeString;
-			if ((*ChannelMessageObject)->TryGetStringField(TEXT("create_time"), CreateTimeString)) {
+			if ((*ChannelMessageObject)->TryGetStringField(TEXT("create_time"), CreateTimeString))
+			{
 				FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 			}
 
 			FString UpdateTimeString;
-			if ((*ChannelMessageObject)->TryGetStringField(TEXT("update_time"), UpdateTimeString)) {
+			if ((*ChannelMessageObject)->TryGetStringField(TEXT("update_time"), UpdateTimeString))
+			{
 				FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 			}
 
 			(*ChannelMessageObject)->TryGetBoolField(TEXT("persistent"), Persistent);
 			(*ChannelMessageObject)->TryGetStringField(TEXT("room_name"), RoomName);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("group_id"), GroupId);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("user_id_one"), UserIdOne);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("user_id_two"), UserIdTwo);
 		}
 	}
 	
 }
 
 FNakamaChannelMessageAck::FNakamaChannelMessageAck()
-	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), code(0), Persistent(false) 
 {
 }
 
@@ -114,6 +119,7 @@ FNakamaChannelMessageList::FNakamaChannelMessageList(const FString& JsonString)
 
 		JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
 		JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+		JsonObject->TryGetStringField(TEXT("cacheable_cursor"), CacheableCursor);
 	}
 }
 
@@ -167,5 +173,4 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 
 FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent()
 {
-	
 }

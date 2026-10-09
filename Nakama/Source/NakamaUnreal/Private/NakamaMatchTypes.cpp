@@ -29,13 +29,15 @@ FNakamaMatchmakerUser::FNakamaMatchmakerUser(const TSharedPtr<FJsonObject> JsonO
 		{
 			Presence = FNakamaUserPresence(*PresenceObject);
 		}
+		
+		JsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
 		const TSharedPtr<FJsonObject>* StringPropertiesObject;
 		if (JsonObject->TryGetObjectField(TEXT("string_properties"), StringPropertiesObject))
 		{
 			for (const auto& Entry : (*StringPropertiesObject)->Values)
 			{
-				StringProperties.Add(Entry.Key, Entry.Value->AsString());
+				StringProperties.Emplace(Entry.Key, Entry.Value->AsString());
 			}
 		}
 
@@ -44,7 +46,7 @@ FNakamaMatchmakerUser::FNakamaMatchmakerUser(const TSharedPtr<FJsonObject> JsonO
 		{
 			for (const auto& Entry : (*NumericPropertiesObject)->Values)
 			{
-				NumericProperties.Add(Entry.Key, Entry.Value->AsNumber());
+				NumericProperties.Emplace(Entry.Key, Entry.Value->AsNumber());
 			}
 		}
 	}

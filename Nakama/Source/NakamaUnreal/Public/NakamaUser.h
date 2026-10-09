@@ -60,6 +60,10 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString FacebookId;
 
+	// The Facebook Instant Game ID in the user's account.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
+	FString FacebookInstantGameId;
+	
 	// The Google id in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString GoogleId;
@@ -78,23 +82,23 @@ struct NAKAMAUNREAL_API FNakamaUser
 	
 	// The UNIX time when the user was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	FDateTime CreatedAt;
+	FDateTime CreatedAt = FDateTime::MinValue();
 
 	// The UNIX time when the user was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	FDateTime updatedAt;
+	FDateTime updatedAt = FDateTime::MinValue();
 
 	// Number of related edges to this user (friends).
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	int32 EdgeCount;
+	int32 EdgeCount = 0;
 	
 	// Indicates whether the user is currently online.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	bool Online;
+	bool Online = false;
 
 	FNakamaUser(const FString& JsonString);
     FNakamaUser(const TSharedPtr<class FJsonObject> JsonObject);
-	FNakamaUser() : CreatedAt(FDateTime::MinValue()), updatedAt(FDateTime::MinValue()), EdgeCount(0), Online(false) { }
+	FNakamaUser() { }
 
 };
 

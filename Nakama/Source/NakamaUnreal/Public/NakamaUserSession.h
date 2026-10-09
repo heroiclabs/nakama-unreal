@@ -45,27 +45,27 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 
 	// The timestamp in milliseconds when this session object was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// The timestamp in milliseconds when this session will expire.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	FDateTime ExpireTime;
+	FDateTime ExpireTime = FDateTime::MinValue();
 
 	// The timestamp in milliseconds when this session will expire.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	FDateTime RefreshExpireTime;
+	FDateTime RefreshExpireTime = FDateTime::MinValue();
 
 	// True if the user account for this session was just created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	bool IsCreated;
+	bool IsCreated = false;
 
 	// True if the session has expired against the current time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	bool IsExpired;
+	bool IsExpired = false;
 
 	// True if the session has expired against the current time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	bool IsRefreshExpired;
+	bool IsRefreshExpired = false;
 	
 	FNakamaUserSession(); // Default Constructor
 };

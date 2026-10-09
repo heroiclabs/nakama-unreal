@@ -37,6 +37,13 @@ public:
 	static UNakamaSession* SetupSession(const FString& AuthResponse);
 
 	/**
+	 * Copy all session fields (tokens, expiry, identity, variables) from another
+	 * session into this one, in place. Used by auto-refresh so the caller's
+	 * session pointer reflects refreshed tokens.
+	 */
+	void Update(const UNakamaSession* Other);
+
+	/**
 	 * @return The authentication token used to construct this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")

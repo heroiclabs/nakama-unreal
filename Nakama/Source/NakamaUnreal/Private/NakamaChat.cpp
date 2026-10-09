@@ -20,7 +20,6 @@
 
 FNakamaChannel::FNakamaChannel()
 {
-	
 }
 
 FNakamaChannel::FNakamaChannel(const FString& JsonString)

@@ -17,8 +17,5 @@
 #include "NakamaUserSession.h"
 
 FNakamaUserSession::FNakamaUserSession()
-	: CreateTime(FDateTime::MinValue()), ExpireTime(FDateTime::MinValue()), RefreshExpireTime(FDateTime::MinValue()),
-	IsCreated(false), IsExpired(false), IsRefreshExpired(false)
 {
-	
 }

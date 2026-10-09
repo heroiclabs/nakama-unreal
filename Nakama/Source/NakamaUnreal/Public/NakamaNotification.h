@@ -43,15 +43,15 @@ struct NAKAMAUNREAL_API FNakamaNotification
 
 	// The UNIX time when the notification was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
-	FDateTime CreateTime;
+	FDateTime CreateTime = FDateTime::MinValue();
 
 	// Category code for this notification.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
-	int32 Code;
+	int32 Code = 0;
 
 	// True if this notification was persisted to the database.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
-	bool Persistent;
+	bool Persistent = false;
 
 	FNakamaNotification(const FString& JsonString);
     FNakamaNotification(const TSharedPtr<class FJsonObject> JsonObject);

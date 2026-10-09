@@ -82,9 +82,8 @@ FNakamaGroup::FNakamaGroup(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaGroup::FNakamaGroup() : CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), EdgeCount(0), MaxCount(0), open(false)
+FNakamaGroup::FNakamaGroup()
 {
-	
 }
 
 
@@ -110,7 +109,7 @@ FNakamaGroupUser::FNakamaGroupUser(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaGroupUser::FNakamaGroupUser(): State(ENakamaGroupState::SUPERADMIN)
+FNakamaGroupUser::FNakamaGroupUser()
 {
 	
 }
@@ -187,7 +186,7 @@ FNakamaUserGroup::FNakamaUserGroup(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FNakamaUserGroup::FNakamaUserGroup(): State(ENakamaGroupState::SUPERADMIN)
+FNakamaUserGroup::FNakamaUserGroup()
 {
 	
 }
@@ -217,5 +216,4 @@ FNakamaUserGroupList::FNakamaUserGroupList(const FString& JsonString)
 
 FNakamaUserGroupList::FNakamaUserGroupList()
 {
-	
 }

@@ -54,17 +54,19 @@ FNakamaTournament::FNakamaTournament(const TSharedPtr<FJsonObject> JsonObject)
 
 		JsonObject->TryGetNumberField(TEXT("end_active"), EndActive);
 		JsonObject->TryGetNumberField(TEXT("next_reset"), NextReset);
+		JsonObject->TryGetNumberField(TEXT("prev_reset"), PrevReset);
 		JsonObject->TryGetNumberField(TEXT("duration"), Duration);
 		JsonObject->TryGetNumberField(TEXT("start_active"), StartActive);
 
 		JsonObject->TryGetStringField(TEXT("metadata"), Metadata);
+		JsonObject->TryGetStringField(TEXT("operator"), Operator);
+		
+		JsonObject->TryGetBoolField(TEXT("authoritative"), Authoritative);
+		JsonObject->TryGetBoolField(TEXT("join_required"), JoinRequired);
 	}
 }
 
 FNakamaTournament::FNakamaTournament()
-	: CreateTime(FDateTime::MinValue()), StartTime(FDateTime::MinValue()), EndTime(FDateTime::MinValue()),
-	Category(0), SortOrder(0), Size(0), MaxSize(0), MaxNumScore(0), EndActive(0), 
-	NextReset(0), Duration(0), StartActive(0), CanEnter(false)
 {
 }
 
@@ -101,6 +103,7 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
 
         JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
         JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
+        JsonObject->TryGetNumberField(TEXT("rank_count"), RankCount);
     }
 	
 }

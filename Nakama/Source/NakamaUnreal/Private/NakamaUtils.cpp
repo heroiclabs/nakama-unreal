@@ -23,100 +23,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogNakamaUtils, Log, Log);
 
-void FNakamaUtils::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
-{
-	if (bSuccess && Response.IsValid())
-	{
-		const int32 ResponseCode = Response->GetResponseCode();
-		const FString ResponseBody = Response->GetContentAsString();
-
-		if (ResponseCode == 200)
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
-			if (SuccessCallback)
-			{
-				SuccessCallback(ResponseBody);
-			}
-		}
-		else
-		{
-			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-			const FNakamaError Error(ResponseBody);
-			if (ErrorCallback)
-			{
-				ErrorCallback(Error);
-			}
-		}
-	}
-	else
-	{
-		// Handle request failure
-		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
-
-		if (Request.IsValid())
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
-		}
-
-		FNakamaError Error;
-		Error.Code = ENakamaErrorCode::Unknown;
-		Error.Message = TEXT("Failed to proccess request. Request failed.");
-
-		if (ErrorCallback)
-		{
-			ErrorCallback(Error);
-		}
-	}
-}
-
-void FNakamaUtils::ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess,
-	const TFunction<void(FString&&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
-{
-	if (bSuccess && Response.IsValid())
-	{
-		const int32 ResponseCode = Response->GetResponseCode();
-		FString ResponseBody = Response->GetContentAsString();
-
-		if (ResponseCode == 200)
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
-			if (SuccessCallback)
-			{
-				SuccessCallback(MoveTemp(ResponseBody));
-			}
-		}
-		else
-		{
-			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-			const FNakamaError Error(ResponseBody);
-			if (ErrorCallback)
-			{
-				ErrorCallback(Error);
-			}
-		}
-	}
-	else
-	{
-		// Handle request failure
-		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
-
-		if (Request.IsValid())
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
-		}
-
-		FNakamaError Error;
-		Error.Code = ENakamaErrorCode::Unknown;
-		Error.Message = TEXT("Failed to proccess request. Request failed.");
-
-		if (ErrorCallback)
-		{
-			ErrorCallback(Error);
-		}
-	}
-}
-
-void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
+void FNakamaUtils::HandleJsonSerializationFailure(const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 	{
 		NAKAMA_LOG_ERROR(TEXT("Failed to generate request content."));
 		FNakamaError Error;
@@ -125,7 +32,7 @@ void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaEr
 		ErrorCallback(Error);
 	}
 
-	bool FNakamaUtils::IsSessionValid(const UNakamaSession* Session, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	bool FNakamaUtils::IsSessionValid(const UNakamaSession* Session, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 	{
 		if (!Session || Session->SessionData.AuthToken.IsEmpty())
 		{
@@ -151,6 +58,17 @@ void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaEr
 		FNakamaError Error;
 		Error.Code = ENakamaErrorCode::Unknown;
 		Error.Message = TEXT("Failed to proccess request. Request failed.");
+		return Error;
+	}
+
+	FNakamaError FNakamaUtils::CreateRequestCancelledError()
+	{
+		// Expected outcome (request cancelled or owning client released), not a
+		// fault: log at Debug so it does not read as an error or fail automation.
+		NAKAMA_LOG_DEBUG(TEXT("Request cancelled or client released before completion."));
+		FNakamaError Error;
+		Error.Code = ENakamaErrorCode::Cancelled;
+		Error.Message = TEXT("Request cancelled or client released before completion.");
 		return Error;
 	}
 	

@@ -62,7 +62,7 @@ UNakamaSession* UNakamaSession::SetupSession(const FString& AuthResponse)
                 const TSharedPtr<FJsonObject>& VarsJson = PayloadJson->GetObjectField(TEXT("vrs"));
                 for (const auto& Entry : VarsJson->Values)
                 {
-                    FString Key = Entry.Key;
+                    FString Key{Entry.Key};
                     FString Value = Entry.Value->AsString();
 					ResultSession->SessionData.Variables.Add(Key, Value);
 					ResultSession->_Variables.Add(Key, Value);
@@ -108,6 +108,28 @@ UNakamaSession* UNakamaSession::SetupSession(const FString& AuthResponse)
     	NAKAMA_LOG_ERROR(TEXT("Failed to deserialize Session JSON object"));
     }
 	return nullptr;
+}
+
+void UNakamaSession::Update(const UNakamaSession* Other)
+{
+	if (!Other)
+	{
+		return;
+	}
+
+	SessionData = Other->SessionData;
+
+	_AuthToken         = Other->_AuthToken;
+	_RefreshToken      = Other->_RefreshToken;
+	_IsCreated         = Other->_IsCreated;
+	_Username          = Other->_Username;
+	_UserId            = Other->_UserId;
+	_CreateTime        = Other->_CreateTime;
+	_ExpireTime        = Other->_ExpireTime;
+	_RefreshExpireTime = Other->_RefreshExpireTime;
+	_IsExpired         = Other->_IsExpired;
+	_IsRefreshExpired  = Other->_IsRefreshExpired;
+	_Variables         = Other->_Variables;
 }
 
 const FString UNakamaSession::GetAuthToken()  const
@@ -232,7 +254,11 @@ bool UNakamaSession::ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>
 
 	// Decode to bytes
 	TArray<uint8> decodedBytes;
-	FBase64::Decode(payloadString, decodedBytes);
+	if (!FBase64::Decode(payloadString, decodedBytes))
+	{
+		// Invalid Base64 payload
+		return false;
+	}
 
 	// Ensure null termination
 	decodedBytes.Add(0);
