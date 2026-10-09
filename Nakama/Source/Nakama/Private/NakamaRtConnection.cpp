@@ -273,21 +273,6 @@ void FNakamaRtConnection::OnConnected()
     return;
   }
 
-  if (!ServerEventReceived.IsBound())
-  {
-    TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
-    ServerEventReceived.AddLambda([WeakSelf](const TSharedPtr<FJsonObject>& Envelope)
-    {
-      AsyncTask(ENamedThreads::GameThread, [WeakSelf, Envelope]()
-      {
-        if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
-        {
-          StrongThis->HandleServerEvent(Envelope);
-        }
-      });
-    });
-  }
-  
   UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
   ConnectionState = ENakamaRtConnectionState::Connected;
 
@@ -425,10 +410,18 @@ void FNakamaRtConnection::OnMessage(const FString& Message)
   // Otherwise, this is a server event we need to handle.
   else
   {
-    if (ServerEventReceived.IsBound())
+    TWeakPtr<FNakamaRtConnection> WeakSelf = AsShared();
+    AsyncTask(ENamedThreads::GameThread, [WeakSelf, JsonObject]()
     {
-      ServerEventReceived.Broadcast(JsonObject);
-    }
+      if (TSharedPtr<FNakamaRtConnection> StrongThis = WeakSelf.Pin())
+      {
+        StrongThis->HandleServerEvent(JsonObject);
+        if (StrongThis->ServerEventReceived.IsBound())
+        {
+          StrongThis->ServerEventReceived.Broadcast(JsonObject);
+        }
+      }
+    });
   }
 }
 
