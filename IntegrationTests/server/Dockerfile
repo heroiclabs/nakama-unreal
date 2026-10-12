@@ -1,4 +1,4 @@
-ARG NAKAMA_VERSION=3.39.0
+ARG NAKAMA_VERSION=3.37.0
 
 FROM docker.io/heroiclabs/nakama-pluginbuilder:${NAKAMA_VERSION} AS builder
 
@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go mod tidy && go build -buildmode=plugin -trimpath -o /backend/backend.so
+RUN go build -buildmode=plugin -trimpath -o /backend/backend.so
 
 FROM docker.io/heroiclabs/nakama:${NAKAMA_VERSION}
 
