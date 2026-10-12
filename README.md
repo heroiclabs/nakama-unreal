@@ -4,7 +4,7 @@ Nakama Unreal
 [Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com/nakama).
 
 This client implements the full Nakama API and socket options with the server, as well as the [Satori](https://heroiclabs.com/docs/satori/concepts/introduction/index.html) API.  
-It's written in C++ with minimal dependencies to support Unreal 4 and 5.
+It's written in C++ with minimal dependencies to support Unreal 5.3 and later.
 
 If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-unreal/issues).
 
@@ -16,12 +16,6 @@ For all other docs, check out [https://heroiclabs.com/docs](https://heroiclabs.c
 
 This plugin can also be used for programmers who like C++ or Blueprints. All variables and functions are exposed to types used by Unreal Engine (UPROPERTIES, USTRUCT, UFUNCTIONS etc.)
 
-The plugin is divided into three modules which can be pulled in depending on your needs.
-
-- `Nakama` High-level Nakama API: The recommended C++-based module for using Nakama in UnrealEngine.
-- `NakamaApi` Low-level Nakama API: Required for the `Nakama` module, but not recommended for direct use.
-- `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
-
 # Getting Started
 
 You'll need to set up the server and database before you can connect with the client. The simplest way is to use Docker but have a look at the [server documentation](https://github.com/heroiclabs/nakama#getting-started) for other options.
@@ -30,7 +24,7 @@ To get started using Nakama in Unreal you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/nakama/getting-started/install/docker/).
 2. A copy of the [Nakama Client](https://github.com/heroiclabs/nakama-unreal/releases) plugin
-3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater or 5.
+3. [Unreal Engine](https://www.unrealengine.com) 5.3 or later.
 4. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 
 Also, please ensure your Unreal project is a C++ project.  If it is Blueprint only, you can add a new C++ file to your project in Unreal Editor via "File -> New C++ Class".  Set it private and name it whatever you like.  Having this file in your project lets Unreal compile the plugin.
@@ -43,12 +37,12 @@ To use Nakama in your Unreal project, you'll need to copy the Nakama Client file
 2. If one does not already exist, create a `Plugins` folder here.
 3. Copy the `Nakama` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
 
-**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
+**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_5.3\Engine\Plugins\`) to use the plugin across multiple projects.
 
-Remember to add the modules to the dependencies under your project's Build.cs file. For example:
+Remember to add the module to the dependencies under your project's Build.cs file:
 
 ```cs
-PublicDependencyModuleNames.AddRange(new string[] { "Nakama", "NakamaApi", "NakamaBlueprints" });
+PublicDependencyModuleNames.AddRange(new string[] { "Nakama" });
 ```
 
 At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Nakama". If all went well, you should see the Nakama plugin, make sure to enable it (this may prompt an editor restart).
@@ -203,12 +197,12 @@ To use Satori in your Unreal project, you'll need to copy the Satori Client file
 2. If one does not already exist, create a `Plugins` folder here.
 3. Copy the `Satori` folder from the root of the downloaded release zip and put it in the `Plugins` folder.
 
-**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\`) to use the plugin across multiple projects.
+**Optionally:** you can put the plugin inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_5.3\Engine\Plugins\`) to use the plugin across multiple projects.
 
-Remember to add the modules to the dependencies under your project's Build.cs file. For example:
+Remember to add the module to the dependencies under your project's Build.cs file:
 
 ```cs
-PublicDependencyModuleNames.AddRange(new string[] { "Satori", "SatoriApi", "SatoriBlueprints" });
+PublicDependencyModuleNames.AddRange(new string[] { "Satori" });
 ```
 
 At this point, you are done. Restart Unreal. After it compiles everything, open Edit->Plugins, then search for "Satori". If all went well, you should see the Satori plugin, make sure to enable it (this may prompt an editor restart).
