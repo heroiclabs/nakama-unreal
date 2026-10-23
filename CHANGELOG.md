@@ -3,7 +3,7 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-### [3.0.0] - 2026-09-30
+### [3.0.0] - 2026-10-26
 ### Added 
 - Async Future-based API.
 - Missing Server-to-server methods.
@@ -23,6 +23,11 @@ This is a major release with a larger list of changes.
 For more information on the current version and the differences to previous versions, 
 please refer to [documentation](https://heroiclabs.com/docs/nakama/client-libraries/unreal/index.html) 
 and the [migration guide](https://heroiclabs.com/docs/nakama/client-libraries/unreal/migration-guide).
+
+### [2.11.7] - 2026-10-23
+### Fixed
+- Add expired session check to UNakamaClient::RPCm (#188).
+- Fix invalid request bodies for several Nakama requests (#187).
 
 ### [2.11.6] - 2026-08-24
 ### Fixed
