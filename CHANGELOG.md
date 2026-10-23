@@ -3,6 +3,11 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.11.7] - 2026-10-23
+### Fixed
+- Add expired session check to UNakamaClient::RPCm (#188).
+- Fix invalid request bodies for several Nakama requests (#187).
+
 ### [2.11.6] - 2026-08-24
 ### Fixed
 - Fix invalid/missing field names (#184).
