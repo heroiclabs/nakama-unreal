@@ -5893,43 +5893,43 @@ bool UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
     // The actual send, deferred so it can run after an optional token refresh.
     auto SendNow = [WeakThis, Session, Endpoint, Id, Payload, QueryParams, SuccessCallback, ErrorCallback]() mutable -> bool
     {
-    UNakamaClient* Self = WeakThis.Get();
-    if (!Self)
-    {
-    	return false;
-    }
+		UNakamaClient* Self = WeakThis.Get();
+		if (!Self)
+		{
+			return false;
+		}
 
-    FString SessionToken;
-    if (Session != nullptr)
-    {
-        SessionToken = Session->GetAuthToken();
-    }
+		FString SessionToken;
+		if (Session != nullptr)
+		{
+			SessionToken = Session->GetAuthToken();
+		}
 
-    if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
-    {
-        // This part is important
-        const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
+		if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
+		{
+			// This part is important
+			const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
 
-        Self->SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
-            [SuccessCallback](const FString& ResponseBody)
-            {
-                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
-            },
-            ErrorCallback);
-    }
-    else
-    {
-        // Add the RPC ID to the query parameters
-        QueryParams.Add(TEXT("id"), Id);
+			Self->SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
+				[SuccessCallback](const FString& ResponseBody)
+				{
+					if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+				},
+				ErrorCallback);
+		}
+		else
+		{
+			// Add the RPC ID to the query parameters
+			QueryParams.Add(TEXT("id"), Id);
 
-        Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
-            [SuccessCallback](const FString& ResponseBody)
-            {
-                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
-            },
-            ErrorCallback);
-    }
-    return true;
+			Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
+				[SuccessCallback](const FString& ResponseBody)
+				{
+					if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+				},
+				ErrorCallback);
+		}
+		return true;
     };
 
     // HTTP-key RPC (no session) runs immediately and returns the real result.
@@ -5950,40 +5950,62 @@ bool UNakamaClient::SendRPCm(UNakamaSession* Session, const FString& Id, const T
 	TMultiMap<FString, FString> QueryParams, const TFunction<void(FNakamaRPC&& Rpc)>& SuccessCallback,
 	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
 {
+	TWeakObjectPtr<UNakamaClient> WeakThis(this);
+	
 	// Setup the endpoint
     const FString Endpoint = FString("/v2/rpc/") + Id;
 
-    FString SessionToken;
-    if (Session != nullptr)
+    auto SendNow = [WeakThis, Session, Endpoint, Id, Payload, QueryParams, SuccessCallback, ErrorCallback]() mutable -> bool
     {
-        SessionToken = Session->GetAuthToken();
-    }
+		UNakamaClient* Self = WeakThis.Get();
+		if (!Self)
+		{
+			return false;
+		}
 
-    if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
-    {
-        // This part is important
-        const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
+		FString SessionToken;
+		if (Session != nullptr)
+		{
+			SessionToken = Session->GetAuthToken();
+		}
 
-        SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
-            [SuccessCallback](const FString& ResponseBody)
-            {
-                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
-            },
-            ErrorCallback);
-    }
-    else
-    {
-        // Add the RPC ID to the query parameters
-        QueryParams.Add(TEXT("id"), Id);
+		if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
+		{
+			// This part is important
+			const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
 
-        SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
-            [SuccessCallback](const FString& ResponseBody)
-            {
-                if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
-            },
-            ErrorCallback);
-    }
-    return true;
+			Self->SendJsonRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken,
+				[SuccessCallback](const FString& ResponseBody)
+				{
+					if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+				},
+				ErrorCallback);
+		}
+		else
+		{
+			// Add the RPC ID to the query parameters
+			QueryParams.Add(TEXT("id"), Id);
+
+			Self->SendJsonRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken,
+				[SuccessCallback](const FString& ResponseBody)
+				{
+					if (SuccessCallback) { SuccessCallback(FNakamaRPC(ResponseBody)); }
+				},
+				ErrorCallback);
+		}
+		return true;
+    };
+	
+	if (Session == nullptr)
+	{
+		return SendNow();
+	}
+	
+	EnsureValidSession(Session,
+		[SendNow]() mutable { SendNow(); },
+		ErrorCallback);
+	
+	return true;
 }
 
 void UNakamaClient::CancelAllRequests()
