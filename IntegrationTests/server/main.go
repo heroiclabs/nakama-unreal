@@ -19,6 +19,10 @@ var retryAttempts sync.Map
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
 	initStart := time.Now()
 
+	if err := initializer.RegisterRpc("noop", rpcNoop); err != nil {
+		return err
+	}
+
 	if err := initializer.RegisterRpc("transform", rpcTransform); err != nil {
 		return err
 	}
@@ -33,6 +37,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 
 	logger.Info("Test server plugin loaded in %dms", time.Since(initStart).Milliseconds())
 	return nil
+}
+
+func rpcNoop(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, _ string) (string, error) {
+	return "{}", nil
 }
 
 func rpcTransform(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
