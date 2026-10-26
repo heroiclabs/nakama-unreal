@@ -188,11 +188,19 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("session_issued_at")))
   {
-    Result.SessionIssuedAt = Json->GetNumberField(TEXT("session_issued_at"));
+    {
+      FString SessionIssuedAtStr;
+      Json->TryGetStringField(TEXT("session_issued_at"), SessionIssuedAtStr);
+      Result.SessionIssuedAt = FCString::Atoi64(*SessionIssuedAtStr);
+    }
   }
   if (Json->HasField(TEXT("session_expires_at")))
   {
-    Result.SessionExpiresAt = Json->GetNumberField(TEXT("session_expires_at"));
+    {
+      FString SessionExpiresAtStr;
+      Json->TryGetStringField(TEXT("session_expires_at"), SessionExpiresAtStr);
+      Result.SessionExpiresAt = FCString::Atoi64(*SessionExpiresAtStr);
+    }
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -232,8 +240,8 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const
   {
     Json->SetStringField(TEXT("session_id"), SessionId);
   }
-  Json->SetNumberField(TEXT("session_issued_at"), SessionIssuedAt);
-  Json->SetNumberField(TEXT("session_expires_at"), SessionExpiresAt);
+  Json->SetStringField(TEXT("session_issued_at"), FString::Printf(TEXT("%lld"), SessionIssuedAt));
+  Json->SetStringField(TEXT("session_expires_at"), FString::Printf(TEXT("%lld"), SessionExpiresAt));
   if (Metadata.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -557,7 +565,11 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("create_time_sec")))
   {
-    Result.CreateTimeSec = Json->GetNumberField(TEXT("create_time_sec"));
+    {
+      FString CreateTimeSecStr;
+      Json->TryGetStringField(TEXT("create_time_sec"), CreateTimeSecStr);
+      Result.CreateTimeSec = FCString::Atoi64(*CreateTimeSecStr);
+    }
   }
   return Result;
 }
@@ -578,7 +590,7 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  Json->SetNumberField(TEXT("create_time_sec"), CreateTimeSec);
+  Json->SetStringField(TEXT("create_time_sec"), FString::Printf(TEXT("%lld"), CreateTimeSec));
   return Json;
 }
 FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>& Json)
@@ -793,11 +805,19 @@ FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("start_time_sec")))
   {
-    Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"));
+    {
+      FString StartTimeSecStr;
+      Json->TryGetStringField(TEXT("start_time_sec"), StartTimeSecStr);
+      Result.StartTimeSec = FCString::Atoi64(*StartTimeSecStr);
+    }
   }
   if (Json->HasField(TEXT("end_time_sec")))
   {
-    Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"));
+    {
+      FString EndTimeSecStr;
+      Json->TryGetStringField(TEXT("end_time_sec"), EndTimeSecStr);
+      Result.EndTimeSec = FCString::Atoi64(*EndTimeSecStr);
+    }
   }
   const TArray<TSharedPtr<FJsonValue>>* NamesArrayPtr;
   if (Json->TryGetArrayField(TEXT("names"), NamesArrayPtr))
@@ -823,8 +843,8 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   Json->SetNumberField(TEXT("past_run_count"), PastRunCount);
   Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
-  Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
-  Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
+  Json->SetStringField(TEXT("start_time_sec"), FString::Printf(TEXT("%lld"), StartTimeSec));
+  Json->SetStringField(TEXT("end_time_sec"), FString::Printf(TEXT("%lld"), EndTimeSec));
   if (Names.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -952,11 +972,19 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("active_start_time_sec")))
   {
-    Result.ActiveStartTimeSec = Json->GetNumberField(TEXT("active_start_time_sec"));
+    {
+      FString ActiveStartTimeSecStr;
+      Json->TryGetStringField(TEXT("active_start_time_sec"), ActiveStartTimeSecStr);
+      Result.ActiveStartTimeSec = FCString::Atoi64(*ActiveStartTimeSecStr);
+    }
   }
   if (Json->HasField(TEXT("active_end_time_sec")))
   {
-    Result.ActiveEndTimeSec = Json->GetNumberField(TEXT("active_end_time_sec"));
+    {
+      FString ActiveEndTimeSecStr;
+      Json->TryGetStringField(TEXT("active_end_time_sec"), ActiveEndTimeSecStr);
+      Result.ActiveEndTimeSec = FCString::Atoi64(*ActiveEndTimeSecStr);
+    }
   }
   if (Json->HasField(TEXT("id")))
   {
@@ -964,15 +992,27 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("start_time_sec")))
   {
-    Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"));
+    {
+      FString StartTimeSecStr;
+      Json->TryGetStringField(TEXT("start_time_sec"), StartTimeSecStr);
+      Result.StartTimeSec = FCString::Atoi64(*StartTimeSecStr);
+    }
   }
   if (Json->HasField(TEXT("end_time_sec")))
   {
-    Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"));
+    {
+      FString EndTimeSecStr;
+      Json->TryGetStringField(TEXT("end_time_sec"), EndTimeSecStr);
+      Result.EndTimeSec = FCString::Atoi64(*EndTimeSecStr);
+    }
   }
   if (Json->HasField(TEXT("duration_sec")))
   {
-    Result.DurationSec = Json->GetNumberField(TEXT("duration_sec"));
+    {
+      FString DurationSecStr;
+      Json->TryGetStringField(TEXT("duration_sec"), DurationSecStr);
+      Result.DurationSec = FCString::Atoi64(*DurationSecStr);
+    }
   }
   if (Json->HasField(TEXT("reset_cron")))
   {
@@ -984,7 +1024,11 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("active_participation_end_time_sec")))
   {
-    Result.ActiveParticipationEndTimeSec = Json->GetNumberField(TEXT("active_participation_end_time_sec"));
+    {
+      FString ActiveParticipationEndTimeSecStr;
+      Json->TryGetStringField(TEXT("active_participation_end_time_sec"), ActiveParticipationEndTimeSecStr);
+      Result.ActiveParticipationEndTimeSec = FCString::Atoi64(*ActiveParticipationEndTimeSecStr);
+    }
   }
   const TArray<TSharedPtr<FJsonValue>>* LabelsArrayPtr;
   if (Json->TryGetArrayField(TEXT("labels"), LabelsArrayPtr))
@@ -1020,21 +1064,21 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  Json->SetNumberField(TEXT("active_start_time_sec"), ActiveStartTimeSec);
-  Json->SetNumberField(TEXT("active_end_time_sec"), ActiveEndTimeSec);
+  Json->SetStringField(TEXT("active_start_time_sec"), FString::Printf(TEXT("%lld"), ActiveStartTimeSec));
+  Json->SetStringField(TEXT("active_end_time_sec"), FString::Printf(TEXT("%lld"), ActiveEndTimeSec));
   if (Id.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
-  Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
-  Json->SetNumberField(TEXT("duration_sec"), DurationSec);
+  Json->SetStringField(TEXT("start_time_sec"), FString::Printf(TEXT("%lld"), StartTimeSec));
+  Json->SetStringField(TEXT("end_time_sec"), FString::Printf(TEXT("%lld"), EndTimeSec));
+  Json->SetStringField(TEXT("duration_sec"), FString::Printf(TEXT("%lld"), DurationSec));
   if (ResetCron.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("reset_cron"), ResetCron);
   }
   Json->SetNumberField(TEXT("status"), static_cast<int32>(Status));
-  Json->SetNumberField(TEXT("active_participation_end_time_sec"), ActiveParticipationEndTimeSec);
+  Json->SetStringField(TEXT("active_participation_end_time_sec"), FString::Printf(TEXT("%lld"), ActiveParticipationEndTimeSec));
   if (Labels.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -1313,23 +1357,43 @@ FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("send_time")))
   {
-    Result.SendTime = Json->GetNumberField(TEXT("send_time"));
+    {
+      FString SendTimeStr;
+      Json->TryGetStringField(TEXT("send_time"), SendTimeStr);
+      Result.SendTime = FCString::Atoi64(*SendTimeStr);
+    }
   }
   if (Json->HasField(TEXT("create_time")))
   {
-    Result.CreateTime = Json->GetNumberField(TEXT("create_time"));
+    {
+      FString CreateTimeStr;
+      Json->TryGetStringField(TEXT("create_time"), CreateTimeStr);
+      Result.CreateTime = FCString::Atoi64(*CreateTimeStr);
+    }
   }
   if (Json->HasField(TEXT("update_time")))
   {
-    Result.UpdateTime = Json->GetNumberField(TEXT("update_time"));
+    {
+      FString UpdateTimeStr;
+      Json->TryGetStringField(TEXT("update_time"), UpdateTimeStr);
+      Result.UpdateTime = FCString::Atoi64(*UpdateTimeStr);
+    }
   }
   if (Json->HasField(TEXT("read_time")))
   {
-    Result.ReadTime = Json->GetNumberField(TEXT("read_time"));
+    {
+      FString ReadTimeStr;
+      Json->TryGetStringField(TEXT("read_time"), ReadTimeStr);
+      Result.ReadTime = FCString::Atoi64(*ReadTimeStr);
+    }
   }
   if (Json->HasField(TEXT("consume_time")))
   {
-    Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"));
+    {
+      FString ConsumeTimeStr;
+      Json->TryGetStringField(TEXT("consume_time"), ConsumeTimeStr);
+      Result.ConsumeTime = FCString::Atoi64(*ConsumeTimeStr);
+    }
   }
   if (Json->HasField(TEXT("text")))
   {
@@ -1368,11 +1432,11 @@ TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const
   {
     Json->SetStringField(TEXT("schedule_id"), ScheduleId);
   }
-  Json->SetNumberField(TEXT("send_time"), SendTime);
-  Json->SetNumberField(TEXT("create_time"), CreateTime);
-  Json->SetNumberField(TEXT("update_time"), UpdateTime);
-  Json->SetNumberField(TEXT("read_time"), ReadTime);
-  Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
+  Json->SetStringField(TEXT("send_time"), FString::Printf(TEXT("%lld"), SendTime));
+  Json->SetStringField(TEXT("create_time"), FString::Printf(TEXT("%lld"), CreateTime));
+  Json->SetStringField(TEXT("update_time"), FString::Printf(TEXT("%lld"), UpdateTime));
+  Json->SetStringField(TEXT("read_time"), FString::Printf(TEXT("%lld"), ReadTime));
+  Json->SetStringField(TEXT("consume_time"), FString::Printf(TEXT("%lld"), ConsumeTime));
   if (Text.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("text"), Text);
@@ -1473,11 +1537,19 @@ FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("read_time")))
   {
-    Result.ReadTime = Json->GetNumberField(TEXT("read_time"));
+    {
+      FString ReadTimeStr;
+      Json->TryGetStringField(TEXT("read_time"), ReadTimeStr);
+      Result.ReadTime = FCString::Atoi64(*ReadTimeStr);
+    }
   }
   if (Json->HasField(TEXT("consume_time")))
   {
-    Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"));
+    {
+      FString ConsumeTimeStr;
+      Json->TryGetStringField(TEXT("consume_time"), ConsumeTimeStr);
+      Result.ConsumeTime = FCString::Atoi64(*ConsumeTimeStr);
+    }
   }
   return Result;
 }
@@ -1489,8 +1561,8 @@ TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  Json->SetNumberField(TEXT("read_time"), ReadTime);
-  Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
+  Json->SetStringField(TEXT("read_time"), FString::Printf(TEXT("%lld"), ReadTime));
+  Json->SetStringField(TEXT("consume_time"), FString::Printf(TEXT("%lld"), ConsumeTime));
   return Json;
 }
 FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json)

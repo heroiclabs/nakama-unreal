@@ -780,7 +780,11 @@ FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("op_code")))
   {
-    Result.OpCode = Json->GetNumberField(TEXT("op_code"));
+    {
+      FString OpCodeStr;
+      Json->TryGetStringField(TEXT("op_code"), OpCodeStr);
+      Result.OpCode = FCString::Atoi64(*OpCodeStr);
+    }
   }
   if (Json->HasField(TEXT("data")))
   {
@@ -801,7 +805,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
   Json->SetObjectField(TEXT("presence"), Presence.ToJson());
-  Json->SetNumberField(TEXT("op_code"), OpCode);
+  Json->SetStringField(TEXT("op_code"), FString::Printf(TEXT("%lld"), OpCode));
   if (Data.Num() > 0)
   {
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
@@ -822,7 +826,11 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("op_code")))
   {
-    Result.OpCode = Json->GetNumberField(TEXT("op_code"));
+    {
+      FString OpCodeStr;
+      Json->TryGetStringField(TEXT("op_code"), OpCodeStr);
+      Result.OpCode = FCString::Atoi64(*OpCodeStr);
+    }
   }
   if (Json->HasField(TEXT("data")))
   {
@@ -854,7 +862,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const
   {
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  Json->SetNumberField(TEXT("op_code"), OpCode);
+  Json->SetStringField(TEXT("op_code"), FString::Printf(TEXT("%lld"), OpCode));
   if (Data.Num() > 0)
   {
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
@@ -2171,7 +2179,11 @@ FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("op_code")))
   {
-    Result.OpCode = Json->GetNumberField(TEXT("op_code"));
+    {
+      FString OpCodeStr;
+      Json->TryGetStringField(TEXT("op_code"), OpCodeStr);
+      Result.OpCode = FCString::Atoi64(*OpCodeStr);
+    }
   }
   if (Json->HasField(TEXT("data")))
   {
@@ -2188,7 +2200,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
   Json->SetObjectField(TEXT("presence"), Presence.ToJson());
-  Json->SetNumberField(TEXT("op_code"), OpCode);
+  Json->SetStringField(TEXT("op_code"), FString::Printf(TEXT("%lld"), OpCode));
   if (Data.Num() > 0)
   {
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
@@ -2208,7 +2220,11 @@ FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("op_code")))
   {
-    Result.OpCode = Json->GetNumberField(TEXT("op_code"));
+    {
+      FString OpCodeStr;
+      Json->TryGetStringField(TEXT("op_code"), OpCodeStr);
+      Result.OpCode = FCString::Atoi64(*OpCodeStr);
+    }
   }
   if (Json->HasField(TEXT("data")))
   {
@@ -2224,7 +2240,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  Json->SetNumberField(TEXT("op_code"), OpCode);
+  Json->SetStringField(TEXT("op_code"), FString::Printf(TEXT("%lld"), OpCode));
   if (Data.Num() > 0)
   {
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));

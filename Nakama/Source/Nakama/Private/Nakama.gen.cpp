@@ -866,6 +866,8 @@ FNakamaApiRequestModel NAKAMA_API BuildRpcFuncRequest (
     FString Escaped = Params.Payload;
     Escaped = Escaped.Replace(TEXT("\\"), TEXT("\\\\"));
     Escaped = Escaped.Replace(TEXT("\""), TEXT("\\\""));
+    Escaped = Escaped.Replace(TEXT("\b"), TEXT("\\b"));
+    Escaped = Escaped.Replace(TEXT("\f"), TEXT("\\f"));
     Escaped = Escaped.Replace(TEXT("\r"), TEXT("\\r"));
     Escaped = Escaped.Replace(TEXT("\n"), TEXT("\\n"));
     Escaped = Escaped.Replace(TEXT("\t"), TEXT("\\t"));

@@ -662,7 +662,11 @@ FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("timestamp_seconds")))
   {
-    Result.TimestampSeconds = Json->GetNumberField(TEXT("timestamp_seconds"));
+    {
+      FString TimestampSecondsStr;
+      Json->TryGetStringField(TEXT("timestamp_seconds"), TimestampSecondsStr);
+      Result.TimestampSeconds = FCString::Atoi64(*TimestampSecondsStr);
+    }
   }
   if (Json->HasField(TEXT("salt")))
   {
@@ -701,7 +705,7 @@ TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const
   {
     Json->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  Json->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+  Json->SetStringField(TEXT("timestamp_seconds"), FString::Printf(TEXT("%lld"), TimestampSeconds));
   if (Salt.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("salt"), Salt);
@@ -2820,11 +2824,19 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("score")))
   {
-    Result.Score = Json->GetNumberField(TEXT("score"));
+    {
+      FString ScoreStr;
+      Json->TryGetStringField(TEXT("score"), ScoreStr);
+      Result.Score = FCString::Atoi64(*ScoreStr);
+    }
   }
   if (Json->HasField(TEXT("subscore")))
   {
-    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+    {
+      FString SubscoreStr;
+      Json->TryGetStringField(TEXT("subscore"), SubscoreStr);
+      Result.Subscore = FCString::Atoi64(*SubscoreStr);
+    }
   }
   if (Json->HasField(TEXT("num_score")))
   {
@@ -2848,7 +2860,11 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("rank")))
   {
-    Result.Rank = Json->GetNumberField(TEXT("rank"));
+    {
+      FString RankStr;
+      Json->TryGetStringField(TEXT("rank"), RankStr);
+      Result.Rank = FCString::Atoi64(*RankStr);
+    }
   }
   if (Json->HasField(TEXT("max_num_score")))
   {
@@ -2872,8 +2888,8 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
   {
     Json->SetStringField(TEXT("username"), Username);
   }
-  Json->SetNumberField(TEXT("score"), Score);
-  Json->SetNumberField(TEXT("subscore"), Subscore);
+  Json->SetStringField(TEXT("score"), FString::Printf(TEXT("%lld"), Score));
+  Json->SetStringField(TEXT("subscore"), FString::Printf(TEXT("%lld"), Subscore));
   Json->SetNumberField(TEXT("num_score"), NumScore);
   if (Metadata.IsEmpty() == false)
   {
@@ -2882,7 +2898,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
   Json->SetStringField(TEXT("create_time"), CreateTime.ToIso8601());
   Json->SetStringField(TEXT("update_time"), UpdateTime.ToIso8601());
   Json->SetStringField(TEXT("expiry_time"), ExpiryTime.ToIso8601());
-  Json->SetNumberField(TEXT("rank"), Rank);
+  Json->SetStringField(TEXT("rank"), FString::Printf(TEXT("%lld"), Rank));
   Json->SetNumberField(TEXT("max_num_score"), MaxNumScore);
   return Json;
 }
@@ -2903,7 +2919,11 @@ FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TShare
   }
   if (Json->HasField(TEXT("rank_count")))
   {
-    Result.RankCount = Json->GetNumberField(TEXT("rank_count"));
+    {
+      FString RankCountStr;
+      Json->TryGetStringField(TEXT("rank_count"), RankCountStr);
+      Result.RankCount = FCString::Atoi64(*RankCountStr);
+    }
   }
   const TArray<TSharedPtr<FJsonValue>>* RecordsArrayPtr;
   if (Json->TryGetArrayField(TEXT("records"), RecordsArrayPtr))
@@ -2943,7 +2963,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const
   {
     Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
   }
-  Json->SetNumberField(TEXT("rank_count"), RankCount);
+  Json->SetStringField(TEXT("rank_count"), FString::Printf(TEXT("%lld"), RankCount));
   if (Records.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -4700,7 +4720,11 @@ FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("rank_count")))
   {
-    Result.RankCount = Json->GetNumberField(TEXT("rank_count"));
+    {
+      FString RankCountStr;
+      Json->TryGetStringField(TEXT("rank_count"), RankCountStr);
+      Result.RankCount = FCString::Atoi64(*RankCountStr);
+    }
   }
   const TArray<TSharedPtr<FJsonValue>>* RecordsArrayPtr;
   if (Json->TryGetArrayField(TEXT("records"), RecordsArrayPtr))
@@ -4740,7 +4764,7 @@ TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const
   {
     Json->SetStringField(TEXT("prev_cursor"), PrevCursor);
   }
-  Json->SetNumberField(TEXT("rank_count"), RankCount);
+  Json->SetStringField(TEXT("rank_count"), FString::Printf(TEXT("%lld"), RankCount));
   if (Records.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -5574,11 +5598,19 @@ FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FNakamaWriteLeaderboa
   }
   if (Json->HasField(TEXT("score")))
   {
-    Result.Score = Json->GetNumberField(TEXT("score"));
+    {
+      FString ScoreStr;
+      Json->TryGetStringField(TEXT("score"), ScoreStr);
+      Result.Score = FCString::Atoi64(*ScoreStr);
+    }
   }
   if (Json->HasField(TEXT("subscore")))
   {
-    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+    {
+      FString SubscoreStr;
+      Json->TryGetStringField(TEXT("subscore"), SubscoreStr);
+      Result.Subscore = FCString::Atoi64(*SubscoreStr);
+    }
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -5594,8 +5626,8 @@ FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FNakamaWriteLeaderboa
 TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  Json->SetNumberField(TEXT("score"), Score);
-  Json->SetNumberField(TEXT("subscore"), Subscore);
+  Json->SetStringField(TEXT("score"), FString::Printf(TEXT("%lld"), Score));
+  Json->SetStringField(TEXT("subscore"), FString::Printf(TEXT("%lld"), Subscore));
   if (Metadata.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
@@ -5743,11 +5775,19 @@ FNakamaWriteTournamentRecordRequestTournamentRecordWrite FNakamaWriteTournamentR
   }
   if (Json->HasField(TEXT("score")))
   {
-    Result.Score = Json->GetNumberField(TEXT("score"));
+    {
+      FString ScoreStr;
+      Json->TryGetStringField(TEXT("score"), ScoreStr);
+      Result.Score = FCString::Atoi64(*ScoreStr);
+    }
   }
   if (Json->HasField(TEXT("subscore")))
   {
-    Result.Subscore = Json->GetNumberField(TEXT("subscore"));
+    {
+      FString SubscoreStr;
+      Json->TryGetStringField(TEXT("subscore"), SubscoreStr);
+      Result.Subscore = FCString::Atoi64(*SubscoreStr);
+    }
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -5763,8 +5803,8 @@ FNakamaWriteTournamentRecordRequestTournamentRecordWrite FNakamaWriteTournamentR
 TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequestTournamentRecordWrite::ToJson() const
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  Json->SetNumberField(TEXT("score"), Score);
-  Json->SetNumberField(TEXT("subscore"), Subscore);
+  Json->SetStringField(TEXT("score"), FString::Printf(TEXT("%lld"), Score));
+  Json->SetStringField(TEXT("subscore"), FString::Printf(TEXT("%lld"), Subscore));
   if (Metadata.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
