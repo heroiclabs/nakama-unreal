@@ -70,6 +70,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseFacebookIn
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteLeaderboardRecord, const FNakamaError&, Error, const FNakamaLeaderboardRecord&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteStorageObjects, const FNakamaError&, Error, const FNakamaStorageObjectAcks&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteTournamentRecord, const FNakamaError&, Error, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaSessionRefreshed, const FNakamaSession&, Session);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -90,6 +91,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -133,6 +137,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -628,6 +635,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -669,6 +679,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -709,6 +722,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaCreateGroup OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -759,6 +775,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -795,6 +814,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -837,6 +859,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -875,6 +900,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -915,6 +943,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -953,6 +984,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -993,6 +1027,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1031,6 +1068,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1077,6 +1117,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetAccount OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1113,6 +1156,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetUsers OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1157,6 +1203,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetSubscription OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1196,6 +1245,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetMatchmakerStats OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1233,6 +1285,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1269,6 +1324,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1311,6 +1369,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1352,6 +1413,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1391,6 +1455,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1429,6 +1496,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1471,6 +1541,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1509,6 +1582,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1551,6 +1627,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1592,6 +1671,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1632,6 +1714,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1676,6 +1761,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1717,6 +1805,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1757,6 +1848,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1809,6 +1903,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1850,6 +1947,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1890,6 +1990,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListChannelMessages OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -1936,6 +2039,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListFriends OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -1979,6 +2085,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListFriendsOfFriends OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2019,6 +2128,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListGroups OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2069,6 +2181,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListGroupUsers OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2113,6 +2228,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListLeaderboardRecords OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2161,6 +2279,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListLeaderboardRecordsAroundOwner OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2207,6 +2328,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListMatches OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2257,6 +2381,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListParties OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2302,6 +2429,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListNotifications OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2342,6 +2472,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListStorageObjects OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2388,6 +2521,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListSubscriptions OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2428,6 +2564,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournaments OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2478,6 +2617,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournamentRecords OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2524,6 +2666,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournamentRecordsAroundOwner OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2572,6 +2717,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListUserGroups OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2617,6 +2765,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2657,6 +2808,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2699,6 +2853,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaReadStorageObjects OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2737,6 +2894,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRpcFunc OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2779,6 +2939,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2819,6 +2982,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2861,6 +3027,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2901,6 +3070,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -2945,6 +3117,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -2986,6 +3161,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3026,6 +3204,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -3078,6 +3259,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3119,6 +3303,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3159,6 +3346,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -3209,6 +3399,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3258,6 +3451,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseApple OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3298,6 +3494,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidateSubscriptionApple OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -3340,6 +3539,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseGoogle OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3381,6 +3583,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidateSubscriptionGoogle OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3421,6 +3626,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseHuawei OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -3465,6 +3673,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseFacebookInstant OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3505,6 +3716,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteLeaderboardRecord OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -3547,6 +3761,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteStorageObjects OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -3585,6 +3802,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteTournamentRecord OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
