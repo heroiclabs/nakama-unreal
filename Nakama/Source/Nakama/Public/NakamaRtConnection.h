@@ -134,7 +134,8 @@ private:
   TSharedPtr<IWebSocket> WebSocket;
   
   FTSTicker::FDelegateHandle PingTimerHandle;
-  
+  std::atomic<int32> MissedPingCount{0};
+
   TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> ConnectionPromise;
   std::atomic<ENakamaRtConnectionState> ConnectionState { ENakamaRtConnectionState::Disconnected };
 

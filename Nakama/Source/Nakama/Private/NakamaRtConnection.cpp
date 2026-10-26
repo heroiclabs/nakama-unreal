@@ -144,10 +144,7 @@ void FNakamaRtConnection::Close()
   
   StopPingLoop();
 
-  // Eagerly resolve all pending futures so their tasks don't become zombies
-  // that fire UE_LOG during engine teardown.
-  // (The async OnClosed path is skipped by the stale-socket guard when we
-  // call WebSocket.Reset() before the close handshake completes.)
+  TSharedPtr<IWebSocket> LocalWebSocket;
   {
     FScopeLock Lock(&RequestsLock);
     for (const auto& Request : Requests)
@@ -155,15 +152,14 @@ void FNakamaRtConnection::Close()
       Request.Value->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ConnectionClosed });
     }
     Requests.Empty();
+    LocalWebSocket = MoveTemp(WebSocket);
+    ConnectionState = ENakamaRtConnectionState::Disconnected;
   }
 
-  if (WebSocket.IsValid())
+  if (LocalWebSocket.IsValid())
   {
-    WebSocket->Close();
-    WebSocket.Reset();
+    LocalWebSocket->Close();
   }
-
-  ConnectionState = ENakamaRtConnectionState::Disconnected;
 
   if (Closed.IsBound())
   {
@@ -254,6 +250,12 @@ bool FNakamaRtConnection::SendPing()
     LocalWebSocket = WebSocket;
   }
 
+  if (++MissedPingCount > 3)
+  {
+    Close();
+    return false;
+  }
+
   TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
   Envelope->SetObjectField(TEXT("ping"), MakeShareable(new FJsonObject()));
 
@@ -283,6 +285,7 @@ void FNakamaRtConnection::OnConnected()
 
   UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
   ConnectionState = ENakamaRtConnectionState::Connected;
+  MissedPingCount = 0;
 
   StartPingLoop();
 
@@ -324,7 +327,11 @@ void FNakamaRtConnection::OnMessage(const FString& Message)
   //
   // Log message (unless it's a pong).
   const bool bIsPong = JsonObject->HasField(TEXT("pong"));
-  if (!bIsPong)
+  if (bIsPong)
+  {
+    MissedPingCount = 0;
+  }
+  else
   {
     UE_LOG(LogNakama, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
   }
