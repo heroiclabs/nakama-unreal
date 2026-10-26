@@ -35,6 +35,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 
+	if err := nk.LeaderboardCreate(ctx, "test_leaderboard", false, "desc", "best", "", nil, true); err != nil {
+		return err
+	}
+
 	logger.Info("Test server plugin loaded in %dms", time.Since(initStart).Milliseconds())
 	return nil
 }

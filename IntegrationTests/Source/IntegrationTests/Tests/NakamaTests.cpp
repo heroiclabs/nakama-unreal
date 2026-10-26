@@ -813,6 +813,28 @@ void FNakamaAsyncLeaderboardSpec::Define()
 				Done.Execute();
 			});
 		});
+
+		LatentIt("should round-trip int64 score values above double precision without loss", [this](const FDoneDelegate& Done)
+		{
+			constexpr int64 LargeScore    = 9007199254740993LL; // 2^53 + 1
+			constexpr int64 LargeSubscore = 9007199254740994LL; // 2^53 + 2
+
+			Nakama::WriteLeaderboardRecord(ClientConfig, Session, TEXT("test_leaderboard"), LargeScore, LargeSubscore, TEXT("{}"), ENakamaOperator::NO_OVERRIDE)
+			.Next([this, Done](FNakamaLeaderboardRecordResult WriteResult)
+			{
+				ASYNC_FAIL_ON_ERROR(WriteResult, Done);
+				Nakama::ListLeaderboardRecords(ClientConfig, Session, TEXT("test_leaderboard"), TArray<FString>{Session.UserId}, 1, TEXT(""), 0)
+				.Next([this, Done](FNakamaLeaderboardRecordListResult ListResult)
+				{
+					ASYNC_FAIL_ON_ERROR(ListResult, Done);
+					if (ListResult.Value.OwnerRecords.IsEmpty()) { AddError(TEXT("No owner record returned")); Done.Execute(); return; }
+					const FNakamaLeaderboardRecord& Record = ListResult.Value.OwnerRecords[0];
+					TestEqual("Score round-trips exactly",    Record.Score,    (int64)9007199254740993LL);
+					TestEqual("Subscore round-trips exactly", Record.Subscore, (int64)9007199254740994LL);
+					Done.Execute();
+				});
+			});
+		});
 	});
 
 	Describe("ListLeaderboardRecords", [this]()

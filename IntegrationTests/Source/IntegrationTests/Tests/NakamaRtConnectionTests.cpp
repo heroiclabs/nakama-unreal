@@ -328,6 +328,39 @@ void FNakamaRtConnectionPingSpec::Define()
                 );
             });
         });
+
+        LatentIt("should keep the connection alive while pongs are received (liveness regression)", [this](const FDoneDelegate& Done)
+        {
+            FNakamaWebSocketConnectionParams P = MakeConnParams(Session);
+            P.PingIntervalSeconds = 0.5f;
+
+            TSharedRef<TAtomic<bool>> bSucceeded = MakeShared<TAtomic<bool>>(false);
+
+            RtConn->Closed.AddLambda([this, Done, bSucceeded](int32, const FString&, bool)
+            {
+                if (!bSucceeded->Load())
+                {
+                    AddError(TEXT("Connection closed unexpectedly — pong liveness reset may be broken"));
+                    Done.Execute();
+                }
+            });
+
+            RtConn->Connect(P).Next([this, Done, bSucceeded](FNakamaWebSocketConnectionResult CR)
+            {
+                TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                if (CR.ErrorCode != ENakamaWebSocketError::None) { Done.Execute(); return; }
+
+                FTSTicker::GetCoreTicker().AddTicker(
+                    FTickerDelegate::CreateLambda([Done, bSucceeded](float) -> bool
+                    {
+                        bSucceeded->Store(true);
+                        Done.Execute();
+                        return false;
+                    }),
+                    3.0f
+                );
+            });
+        });
     });
 
     Describe("Concurrent", [this]()
