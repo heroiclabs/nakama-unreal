@@ -103,6 +103,15 @@ public:
   void Connect(const FNakamaWebSocketConnectionParams& Params);
 
   UFUNCTION(BlueprintCallable)
+  void Close()
+  {
+    if (Connection.IsValid())
+    {
+      Connection->Close();
+    }
+  }
+
+  UFUNCTION(BlueprintCallable)
   int32 GetPendingRequestCount()
   {
     if (!Connection.IsValid())
