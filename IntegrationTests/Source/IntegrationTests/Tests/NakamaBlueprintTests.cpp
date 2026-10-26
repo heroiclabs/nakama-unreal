@@ -11,6 +11,7 @@
 #include "Misc/AutomationTest.h"
 #include "NakamaClient.h"
 #include "NakamaClientBlueprintLibrary.h"
+#include "NakamaSession.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 #include "UObject/Package.h"
@@ -2058,6 +2059,70 @@ void FNakamaBPEventsSpec::Define()
 					{
 						AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Result.Error.Message));
 					}
+					Done.Execute();
+				});
+			});
+		});
+	});
+}
+
+// ============================================================================
+// AUTO-REFRESH TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaBPAutoRefreshSpec, "IntegrationTests.NakamaBlueprintTests.AutoRefresh",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	FNakamaSession Session;
+	FNakamaClientConfig Client;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaBPAutoRefreshSpec)
+
+const FString FNakamaBPAutoRefreshSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaBPAutoRefreshSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaBPAutoRefreshSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		Nakama::AuthenticateCustom(Client, true, TEXT(""), GenerateId()).Next([this, Done](FNakamaSessionResult Result)
+		{
+			if (Result.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *Result.Error.Message)); Done.Execute(); return; }
+			Session = Result.Value;
+			Done.Execute();
+		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		Nakama::DeleteAccount(Client, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+	});
+
+	Describe("OnSessionRefreshed", [this]()
+	{
+		LatentIt("should complete successfully when the BP action auto-refreshes a near-expired session", [this](const FDoneDelegate& Done)
+		{
+			Session.TokenExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + 10;
+
+			auto* Action = UNakamaClientGetAccount::GetAccount(GetTransientPackage(), Client, Session);
+			Action->Activate();
+
+			VerifyWhenComplete(Action, [this, Done]()
+			{
+				Nakama::GetAccount(Client, Session).Next([this, Done](FNakamaAccountResult Result)
+				{
+					if (Result.bIsError) { AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Result.Error.Message)); }
 					Done.Execute();
 				});
 			});

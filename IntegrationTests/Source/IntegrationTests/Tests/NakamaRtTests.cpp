@@ -461,8 +461,24 @@ void FNakamaRtMatchSpec::Define()
                 .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> CreateResp)
                 {
                     RT_FAIL_ON_ERROR(CreateResp, Done);
-                    // MatchDataSend is fire-and-forget — the server sends no response.
                     NakamaRt::MatchDataSend(Connection, CreateResp.Data->MatchId, 1, TArray<uint8>{0x48, 0x65, 0x6C, 0x6C, 0x6F}, {}, true);
+                    Done.Execute();
+                });
+        });
+
+        LatentIt("should leave no pending requests after send", [this](const FDoneDelegate& Done)
+        {
+            Connection->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaRtResult<FNakamaRtMatch>>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return NakamaRt::MatchCreate(Connection, TEXT(""));
+                })
+                .Next([this, Done](FNakamaRtResult<FNakamaRtMatch> CreateResp)
+                {
+                    RT_FAIL_ON_ERROR(CreateResp, Done);
+                    NakamaRt::MatchDataSend(Connection, CreateResp.Data->MatchId, 1, TArray<uint8>{0x01}, {}, true);
+                    TestEqual("No pending requests after fire-and-forget send", Connection->GetPendingRequestCount(), 0);
                     Done.Execute();
                 });
         });

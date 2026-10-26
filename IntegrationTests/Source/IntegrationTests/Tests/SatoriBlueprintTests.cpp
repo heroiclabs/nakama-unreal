@@ -11,6 +11,7 @@
 #include "Misc/AutomationTest.h"
 #include "SatoriClientBlueprintLibrary.h"
 #include "SatoriClient.h"
+#include "SatoriSession.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 #include "SatoriConsoleHelper.h"
@@ -925,6 +926,71 @@ void FSatoriBPMessagesSpec::Define()
 
 			// Verify: action completed (may error, but should not crash)
 			VerifyWhenComplete(Action, [this, Done]()
+			{
+				Done.Execute();
+			});
+		});
+	});
+}
+
+// ============================================================================
+// AUTO-REFRESH TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FSatoriBPAutoRefreshSpec, "IntegrationTests.SatoriBlueprintTests.AutoRefresh",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	FSatoriSession Session;
+	FSatoriClientConfig ClientConfig;
+
+	static FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7450;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FSatoriBPAutoRefreshSpec)
+
+FString FSatoriBPAutoRefreshSpec::ServerKey;
+const FString FSatoriBPAutoRefreshSpec::Host = TEXT("127.0.0.1");
+
+void FSatoriBPAutoRefreshSpec::Define()
+{
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		Satori::Authenticate(ClientConfig, GenerateId(), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
+		{
+			if (Result.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *Result.Error.Message)); Done.Execute(); return; }
+			Session = Result.Value;
+			Done.Execute();
+		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
+	Describe("OnSessionRefreshed", [this]()
+	{
+		LatentIt("should complete successfully when the BP action auto-refreshes a near-expired session", [this](const FDoneDelegate& Done)
+		{
+			Session.TokenExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + 10;
+
+			auto* Action = USatoriClientGetFlags::GetFlags(nullptr, ClientConfig, Session, {}, {});
+			Action->Activate();
+
+			VerifyWhenComplete(Action, [Done]()
 			{
 				Done.Execute();
 			});
