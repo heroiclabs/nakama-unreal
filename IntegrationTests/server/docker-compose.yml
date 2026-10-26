@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: unreal_integration_test_postgres
-    image: timescale/timescaledb-ha:pg17
+    image: timescale/timescaledb-ha:pg18.1-ts2.23.1-all
     platform: "linux/amd64"
     environment:
       - POSTGRES_DB=satori
@@ -17,8 +17,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - data:/home/postgres/pgdata/data
-      - ./init-timescaledb.sql:/docker-entrypoint-initdb.d/init-timescaledb.sql
+      - data:/var/lib/postgresql/data
 
   nakama:
     container_name: unreal_integration_test_nakama

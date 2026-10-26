@@ -1,0 +1,105 @@
+name: "E2E - Unreal Engine Tests"
+
+on:
+  push:
+    branches:
+      - master
+      - sdk3
+    paths:
+      - 'Nakama/Source/**'
+      - 'Satori/Source/**'
+      - 'IntegrationTests/Source/**'
+      - 'IntegrationTests/server/**'
+      - 'cmd/**'
+      - 'Taskfile.yml'
+      - '.github/workflows/unreal-tests.yml'
+  pull_request:
+    paths:
+      - 'Nakama/Source/**'
+      - 'Satori/Source/**'
+      - 'IntegrationTests/Source/**'
+      - 'IntegrationTests/server/**'
+      - 'cmd/**'
+      - 'Taskfile.yml'
+      - '.github/workflows/unreal-tests.yml'
+
+jobs:
+  unreal-test:
+    runs-on:
+      labels: linux-x64-16cpu-64gb-600gb-cpp-unreal
+    strategy:
+      fail-fast: false
+      matrix:
+        unreal_version: ['5.3.0', '5.8.0']
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Set up Go"
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: "Install Go Task"
+        uses: arduino/setup-task@v1
+
+      - name: "Set up SSH agent"
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: "Clone private repositories"
+        run: |
+          git clone git@github.com:heroiclabs/satori.git IntegrationTests/satori
+          git -C IntegrationTests/satori lfs pull
+          git clone git@github.com:heroiclabs/dashboards.git IntegrationTests/dashboards
+
+      - name: "Fix plugin symlinks"
+        run: |
+          cd IntegrationTests/Plugins
+          ln -sfn ../../Nakama Nakama
+          ln -sfn ../../Satori Satori
+
+      - name: "Login to GitHub Container Registry"
+        run: echo ${{ secrets.ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+      - name: "Start backend services"
+        run: docker compose -f IntegrationTests/server/docker-compose.yml up --build --wait -d
+
+      - name: "Prepare build directories"
+        run: |
+          mkdir -p IntegrationTests/{Saved,Intermediate,Binaries}
+          chmod -R 777 IntegrationTests/{Saved,Intermediate,Binaries}
+
+      - name: "Build IntegrationTests"
+        run: |
+          docker run --rm \
+            -v "$(pwd):/workspace" \
+            ghcr.io/epicgames/unreal-engine:dev-slim-${{ matrix.unreal_version }} \
+            /home/ue4/UnrealEngine/Engine/Build/BatchFiles/Linux/Build.sh \
+            IntegrationTestsEditor Linux Development \
+            -Project=/workspace/IntegrationTests/IntegrationTests.uproject
+
+      - name: "Build testrunner"
+        run: cd cmd/testrunner && go build -o ../../build/testrunner
+
+      - name: "Run tests"
+        run: |
+          docker run --rm --network=host \
+            -v "$(pwd):/workspace" \
+            -w /workspace \
+            ghcr.io/epicgames/unreal-engine:dev-slim-${{ matrix.unreal_version }} \
+            ./build/testrunner
+
+      - name: "Stop backend services"
+        if: always()
+        run: docker compose -f IntegrationTests/server/docker-compose.yml down -v
+
+      - name: "Upload test reports"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-ue${{ matrix.unreal_version }}
+          path: Reports/
+          retention-days: 1
+
