@@ -150,7 +150,7 @@ public:
   TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(const FNakamaWebSocketConnectionParams& Params);
   void Close();
   
-  TNakamaFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
+  TNakamaFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data, bool bExpectReply = true);
   
   int32 GetPendingRequestCount();
 

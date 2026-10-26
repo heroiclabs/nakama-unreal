@@ -171,22 +171,25 @@ void FNakamaRtConnection::Close()
   }
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtConnection::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtConnection::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data, bool bExpectReply)
 {
-  //
-  // Create an Envelope, embed a new guid as Cid.
-  const FString Cid = FGuid::NewGuid().ToString();
   TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
-
-  Envelope->SetStringField(TEXT("cid"), Cid);
   Envelope->SetObjectField(RequestName, Data);
+
+  FString Cid;
+  TSharedPtr<TNakamaFuture<FNakamaWebSocketResponse>::FState> ResponseState;
+
+  if (bExpectReply)
+  {
+    Cid = FGuid::NewGuid().ToString();
+    Envelope->SetStringField(TEXT("cid"), Cid);
+  }
 
   FString EnvelopeJson;
   const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&EnvelopeJson);
   FJsonSerializer::Serialize(Envelope.ToSharedRef(), Writer);
 
   TSharedPtr<IWebSocket> LocalWebSocket;
-  TSharedPtr<TNakamaFuture<FNakamaWebSocketResponse>::FState> ResponseState;
   {
     FScopeLock Lock(&RequestsLock);
 
@@ -196,19 +199,24 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtConnection::Send(const FString&
       return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::NotConnected });
     }
 
-    //
-    // Create state, associate it with the Cid.
-    ResponseState = MakeShared<TNakamaFuture<FNakamaWebSocketResponse>::FState>();
     LocalWebSocket = WebSocket;
-    Requests.Add(Cid, ResponseState.ToSharedRef());
+
+    if (bExpectReply)
+    {
+      ResponseState = MakeShared<TNakamaFuture<FNakamaWebSocketResponse>::FState>();
+      Requests.Add(Cid, ResponseState.ToSharedRef());
+    }
   }
 
   //
   // Send the envelope outside the lock so WebSocket callbacks can't re-enter RequestsLock.
-  // Will activate the future on message received.
   LocalWebSocket->Send(EnvelopeJson);
 
-  return TNakamaFuture<FNakamaWebSocketResponse>(ResponseState);
+  if (bExpectReply)
+  {
+    return TNakamaFuture<FNakamaWebSocketResponse>(ResponseState);
+  }
+  return MakeCompletedFuture<FNakamaWebSocketResponse>({});
 }
 
 int32 FNakamaRtConnection::GetPendingRequestCount()

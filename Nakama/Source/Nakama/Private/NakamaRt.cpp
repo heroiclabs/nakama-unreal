@@ -442,7 +442,7 @@ TNakamaFuture<FNakamaRtResult<FNakamaRtEmptyResponse>> MatchDataSend(
   RequestMsg.Presences = Presences;
   RequestMsg.Reliable = Reliable;
 
-  return Connection->Send(TEXT("match_data_send"), RequestMsg.ToJson())
+  return Connection->Send(TEXT("match_data_send"), RequestMsg.ToJson(), false)
     .Next([](FNakamaWebSocketResponse Response)
     {
       if (Response.ErrorCode == ENakamaWebSocketError::None)
