@@ -174,9 +174,20 @@ void USatoriClientDeleteIdentity::Activate()
 
   TWeakObjectPtr<USatoriClientDeleteIdentity> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::DeleteIdentity(
     StoredClientConfig,
-    StoredSession
+    StoredSession,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -217,10 +228,21 @@ void USatoriClientEvent::Activate()
 
   TWeakObjectPtr<USatoriClientEvent> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::Event(
     StoredClientConfig,
     StoredSession,
-    StoredEvents
+    StoredEvents,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -307,11 +329,22 @@ void USatoriClientGetExperiments::Activate()
 
   TWeakObjectPtr<USatoriClientGetExperiments> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::GetExperiments(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels
+    StoredLabels,
+    RetryConfig
   ).Next([WeakThis](const FSatoriExperimentListResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -354,11 +387,22 @@ void USatoriClientGetFlagOverrides::Activate()
 
   TWeakObjectPtr<USatoriClientGetFlagOverrides> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::GetFlagOverrides(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels
+    StoredLabels,
+    RetryConfig
   ).Next([WeakThis](const FSatoriFlagOverrideListResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -401,11 +445,22 @@ void USatoriClientGetFlags::Activate()
 
   TWeakObjectPtr<USatoriClientGetFlags> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::GetFlags(
     StoredClientConfig,
     StoredSession,
     StoredNames,
-    StoredLabels
+    StoredLabels,
+    RetryConfig
   ).Next([WeakThis](const FSatoriFlagListResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -456,6 +511,16 @@ void USatoriClientGetLiveEvents::Activate()
 
   TWeakObjectPtr<USatoriClientGetLiveEvents> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::GetLiveEvents(
     StoredClientConfig,
     StoredSession,
@@ -464,7 +529,8 @@ void USatoriClientGetLiveEvents::Activate()
     StoredPastRunCount,
     StoredFutureRunCount,
     StoredStartTimeSec,
-    StoredEndTimeSec
+    StoredEndTimeSec,
+    RetryConfig
   ).Next([WeakThis](const FSatoriLiveEventListResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -505,10 +571,21 @@ void USatoriClientJoinLiveEvent::Activate()
 
   TWeakObjectPtr<USatoriClientJoinLiveEvent> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::JoinLiveEvent(
     StoredClientConfig,
     StoredSession,
-    StoredId
+    StoredId,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -593,12 +670,23 @@ void USatoriClientIdentify::Activate()
 
   TWeakObjectPtr<USatoriClientIdentify> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::Identify(
     StoredClientConfig,
     StoredSession,
     StoredId,
     StoredDefault,
-    StoredCustom
+    StoredCustom,
+    RetryConfig
   ).Next([WeakThis](const FSatoriSessionResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -637,9 +725,20 @@ void USatoriClientListProperties::Activate()
 
   TWeakObjectPtr<USatoriClientListProperties> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::ListProperties(
     StoredClientConfig,
-    StoredSession
+    StoredSession,
+    RetryConfig
   ).Next([WeakThis](const FSatoriPropertiesResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -724,12 +823,23 @@ void USatoriClientUpdateProperties::Activate()
 
   TWeakObjectPtr<USatoriClientUpdateProperties> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::UpdateProperties(
     StoredClientConfig,
     StoredSession,
     StoredRecompute,
     StoredDefault,
-    StoredCustom
+    StoredCustom,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -776,13 +886,24 @@ void USatoriClientGetMessageList::Activate()
 
   TWeakObjectPtr<USatoriClientGetMessageList> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::GetMessageList(
     StoredClientConfig,
     StoredSession,
     StoredLimit,
     StoredForward,
     StoredCursor,
-    StoredMessageIds
+    StoredMessageIds,
+    RetryConfig
   ).Next([WeakThis](const FSatoriGetMessageListResponseResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -827,12 +948,23 @@ void USatoriClientUpdateMessage::Activate()
 
   TWeakObjectPtr<USatoriClientUpdateMessage> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::UpdateMessage(
     StoredClientConfig,
     StoredSession,
     StoredId,
     StoredReadTime,
-    StoredConsumeTime
+    StoredConsumeTime,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())
@@ -873,10 +1005,21 @@ void USatoriClientDeleteMessage::Activate()
 
   TWeakObjectPtr<USatoriClientDeleteMessage> WeakThis(this);
 
+  FSatoriRetryConfig RetryConfig;
+  RetryConfig.OnSessionRefreshed = [WeakThis](const FSatoriSession& Session)
+  {
+    if (auto* Self = WeakThis.Get())
+    {
+      Self->OnSessionRefreshed.Broadcast(Session);
+    }
+  };
+  RetryConfig.OnSessionRefreshedOwner = this;
+
   Satori::DeleteMessage(
     StoredClientConfig,
     StoredSession,
-    StoredId
+    StoredId,
+    RetryConfig
   ).Next([WeakThis](const FSatoriVoidResult& Result)
   {
     if (auto* Self = WeakThis.Get())

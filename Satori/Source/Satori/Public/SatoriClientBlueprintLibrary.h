@@ -38,6 +38,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetLiveEvents, const FSato
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriIdentify, const FSatoriError&, Error, const FSatoriSession&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriListProperties, const FSatoriError&, Error, const FSatoriProperties&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetMessageList, const FSatoriError&, Error, const FSatoriGetMessageListResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriSessionRefreshed, const FSatoriSession&, Session);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -178,6 +179,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -214,6 +218,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -293,6 +300,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriGetExperiments OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -333,6 +343,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriGetFlagOverrides OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -375,6 +388,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriGetFlags OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -415,6 +431,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriGetLiveEvents OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -464,6 +483,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -541,6 +563,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriIdentify OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -583,6 +608,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriListProperties OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -658,6 +686,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -700,6 +731,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriGetMessageList OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
@@ -746,6 +780,9 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
 
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
+
   UFUNCTION(
     BlueprintCallable
     , meta = (
@@ -788,6 +825,9 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FOnSatoriEmptyResponse OnError;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriSessionRefreshed OnSessionRefreshed;
 
   UFUNCTION(
     BlueprintCallable
