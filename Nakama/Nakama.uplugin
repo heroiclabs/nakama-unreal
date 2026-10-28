@@ -53,14 +53,12 @@
 		},
 		{
 			"Name": "NakamaEditorUtils",
-			"Type": "DeveloperTool",
+			"Type": "Editor",
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
-				"IOS",
-				"Mac",
-				"Android"
+				"Mac"
 			]
 		}
 	]
